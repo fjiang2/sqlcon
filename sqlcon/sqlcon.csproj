@@ -105,7 +105,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Sys\Core\Sys.Core.csproj">
+    <ProjectReference Include="..\Core\Sys.Core.csproj">
       <Project>{58332852-369d-4045-93c2-5cfe9cfb2313}</Project>
       <Name>Sys.Core</Name>
     </ProjectReference>
