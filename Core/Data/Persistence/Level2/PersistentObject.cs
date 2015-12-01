@@ -143,22 +143,6 @@ namespace Sys.Data
         }
 
 
-        protected T GetValue<T>(DataRow row, string name)
-        {
-            object obj = row[name];
-            if (obj == DBNull.Value)
-                return default(T);
-
-            return (T)obj;
-        }
-
-        protected void SetValue(DataRow row, string name, object value)
-        {
-            if (value == null)
-                row[name] = DBNull.Value;
-            else
-                row[name] = value;
-        }
 
         /// <summary>
         /// DataRow <==> persistentObject instance, return new row
@@ -384,7 +368,7 @@ namespace Sys.Data
             }
         }
 
-     
+
         #endregion
 
 

@@ -113,7 +113,18 @@ namespace sqlcon
 
         public T GetValue<T>(string variable, T defaultValue = default(T))
         {
-            return Cfg.GetValue<T>(variable, defaultValue);
+            VAL val = Cfg.GetValue(variable);
+            if (val.Defined)
+            {
+                if (typeof(T) == typeof(VAL))
+                    return (T)(object)val;
+                else if (val.HostValue is T)
+                    return (T)val.HostValue;
+                else if (typeof(T).IsEnum && val.HostValue is int)
+                    return (T)val.HostValue;
+            }
+
+            return defaultValue;
         }
 
         public string DefaultServerPath

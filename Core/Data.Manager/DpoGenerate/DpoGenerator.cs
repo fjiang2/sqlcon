@@ -94,8 +94,8 @@ namespace Sys.Data.Manager
                     return false;
             }
 
-            if (schema.TableID == -1 && RegisterTable)
-                throw new MessageException("Table ID {0} is not defined", ctname);
+            //if (schema.TableID == -1 && RegisterTable)
+            //    throw new MessageException("Table ID {0} is not defined", ctname);
 
             if (!Directory.Exists(OutputPath))
             {

@@ -76,6 +76,8 @@
     <Compile Include="Data.Manager\DpoGenerate\DpoGenerator.cs" />
     <Compile Include="Data.Manager\DpoGenerate\PropertyDefinition.cs" />
     <Compile Include="Data.Manager\Extension.cs" />
+    <Compile Include="Data.Manager\Manager.cs" />
+    <Compile Include="Data.Manager\ManagerExtension.cs" />
     <Compile Include="Data.Manager\Package\BasePackage.cs" />
     <Compile Include="Data.Manager\Package\IPacking.cs" />
     <Compile Include="Data.Manager\Package\Packing.cs" />

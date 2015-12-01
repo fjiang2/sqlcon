@@ -8,6 +8,15 @@ namespace Sys.Data.Manager
 {
     public static class Extension
     {
+
+        public static TableSchema GetSchema(this TableName tname)
+        {
+            var schema = new TableSchema(tname);
+            return schema;
+        }
+
+
+
         #region Table Attribute Generate
 
 

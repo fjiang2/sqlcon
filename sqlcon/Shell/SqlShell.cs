@@ -597,8 +597,35 @@ namespace sqlcon
 
                     return true;
 
+                case "class":
+                    string path = cfg.GetValue<string>("dpo.path", "c:\\temp\\dpo");
+                    string ns = cfg.GetValue<string>("dpo.ns", "Sys.DataModel.Dpo");
+
+                    if (tname != null)
+                    {
+                        Sys.Data.Manager.Manager.CreateClass(tname, path, ns, Level.Application, true, false, null);
+                        stdio.WriteLine("generated class {0}", tname.ShortName);
+                    }
+                    else if (dname != null)
+                    {
+                        stdio.WriteLine("start to generate database {0} class to directory: {1}", dname, path);
+                        foreach (var tn in dname.GetTableNames())
+                        {
+                            Sys.Data.Manager.Manager.CreateClass(tn, path, ns, Level.Application, true, false, null);
+                            stdio.WriteLine("generated class for {0}", tn.ShortName);
+                        }
+
+                        stdio.WriteLine("completed");
+                    }
+                    else
+                    {
+                        stdio.ShowError("warning: database is not selected");
+                    }
+
+                    return true;
+
                 default:
-                    stdio.ShowError("warning: correct format is export insert [/if]|create|select|update|delete|schema");
+                    stdio.ShowError("warning: correct format is export insert [/if]|create|select|update|delete|schema|class");
                     break;
             }
 
@@ -824,6 +851,7 @@ namespace sqlcon
             stdio.WriteLine("<export insert>         : export INSERT INTO script on current table/database");
             stdio.WriteLine("<export create>         : export CREATE TABLE script on current table/database");
             stdio.WriteLine("<export schema>         : export database schema xml file");
+            stdio.WriteLine("<export class>          : export C# class");
             stdio.WriteLine("<execute inputfile>     : execute sql script file");
             stdio.WriteLine("<execute variable /s>   : execute script file list defined on the configuration file");
             stdio.WriteLine();
