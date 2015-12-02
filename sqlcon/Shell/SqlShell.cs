@@ -14,46 +14,14 @@ using Tie;
 
 namespace sqlcon
 {
-    class SqlShell
+    class SqlShell :ShellContext
     {
-        private Side theSide;
         private CompareAdapter adapter;
-        private Configuration cfg;
-
-        private PathManager mgr;
-        private Commandee commandee;
 
         public SqlShell(Configuration cfg, CompareAdapter adapter)
+            :base(cfg)
         {
-            this.cfg = cfg;
             this.adapter = adapter;
-            this.mgr = new PathManager(cfg);
-            this.commandee = new Commandee(mgr);
-
-            string server = cfg.GetValue<string>(Configuration._SERVER0);
-            var pvd = cfg.GetProvider(server);
-            if (pvd != null)
-            {
-                theSide = new Side(pvd);
-                ChangeSide(theSide);
-            }
-            else if (cfg.Providers.Count() > 0)
-            {
-                theSide = new Side(cfg.Providers.First());
-                ChangeSide(theSide);
-            }
-            else
-            {
-                throw new Exception("SQL Server not defined");
-            }
-        }
-
-        private void ChangeSide(Side side)
-        {
-            this.theSide = side;
-            Context.DS.AddHostObject(Context.THESIDE, side);
-
-            commandee.chdir(theSide.Provider.ServerName, theSide.DatabaseName);
         }
 
         public void DoCommand()
@@ -430,7 +398,8 @@ namespace sqlcon
                     return true;
 
                 case "export":
-                    return ExportSqlScript(cmd);
+                    var exporter = new Exporter(this);
+                    return exporter.ExportSqlScript(cmd);
 
                 default:
                     break;
@@ -439,206 +408,7 @@ namespace sqlcon
             return false;
         }
 
-        private bool ExportSqlScript(Command cmd)
-        {
-            string fileName = cfg.OutputFile;
-            TableName tname = mgr.GetCurrentPath<TableName>();
-            DatabaseName dname = mgr.GetCurrentPath<DatabaseName>();
-
-
-            switch (cmd.arg1)
-            {
-                case "insert":
-                    if (tname != null)
-                    {
-                        if (cmd.IsSchema)
-                        {
-                            using (var writer = fileName.NewStreamWriter())
-                            {
-                                string sql = theSide.GenerateTemplate(tname, SqlScriptType.INSERT);
-                                stdio.WriteLine(sql);
-                                writer.WriteLine(sql);
-                            }
-                        }
-                        else
-                        {
-                            var node = mgr.GetCurrentNode<Locator>();
-                            int count;
-
-                            using (var writer = fileName.NewStreamWriter())
-                            {
-                                if (node != null)
-                                {
-                                    stdio.WriteLine("start to generate {0} INSERT script to file: {1}", tname, fileName);
-                                    Locator locator = mgr.GetCombinedLocator(node);
-                                    count = theSide.GenerateRows(writer, tname, locator, cmd.HasIfExists);
-                                    stdio.WriteLine("insert clauses (SELECT * FROM {0} WHERE {1}) generated to {2}", tname, locator, fileName);
-                                }
-                                else
-                                {
-                                    count = theSide.GenerateRows(writer, tname, null, cmd.HasIfExists);
-                                    stdio.WriteLine("insert clauses (SELECT * FROM {0}) generated to {1}", tname, fileName);
-                                }
-                            }
-                        }
-                    }
-                    else if (dname != null)
-                    {
-                        stdio.WriteLine("start to generate {0} script to file: {1}", dname, fileName);
-                        using (var writer = fileName.NewStreamWriter())
-                        {
-                            TableName[] tnames = dname.GetDependencyTableNames();
-                            foreach (var tn in tnames)
-                            {
-                                if (!cfg.exportExcludedTables.IsMatch(tn.ShortName))
-                                {
-                                    int count = new SqlCmd(tn.Provider, string.Format("SELECT COUNT(*) FROM {0}", tn)).FillObject<int>();
-                                    if (count > cfg.Export_Max_Count)
-                                    {
-                                        if(!stdio.YesOrNo("are you sure to export {0} rows on {1} (y/n)?", count, tn.ShortName))
-                                        {
-                                            stdio.WriteLine("\n{0,10} skipped", tn.ShortName);
-                                            continue;
-                                        }
-                                    }
-
-                                    count = theSide.GenerateRows(writer, tn, null, cmd.HasIfExists);
-                                    stdio.WriteLine("{0,10} row(s) generated on {1}", count, tn.ShortName);
-                                }
-                                else
-                                    stdio.WriteLine("{0,10} skipped", tn.ShortName);
-                            }
-                            stdio.WriteLine("completed");
-                        }
-                    }
-                    else
-                        stdio.ShowError("warning: table or database is not selected");
-
-                    return true;
-
-                case "create":
-                    if (tname != null)
-                    {
-                        stdio.WriteLine("start to generate {0} CREATE TABLE script to file: {1}", tname, fileName);
-                        using (var writer = fileName.NewStreamWriter())
-                        {
-                            writer.WriteLine(tname.IF_EXISTS_DROP_TABLE());
-                            writer.WriteLine("GO");
-                            writer.WriteLine(tname.GenerateScript());
-                        }
-                        stdio.WriteLine("completed");
-                    }
-                    else if (dname != null)
-                    {
-                        stdio.WriteLine("start to generate {0} script to file: {1}", dname, fileName);
-                        using (var writer = fileName.NewStreamWriter())
-                        {
-                            writer.WriteLine(dname.GenerateScript());
-                        }
-                        stdio.WriteLine("completed");
-                    }
-                    else
-                    {
-                        stdio.ShowError("warning: table or database is not seleted");
-                    }
-                    return true;
-
-                case "select":
-                case "delete":
-                case "update":
-                    if (tname != null)
-                    {
-                        SqlScriptType type = SqlScriptType.SELECT;
-                        if (cmd.arg1 == "delete")
-                            type = SqlScriptType.DELETE;
-                        if (cmd.arg1 == "update")
-                            type = SqlScriptType.UPDATE;
-
-                        using (var writer = fileName.NewStreamWriter())
-                        {
-                            string sql = theSide.GenerateTemplate(tname, type);
-                            stdio.WriteLine(sql);
-                            writer.WriteLine(sql);
-                        }
-                    }
-                    else
-                    {
-                        stdio.ShowError("warning: table is not selected");
-                    }
-                    return true;
-
-                case "schema":
-                    if (dname != null)
-                    {
-                        stdio.WriteLine("start to generate database {0} schema to file: {1}", dname, cfg.SchemaFile);
-                        using (var writer = cfg.SchemaFile.NewStreamWriter())
-                        {
-                            DataTable dt = dname.DatabaseSchema();
-                            dt.WriteXml(writer, XmlWriteMode.WriteSchema);
-                        }
-                        stdio.WriteLine("completed");
-                    }
-                    else
-                    {
-                        ServerName sname = mgr.GetCurrentPath<ServerName>();
-                        if (sname != null)
-                        {
-                            stdio.WriteLine("start to generate server {0} schema to file: {1}", sname, cfg.SchemaFile);
-                            using (var writer = cfg.SchemaFile.NewStreamWriter())
-                            {
-                                DataSet ds = sname.ServerSchema();
-                                ds.WriteXml(writer, XmlWriteMode.WriteSchema);
-                            }
-                            stdio.WriteLine("completed");
-                        }
-                        else
-                            stdio.ShowError("warning: server or database is not selected");
-                    }
-
-                    return true;
-
-                case "class":
-                    string path = cfg.GetValue<string>("dpo.path", "c:\\temp\\dpo");
-                    string ns = cfg.GetValue<string>("dpo.ns", "Sys.DataModel.Dpo");
-
-                    if (tname != null)
-                    {
-                        Sys.Data.Manager.Manager.CreateClass(tname, path, ns, Level.Application, true, false, null);
-                        stdio.WriteLine("generated class {0}", tname.ShortName);
-                    }
-                    else if (dname != null)
-                    {
-                        stdio.WriteLine("start to generate database {0} class to directory: {1}", dname, path);
-                        foreach (var tn in dname.GetTableNames())
-                        {
-                            try
-                            {
-                                Sys.Data.Manager.Manager.CreateClass(tn, path, ns, Level.Application, true, false, null);
-                                stdio.WriteLine("generated class for {0}", tn.ShortName);
-                            }
-                            catch (Exception ex)
-                            {
-                                stdio.ShowError("failed to generate class {0}, {1}", tn.ShortName, ex.Message);
-                            }
-                        }
-
-                        stdio.WriteLine("completed");
-                    }
-                    else
-                    {
-                        stdio.ShowError("warning: database is not selected");
-                    }
-
-                    return true;
-
-                default:
-                    stdio.ShowError("warning: correct format is export insert [/if]|create|select|update|delete|schema|class");
-                    break;
-            }
-
-            return true;
-        }
-
+       
 
     
         private void chdir(Command cmd)

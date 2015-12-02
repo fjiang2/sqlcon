@@ -365,8 +365,8 @@ namespace @NAMESPACE
         {
         }
 
-        public @CLASSNAME(DataRow dataRow)
-            :base(dataRow)
+        public @CLASSNAME(DataRow row)
+            :base(row)
         {
         }
 

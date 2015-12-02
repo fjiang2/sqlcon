@@ -38,6 +38,8 @@ namespace sqlcon
         public readonly bool ToCSharp;
 
         public readonly int top;
+
+        private List<string> options = new List<string>();
         private readonly string columns;
 
         public Command(string line, Configuration cfg)
@@ -140,9 +142,11 @@ namespace sqlcon
                         default:
                             if (a.StartsWith("/top:"))
                                 int.TryParse(a.Substring(5), out top);
-
-                            if (a.StartsWith("/col:"))
+                            else if (a.StartsWith("/col:"))
                                 columns = a.Substring(5);
+                            else
+                                options.Add(a.Substring(1));
+
                             break;
                     }
                 }
@@ -156,6 +160,11 @@ namespace sqlcon
             }
         }
 
+
+        public bool Has(string name)
+        {
+            return options.IndexOf(name) >= 0;
+        }
 
         public PathName Path1
         {
