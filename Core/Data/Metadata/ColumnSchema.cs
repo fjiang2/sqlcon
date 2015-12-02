@@ -249,13 +249,13 @@ namespace Sys.Data
                     return CType.UniqueIdentifier;
 
                 case "hierarchyid":
-                    return CType.Binary;
+                    return CType.HierarchyId;
 
                 case "geometry":
-                    return CType.Binary;
+                    return CType.Geometry;
 
                 case "geography":
-                    return CType.Binary;
+                    return CType.Geography;
 
                 case "date":
                     return CType.Date;
@@ -356,6 +356,18 @@ namespace Sys.Data
 
                 case "sql_variant":
                     ty = "object";
+                    break;
+
+                case "geography":
+                    ty = "SqlGeography";
+                    break;
+
+                case "geometry":
+                    ty = "SqlGeometry";
+                    break;
+
+                case "hierarchyid":
+                    ty = "SqlHierarchyId";
                     break;
 
                 default:

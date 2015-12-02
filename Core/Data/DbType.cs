@@ -41,6 +41,10 @@ namespace Sys.Data
         DateTime2 = 33,
         DateTimeOffset = 34,
 
+        HierarchyId = 35,
+        Geometry = 36,
+        Geography = 37,
+
         Auto = 100
     }
 
@@ -190,6 +194,15 @@ namespace Sys.Data
                 case CType.DateTime2:
                 case CType.DateTimeOffset:
                     break;
+
+                //case CType.Geography:
+                //    return typeof(Microsoft.SqlServer.Types.SqlGeography);
+
+                //case CType.Geometry:
+                //    return typeof(Microsoft.SqlServer.Types.SqlGeometry);
+
+                //case CType.HierarchyId:
+                //    return typeof(Microsoft.SqlServer.Types.SqlHierarchyId);
 
             }
 
