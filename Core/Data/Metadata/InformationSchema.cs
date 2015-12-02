@@ -30,7 +30,7 @@ SELECT
 	f.Constraint_Name AS FKContraintName
     FROM sys.tables t 
         INNER JOIN sys.columns c ON t.object_id = c.object_id 
-        INNER JOIN sys.types ty ON ty.system_type_id =c.system_type_id AND ty.name<>'sysname' AND ty.is_user_defined = 0
+        INNER JOIN sys.types ty ON ty.user_type_id =c.user_type_id AND ty.name<>'sysname' AND ty.is_user_defined = 0
         LEFT JOIN sys.Computed_columns d ON t.object_id = d.object_id AND c.name = d.name
 		LEFT JOIN (SELECT pk.TABLE_NAME, k.COLUMN_NAME, pk.CONSTRAINT_NAME
 					FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS pk 
