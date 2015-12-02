@@ -611,8 +611,15 @@ namespace sqlcon
                         stdio.WriteLine("start to generate database {0} class to directory: {1}", dname, path);
                         foreach (var tn in dname.GetTableNames())
                         {
-                            Sys.Data.Manager.Manager.CreateClass(tn, path, ns, Level.Application, true, false, null);
-                            stdio.WriteLine("generated class for {0}", tn.ShortName);
+                            try
+                            {
+                                Sys.Data.Manager.Manager.CreateClass(tn, path, ns, Level.Application, true, false, null);
+                                stdio.WriteLine("generated class for {0}", tn.ShortName);
+                            }
+                            catch (Exception ex)
+                            {
+                                stdio.ShowError("failed to generate class {0}, {1}", tn.ShortName, ex.Message);
+                            }
                         }
 
                         stdio.WriteLine("completed");

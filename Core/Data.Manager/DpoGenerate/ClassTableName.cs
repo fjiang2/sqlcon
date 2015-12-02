@@ -82,7 +82,11 @@ namespace Sys.Data.Manager
                 if (vowel != 'u')
                     className = className.Substring(0, className.Length - 1);
             }
-             
+
+            className = className.Substring(0,1).ToUpper() + className.Substring(1);
+
+            // className = className.Substring(0,1).ToUpper() + className.Substring(1).ToLower();
+           
             //Add "Dpo"
             className += Setting.DPO_CLASS_SUFFIX_CLASS_NAME;
 
