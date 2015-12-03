@@ -25,7 +25,7 @@ namespace Sys.Data.Manager
 {
   
 
-    public class ClassName
+    class ClassName
     {
         string nameSpace;
         string className;

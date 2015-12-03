@@ -50,13 +50,14 @@ namespace Sys.Data.Manager
 
                     DPObject dpo = (DPObject)Activator.CreateInstance(type);
                     ClassTableName ctname = new ClassTableName(dpo.TableName)
-                     {
-                         Level = dpo.Level,
-                         Pack = dpo.IsPack,
-                         HasProvider = dpo.HasProvider
-                     };
+                    {
+                        Level = dpo.Level,
+                        Pack = dpo.IsPack,
+                        HasProvider = dpo.HasProvider
+                    };
                     ClassName cname = new ClassName(dpo);
-                    ctname.GenTableDpo(path, true, cname, true, dict);
+                    TableClass clss = new TableClass(ctname) { MustGenerate = true, dict = dict };
+                    clss.CreateClass(path); ;
                 }
             }
         }

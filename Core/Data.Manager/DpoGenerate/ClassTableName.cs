@@ -23,7 +23,7 @@ using System.Globalization;
 
 namespace Sys.Data.Manager
 {
-    public sealed class ClassTableName : TableName
+    sealed class ClassTableName : TableName
     {
 
         public ClassTableName(DatabaseName databaseName, string tableName)

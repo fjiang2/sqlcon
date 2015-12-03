@@ -26,7 +26,7 @@ using Sys.Data.Manager;
 
 namespace Sys.Data.Manager
 {
-    public class DpoGenerator
+    class DpoGenerator
     {
         private string sourceCode;
         private ClassTableName ctname;
