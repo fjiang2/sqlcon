@@ -35,23 +35,6 @@ namespace Sys.Data.Manager
         }
 
 
-        public static void CreateClass(TableName tableName, string path, string nameSpace,
-            Level level, bool isPack, bool hasProvider,
-            Dictionary<TableName, Type> dict)
-        {
-            ClassTableName ctname = new ClassTableName(tableName)
-            {
-                Level = level,
-                Pack = isPack,
-                HasProvider = hasProvider
-            };
-
-            ClassName cname = new ClassName(nameSpace, AccessModifier.Public, ctname);
-
-            ctname.GenTableDpo(path, true, cname, true, dict);
-        }
-
-   
 
         /// <summary>
         /// Upgrade DPO classes from SQL SERVER

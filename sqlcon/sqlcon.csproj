@@ -67,7 +67,7 @@
   <ItemGroup>
     <Compile Include="Input\KeyValueTable.cs" />
     <Compile Include="Input\PathName.cs" />
-    <Compile Include="Output\Exporter.cs" />
+    <Compile Include="Shell\Exporter.cs" />
     <Compile Include="Output\TableOut.cs" />
     <Compile Include="Path\ColumnName.cs" />
     <Compile Include="Path\Commandee.cs" />

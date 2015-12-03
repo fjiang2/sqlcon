@@ -7,6 +7,7 @@ using System.Data;
 using Sys;
 using Sys.Data;
 using Sys.Data.Comparison;
+using Sys.Data.Manager;
 
 namespace sqlcon
 {
@@ -178,10 +179,15 @@ namespace sqlcon
         {
             string path = context.cfg.GetValue<string>("dpo.path", "c:\\temp\\dpo");
             string ns = context.cfg.GetValue<string>("dpo.ns", "Sys.DataModel.Dpo");
+            string suffix = context.cfg.GetValue<string>("dpo.suffix", Setting.DPO_CLASS_SUFFIX_CLASS_NAME);
+
+            Func<string, string> rule = 
+                name =>  name.Substring(0,1).ToUpper() + name.Substring(1).ToLower() + suffix;
 
             if (tname != null)
             {
-                Sys.Data.Manager.Manager.CreateClass(tname, path, ns, Level.Application, true, false, null);
+                TableClass clss = new TableClass(tname) { NameSpace = ns, ClassNameRule = rule };
+                clss.CreateClass(path);
                 stdio.WriteLine("generated class {0}", tname.ShortName);
             }
             else if (dname != null)
@@ -191,7 +197,8 @@ namespace sqlcon
                 {
                     try
                     {
-                        Sys.Data.Manager.Manager.CreateClass(tn, path, ns, Level.Application, true, false, null);
+                        TableClass clss = new TableClass(tn) { NameSpace = ns, ClassNameRule = rule };
+                        clss.CreateClass(path);
                         stdio.WriteLine("generated class for {0}", tn.ShortName);
                     }
                     catch (Exception ex)

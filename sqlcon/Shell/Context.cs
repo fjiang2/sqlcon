@@ -93,7 +93,7 @@ namespace sqlcon
                         if (tableName != null)
                         {
                             Side theSide = (Side)DS[THESIDE].HostValue;
-                            string schema = "dbo";
+                            string schema = TableName.dbo;
                             if (tableName.IndexOf(".") > 0)
                             {
                                 string[] L = tableName.Split('.');

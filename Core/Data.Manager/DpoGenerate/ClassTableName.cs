@@ -43,7 +43,8 @@ namespace Sys.Data.Manager
         public Level Level { get; set;}
         public bool Pack { get; set;}
         public bool HasProvider { get; set; }
-      
+
+        public Func<string, string> ClassNameRule { get; set; }
 
         public string SubNamespace
         {
@@ -53,11 +54,11 @@ namespace Sys.Data.Manager
 
         public string ClassName
         {
-            get { return toClassName(this.tableName); }
+            get { return toClassName(); }
         }
 
 
-        private static string toClassName(string tableName)
+        private string toClassName()
         {
             string className = ident.Identifier(tableName);
 
@@ -70,7 +71,7 @@ namespace Sys.Data.Manager
             {
                 char ch1 = className[className.Length - 3];
                 char ch2 = className[className.Length - 4];
-                
+
                 if (!IsVowel(ch1) && IsVowel(ch2))
                     className = className.Substring(0, className.Length - 1);
                 else
@@ -83,12 +84,8 @@ namespace Sys.Data.Manager
                     className = className.Substring(0, className.Length - 1);
             }
 
-            className = className.Substring(0,1).ToUpper() + className.Substring(1);
-
-            // className = className.Substring(0,1).ToUpper() + className.Substring(1).ToLower();
-           
-            //Add "Dpo"
-            className += Setting.DPO_CLASS_SUFFIX_CLASS_NAME;
+            if (ClassNameRule != null)
+                className = ClassNameRule(className);
 
             return className;
 
