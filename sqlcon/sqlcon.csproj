@@ -49,6 +49,18 @@
   <PropertyGroup>
     <ApplicationIcon>Tie.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>513A9BA4C6660985C3C1E53DB82D5832FD93766F</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>tie.pfx</ManifestKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
@@ -99,6 +111,7 @@
   <ItemGroup>
     <Compile Include="Output\ConsoleGrid.cs" />
     <None Include="packages.config" />
+    <None Include="tie.pfx" />
     <None Include="user.cfg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

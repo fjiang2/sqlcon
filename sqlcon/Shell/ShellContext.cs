@@ -39,6 +39,12 @@ namespace sqlcon
 
         protected void ChangeSide(Side side)
         {
+            if (side == null)
+            {
+                stdio.ShowError("undefined side");
+                return;
+            }
+
             this.theSide = side;
             Context.DS.AddHostObject(Context.THESIDE, side);
 

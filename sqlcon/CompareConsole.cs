@@ -274,32 +274,36 @@ namespace sqlcon
             {
                 if (!cs1.IsGoodConnectionString())
                 {
-                    stdio.WriteLine("invalid connection string: {0}", cs1.ConnectionString);
-                    return;
+                    stdio.WriteLine("invalid connection string on side 1: {0}", cs1.ConnectionString);
                 }
-
-                pvd1 = ConnectionProviderManager.Register(alias1, cs1);
-                cfg.Providers.Add(pvd1);
+                else
+                {
+                    pvd1 = ConnectionProviderManager.Register(alias1, cs1);
+                    cfg.Providers.Add(pvd1);
+                }
             }
 
             if (pvd2 == null)
             {
                 if (!cs2.IsGoodConnectionString())
                 {
-                    stdio.WriteLine("invalid connection string: {0}", cs2.ConnectionString);
-                    return;
+                    stdio.WriteLine("invalid connection string on side 2: {0}", cs2.ConnectionString);
                 }
-
-                pvd2 = ConnectionProviderManager.Register(alias2, cs2);
-                cfg.Providers.Add(pvd2);
+                else
+                {
+                    pvd2 = ConnectionProviderManager.Register(alias2, cs2);
+                    cfg.Providers.Add(pvd2);
+                }
             }
 
-            Side side1 = new Side(pvd1);
-            Side side2 = new Side(pvd2);
+            CompareAdapter adapter = null;
+            if (pvd1 != null && pvd2 != null)
+            {
+                Side side1 = new Side(pvd1);
+                Side side2 = new Side(pvd2);
 
-            CompareAdapter adapter = new CompareAdapter(side1, side2);
-            MatchedDatabase m1 = new MatchedDatabase(adapter.Side1.DatabaseName, tableNamePattern1, cfg.compareExcludedTables);
-            MatchedDatabase m2 = new MatchedDatabase(adapter.Side2.DatabaseName, tableNamePattern2, cfg.compareExcludedTables);
+                adapter = new CompareAdapter(side1, side2);
+            }
 
             switch (action)
             {
@@ -330,6 +334,8 @@ namespace sqlcon
 
                 case ActionType.CompareData:
                 case ActionType.CompareSchema:
+                    MatchedDatabase m1 = new MatchedDatabase(adapter.Side1.DatabaseName, tableNamePattern1, cfg.compareExcludedTables);
+                    MatchedDatabase m2 = new MatchedDatabase(adapter.Side2.DatabaseName, tableNamePattern2, cfg.compareExcludedTables);
                     WriteFile(adapter.Run(action, m1, m2, cfg.PK, new string[] { }));
                     break;
 

@@ -218,11 +218,11 @@ namespace sqlcon
                                 if (pvd != null)
                                 {
                                     Side side = new Side(pvd);
-                                    adapter = new CompareAdapter(side, adapter.Side2);
+                                    adapter = new CompareAdapter(side, adapter?.Side2);
                                 }
                             }
 
-                            ChangeSide(adapter.Side1);
+                            ChangeSide(adapter?.Side1);
                             stdio.WriteLine("comparison server 1 selected({0})", showConnection(theSide.Provider));
                             return true;
 
@@ -239,16 +239,16 @@ namespace sqlcon
                                 if (pvd != null)
                                 {
                                     Side side = new Side(pvd);
-                                    adapter = new CompareAdapter(adapter.Side1, side);
+                                    adapter = new CompareAdapter(adapter?.Side1, side);
                                 }
                             }
-                            ChangeSide(adapter.Side2);
+                            ChangeSide(adapter?.Side2);
                             stdio.WriteLine("comparison server 2 selected({0})", showConnection(theSide.Provider));
                             return true;
 
                         case "swap":
-                            adapter = new CompareAdapter(adapter.Side2, adapter.Side1);
-                            stdio.WriteLine("comparison servers has been swapped, source:{0}, sink:{1}", adapter.Side1, adapter.Side2);
+                            adapter = new CompareAdapter(adapter?.Side2, adapter?.Side1);
+                            stdio.WriteLine("comparison servers has been swapped, source:{0}, sink:{1}", adapter?.Side1, adapter?.Side2);
                             return true;
 
                         default:
@@ -338,6 +338,11 @@ namespace sqlcon
                     if (cmd.arg1 != null)
                         cmd.arg1.parse(out t1, out t2);
 
+                    if (adapter == null)
+                    {
+                        stdio.ShowError("undefined compare sides");
+                        return true;
+                    }
                     MatchedDatabase m1 = new MatchedDatabase(adapter.Side1.DatabaseName, t1, cfg.compareExcludedTables);
                     MatchedDatabase m2 = new MatchedDatabase(adapter.Side2.DatabaseName, t2, cfg.compareExcludedTables);
                     using (var writer = cfg.OutputFile.NewStreamWriter())
