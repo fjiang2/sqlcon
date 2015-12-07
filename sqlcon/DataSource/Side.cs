@@ -56,7 +56,7 @@ namespace sqlcon
         {
             if (!File.Exists(scriptFile))
             {
-                stdio.ShowError("no input file found : {0}", scriptFile);
+                stdio.ErrorFormat("no input file found : {0}", scriptFile);
                 return false;
             }
 
@@ -71,7 +71,7 @@ namespace sqlcon
             script.Error += (sender, e) =>
             {
                 hasError = true;
-                stdio.ShowError("line:{0}, {1}, SQL:{2}", e.Line, e.Exception.Message, e.Command);
+                stdio.ErrorFormat("line:{0}, {1}, SQL:{2}", e.Line, e.Exception.Message, e.Command);
             };
 
             Func<bool> stopOnError = () =>

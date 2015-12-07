@@ -42,7 +42,7 @@ namespace sqlcon
             }
             else
             {
-                stdio.ShowError("warning: table is not selected");
+                stdio.ErrorFormat("warning: table is not selected");
             }
         }
 
@@ -71,7 +71,7 @@ namespace sqlcon
             }
             else
             {
-                stdio.ShowError("warning: table or database is not seleted");
+                stdio.ErrorFormat("warning: table or database is not seleted");
             }
 
         }
@@ -141,7 +141,7 @@ namespace sqlcon
                 }
             }
             else
-                stdio.ShowError("warning: table or database is not selected");
+                stdio.ErrorFormat("warning: table or database is not selected");
         }
 
         private void ExportSchema()
@@ -170,7 +170,7 @@ namespace sqlcon
                     stdio.WriteLine("completed");
                 }
                 else
-                    stdio.ShowError("warning: server or database is not selected");
+                    stdio.ErrorFormat("warning: server or database is not selected");
             }
         }
 
@@ -203,7 +203,7 @@ namespace sqlcon
                     }
                     catch (Exception ex)
                     {
-                        stdio.ShowError("failed to generate class {0}, {1}", tn.ShortName, ex.Message);
+                        stdio.ErrorFormat("failed to generate class {0}, {1}", tn.ShortName, ex.Message);
                     }
                 }
 
@@ -211,7 +211,7 @@ namespace sqlcon
             }
             else
             {
-                stdio.ShowError("warning: database is not selected");
+                stdio.ErrorFormat("warning: database is not selected");
             }
 
 
@@ -251,7 +251,7 @@ namespace sqlcon
                     return true;
 
                 default:
-                    stdio.ShowError("warning: correct format is export insert [/if]|create|select|update|delete|schema|class");
+                    stdio.ErrorFormat("warning: correct format is export insert [/if]|create|select|update|delete|schema|class");
                     break;
             }
 

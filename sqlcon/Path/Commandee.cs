@@ -48,7 +48,7 @@ namespace sqlcon
                 pt = mgr.Navigate(cmd.Path1);
                 if (pt == null)
                 {
-                    stdio.ShowError("invalid path");
+                    stdio.ErrorFormat("invalid path");
                     return false;
                 }
             }
@@ -66,7 +66,7 @@ namespace sqlcon
                 mgr.current = node;
             }
             else
-                stdio.ShowError("invalid path:" + path);
+                stdio.ErrorFormat("invalid path:" + path);
         }
 
         public bool chdir(Command cmd)
@@ -85,7 +85,7 @@ namespace sqlcon
 
             if (cmd.wildcard != null)
             {
-                stdio.ShowError("invalid path");
+                stdio.ErrorFormat("invalid path");
                 return false;
             }
 
@@ -143,14 +143,14 @@ namespace sqlcon
 
             if (string.IsNullOrEmpty(cmd.args))
             {
-                stdio.ShowError("argument cannot be empty");
+                stdio.ErrorFormat("argument cannot be empty");
                 return;
             }
 
             var pt = mgr.current;
             if (!(pt.Item is Locator) && !(pt.Item is TableName))
             {
-                stdio.ShowError("table is not selected");
+                stdio.ErrorFormat("table is not selected");
                 return;
             }
 
@@ -172,12 +172,12 @@ namespace sqlcon
                 }
                 catch (TieException)
                 {
-                    stdio.ShowError("invalid set assigment");
+                    stdio.ErrorFormat("invalid set assigment");
                     return;
                 }
                 catch (Exception ex2)
                 {
-                    stdio.ShowError(ex2.Message);
+                    stdio.ErrorFormat(ex2.Message);
                     return;
                 }
             }
@@ -189,7 +189,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                stdio.ShowError(ex.Message);
+                stdio.ErrorFormat(ex.Message);
             }
         }
 
@@ -274,20 +274,20 @@ namespace sqlcon
                                     T = new TableName[] { _tname };
                                 else
                                 {
-                                    stdio.ShowError("invalid path");
+                                    stdio.ErrorFormat("invalid path");
                                     return;
                                 }
                             }
                         }
                         else
                         {
-                            stdio.ShowError("database is unavailable");
+                            stdio.ErrorFormat("database is unavailable");
                             return;
                         }
                     }
                     else
                     {
-                        stdio.ShowError("invalid path");
+                        stdio.ErrorFormat("invalid path");
                         return;
                     }
                 }
@@ -301,15 +301,15 @@ namespace sqlcon
                     {
                         var sqlcmd = new SqlCmd(T[0].Provider, string.Empty);
                         sqlcmd.ExecuteNonQueryTransaction(T.Select(row => string.Format("DROP TABLE {0}", row)));
-                        stdio.ShowError("completed to drop table(s):\n{0}", string.Join<TableName>("\n", T));
+                        stdio.ErrorFormat("completed to drop table(s):\n{0}", string.Join<TableName>("\n", T));
                     }
                     catch (Exception ex)
                     {
-                        stdio.ShowError(ex.Message);
+                        stdio.ErrorFormat(ex.Message);
                     }
                 }
                 else
-                    stdio.ShowError("table is not selected");
+                    stdio.ErrorFormat("table is not selected");
 
                 return;
             }
@@ -354,7 +354,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                stdio.ShowError(ex.Message);
+                stdio.ErrorFormat(ex.Message);
             }
         }
 
@@ -374,7 +374,7 @@ namespace sqlcon
 
             if (!(pt.Item is TableName) && !(pt.Item is Locator))
             {
-                stdio.ShowError("must add filter underneath table or locator");
+                stdio.ErrorFormat("must add filter underneath table or locator");
                 return;
             }
 
@@ -407,7 +407,7 @@ namespace sqlcon
 
             if (!(pt.Item is TableName))
             {
-                stdio.ShowError("cannot remove filter underneath non-Table");
+                stdio.ErrorFormat("cannot remove filter underneath non-Table");
                 return;
             }
 
@@ -469,7 +469,7 @@ namespace sqlcon
                 return;
 
             if (!mgr.TypeFile(pt, cmd))
-                stdio.ShowError("invalid arguments");
+                stdio.ErrorFormat("invalid arguments");
         }
 
 
@@ -500,12 +500,12 @@ namespace sqlcon
 
             if (cmd.arg1 == null)
             {
-                stdio.ShowError("invalid argument");
+                stdio.ErrorFormat("invalid argument");
                 return;
             }
 
             var path1 = new PathName(cmd.arg1);
-            TableName[] T1;
+            TableName[] T1;     //wildcard matched tables
             Side side1;
 
             if (path1.wildcard != null)
@@ -514,7 +514,7 @@ namespace sqlcon
                 DatabaseName dname1 = mgr.GetPathFrom<DatabaseName>(node1);
                 if (dname1 == null)
                 {
-                    stdio.ShowError("warning: source database is unavailable");
+                    stdio.ErrorFormat("warning: source database is unavailable");
                     return;
                 }
 
@@ -528,18 +528,20 @@ namespace sqlcon
                 TreeNode<IDataPath> node1 = mgr.Navigate(path1);
                 if (node1 == null)
                 {
-                    stdio.ShowError("invalid path:" + path1);
+                    stdio.ErrorFormat("invalid path:" + path1);
                     return;
                 }
 
                 TableName tname1 = mgr.GetPathFrom<TableName>(node1);
                 if (tname1 == null)
                 {
-                    stdio.ShowError("warning: source table is not available");
-                    return;
+                    DatabaseName dname1 = mgr.GetPathFrom<DatabaseName>(node1);
+                    T1 = dname1.GetTableNames();
                 }
-
-                T1 = new TableName[] { tname1 };
+                else
+                {
+                    T1 = new TableName[] { tname1 };
+                }
 
                 var server1 = mgr.GetPathFrom<ServerName>(node1);
                 side1 = new Side(server1.Provider);
@@ -553,7 +555,7 @@ namespace sqlcon
                 node2 = mgr.Navigate(path2);
                 if (node2 == null)
                 {
-                    stdio.ShowError("invalid path:" + path2);
+                    stdio.ErrorFormat("invalid path:" + path2);
                     return;
                 }
             }
@@ -563,7 +565,7 @@ namespace sqlcon
             var dname2 = mgr.GetPathFrom<DatabaseName>(node2);
             if (dname2 == null)
             {
-                stdio.ShowError("warning: destination database is unavailable");
+                stdio.ErrorFormat("warning: destination database is unavailable");
                 return;
             }
 
@@ -573,7 +575,7 @@ namespace sqlcon
             foreach (var tname1 in T1)
             {
                 TableName tname2 = mgr.GetPathFrom<TableName>(node2);
-                if (tname2 == null || path1.wildcard != null)
+                if (tname2 == null)
                 {
                     tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
                 }
@@ -581,7 +583,7 @@ namespace sqlcon
                 var adapter = new CompareAdapter(side1, side2);
                 //stdio.WriteLine("start to {0} from {1} to {2}", sideType, tname1, tname2);
                 var sql = adapter.CompareTable(cmd.IsSchema ? ActionType.CompareSchema : ActionType.CompareData, 
-                    sideType, tname1, tname2, mgr.Configuration.PK, new string[] { });
+                    sideType, tname1, tname2, mgr.Configuration.PK, cmd.Columns);
 
                 if (sideType == CompareSideType.compare)
                 {
@@ -615,7 +617,7 @@ namespace sqlcon
                     }
                     catch (Exception ex)
                     {
-                        stdio.ShowError(ex.Message);
+                        stdio.ErrorFormat(ex.Message);
                         return;
                     }
                 }
@@ -633,7 +635,7 @@ namespace sqlcon
 
             if (cmd.arg1 == null)
             {
-                stdio.ShowError("invalid argument");
+                stdio.ErrorFormat("invalid argument");
                 return;
             }
         }
@@ -651,20 +653,20 @@ namespace sqlcon
 
             if (string.IsNullOrEmpty(cmd.args))
             {
-                stdio.ShowError("argument cannot be empty");
+                stdio.ErrorFormat("argument cannot be empty");
                 return;
             }
 
             var pt = mgr.current;
             if (!(pt.Item is Locator) && !(pt.Item is TableName))
             {
-                stdio.ShowError("table is not selected");
+                stdio.ErrorFormat("table is not selected");
                 return;
             }
 
             if (this.mgr.Configuration.dictionarytables.Count == 0)
             {
-                stdio.ShowError("key-value tables is undefined");
+                stdio.ErrorFormat("key-value tables is undefined");
                 return;
             }
 
@@ -672,7 +674,7 @@ namespace sqlcon
             var setting = this.mgr.Configuration.dictionarytables.FirstOrDefault(row => row.TableName.ToUpper() == tname.Name.ToUpper());
             if (setting == null)
             {
-                stdio.ShowError("current table is not key-value tables");
+                stdio.ErrorFormat("current table is not key-value tables");
                 return;
             }
 
@@ -693,7 +695,7 @@ namespace sqlcon
 
             if (string.IsNullOrEmpty(key))
             {
-                stdio.ShowError("invalid assignment");
+                stdio.ErrorFormat("invalid assignment");
                 return;
             }
 
@@ -702,13 +704,13 @@ namespace sqlcon
             var L = new SqlCmd(builder).FillDataColumn<string>(0);
             if (L.Count() == 0)
             {
-                stdio.ShowError("undefined key: {0}", key);
+                stdio.ErrorFormat("undefined key: {0}", key);
                 return;
             }
 
             if (kvp.Length == 1)
             {
-                stdio.ShowError("{0} = {1}", key, L.First());
+                stdio.ErrorFormat("{0} = {1}", key, L.First());
                 return;
             }
 
@@ -724,7 +726,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                stdio.ShowError(ex.Message);
+                stdio.ErrorFormat(ex.Message);
             }
         }
     }

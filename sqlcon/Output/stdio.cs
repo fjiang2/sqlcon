@@ -45,7 +45,7 @@ namespace sqlcon
             if (File.Exists(fileName))
                 process.Start();
             else
-                stdio.ShowError("file not found: {0}", fileName);
+                stdio.ErrorFormat("file not found: {0}", fileName);
         }
 
         public static void Write(string format, params object[] args)
@@ -96,7 +96,7 @@ namespace sqlcon
             }
         }
 
-        public static void ShowError(string format, params object[] args)
+        public static void ErrorFormat(string format, params object[] args)
         {
             string value = string.Format(format, args);
             var keep = Console.ForegroundColor;

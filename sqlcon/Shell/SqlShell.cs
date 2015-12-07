@@ -109,11 +109,11 @@ namespace sqlcon
             }
             catch (SqlException ex1)
             {
-                stdio.ShowError("{0}:{1}", "SQL", ex1.Message);
+                stdio.ErrorFormat("{0}:{1}", "SQL", ex1.Message);
             }
             catch (Exception ex2)
             {
-                stdio.ShowError(ex2.Message);
+                stdio.ErrorFormat(ex2.Message);
             }
 
             return true;
@@ -192,14 +192,14 @@ namespace sqlcon
                     if (cmd.arg1 != null)
                         Show(cmd.arg1.ToLower(), cmd.arg2);
                     else
-                        stdio.ShowError("invalid argument");
+                        stdio.ErrorFormat("invalid argument");
                     return true;
 
                 case "find":
                     if (cmd.arg1 != null)
                         theSide.FindName(cmd.arg1);
                     else
-                        stdio.ShowError("find object undefined");
+                        stdio.ErrorFormat("find object undefined");
                     return true;
 
                 case "side":
@@ -263,7 +263,7 @@ namespace sqlcon
                     {
                         if (!File.Exists(this.cfg.OutputFile))
                         {
-                            stdio.ShowError("no output file found : {0}", this.cfg.OutputFile);
+                            stdio.ErrorFormat("no output file found : {0}", this.cfg.OutputFile);
                             break;
                         }
                         using (var reader = new StreamReader(this.cfg.OutputFile))
@@ -287,7 +287,7 @@ namespace sqlcon
                             string[] files = cfg.GetValue<string[]>(tag);
                             if (files == null)
                             {
-                                stdio.ShowError("no varible string[] {0} found on config file: {0}", tag);
+                                stdio.ErrorFormat("no varible string[] {0} found on config file: {0}", tag);
                                 return true;
                             }
 
@@ -297,7 +297,7 @@ namespace sqlcon
                                 {
                                     if (!stdio.YesOrNo("are you sure to continue(y/n)?"))
                                     {
-                                        stdio.ShowError("interupted on {0}", file);
+                                        stdio.ErrorFormat("interupted on {0}", file);
                                         return true;
                                     }
                                 }
@@ -333,32 +333,42 @@ namespace sqlcon
 
 
                 case "compare":
-                    string t1 = null;
-                    string t2 = null;
-                    if (cmd.arg1 != null)
-                        cmd.arg1.parse(out t1, out t2);
-
-                    if (adapter == null)
                     {
-                        stdio.ShowError("undefined compare sides");
+                        DatabaseName dname1 = adapter?.Side1?.DatabaseName;
+                        DatabaseName dname2 = adapter?.Side2?.DatabaseName;
+
+                        string t1 = null;
+                        string t2 = null;
+                        if (cmd.arg1 != null)
+                            cmd.arg1.parse(out t1, out t2);
+
+                        if (cmd.arg2 == null)
+                        {
+                            mgr.GetCurrentNode<DatabaseName>();
+                        }
+
+                        if (adapter == null)
+                        {
+                            stdio.ErrorFormat("undefined compare sides");
+                            return true;
+                        }
+
+                        MatchedDatabase m1 = new MatchedDatabase(dname1, t1, cfg.compareExcludedTables);
+                        MatchedDatabase m2 = new MatchedDatabase(dname2, t2, cfg.compareExcludedTables);
+                        using (var writer = cfg.OutputFile.NewStreamWriter())
+                        {
+                            ActionType type;
+                            if (cmd.IsSchema)
+                                type = ActionType.CompareSchema;
+                            else
+                                type = ActionType.CompareData;
+
+                            var sql = adapter.Run(type, m1, m2, cfg.PK, cmd.Columns);
+                            writer.Write(sql);
+                        }
+                        stdio.WriteLine("completed");
                         return true;
                     }
-                    MatchedDatabase m1 = new MatchedDatabase(adapter.Side1.DatabaseName, t1, cfg.compareExcludedTables);
-                    MatchedDatabase m2 = new MatchedDatabase(adapter.Side2.DatabaseName, t2, cfg.compareExcludedTables);
-                    using (var writer = cfg.OutputFile.NewStreamWriter())
-                    {
-                        ActionType type;
-                        if (cmd.IsSchema)
-                            type = ActionType.CompareSchema;
-                        else 
-                            type = ActionType.CompareData;
-
-                        var sql = adapter.Run(type, m1, m2, cfg.PK, cmd.Columns);
-                        writer.Write(sql);
-                    }
-                    stdio.WriteLine("completed");
-                    return true;
-
 
                 case "copy":
                     commandee.xcopy(cmd, CompareSideType.copy);
@@ -377,7 +387,7 @@ namespace sqlcon
                     {
                         VAL result = Context.Evaluate(cmd.args);
                         if (result.IsNull)
-                            stdio.ShowError("undefined query function");
+                            stdio.ErrorFormat("undefined query function");
                         else if (result.IsInt)
                         {
                             //show error code
@@ -386,7 +396,7 @@ namespace sqlcon
                         {
                             if (!result.IsList && result.Size != 2)
                             {
-                                stdio.ShowError("invalid format, run query like >run query(id=1)");
+                                stdio.ErrorFormat("invalid format, run query like >run query(id=1)");
                                 return true;
                             }
 
@@ -397,7 +407,7 @@ namespace sqlcon
                                     dt.ToConsole();
                             }
                             else
-                                stdio.ShowError("cannot retrieve data from server");
+                                stdio.ErrorFormat("cannot retrieve data from server");
                         }
                     }
                     return true;
@@ -495,14 +505,14 @@ namespace sqlcon
                     }
                     catch (Exception ex)
                     {
-                        stdio.ShowError(ex.Message);
+                        stdio.ErrorFormat(ex.Message);
                     }
                     break;
 
                 default:
                     if (char.IsDigit(cmd[0]))
                     {
-                        stdio.ShowError("invalid command");
+                        stdio.ErrorFormat("invalid command");
                         break;
                     }
                     else
@@ -566,7 +576,7 @@ namespace sqlcon
                             .ToConsole();
                         }
                         else
-                            stdio.ShowError("connection string not found");
+                            stdio.ErrorFormat("connection string not found");
                     }
                     break;
 
@@ -578,7 +588,7 @@ namespace sqlcon
                     Context.ToConsole();
                     break;
                 default:
-                    stdio.ShowError("invalid argument");
+                    stdio.ErrorFormat("invalid argument");
                     break;
             }
         }

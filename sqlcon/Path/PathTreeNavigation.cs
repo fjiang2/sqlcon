@@ -173,7 +173,7 @@ namespace sqlcon
 
             if (string.IsNullOrEmpty(segment))
             {
-                stdio.ShowError("argument cannot be empty");
+                stdio.ErrorFormat("argument cannot be empty");
             }
 
             TableName tname = GetCurrentPath<TableName>();
@@ -182,7 +182,7 @@ namespace sqlcon
             var builder = new SqlBuilder().SELECT.TOP(1).COLUMNS().FROM(tname).WHERE(locator);
             if (builder.Invalid())
             {
-                stdio.ShowError("invalid path");
+                stdio.ErrorFormat("invalid path");
                 return pt;
             }
 

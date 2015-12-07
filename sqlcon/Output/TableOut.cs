@@ -155,7 +155,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                stdio.ShowError(ex.Message);
+                stdio.ErrorFormat(ex.Message);
                 return false;
             }
 

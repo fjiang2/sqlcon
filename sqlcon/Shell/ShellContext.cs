@@ -41,7 +41,7 @@ namespace sqlcon
         {
             if (side == null)
             {
-                stdio.ShowError("undefined side");
+                stdio.ErrorFormat("undefined side");
                 return;
             }
 

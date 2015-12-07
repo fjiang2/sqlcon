@@ -279,7 +279,7 @@ namespace sqlcon
 
                     if (k == args.Length)
                     {
-                        stdio.ShowError("Unclosed quotation mark after the character string \"");
+                        stdio.ErrorFormat("Unclosed quotation mark after the character string \"");
                         result = new string[] { };
                         return false;
                     }
