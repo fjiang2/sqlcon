@@ -25,6 +25,12 @@ namespace sqlcon
         }
 
 
+        public Side(ConnectionProvider provider, DatabaseName dname)
+        {
+            this.provider = provider;
+            this.DatabaseName = dname;
+        }
+
         public void UpdateDatabase(ConnectionProvider provider)
         {
             this.provider = provider;
@@ -85,17 +91,7 @@ namespace sqlcon
             return !hasError;
         }
 
-
-
-
-
-
-
-
-
-
-
-
+        
 
         public void GenerateRowScript(StreamWriter writer, string tableNamePattern, string[] excludedtables)
         {

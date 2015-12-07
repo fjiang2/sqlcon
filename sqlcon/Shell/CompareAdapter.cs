@@ -48,7 +48,7 @@ namespace sqlcon
         }
 
 
-        public string Run(ActionType CompareType, MatchedDatabase m1, MatchedDatabase m2, Dictionary<string, string[]> pk, string[] exceptColumns)
+        public string Run(ActionType CompareType, TableName[] N1, TableName[] N2, Configuration cfg,  string[] exceptColumns)
         {
             DatabaseName db1 = Side1.DatabaseName;
             DatabaseName db2 = Side2.DatabaseName;
@@ -64,17 +64,15 @@ namespace sqlcon
             builder.AppendFormat("-- sqlcon:", Side1.Provider.DataSource, db1.Name).AppendLine();
             builder.AppendFormat("-- compare server={0} db={1}", Side1.Provider.DataSource, db1.Name).AppendLine();
             builder.AppendFormat("--         server={0} db={1} @ {2}", Side2.Provider.DataSource, db2.Name, DateTime.Now).AppendLine();
-            var N1 = m1.MatchedTableNames;
-            var N2 = m2.MatchedTableNames;
             string sql;
 
-            if (N1 != null && N2 != null)
+            if (N1.Length != 0 && N2.Length != 0)
             {
                 if (N1.Length == N2.Length)
                 {
                     for (int i = 0; i < N1.Length; i++)
                     {
-                        builder.Append(CompareTable(CompareType, CompareSideType.compare, N1[i], N2[i], pk, exceptColumns));
+                        builder.Append(CompareTable(CompareType, CompareSideType.compare, N1[i], N2[i], cfg.PK, exceptColumns));
                     }
                 }
                 else if (N1.Length > 0 && N2.Length == 0)
@@ -112,12 +110,7 @@ namespace sqlcon
             }
             else if (CompareType == ActionType.CompareData)
             {
-                //sql = CompareDatabaseSchema(db1, db2);
-
-                //if (sql != string.Empty)
-                //    builder.Append(sql);
-
-                sql = CompareDatabaseData(CompareSideType.compare, db1, db2, m1.Excludedtables);
+                sql = CompareDatabaseData(CompareSideType.compare, db1, db2, cfg.compareExcludedTables);
                 if (sql != string.Empty)
                     builder.Append(sql);
 

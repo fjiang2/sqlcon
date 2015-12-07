@@ -336,7 +336,7 @@ namespace sqlcon
                 case ActionType.CompareSchema:
                     MatchedDatabase m1 = new MatchedDatabase(adapter.Side1.DatabaseName, tableNamePattern1, cfg.compareExcludedTables);
                     MatchedDatabase m2 = new MatchedDatabase(adapter.Side2.DatabaseName, tableNamePattern2, cfg.compareExcludedTables);
-                    WriteFile(adapter.Run(action, m1, m2, cfg.PK, new string[] { }));
+                    WriteFile(adapter.Run(action, m1.MatchedTableNames, m2.MatchedTableNames, cfg, new string[] { }));
                     break;
 
                 case ActionType.Shell:

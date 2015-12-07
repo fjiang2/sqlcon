@@ -334,27 +334,8 @@ namespace sqlcon
 
                 case "compare":
                     {
-                        DatabaseName dname1 = adapter?.Side1?.DatabaseName;
-                        DatabaseName dname2 = adapter?.Side2?.DatabaseName;
+                        PathBothSide both = new PathBothSide(mgr, cmd);
 
-                        string t1 = null;
-                        string t2 = null;
-                        if (cmd.arg1 != null)
-                            cmd.arg1.parse(out t1, out t2);
-
-                        if (cmd.arg2 == null)
-                        {
-                            mgr.GetCurrentNode<DatabaseName>();
-                        }
-
-                        if (adapter == null)
-                        {
-                            stdio.ErrorFormat("undefined compare sides");
-                            return true;
-                        }
-
-                        MatchedDatabase m1 = new MatchedDatabase(dname1, t1, cfg.compareExcludedTables);
-                        MatchedDatabase m2 = new MatchedDatabase(dname2, t2, cfg.compareExcludedTables);
                         using (var writer = cfg.OutputFile.NewStreamWriter())
                         {
                             ActionType type;
@@ -363,7 +344,13 @@ namespace sqlcon
                             else
                                 type = ActionType.CompareData;
 
-                            var sql = adapter.Run(type, m1, m2, cfg.PK, cmd.Columns);
+                            if (both.Invalid)
+                            {
+                                return true;
+                            }
+
+                            var adapter = new CompareAdapter(both.ps1.side, both.ps2.side);
+                            var sql = adapter.Run(type, both.ps1.MatchedTables, both.ps2.MatchedTables, cfg, cmd.Columns);
                             writer.Write(sql);
                         }
                         stdio.WriteLine("completed");

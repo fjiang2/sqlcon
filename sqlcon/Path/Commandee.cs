@@ -473,6 +473,7 @@ namespace sqlcon
         }
 
 
+     
 
         public void xcopy(Command cmd, CompareSideType sideType)
         {
@@ -498,89 +499,17 @@ namespace sqlcon
                 return;
             }
 
-            if (cmd.arg1 == null)
+            PathBothSide both = new PathBothSide(mgr, cmd);
+            var dname2 = mgr.GetPathFrom<DatabaseName>(both.ps2.Node);
+            foreach (var tname1 in both.ps1.MatchedTables)
             {
-                stdio.ErrorFormat("invalid argument");
-                return;
-            }
-
-            var path1 = new PathName(cmd.arg1);
-            TableName[] T1;     //wildcard matched tables
-            Side side1;
-
-            if (path1.wildcard != null)
-            {
-                TreeNode<IDataPath> node1 = mgr.Navigate(path1);
-                DatabaseName dname1 = mgr.GetPathFrom<DatabaseName>(node1);
-                if (dname1 == null)
-                {
-                    stdio.ErrorFormat("warning: source database is unavailable");
-                    return;
-                }
-
-                var m1 = new MatchedDatabase(dname1, path1.wildcard, mgr.Configuration.compareExcludedTables);
-                T1 = m1.MatchedTableNames;
-                var server1 = mgr.GetPathFrom<ServerName>(node1);
-                side1 = new Side(server1.Provider);
-            }
-            else
-            {
-                TreeNode<IDataPath> node1 = mgr.Navigate(path1);
-                if (node1 == null)
-                {
-                    stdio.ErrorFormat("invalid path:" + path1);
-                    return;
-                }
-
-                TableName tname1 = mgr.GetPathFrom<TableName>(node1);
-                if (tname1 == null)
-                {
-                    DatabaseName dname1 = mgr.GetPathFrom<DatabaseName>(node1);
-                    T1 = dname1.GetTableNames();
-                }
-                else
-                {
-                    T1 = new TableName[] { tname1 };
-                }
-
-                var server1 = mgr.GetPathFrom<ServerName>(node1);
-                side1 = new Side(server1.Provider);
-            }
-
-            //------------------------------------------------------------------------------
-            TreeNode<IDataPath> node2;
-            if (cmd.arg2 != null)
-            {
-                var path2 = new PathName(cmd.arg2);
-                node2 = mgr.Navigate(path2);
-                if (node2 == null)
-                {
-                    stdio.ErrorFormat("invalid path:" + path2);
-                    return;
-                }
-            }
-            else
-                node2 = this.mgr.current;
-
-            var dname2 = mgr.GetPathFrom<DatabaseName>(node2);
-            if (dname2 == null)
-            {
-                stdio.ErrorFormat("warning: destination database is unavailable");
-                return;
-            }
-
-            var server2 = mgr.GetPathFrom<ServerName>(node2);
-            Side side2 = new Side(server2.Provider);
-
-            foreach (var tname1 in T1)
-            {
-                TableName tname2 = mgr.GetPathFrom<TableName>(node2);
+                TableName tname2 = mgr.GetPathFrom<TableName>(both.ps2.Node);
                 if (tname2 == null)
                 {
                     tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
                 }
 
-                var adapter = new CompareAdapter(side1, side2);
+                var adapter = new CompareAdapter(both.ps1.side, both.ps2.side);
                 //stdio.WriteLine("start to {0} from {1} to {2}", sideType, tname1, tname2);
                 var sql = adapter.CompareTable(cmd.IsSchema ? ActionType.CompareSchema : ActionType.CompareData, 
                     sideType, tname1, tname2, mgr.Configuration.PK, cmd.Columns);
@@ -603,7 +532,7 @@ namespace sqlcon
                     bool exists = tname2.Exists();
                     try
                     {
-                        var sqlcmd = new SqlCmd(side2.Provider, sql);
+                        var sqlcmd = new SqlCmd(both.ps2.side.Provider, sql);
                         int count = sqlcmd.ExecuteNonQueryTransaction();
                         if (exists)
                         {
