@@ -499,58 +499,67 @@ namespace sqlcon
                 return;
             }
 
-            PathBothSide both = new PathBothSide(mgr, cmd);
-            var dname2 = mgr.GetPathFrom<DatabaseName>(both.ps2.Node);
-            foreach (var tname1 in both.ps1.MatchedTables)
+            stdio.CanCancel(cancelled =>
             {
-                TableName tname2 = mgr.GetPathFrom<TableName>(both.ps2.Node);
-                if (tname2 == null)
-                {
-                    tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
-                }
+                PathBothSide both = new PathBothSide(mgr, cmd);
+                var dname2 = mgr.GetPathFrom<DatabaseName>(both.ps2.Node);
+                if (both.ps1.MatchedTables == null)
+                    return;
 
-                var adapter = new CompareAdapter(both.ps1.side, both.ps2.side);
-                //stdio.WriteLine("start to {0} from {1} to {2}", sideType, tname1, tname2);
-                var sql = adapter.CompareTable(cmd.IsSchema ? ActionType.CompareSchema : ActionType.CompareData, 
-                    sideType, tname1, tname2, mgr.Configuration.PK, cmd.Columns);
-
-                if (sideType == CompareSideType.compare)
+                foreach (var tname1 in both.ps1.MatchedTables)
                 {
+                    if (cancelled())
+                        break;
+
+                    TableName tname2 = mgr.GetPathFrom<TableName>(both.ps2.Node);
+                    if (tname2 == null)
+                    {
+                        tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
+                    }
+
+                    var adapter = new CompareAdapter(both.ps1.side, both.ps2.side);
+                    //stdio.WriteLine("start to {0} from {1} to {2}", sideType, tname1, tname2);
+                    var sql = adapter.CompareTable(cmd.IsSchema ? ActionType.CompareSchema : ActionType.CompareData,
+                        sideType, tname1, tname2, mgr.Configuration.PK, cmd.Columns);
+
+                    if (sideType == CompareSideType.compare)
+                    {
+                        if (sql == string.Empty)
+                        {
+                            stdio.WriteLine("source {0} and destination {1} are identical", tname1, tname2);
+                        }
+                        continue;
+                    }
+
                     if (sql == string.Empty)
                     {
-                        stdio.WriteLine("source {0} and destination {1} are identical", tname1, tname2);
+                        stdio.WriteLine("nothing changes made on destination {0}", tname2);
                     }
-                    return;
-                }
-
-                if (sql == string.Empty)
-                {
-                    stdio.WriteLine("nothing changes made on destination {0}", tname2);
-                }
-                else
-                {
-                    bool exists = tname2.Exists();
-                    try
+                    else
                     {
-                        var sqlcmd = new SqlCmd(both.ps2.side.Provider, sql);
-                        int count = sqlcmd.ExecuteNonQueryTransaction();
-                        if (exists)
+                        bool exists = tname2.Exists();
+                        try
                         {
-                            if (count >= 0)
-                                stdio.WriteLine("{0} row(s) changed at destination {1}", count, tname2);
+                            var sqlcmd = new SqlCmd(both.ps2.side.Provider, sql);
+                            int count = sqlcmd.ExecuteNonQueryTransaction();
+                            if (exists)
+                            {
+                                if (count >= 0)
+                                    stdio.WriteLine("{0} row(s) changed at destination {1}", count, tname2);
+                                else
+                                    stdio.WriteLine("command(s) completed successfully at destination {1}", count, tname2);
+                            }
                             else
-                                stdio.WriteLine("command(s) completed successfully at destination {1}", count, tname2);
+                                stdio.WriteLine("table {0} created at destination", tname2);
                         }
-                        else
-                            stdio.WriteLine("table {0} created at destination", tname2);
+                        catch (Exception ex)
+                        {
+                            stdio.ErrorFormat(ex.Message);
+                            return;
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        stdio.ErrorFormat(ex.Message);
-                        return;
-                    }
-                }
-            } // loop for
+                } // loop for
+            });
         }
 
         public void rename(Command cmd)

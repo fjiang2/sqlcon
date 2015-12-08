@@ -223,5 +223,29 @@ namespace sqlcon
             stdio.WriteLine();
             return true;
         }
+
+        public static void CanCancel(Action<Func<bool>> action)
+        {
+            bool cancelled = false;
+            ConsoleCancelEventHandler cancelKeyPress =
+                (sender, e) =>
+                {
+                    e.Cancel = true;
+                    cancelled = true;
+                    Console.WriteLine();
+                    Console.WriteLine("command interrupted");
+                };
+
+            Console.CancelKeyPress += cancelKeyPress;
+
+            try
+            {
+                action(() => cancelled);
+            }
+            finally
+            {
+                Console.CancelKeyPress -= cancelKeyPress;
+            }
+        }
     }
 }

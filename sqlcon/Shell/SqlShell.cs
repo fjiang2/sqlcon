@@ -524,6 +524,8 @@ namespace sqlcon
 
         private static void Help()
         {
+            stdio.WriteLine("Path points to server, database,tables, data rows");
+            stdio.WriteLine("      \\server\\database\\table\\filter\\filter\\....");
             stdio.WriteLine("Notes: table names support wildcard matching, e.g. Prod*,Pro?ucts");
             stdio.WriteLine("exit                    : quit application");
             stdio.WriteLine("help                    : this help");
@@ -542,12 +544,11 @@ namespace sqlcon
             stdio.WriteLine("echo                    : display message");
             stdio.WriteLine("rem                     : records comments/remarks");
             stdio.WriteLine("ver                     : display version");
+            stdio.WriteLine("compare path1 [path2]   : compare table scheam or data");
+            stdio.WriteLine("          /s            : compare schema otherwise compare data");
+            stdio.WriteLine("          /col:c1,c2    : skip columns defined during comparing");
             stdio.WriteLine();
             stdio.WriteLine("<Commands>");
-            stdio.WriteLine("<compare tables /s     : compare schema of tables");
-            stdio.WriteLine("<compare tables        : compare data of tables, compare different tables");
-            stdio.WriteLine("                          using <compare table1 table2>");
-            stdio.WriteLine("          /col:c1,c2    : skip columns defined during comparing");
             stdio.WriteLine("<find> pattern          : find table name or column name");
             stdio.WriteLine("<show view>             : show all views");
             stdio.WriteLine("<show proc>             : show all stored proc and func");
@@ -559,7 +560,6 @@ namespace sqlcon
             stdio.WriteLine("<run> query(..)         : run predefined query. e.g. run query(var1=val1,...);");
             stdio.WriteLine("<sync table1 table2>    : synchronize, make table2 is the same as table1");
             stdio.WriteLine("<xcopy output>          : copy sql script ouput to clipboard");
-            stdio.WriteLine("<schema>                : generate current database schema");
             stdio.WriteLine("<open log>              : open log file");
             stdio.WriteLine("<open input>            : open input file");
             stdio.WriteLine("<open output>           : open output file");

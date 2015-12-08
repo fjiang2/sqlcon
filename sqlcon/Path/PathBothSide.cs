@@ -30,10 +30,9 @@ namespace sqlcon
             ps1 = new PathSide(mgr);
             ps2 = new PathSide(mgr);
 
-            if (ps1.SetSource(cmd.arg1))
-            {
-                valid = ps2.SetSink(cmd.arg2);
-            }
+            var f1 = ps1.SetSource(cmd.arg1);
+            var f2 = ps2.SetSink(cmd.arg2);
+            valid = f1 && f2;
         }
 
         public bool Invalid => !valid;

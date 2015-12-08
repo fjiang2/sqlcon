@@ -64,52 +64,44 @@ namespace sqlcon
             builder.AppendFormat("-- compare server={0} db={1}", Side1.Provider.DataSource, dname1.Name).AppendLine();
             builder.AppendFormat("--         server={0} db={1} @ {2}", Side2.Provider.DataSource, dname2.Name, DateTime.Now).AppendLine();
 
-            foreach (var tname1 in N1)
+            stdio.CanCancel(cancelled =>
             {
-                TableName tname2 = N2.Where(t => t.ShortName == tname1.ShortName).FirstOrDefault();
-                if (tname2 == null)
+                foreach (var tname1 in N1)
                 {
-                    tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
+                    if (cancelled())
+                        break;
+
+                    TableName tname2 = N2.Where(t => t.ShortName == tname1.ShortName).FirstOrDefault();
+                    if (tname2 == null)
+                    {
+                        tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
+                    }
+
+                    if (compareType == ActionType.CompareData && cfg.compareExcludedTables.FirstOrDefault(t => t == tname1.Name) != null)
+                    {
+                        stdio.WriteLine("{0} is excluded", tname1);
+                        continue;
+                    }
+
+                    if (tname2.Exists())
+                        builder.Append(CompareTable(compareType, CompareSideType.compare, tname1, tname2, cfg.PK, exceptColumns));
+                    else
+                    {
+                        if (compareType == ActionType.CompareSchema)
+                        {
+                            string sql = tname1.GenerateScript();
+                            stdio.WriteLine(sql);
+                            builder.Append(sql);
+                        }
+                        else
+                        {
+                            stdio.WriteLine("{0} doesn't exist", tname2);
+                        }
+                    }
                 }
-
-                if (compareType == ActionType.CompareData && cfg.compareExcludedTables.FirstOrDefault(t => t == tname1.Name) != null)
-                {
-                    stdio.WriteLine("{0} is excluded", tname1);
-                    continue;
-                }
-
-                if (tname2.Exists())
-                    builder.Append(CompareTable(compareType, CompareSideType.compare, tname1, tname2, cfg.PK, exceptColumns));
-                else
-                {
-                    string sql = tname1.GenerateScript();
-                    stdio.WriteLine(sql);
-                    builder.Append(sql);
-                }
-            }
-            
-       
-            //{
-            //    var common = N1.Join(N2, t1 => t1.ShortName.ToUpper(), t2 => t2.ShortName.ToUpper(), (t1, t2) => new { T1 = t1, T2 = t2 }).ToArray();
-            //    var diff1 = N1.Except(common.Select(t => t.T1)).ToArray();
-            //    var diff2 = N2.Except(common.Select(t => t.T2)).ToArray();
-
-            //    stdio.WriteLine("number of comparing table are different: {0}!={1}", N1.Length, N2.Length);
-            //    foreach (var tname in diff1)
-            //    {
-            //        stdio.WriteLine(tname.ToString());
-            //    }
-
-            //    foreach (var tname in diff2)
-            //    {
-            //        stdio.WriteLine(tname.ToString());
-            //    }
-             
-            //}
-
+            });
 
             return builder.ToString();
-
         }
 
         private string CompareDatabaseSchema(CompareSideType sideType, DatabaseName db1, DatabaseName db2)
