@@ -107,7 +107,7 @@ namespace sqlcon
                 return false;
             }
 
-            T = new TableName[] { };
+            T = null;
             var server = mgr.GetPathFrom<ServerName>(node);
             side = new Side(server.Provider, dname);
 

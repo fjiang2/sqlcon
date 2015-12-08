@@ -31,7 +31,7 @@ namespace sqlcon
             get
             {
                 if (namePattern == null)
-                    return new TableName[] { };
+                    return null;
 
                 var names = Search(namePattern, this.DatabaseName.GetDependencyTableNames());
                 return names;

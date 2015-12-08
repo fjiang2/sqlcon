@@ -48,15 +48,14 @@ namespace sqlcon
         }
 
 
-        public string Run(ActionType CompareType, TableName[] N1, TableName[] N2, Configuration cfg,  string[] exceptColumns)
+        public string Run(ActionType compareType, TableName[] N1, TableName[] N2, Configuration cfg, string[] exceptColumns)
         {
             DatabaseName db1 = Side1.DatabaseName;
             DatabaseName db2 = Side2.DatabaseName;
 
-
             stdio.WriteLine("server1: {0} default database:{1}", Side1.Provider.DataSource, db1.Name);
             stdio.WriteLine("server2: {0} default database:{1}", Side2.Provider.DataSource, db2.Name);
-           
+
             if (!Exists(db1) || !Exists(db2))
                 return string.Empty;
 
@@ -66,13 +65,49 @@ namespace sqlcon
             builder.AppendFormat("--         server={0} db={1} @ {2}", Side2.Provider.DataSource, db2.Name, DateTime.Now).AppendLine();
             string sql;
 
-            if (N1.Length != 0 && N2.Length != 0)
+            if (N1 == null) //table names not defined
             {
+                if (N2 == null) //table names not defined
+                {
+                    if (compareType == ActionType.CompareSchema)
+                    {
+                        sql = CompareDatabaseSchema(CompareSideType.compare, db1, db2);
+
+                        if (sql != string.Empty)
+                            builder.Append(sql);
+                    }
+
+                    else if (compareType == ActionType.CompareData)
+                    {
+                        sql = CompareDatabaseData(CompareSideType.compare, db1, db2, cfg.compareExcludedTables);
+                        if (sql != string.Empty)
+                            builder.Append(sql);
+
+                    }
+
+                    return builder.ToString();
+                }
+                else
+                    return string.Empty; //impossible route
+            }
+            else
+            {
+                if (N2 == null)
+                {
+                    List<TableName> names = new List<TableName>();
+                    foreach (var tname1 in N1)
+                    {
+                        names.Add(new TableName(db2, tname1.SchemaName, tname1.ShortName));
+                    }
+
+                    N2 = names.ToArray();
+                }
+
                 if (N1.Length == N2.Length)
                 {
                     for (int i = 0; i < N1.Length; i++)
                     {
-                        builder.Append(CompareTable(CompareType, CompareSideType.compare, N1[i], N2[i], cfg.PK, exceptColumns));
+                        builder.Append(CompareTable(compareType, CompareSideType.compare, N1[i], N2[i], cfg.PK, exceptColumns));
                     }
                 }
                 else if (N1.Length > 0 && N2.Length == 0)
@@ -83,8 +118,8 @@ namespace sqlcon
                 else
                 {
                     var common = N1.Join(N2, t1 => t1.ShortName.ToUpper(), t2 => t2.ShortName.ToUpper(), (t1, t2) => new { T1 = t1, T2 = t2 }).ToArray();
-                    var diff1 = N1.Except(common.Select(t=>t.T1)).ToArray();
-                    var diff2 = N2.Except(common.Select(t=>t.T2)).ToArray();
+                    var diff1 = N1.Except(common.Select(t => t.T1)).ToArray();
+                    var diff2 = N2.Except(common.Select(t => t.T2)).ToArray();
 
                     stdio.WriteLine("number of comparing table are different: {0}!={1}", N1.Length, N2.Length);
                     foreach (var tname in diff1)
@@ -100,23 +135,9 @@ namespace sqlcon
                     return string.Empty;
                 }
 
-            }
-            else if (CompareType == ActionType.CompareSchema)
-            {
-                sql = CompareDatabaseSchema(CompareSideType.compare, db1, db2);
 
-                if (sql != string.Empty)
-                    builder.Append(sql);
+                return builder.ToString();
             }
-            else if (CompareType == ActionType.CompareData)
-            {
-                sql = CompareDatabaseData(CompareSideType.compare, db1, db2, cfg.compareExcludedTables);
-                if (sql != string.Empty)
-                    builder.Append(sql);
-
-            }
-
-            return builder.ToString();
         }
 
         private string CompareDatabaseSchema(CompareSideType sideType, DatabaseName db1, DatabaseName db2)

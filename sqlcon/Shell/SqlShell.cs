@@ -16,12 +16,9 @@ namespace sqlcon
 {
     class SqlShell :ShellContext
     {
-        private CompareAdapter adapter;
-
-        public SqlShell(Configuration cfg, CompareAdapter adapter)
+        public SqlShell(Configuration cfg)
             :base(cfg)
         {
-            this.adapter = adapter;
         }
 
         public void DoCommand()
@@ -201,62 +198,6 @@ namespace sqlcon
                     else
                         stdio.ErrorFormat("find object undefined");
                     return true;
-
-                case "side":
-                    switch (cmd.arg1)
-                    {
-                        case "1":
-                        case "source":
-                            if (cmd.arg2 != null)
-                            {
-                                ConnectionProvider pvd;
-                                if (cmd.arg2 == "current")
-                                    pvd = theSide.Provider;
-                                else
-                                    pvd = cfg.GetProvider(cmd.arg2);
-
-                                if (pvd != null)
-                                {
-                                    Side side = new Side(pvd);
-                                    adapter = new CompareAdapter(side, adapter?.Side2);
-                                }
-                            }
-
-                            ChangeSide(adapter?.Side1);
-                            stdio.WriteLine("comparison server 1 selected({0})", showConnection(theSide.Provider));
-                            return true;
-
-                        case "2":
-                        case "sink":
-                            if (cmd.arg2 != null)
-                            {
-                                ConnectionProvider pvd;
-                                if (cmd.arg2 == "current")
-                                    pvd = theSide.Provider;
-                                else
-                                    pvd = cfg.GetProvider(cmd.arg2);
-
-                                if (pvd != null)
-                                {
-                                    Side side = new Side(pvd);
-                                    adapter = new CompareAdapter(adapter?.Side1, side);
-                                }
-                            }
-                            ChangeSide(adapter?.Side2);
-                            stdio.WriteLine("comparison server 2 selected({0})", showConnection(theSide.Provider));
-                            return true;
-
-                        case "swap":
-                            adapter = new CompareAdapter(adapter?.Side2, adapter?.Side1);
-                            stdio.WriteLine("comparison servers has been swapped, source:{0}, sink:{1}", adapter?.Side1, adapter?.Side2);
-                            return true;
-
-                        default:
-                            ChangeSide(theSide);
-                            stdio.WriteLine("working server selected({0})", showConnection(theSide.Provider));
-                            return true;
-                    }
-
 
                 case "xcopy":
                     if (cmd.arg1 == "output")
@@ -603,9 +544,9 @@ namespace sqlcon
             stdio.WriteLine("ver                     : display version");
             stdio.WriteLine();
             stdio.WriteLine("<Commands>");
-            stdio.WriteLine("<compare> tables /s     : compare schema of tables");
-            stdio.WriteLine("<compare> tables        : compare data of tables, compare different tables");
-            stdio.WriteLine("                          using <compare data table1:table2>");
+            stdio.WriteLine("<compare tables /s     : compare schema of tables");
+            stdio.WriteLine("<compare tables        : compare data of tables, compare different tables");
+            stdio.WriteLine("                          using <compare table1 table2>");
             stdio.WriteLine("          /col:c1,c2    : skip columns defined during comparing");
             stdio.WriteLine("<find> pattern          : find table name or column name");
             stdio.WriteLine("<show view>             : show all views");
@@ -616,10 +557,6 @@ namespace sqlcon
             stdio.WriteLine("<show current>          : show current active connection-string");
             stdio.WriteLine("<show var>              : show variable list");
             stdio.WriteLine("<run> query(..)         : run predefined query. e.g. run query(var1=val1,...);");
-            stdio.WriteLine("<side>                  : switch to default server");
-            stdio.WriteLine("<side 1> [path]|current : switch to comparison source server 1");
-            stdio.WriteLine("<side 2> [path]|current : switch to comparison sink server 2");
-            stdio.WriteLine("<side swap>             : swap source server and sink server");
             stdio.WriteLine("<sync table1 table2>    : synchronize, make table2 is the same as table1");
             stdio.WriteLine("<xcopy output>          : copy sql script ouput to clipboard");
             stdio.WriteLine("<schema>                : generate current database schema");

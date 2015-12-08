@@ -15,10 +15,7 @@ namespace sqlcon
     class Configuration
     {
         
-        public const string _COMPARISON = "comparison";
         public const string _SERVER0 = "home";
-        public const string _SERVER1 = "server1";
-        public const string _SERVER2 = "server2";
 
         const string _FUNC_CONFIG = "config";
         const string _FUNC_CFG = "cfg";
@@ -32,7 +29,6 @@ namespace sqlcon
         const string _FILE_EDITOR = "editor";
 
         const string _LIMIT = "limit";
-        const string _ACTION_TYPE = "actiontype";
         const string _COMPARE_EXCLUDED_TABLES = "compare_excluded_tables";
         const string _EXPORT_EXCLUDED_TABLES = "export_excluded_tables";
         const string _DICTIONARY_TABLES = "dictionarytables";
@@ -43,8 +39,7 @@ namespace sqlcon
         private Memory Cfg = new Memory();
 
 
-        public ActionType Action = ActionType.CompareSchema;
-
+        
         public string InputFile { get; set; }
         public string OutputFile { get; set; }
         public string SchemaFile { get; set; }
@@ -266,7 +261,6 @@ namespace sqlcon
                 }
             }
 
-            this.Action = Cfg.GetValue<ActionType>(_ACTION_TYPE, ActionType.CompareSchema);
 
             this.InputFile = Cfg.GetValue<string>(_FILE_INPUT, "script.sql");
             this.OutputFile = Cfg.GetValue<string>(_FILE_OUTPUT, "script.sql");
