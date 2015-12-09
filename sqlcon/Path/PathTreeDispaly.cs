@@ -37,25 +37,32 @@ namespace sqlcon
             int i = 0;
             int count = 0;
             int h = 0;
-            foreach (var node in pt.Nodes)
+            CancelableWork.CanCancel(cancelled =>
             {
-                ServerName sname = (ServerName)node.Item;
-                ++i;
-
-                if (IsMatch(cmd.wildcard, sname.Path))
+                foreach (var node in pt.Nodes)
                 {
-                    count++;
-                    if (node.Nodes.Count == 0)
+                    if (cancelled())
+                        return CancelableState.Cancelled;
+
+                    ServerName sname = (ServerName)node.Item;
+                    ++i;
+
+                    if (IsMatch(cmd.wildcard, sname.Path))
                     {
-                        ExpandServerName(node, Refreshing);
+                        count++;
+                        if (node.Nodes.Count == 0)
+                        {
+                            ExpandServerName(node, Refreshing);
+                        }
+
+                        stdio.WriteLine("{0,4} {1,26} <SVR> {2,10} Databases", sub(i), sname.Path, sname.Disconnected ? "?" : node.Nodes.Count.ToString());
+                        h = PagePause(cmd, ++h);
                     }
-
-                    stdio.WriteLine("{0,4} {1,26} <SVR> {2,10} Databases", sub(i), sname.Path, sname.Disconnected ? "?" : node.Nodes.Count.ToString());
-                    h = PagePause(cmd, ++h);
                 }
-            }
 
-            stdio.WriteLine("\t{0} Server(s)", count);
+                stdio.WriteLine("\t{0} Server(s)", count);
+                return  CancelableState.Completed;
+            });
 
             return true;
         }

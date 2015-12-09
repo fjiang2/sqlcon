@@ -547,6 +547,7 @@ namespace sqlcon
             stdio.WriteLine("compare path1 [path2]   : compare table scheam or data");
             stdio.WriteLine("          /s            : compare schema otherwise compare data");
             stdio.WriteLine("          /col:c1,c2    : skip columns defined during comparing");
+            stdio.WriteLine("export /?               : see more info");
             stdio.WriteLine();
             stdio.WriteLine("<Commands>");
             stdio.WriteLine("<find> pattern          : find table name or column name");
@@ -564,10 +565,6 @@ namespace sqlcon
             stdio.WriteLine("<open input>            : open input file");
             stdio.WriteLine("<open output>           : open output file");
             stdio.WriteLine("<open schema>           : open schema file");
-            stdio.WriteLine("<export insert>         : export INSERT INTO script on current table/database");
-            stdio.WriteLine("<export create>         : export CREATE TABLE script on current table/database");
-            stdio.WriteLine("<export schema>         : export database schema xml file");
-            stdio.WriteLine("<export class>          : export C# class");
             stdio.WriteLine("<execute inputfile>     : execute sql script file");
             stdio.WriteLine("<execute variable /s>   : execute script file list defined on the configuration file");
             stdio.WriteLine();

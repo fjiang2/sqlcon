@@ -499,17 +499,17 @@ namespace sqlcon
                 return;
             }
 
-            stdio.CanCancel(cancelled =>
+            CancelableWork.CanCancel(cancelled =>
             {
                 PathBothSide both = new PathBothSide(mgr, cmd);
                 var dname2 = mgr.GetPathFrom<DatabaseName>(both.ps2.Node);
                 if (both.ps1.MatchedTables == null)
-                    return;
+                    return CancelableState.Completed;
 
                 foreach (var tname1 in both.ps1.MatchedTables)
                 {
                     if (cancelled())
-                        break;
+                        return CancelableState.Cancelled;
 
                     TableName tname2 = mgr.GetPathFrom<TableName>(both.ps2.Node);
                     if (tname2 == null)
@@ -555,10 +555,12 @@ namespace sqlcon
                         catch (Exception ex)
                         {
                             stdio.ErrorFormat(ex.Message);
-                            return;
+                            return CancelableState.Completed;
                         }
                     }
                 } // loop for
+
+                return CancelableState.Completed;
             });
         }
 

@@ -117,27 +117,34 @@ namespace sqlcon
                 using (var writer = fileName.NewStreamWriter())
                 {
                     TableName[] tnames = dname.GetDependencyTableNames();
-                    foreach (var tn in tnames)
+                    CancelableWork.CanCancel(cancelled =>
                     {
-                        if (!context.cfg.exportExcludedTables.IsMatch(tn.ShortName))
+                        foreach (var tn in tnames)
                         {
-                            int count = new SqlCmd(tn.Provider, string.Format("SELECT COUNT(*) FROM {0}", tn)).FillObject<int>();
-                            if (count > context.cfg.Export_Max_Count)
-                            {
-                                if (!stdio.YesOrNo("are you sure to export {0} rows on {1} (y/n)?", count, tn.ShortName))
-                                {
-                                    stdio.WriteLine("\n{0,10} skipped", tn.ShortName);
-                                    continue;
-                                }
-                            }
+                            if (cancelled())
+                                return CancelableState.Cancelled;
 
-                            count = context.theSide.GenerateRows(writer, tn, null, cmd.HasIfExists);
-                            stdio.WriteLine("{0,10} row(s) generated on {1}", count, tn.ShortName);
+                            if (!context.cfg.exportExcludedTables.IsMatch(tn.ShortName))
+                            {
+                                int count = new SqlCmd(tn.Provider, string.Format("SELECT COUNT(*) FROM {0}", tn)).FillObject<int>();
+                                if (count > context.cfg.Export_Max_Count)
+                                {
+                                    if (!stdio.YesOrNo("are you sure to export {0} rows on {1} (y/n)?", count, tn.ShortName))
+                                    {
+                                        stdio.WriteLine("\n{0,10} skipped", tn.ShortName);
+                                        continue;
+                                    }
+                                }
+
+                                count = context.theSide.GenerateRows(writer, tn, null, cmd.HasIfExists);
+                                stdio.WriteLine("{0,10} row(s) generated on {1}", count, tn.ShortName);
+                            }
+                            else
+                                stdio.WriteLine("{0,10} skipped", tn.ShortName);
                         }
-                        else
-                            stdio.WriteLine("{0,10} skipped", tn.ShortName);
-                    }
-                    stdio.WriteLine("completed");
+                        stdio.WriteLine("completed");
+                        return CancelableState.Completed;
+                    });
                 }
             }
             else
@@ -193,21 +200,27 @@ namespace sqlcon
             else if (dname != null)
             {
                 stdio.WriteLine("start to generate database {0} class to directory: {1}", dname, path);
-                foreach (var tn in dname.GetTableNames())
+                CancelableWork.CanCancel(cancelled =>
                 {
-                    try
+                    foreach (var tn in dname.GetTableNames())
                     {
-                        TableClass clss = new TableClass(tn) { NameSpace = ns, ClassNameRule = rule };
-                        clss.CreateClass(path);
-                        stdio.WriteLine("generated class for {0}", tn.ShortName);
+                        if (cancelled())
+                            return CancelableState.Cancelled;
+                        try
+                        {
+                            TableClass clss = new TableClass(tn) { NameSpace = ns, ClassNameRule = rule };
+                            clss.CreateClass(path);
+                            stdio.WriteLine("generated class for {0}", tn.ShortName);
+                        }
+                        catch (Exception ex)
+                        {
+                            stdio.ErrorFormat("failed to generate class {0}, {1}", tn.ShortName, ex.Message);
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        stdio.ErrorFormat("failed to generate class {0}, {1}", tn.ShortName, ex.Message);
-                    }
-                }
 
-                stdio.WriteLine("completed");
+                    stdio.WriteLine("completed");
+                    return CancelableState.Completed;
+                });
             }
             else
             {
@@ -220,6 +233,21 @@ namespace sqlcon
 
         public bool ExportSqlScript(Command cmd)
         {
+            if (cmd.HasHelp)
+            {
+                stdio.WriteLine("export data, schema, class, and template");
+                stdio.WriteLine("export insert  : export INSERT INTO script on current table/database");
+                stdio.WriteLine("  [/if]        : option /if generate if exists row then UPDATE else INSERT");
+                stdio.WriteLine("export create  : generate CREATE TABLE script on current table/database");
+                stdio.WriteLine("export select  : generate SELECT FROM WHERE template");
+                stdio.WriteLine("export update  : generate UPDATE SET WHERE template");
+                stdio.WriteLine("export delete  : generate DELETE FROM WHERE template");
+                stdio.WriteLine("export schema  : generate database schema xml file");
+                stdio.WriteLine("export class   : generate C# table class");
+                return true;
+            }
+
+
             switch (cmd.arg1)
             {
                 case "insert":
@@ -251,7 +279,7 @@ namespace sqlcon
                     return true;
 
                 default:
-                    stdio.ErrorFormat("warning: correct format is export insert [/if]|create|select|update|delete|schema|class");
+                    stdio.ErrorFormat("invalid command");
                     break;
             }
 
