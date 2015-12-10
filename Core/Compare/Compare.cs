@@ -198,7 +198,8 @@ namespace Sys.Data.Comparison
                     return script.UPDATE(schema.Columns);
 
                 case SqlScriptType.DELETE:
-                    return script.DELETE(schema.Columns);
+                    return new Dependency(tableName.DatabaseName).DELETE(tableName);
+                    //return script.DELETE(schema.Columns);
             }
 
             return null;

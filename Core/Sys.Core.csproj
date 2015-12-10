@@ -136,6 +136,7 @@
     <Compile Include="Data\Metadata\ColumnCollection.cs" />
     <Compile Include="Data\Metadata\ColumnSchema.cs" />
     <Compile Include="Data\Metadata\ComputedColumns.cs" />
+    <Compile Include="Data\Metadata\Dependency.cs" />
     <Compile Include="Data\Metadata\ForeignKeys.cs" />
     <Compile Include="Data\Metadata\IdentityKeys.cs" />
     <Compile Include="Data\Metadata\InformationSchema.cs" />

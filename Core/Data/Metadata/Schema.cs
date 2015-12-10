@@ -174,13 +174,17 @@ namespace Sys.Data
         public static TableName[] GetDependencyTableNames(this DatabaseName databaseName)
         {
             var dt = databaseName.Provider
-                .Schema.GetDependencySchema(databaseName)                
+                .Schema.GetDependencySchema(databaseName)
                 .AsEnumerable();
 
             var dict = dt.GroupBy(
-                    row => new TableName(databaseName, (string)row[0], (string)row[1]),
-                    (Key, rows) => new { Fk = Key, Pk = rows.Select(row => new TableName(databaseName, (string)row[2], (string)row[3])).ToArray() })
-                .ToDictionary(row => row.Fk, row => row.Pk);
+                    row => new TableName(databaseName, (string)row["FK_SCHEMA"], (string)row["FK_Table"]),
+                    (Key, rows) => new
+                    {
+                        FkTable = Key,
+                        PkTables = rows.Select(row => new TableName(databaseName, (string)row["PK_SCHEMA"], (string)row["PK_Table"])).ToArray()
+                    })
+                .ToDictionary(row => row.FkTable, row => row.PkTables);
 
 
             TableName[] names = databaseName.GetTableNames();
