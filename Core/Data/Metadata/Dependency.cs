@@ -15,6 +15,8 @@ namespace Sys.Data
             public TableName pkTable { get; set; }
             public string pkColumn { get; set; }
             public string fkColumn { get; set; }
+
+            public override string ToString() => $"{fkTable.ShortName}.{fkColumn} => {pkTable.ShortName}.{pkColumn}";
         }
 
         private RowDef[] rows;
@@ -96,7 +98,9 @@ namespace Sys.Data
 			var fkrows = GetFkRows(tname);
             foreach (var row in fkrows)
             {
-                DELETE(row, GetFkRows(row.fkTable), builder);
+                //string locator = string.Format("SELECT [{0}] FROM {1} WHERE {2}=@{2}", "{0}", row.pkTable.FormalName, row.pkColumn);
+                string locator = string.Format("[{0}]=@{1}", row.fkColumn, row.pkColumn);
+                DELETE(row, GetFkRows(row.fkTable), locator, builder);
                 builder
                     .AppendFormat("DELETE FROM {0} WHERE [{1}] = @{2}", row.fkTable.FormalName, row.fkColumn, row.pkColumn)
                     .AppendLine();
@@ -105,9 +109,14 @@ namespace Sys.Data
             return builder.ToString();
         }
 
-        private string deleteTemplate(RowDef fkrow, string locator)
+        private string deleteTemplate(RowDef row, string locator)
         {
-            return string.Format("DELETE FROM {0} WHERE [{1}] IN ({2})", fkrow.fkTable.FormalName, fkrow.fkColumn, locator);
+            return string.Format("DELETE FROM {0} WHERE [{1}] IN (SELECT [{2}] FROM {3} WHERE {4})", 
+                row.fkTable.FormalName, 
+                row.fkColumn, 
+                row.pkColumn,
+                row.pkTable.FormalName,
+                locator);
         }
 
         private string selectTemplate(RowDef pkrow, RowDef fkrow)
@@ -116,16 +125,18 @@ namespace Sys.Data
         }
 
 
-        private void DELETE(RowDef pkrow, RowDef[] fkrows, StringBuilder builder)
+        private void DELETE(RowDef pkrow, RowDef[] fkrows, string locator, StringBuilder builder)
         {
             if (fkrows.Length == 0)
                 return;
 
             foreach (var row in fkrows)
             {
-                DELETE(row, GetFkRows(row.fkTable), builder);
-				string sql = deleteTemplate(row, selectTemplate(pkrow, row));
-                builder.AppendLine(sql);
+                string sql = string.Format("[{0}] IN (SELECT [{1}] FROM {2} WHERE {3})", row.fkColumn,  pkrow.pkColumn, pkrow.fkTable.FormalName, locator);
+                RowDef[] getFkRows = GetFkRows(row.fkTable);
+                DELETE(row, getFkRows, sql, builder);
+
+                builder.AppendLine(deleteTemplate(row, locator));
             }
 
 
