@@ -85,6 +85,26 @@ namespace sqlcon
 
         }
 
+        public static TableName[] TableWithPrimaryKey(this DatabaseName dname)
+        {
+            const string SQL = @"
+SELECT DISTINCT pk.TABLE_SCHEMA, pk.TABLE_NAME
+FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS pk, 
+     INFORMATION_SCHEMA.KEY_COLUMN_USAGE c 
+WHERE 
+	CONSTRAINT_TYPE = 'PRIMARY KEY' 
+    AND c.TABLE_NAME = pk.TABLE_NAME 
+    AND c.CONSTRAINT_NAME = pk.CONSTRAINT_NAME";
+
+            var list = new SqlCmd(dname.Provider, SQL)
+                .FillDataTable()
+                .AsEnumerable()
+                .Select(row => new TableName(dname, row.Field<string>("TABLE_SCHEMA"), row.Field<string>("TABLE_NAME")))
+                .ToArray();
+
+            return list;
+        }
+
         public static DataTable IdentityKeySchema(this TableName tableName)
         {
             string SQL = @"

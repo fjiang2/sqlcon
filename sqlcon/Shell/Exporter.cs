@@ -195,7 +195,7 @@ namespace sqlcon
             {
                 TableClass clss = new TableClass(tname) { NameSpace = ns, ClassNameRule = rule };
                 clss.CreateClass(path);
-                stdio.WriteLine("generated class {0}", tname.ShortName);
+                stdio.WriteLine("generated class {0} at {1}", tname.ShortName, path);
             }
             else if (dname != null)
             {
@@ -210,7 +210,7 @@ namespace sqlcon
                         {
                             TableClass clss = new TableClass(tn) { NameSpace = ns, ClassNameRule = rule };
                             clss.CreateClass(path);
-                            stdio.WriteLine("generated class for {0}", tn.ShortName);
+                            stdio.WriteLine("generated class for {0} at {1}", tn.ShortName, path);
                         }
                         catch (Exception ex)
                         {

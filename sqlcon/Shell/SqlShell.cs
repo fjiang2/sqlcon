@@ -461,12 +461,43 @@ namespace sqlcon
 
         private void Show(string arg1, string arg2)
         {
+            var dname = theSide.DatabaseName;
             TableName[] vnames;
 
             switch (arg1)
             {
+                case "pk":
+                    {
+                        var PKS = dname.TableWithPrimaryKey();
+                        int count = 0;
+                        foreach (var tname in PKS)
+                        {
+                            count++;
+                            stdio.WriteLine("{0,5} {1}", $"[{count}]", tname);
+                        }
+                        stdio.WriteLine("total <{0}> tables with primary keys", count);
+                    }
+                    break;
+
+                case "npk":
+                    {
+                        var tnames = dname.GetTableNames();
+                        var PKS = dname.TableWithPrimaryKey();
+                        int count = 0;
+                        foreach (var tname in tnames)
+                        {
+                            if (PKS.FirstOrDefault(row => row.Equals(tname)) == null)
+                            {
+                                count++;
+                                stdio.WriteLine("{0,5} {1}", $"[{count}]", tname);
+                            }
+                        }
+                        stdio.WriteLine("total <{0}> tables without primary keys", count);
+                    }
+                    break;
+
                 case "vw":
-                    vnames = new MatchedDatabase(theSide.DatabaseName, arg2, null).DefaultViewNames;
+                    vnames = new MatchedDatabase(dname, arg2, null).DefaultViewNames;
                     foreach (var vname in vnames)
                     {
                         DataTable dt = null;
@@ -482,17 +513,17 @@ namespace sqlcon
                     break;
 
                 case "view":
-                    vnames = new MatchedDatabase(theSide.DatabaseName, arg2, null).DefaultViewNames;
+                    vnames = new MatchedDatabase(dname, arg2, null).DefaultViewNames;
                     vnames.Select(tname => new { Schema = tname.SchemaName, View = tname.Name })
                         .ToConsole();
                     break;
 
                 case "proc":
-                    theSide.DatabaseName.AllProc().ToConsole();
+                    dname.AllProc().ToConsole();
                     break;
 
                 case "index":
-                    theSide.DatabaseName.AllIndices().ToConsole();
+                    dname.AllIndices().ToConsole();
                     break;
 
                 case "connection":
@@ -555,6 +586,8 @@ namespace sqlcon
             stdio.WriteLine("<show proc>             : show all stored proc and func");
             stdio.WriteLine("<show index>            : show all indices");
             stdio.WriteLine("<show vw> viewnames     : show view structure");
+            stdio.WriteLine("<show pk>               : show all tables with primary keys");
+            stdio.WriteLine("<show npk>              : show all tables without primary keys");
             stdio.WriteLine("<show connection>       : show connection-string list");
             stdio.WriteLine("<show current>          : show current active connection-string");
             stdio.WriteLine("<show var>              : show variable list");
