@@ -17,12 +17,6 @@ namespace Sys.Data
             public string fkColumn { get; set; }
         }
 
-		class SelectDef
-		{
-		  public string SELECT {get; set;}
-		  public bool isSelect {get; set;}
-		}
-		
         private RowDef[] rows;
 
         public Dependency(DatabaseName dname)
@@ -100,46 +94,37 @@ namespace Sys.Data
         {
             StringBuilder builder = new StringBuilder();
 			var fkrows = GetFkRows(tname);
-            var pkrows = GetPkRows(tname);
-            if (fkrows.Length > 0)
-			{
-				var select = new SelectDef { SELECT = fkrows[0].pkColumn, isSelect=false};
-				DELETE(fkrows, select, builder);
-			}
-            //sql = deleteTemplate(tname, string.Format("{0}=@{0}", "ID");
-            //builder.AppendLine(sql);
+            foreach (var row in fkrows)
+            {
+                DELETE(row, GetFkRows(row.fkTable), builder);
+                builder
+                    .AppendFormat("DELETE FROM {0} WHERE [{1}] = @{2}", row.fkTable.FormalName, row.fkColumn, row.pkColumn)
+                    .AppendLine();
+            }
+
             return builder.ToString();
         }
 
-        private string deleteTemplate(RowDef row, SelectDef def)
+        private string deleteTemplate(RowDef fkrow, string locator)
         {
-			if(def.isSelect)
-				return string.Format("DELETE FROM {0} WHERE [{1}] IN ({2})", row.fkTable.FormalName, row.fkColumn, def.SELECT); 
-			else
-				return string.Format("DELETE FROM {0} WHERE [{1}] = @{2}", row.fkTable.FormalName, row.fkColumn, def.SELECT); 
+            return string.Format("DELETE FROM {0} WHERE [{1}] IN ({2})", fkrow.fkTable.FormalName, fkrow.fkColumn, locator);
         }
 
-		private SelectDef selectTemplate(RowDef row, SelectDef def)
+        private string selectTemplate(RowDef pkrow, RowDef fkrow)
         {
-			string select;
-			if(def.isSelect)
-				select = string.Format("SELECT [{0}] FROM {1} WHERE [{2}] IN ({3})", row.pkColumn, row.fkTable.FormalName, row.fkColumn, def.SELECT); 
-			else
-				select = string.Format("SELECT [{0}] FROM {1} WHERE [{2}] =@{3}", row.pkColumn, row.fkTable.FormalName, row.fkColumn, def.SELECT);
-
-            return new SelectDef { SELECT = select, isSelect = true };
+            return string.Format("SELECT [{0}] FROM {1} WHERE [{2}] = @{3}", fkrow.pkColumn, fkrow.pkTable.FormalName, fkrow.fkColumn, pkrow.pkColumn);
         }
 
-		
-        private void DELETE(RowDef[] fkrows, SelectDef select, StringBuilder builder)
+
+        private void DELETE(RowDef pkrow, RowDef[] fkrows, StringBuilder builder)
         {
             if (fkrows.Length == 0)
                 return;
 
             foreach (var row in fkrows)
             {
-                DELETE(GetFkRows(row.fkTable), selectTemplate(row, select), builder);
-				string sql = deleteTemplate(row, select);
+                DELETE(row, GetFkRows(row.fkTable), builder);
+				string sql = deleteTemplate(row, selectTemplate(pkrow, row));
                 builder.AppendLine(sql);
             }
 
