@@ -181,7 +181,35 @@ namespace sqlcon
             }
             else if (cmd.Has("dup"))
             {
-                builder = new SqlBuilder().SELECT.COLUMNS(columns.ColumnName(), "COUNT(*)").FROM(tname).GROUP_BY(columns).HAVING("COUNT(*)>1");
+                bool allColumns = false;
+                if (columns.Length == 0)
+                {
+                    columns = new TableSchema(tname).Columns.Select(column => column.ColumnName).ToArray();
+                    allColumns = true;
+                }
+
+                builder = new SqlBuilder().SELECT.COLUMNS(columns).Append(",COUNT(*) AS [$Count] ").FROM(tname).GROUP_BY(columns).Append("HAVING COUNT(*)>1 ").ORDER_BY(columns);
+                var table = builder.SqlCmd.FillDataTable();
+                if (table.Rows.Count == 0)
+                {
+                    stdio.WriteLine("no duplicated record found");
+                    return true;
+                }
+                //Display(cmd, builder, 0);
+
+                foreach (var row in table.AsEnumerable())
+                {
+                    var where = columns.Select(column => column.Assign(row[column])).AND();
+                    if(allColumns)
+                        stdio.WriteLine("idential rows");
+                    else
+                        stdio.WriteLine("{0}", where);
+                    builder = new SqlBuilder().SELECT.COLUMNS().FROM(tname).WHERE(where);
+                    Display(cmd, builder, 0);
+                    stdio.WriteLine();
+                }
+
+                return true;
             }
             else
                 builder = new SqlBuilder().SELECT.TOP(top).ROWID(cmd.HasRowId).COLUMNS(columns).FROM(tname);

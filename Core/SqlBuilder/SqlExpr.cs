@@ -100,6 +100,12 @@ namespace Sys.Data
                 .Next(string.Join<SqlExpr>(",", expl));
             return exp;
         }
+
+        internal static SqlExpr Write(string any)
+        {
+            return new SqlExpr().Next(any);
+        }
+
 #if USE
         public static explicit operator string(SqlExpr x)
         {
@@ -511,10 +517,6 @@ namespace Sys.Data
             //exp.Merge(exp1);
             return exp;
         }
-
-        
-
-      
 
         #endregion
 

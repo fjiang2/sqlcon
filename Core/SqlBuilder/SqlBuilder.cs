@@ -57,6 +57,18 @@ namespace Sys.Data
             }
         }
 
+
+        public SqlBuilder Append(string text)
+        {
+            script.Append(text);
+            return this;
+        }
+        public SqlBuilder AppendFormat(string format, params object[] args)
+        {
+            script.AppendFormat(format, args);
+            return this;
+        }
+
         #region Table Name
         private SqlBuilder TABLE_NAME(string tableName, string alias)
         {
@@ -474,9 +486,9 @@ namespace Sys.Data
             return this;
         }
 
-        public SqlBuilder HAVING(params string[] columns)
+        public SqlBuilder HAVING(SqlExpr expr)
         {
-            script.Append("HAVING ").Append(ConcatColumns(columns)).Append(" ");
+            script.Append("HAVING ").Append(expr).Append(" ");
             return this;
         }
 

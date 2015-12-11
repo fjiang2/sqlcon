@@ -53,7 +53,21 @@ namespace Sys.Data
             return SqlExpr.Join(L);
         }
 
+        public static SqlExpr Func(this string name, params SqlExpr[] args)
+        {
+            return SqlExpr.Func(name, args);
+        }
 
+
+        /// <summary>
+        /// write directly into SQL clause
+        /// </summary>
+        /// <param name="any"></param>
+        /// <returns></returns>
+        public static SqlExpr Inject(this string any)
+        {
+            return SqlExpr.Write(any);
+        }
         /// <summary>
         /// "name" -> "@name"
         /// </summary>
@@ -71,6 +85,11 @@ namespace Sys.Data
         /// <param name="name"></param>
         /// <returns></returns>
         public static SqlExpr AddParameter(this string columnName)
+        {
+            return SqlExpr.AddParameter(columnName, columnName);
+        }
+
+        public static SqlExpr AddParameter(this string columnName, SqlExpr value)
         {
             return SqlExpr.AddParameter(columnName, columnName);
         }
@@ -93,11 +112,28 @@ namespace Sys.Data
         {
             return SqlExpr.OPR(exp1, "AND", exp2);
         }
+        public static SqlExpr AND(this IEnumerable<SqlExpr> expl)
+        {
+            if(expl.Count() >1)
+                return SqlExpr.OPR(expl.First(), "AND", expl.Skip(1).ToArray());
+            else
+                return expl.First();
+        }
+
 
         public static SqlExpr OR(this SqlExpr exp1, SqlExpr exp2)
         {
             return SqlExpr.OPR(exp1, "OR", exp2);
         }
+
+        public static SqlExpr OR(this IEnumerable<SqlExpr> expl)
+        {
+            if (expl.Count() > 1)
+                return SqlExpr.OPR(expl.First(), "OR", expl.Skip(1).ToArray());
+            else
+                return expl.First();
+        }
+
 
         public static SqlExpr NOT(this SqlExpr exp)
         {
@@ -134,6 +170,7 @@ namespace Sys.Data
         {
             return SqlExpr.Func("COUNT", expr);
         }
+
 
         public static SqlExpr ISNULL(this SqlExpr expr)
         {
