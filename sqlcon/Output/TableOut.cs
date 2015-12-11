@@ -179,6 +179,10 @@ namespace sqlcon
                 var locator = new Locator(cmd.where);
                 builder = new SqlBuilder().SELECT.TOP(top).ROWID(cmd.HasRowId).COLUMNS(columns).FROM(tname).WHERE(locator);
             }
+            else if (cmd.Has("dup"))
+            {
+                builder = new SqlBuilder().SELECT.COLUMNS(columns.ColumnName(), "COUNT(*)").FROM(tname).GROUP_BY(columns).HAVING("COUNT(*)>1");
+            }
             else
                 builder = new SqlBuilder().SELECT.TOP(top).ROWID(cmd.HasRowId).COLUMNS(columns).FROM(tname);
 

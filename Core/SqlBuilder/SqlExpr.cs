@@ -94,6 +94,12 @@ namespace Sys.Data
             return exp;
         }
 
+        internal static SqlExpr Join(SqlExpr[] expl)
+        {
+            SqlExpr exp = new SqlExpr()
+                .Next(string.Join<SqlExpr>(",", expl));
+            return exp;
+        }
 #if USE
         public static explicit operator string(SqlExpr x)
         {

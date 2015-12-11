@@ -47,6 +47,12 @@ namespace Sys.Data
             return SqlExpr.ColumnName(name, alias);
         }
 
+        public static SqlExpr ColumnName(this string[] names)
+        {
+            var L = names.Select(column => column.ColumnName()).ToArray();
+            return SqlExpr.Join(L);
+        }
+
 
         /// <summary>
         /// "name" -> "@name"
