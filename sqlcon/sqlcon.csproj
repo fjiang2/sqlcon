@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CancelableWork.cs" />
+    <Compile Include="Data\DuplicatedTable.cs" />
     <Compile Include="Input\KeyValueTable.cs" />
     <Compile Include="Input\PathName.cs" />
     <Compile Include="Path\PathBothSide.cs" />
@@ -109,7 +110,7 @@
     <Compile Include="DataSource\Side.cs" />
     <Compile Include="Shell\ShellContext.cs" />
     <Compile Include="Shell\SqlShell.cs" />
-    <Compile Include="Tools.cs" />
+    <Compile Include="Data\Tools.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Output\ConsoleGrid.cs" />

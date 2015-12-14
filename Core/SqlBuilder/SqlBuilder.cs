@@ -116,6 +116,13 @@ namespace Sys.Data
             return this;
         }
 
+        public SqlBuilder SET(string key, SqlExpr value)
+        {
+
+            script.AppendFormat("SET {0} {1}", key, value)
+                .AppendLine();
+            return this;
+        }
 
         #region SELECT clause
 

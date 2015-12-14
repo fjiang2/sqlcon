@@ -150,8 +150,21 @@ namespace sqlcon
             try
             {
                 DataTable table = builder.SqlCmd.FillDataTable();
+                return Display(cmd, table, top);
+            }
+            catch (Exception ex)
+            {
+                stdio.ErrorFormat(ex.Message);
+                return false;
+            }
+        }
+
+        private bool Display(Command cmd, DataTable table, int top)
+        {
+            try
+            {
                 rTable = new UniqueTable(tname, table);
-                _DisplayTable(rTable.Table, top>0 && table.Rows.Count == top, cmd);
+                _DisplayTable(rTable.Table, top > 0 && table.Rows.Count == top, cmd);
             }
             catch (Exception ex)
             {
@@ -161,7 +174,6 @@ namespace sqlcon
 
             return true;
         }
-
 
         public bool Display(Command cmd)
         {
@@ -181,32 +193,20 @@ namespace sqlcon
             }
             else if (cmd.Has("dup"))
             {
-                bool allColumns = false;
-                if (columns.Length == 0)
-                {
-                    columns = new TableSchema(tname).Columns.Select(column => column.ColumnName).ToArray();
-                    allColumns = true;
-                }
-
-                builder = new SqlBuilder().SELECT.COLUMNS(columns).Append(",COUNT(*) AS [$Count] ").FROM(tname).GROUP_BY(columns).Append("HAVING COUNT(*)>1 ").ORDER_BY(columns);
-                var table = builder.SqlCmd.FillDataTable();
-                if (table.Rows.Count == 0)
+                DuplicatedTable dup = new DuplicatedTable(tname, columns);
+                if (dup.group.Rows.Count == 0)
                 {
                     stdio.WriteLine("no duplicated record found");
                     return true;
                 }
-                //Display(cmd, builder, 0);
 
-                foreach (var row in table.AsEnumerable())
+                if (cmd.IsSchema)
                 {
-                    var where = columns.Select(column => column.Assign(row[column])).AND();
-                    if(allColumns)
-                        stdio.WriteLine("idential rows");
-                    else
-                        stdio.WriteLine("{0}", where);
-                    builder = new SqlBuilder().SELECT.COLUMNS().FROM(tname).WHERE(where);
-                    Display(cmd, builder, 0);
-                    stdio.WriteLine();
+                    Display(cmd, dup.group, 0);
+                }
+                else
+                {
+                    dup.Dispaly(dt => Display(cmd, dt, 0));
                 }
 
                 return true;
