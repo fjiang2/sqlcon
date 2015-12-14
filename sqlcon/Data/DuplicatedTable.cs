@@ -21,7 +21,11 @@ namespace sqlcon
 
             if (columns.Length == 0)
             {
-                _columns = new TableSchema(tname).Columns.Select(column => column.ColumnName).ToArray();
+                _columns = new TableSchema(tname)
+                    .Columns
+                    .Where(column => column.CType != CType.Image && column.CType != CType.Text && column.CType != CType.NText)
+                    .Select(column => column.ColumnName)
+                    .ToArray();
                 AllColumnsSelected = true;
             }
             else
@@ -54,6 +58,19 @@ namespace sqlcon
                 stdio.WriteLine();
             }
         }
+
+        public int DuplicatedRowCount()
+        {
+            int sum = 0;
+            foreach (var row in group.AsEnumerable())
+            {
+                int count = row.Field<int>(COUNT_COLUMN_NAME);
+                sum += count - 1;
+            }
+
+            return sum;
+        }
+
 
         public int Clean()
         {

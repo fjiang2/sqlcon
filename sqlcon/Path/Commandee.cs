@@ -671,7 +671,7 @@ namespace sqlcon
             }
         }
 
-        public void clean(Command cmd)
+        public void clean(Command cmd, Configuration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -679,6 +679,7 @@ namespace sqlcon
                 stdio.WriteLine("clean [path]|[pattern]|  : clean current database or table, or search pattern");
                 stdio.WriteLine("options:");
                 stdio.WriteLine("   /col:c1,c2,..         : clean columns, defined by columns");
+                stdio.WriteLine("   /d                    : clean duplicated rows on database server, otherwise display # of duplicated rows");
                 stdio.WriteLine("example:");
                 stdio.WriteLine("clean match*s /col:c1,c2 : clean duplicated rows matched on columns:c1 and c2");
                 stdio.WriteLine("clean                    : clean non-distinct rows");
@@ -695,8 +696,19 @@ namespace sqlcon
             {
                 var tname = (TableName)pt.Item;
                 var dup = new DuplicatedTable(tname, cmd.Columns);
-                int count = dup.Clean();
-                stdio.WriteLine("completed to clean {0} #rows at {1}", count, tname);
+                if (cmd.Has("d"))
+                {
+                    int count = dup.Clean();
+                    stdio.WriteLine("completed to clean {0} #rows at {1}", count, tname);
+                }
+                else
+                {
+                    int count = dup.DuplicatedRowCount();
+                    if (count == 0)
+                        stdio.WriteLine("no duplicated rows at {0}", tname);
+                    else
+                        stdio.WriteLine("{0} duplicated row(s) at {1}", count, tname);
+                }
                 return;
             }
 
@@ -704,7 +716,7 @@ namespace sqlcon
             if (pt.Item is DatabaseName)
             {
                 var dname = (DatabaseName)pt.Item;
-                var m = new MatchedDatabase(dname, cmd.wildcard, new string[] { });
+                var m = new MatchedDatabase(dname, cmd.wildcard, cfg.compareExcludedTables);
                 var T = m.MatchedTableNames;
 
                 CancelableWork.CanCancel(cancelled =>
@@ -714,9 +726,24 @@ namespace sqlcon
                         if (cancelled())
                             return CancelableState.Cancelled;
 
-                        var dup = new DuplicatedTable(tn, cmd.Columns);
-                        int count = dup.Clean();
-                        stdio.WriteLine("completed to clean {0} #rows at {1}", count, tn);
+                        if (cmd.Has("d"))
+                        {
+                            stdio.WriteLine("start to clean {0}", tn);
+                            var dup = new DuplicatedTable(tn, cmd.Columns);
+                            int count = dup.Clean();
+                            stdio.WriteLine("cleaned {0} #rows", count);
+                        }
+                        else
+                        {
+                            stdio.WriteLine("start to query {0}", tn);
+                            var dup = new DuplicatedTable(tn, cmd.Columns);
+                            int count = dup.DuplicatedRowCount();
+                            if (count == 0)
+                                stdio.WriteLine("no duplicated rows", tn);
+                            else
+                                stdio.WriteLine("{0} duplicated row(s)", count, tn);
+                        }
+                  
                     }
 
                     return CancelableState.Completed;

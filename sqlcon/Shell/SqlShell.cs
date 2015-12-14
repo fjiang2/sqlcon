@@ -345,7 +345,7 @@ namespace sqlcon
                     return exporter.ExportSqlScript(cmd);
 
                 case "clean":
-                    commandee.clean(cmd);
+                    commandee.clean(cmd, cfg);
                     return true;
                 default:
                     break;
