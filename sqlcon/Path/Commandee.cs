@@ -670,5 +670,62 @@ namespace sqlcon
                 stdio.ErrorFormat(ex.Message);
             }
         }
+
+        public void clean(Command cmd)
+        {
+            if (cmd.HasHelp)
+            {
+                stdio.WriteLine("clean duplicated rows");
+                stdio.WriteLine("clean [path]|[pattern]|  : clean current database or table, or search pattern");
+                stdio.WriteLine("options:");
+                stdio.WriteLine("   /col:c1,c2,..         : clean columns, defined by columns");
+                stdio.WriteLine("example:");
+                stdio.WriteLine("clean match*s /col:c1,c2 : clean duplicated rows matched on columns:c1 and c2");
+                stdio.WriteLine("clean                    : clean non-distinct rows");
+                return;
+            }
+
+            this.pt = mgr.current;
+
+            if (!Navigate(cmd))
+                return;
+
+
+            if (pt.Item is TableName)
+            {
+                var tname = (TableName)pt.Item;
+                var dup = new DuplicatedTable(tname, cmd.Columns);
+                int count = dup.Clean();
+                stdio.WriteLine("completed to clean {0} #rows at {1}", count, tname);
+                return;
+            }
+
+
+            if (pt.Item is DatabaseName)
+            {
+                var dname = (DatabaseName)pt.Item;
+                var m = new MatchedDatabase(dname, cmd.wildcard, new string[] { });
+                var T = m.MatchedTableNames;
+
+                CancelableWork.CanCancel(cancelled =>
+                {
+                    foreach (var tn in T)
+                    {
+                        if (cancelled())
+                            return CancelableState.Cancelled;
+
+                        var dup = new DuplicatedTable(tn, cmd.Columns);
+                        int count = dup.Clean();
+                        stdio.WriteLine("completed to clean {0} #rows at {1}", count, tn);
+                    }
+
+                    return CancelableState.Completed;
+                });
+
+                return;
+            }
+
+            stdio.ErrorFormat("select database or table first");
+        }
     }
 }

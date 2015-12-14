@@ -345,40 +345,7 @@ namespace sqlcon
                     return exporter.ExportSqlScript(cmd);
 
                 case "clean":
-                    {
-                        var tname = mgr.GetCurrentPath<TableName>();
-                        if (tname != null)
-                        {
-                            var dup = new DuplicatedTable(tname, cmd.Columns);
-                            int count = dup.Clean();
-                            stdio.WriteLine("completed to clean {0} #rows at {1}", count, tname);
-                        }
-                        else
-                        {
-                            var dname = mgr.GetCurrentPath<DatabaseName>();
-                            if (dname != null)
-                            {
-                                var m = new MatchedDatabase(dname, cmd.wildcard, new string[] { });
-                                var T = m.MatchedTableNames;
-
-                                CancelableWork.CanCancel(cancelled => {
-                                    foreach (var tn in T)
-                                    {
-                                        if (cancelled())
-                                            return CancelableState.Cancelled;
-
-                                        var dup = new DuplicatedTable(tn, cmd.Columns);
-                                        int count = dup.Clean();
-                                        stdio.WriteLine("completed to clean {0} #rows at {1}", count, tn);
-                                    }
-
-                                    return CancelableState.Completed;
-                                });
-                            }
-                            else
-                                stdio.ErrorFormat("select database or table first");
-                        }
-                    }
+                    commandee.clean(cmd);
                     return true;
                 default:
                     break;
@@ -615,7 +582,7 @@ namespace sqlcon
             stdio.WriteLine("          /s            : compare schema otherwise compare data");
             stdio.WriteLine("          /col:c1,c2    : skip columns defined during comparing");
             stdio.WriteLine("export /?               : see more info");
-            stdio.WriteLine("clean [/col:c1,c2]      : clean duplicated rows defined by /col:c1,c2,...");
+            stdio.WriteLine("clean /?                : see more info");
             stdio.WriteLine();
             stdio.WriteLine("<Commands>");
             stdio.WriteLine("<find> pattern          : find table name or column name");
