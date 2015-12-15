@@ -464,8 +464,6 @@ namespace sqlcon
                 return;
             }
 
-            this.pt = mgr.current;
-
             if (!Navigate(cmd))
                 return;
 
@@ -678,15 +676,13 @@ namespace sqlcon
                 stdio.WriteLine("clean duplicated rows");
                 stdio.WriteLine("clean [path]|[pattern]|  : clean current database or table, or search pattern");
                 stdio.WriteLine("options:");
-                stdio.WriteLine("   /col:c1,c2,..         : clean columns, defined by columns");
-                stdio.WriteLine("   /d                    : clean duplicated rows on database server, otherwise display # of duplicated rows");
+                stdio.WriteLine("   /col:c1,c2,..         : clean columns, compare column c1, c2, ...");
+                stdio.WriteLine("   /d                    : commit cleaning duplicated rows on database server, otherwise display # of duplicated rows");
                 stdio.WriteLine("example:");
-                stdio.WriteLine("clean match*s /col:c1,c2 : clean duplicated rows matched on columns:c1 and c2");
-                stdio.WriteLine("clean                    : clean non-distinct rows");
+                stdio.WriteLine("clean match*s /col:c1,c2 : clean duplicated rows by comparing columns:c1 and c2");
+                stdio.WriteLine("clean                    : clean by comparing entire row");
                 return;
             }
-
-            this.pt = mgr.current;
 
             if (!Navigate(cmd))
                 return;
@@ -739,7 +735,7 @@ namespace sqlcon
                             var dup = new DuplicatedTable(tn, cmd.Columns);
                             int count = dup.DuplicatedRowCount();
                             if (count == 0)
-                                stdio.WriteLine("no duplicated rows", tn);
+                                stdio.WriteLine("distinct rows");
                             else
                                 stdio.WriteLine("{0} duplicated row(s)", count, tn);
                         }
@@ -754,5 +750,54 @@ namespace sqlcon
 
             stdio.ErrorFormat("select database or table first");
         }
+
+
+        public void export(Command cmd, Configuration cfg, ShellContext context)
+        {
+            if (cmd.HasHelp)
+            {
+                stdio.WriteLine("export data, schema, class, and template");
+                stdio.WriteLine("export /insert  : export INSERT INTO script on current table/database");
+                stdio.WriteLine("  [/if]        : option /if generate if exists row then UPDATE else INSERT");
+                stdio.WriteLine("export /create  : generate CREATE TABLE script on current table/database");
+                stdio.WriteLine("export /select  : generate SELECT FROM WHERE template");
+                stdio.WriteLine("export /update  : generate UPDATE SET WHERE template");
+                stdio.WriteLine("export /delete  : generate DELETE FROM WHERE template");
+                stdio.WriteLine("export /schema  : generate database schema xml file");
+                stdio.WriteLine("export /data    : generate database data xml file");
+                stdio.WriteLine("export /class   : generate C# table class");
+                return;
+            }
+
+            if (!Navigate(cmd))
+                return;
+
+            if (pt.Item is TableName || pt.Item is DatabaseName)
+            {
+                var exporter = new Exporter(mgr, pt, cfg);
+
+                if (cmd.Has("insert"))
+                    exporter.ExportInsert(cmd);
+                else if (cmd.Has("create"))
+                    exporter.ExportCreate();
+                else if (cmd.Has("select"))
+                    exporter.ExportScud(SqlScriptType.SELECT);
+                else if (cmd.Has("delete"))
+                    exporter.ExportScud(SqlScriptType.DELETE);
+                else if (cmd.Has("update"))
+                    exporter.ExportScud(SqlScriptType.UPDATE);
+                else if (cmd.Has("schema"))
+                    exporter.ExportSchema();
+                else if (cmd.Has("data"))
+                    exporter.ExportData();
+                else if (cmd.Has("class"))
+                    exporter.ExportClass();
+                else
+                    stdio.ErrorFormat("invalid command");
+            }
+            else
+                stdio.ErrorFormat("select database or table first");
+        }
+     
     }
 }

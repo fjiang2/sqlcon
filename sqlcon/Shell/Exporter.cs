@@ -13,29 +13,38 @@ namespace sqlcon
 {
     class Exporter
     {
-        private ShellContext context;
-
+        private PathManager mgr;
+        private Configuration cfg;
         private string fileName;
         private TableName tname;
         private DatabaseName dname;
 
-        public Exporter(ShellContext context)
+        public Exporter(PathManager mgr, TreeNode<IDataPath> pt, Configuration cfg)
         {
-            this.context = context;
+            this.mgr = mgr;
+            this.cfg = cfg;
 
-            this.fileName = context.cfg.OutputFile;
-            this.tname = context.mgr.GetCurrentPath<TableName>();
-            this.dname = context.mgr.GetCurrentPath<DatabaseName>();
+            this.fileName = cfg.OutputFile;
+            if (pt.Item is TableName)
+            {
+                this.tname = (TableName)pt.Item;
+                this.dname = (DatabaseName)pt.Parent.Item;
+            }
+            else if (pt.Item is DatabaseName)
+            {
+                this.tname = null;
+                this.dname = (DatabaseName)pt.Item;
+            }
         }
 
        
-        private void ExportScud(SqlScriptType type)
+        public void ExportScud(SqlScriptType type)
         {
             if (tname != null)
             {
                 using (var writer = fileName.NewStreamWriter())
                 {
-                    string sql = context.theSide.GenerateTemplate(tname, type);
+                    string sql = Compare.GenerateTemplate(new TableSchema(tname), type);
                     stdio.WriteLine(sql);
                     writer.WriteLine(sql);
                 }
@@ -47,7 +56,7 @@ namespace sqlcon
         }
 
 
-        private void ExportCreate()
+        public void ExportCreate()
         {
             if (tname != null)
             {
@@ -76,7 +85,7 @@ namespace sqlcon
 
         }
 
-        private void ExportInsert(Command cmd)
+        public void ExportInsert(Command cmd)
         {
             if (tname != null)
             {
@@ -84,14 +93,14 @@ namespace sqlcon
                 {
                     using (var writer = fileName.NewStreamWriter())
                     {
-                        string sql = context.theSide.GenerateTemplate(tname, SqlScriptType.INSERT);
+                        string sql = Compare.GenerateTemplate(new TableSchema(tname), SqlScriptType.INSERT);
                         stdio.WriteLine(sql);
                         writer.WriteLine(sql);
                     }
                 }
                 else
                 {
-                    var node = context.mgr.GetCurrentNode<Locator>();
+                    var node = mgr.GetCurrentNode<Locator>();
                     int count;
 
                     using (var writer = fileName.NewStreamWriter())
@@ -99,13 +108,13 @@ namespace sqlcon
                         if (node != null)
                         {
                             stdio.WriteLine("start to generate {0} INSERT script to file: {1}", tname, fileName);
-                            Locator locator = context.mgr.GetCombinedLocator(node);
-                            count = context.theSide.GenerateRows(writer, tname, locator, cmd.HasIfExists);
+                            Locator locator = mgr.GetCombinedLocator(node);
+                            count = Compare.GenerateRows(writer, new TableSchema(tname), locator, cmd.HasIfExists);
                             stdio.WriteLine("insert clauses (SELECT * FROM {0} WHERE {1}) generated to {2}", tname, locator, fileName);
                         }
                         else
                         {
-                            count = context.theSide.GenerateRows(writer, tname, null, cmd.HasIfExists);
+                            count = Compare.GenerateRows(writer, new TableSchema(tname), null, cmd.HasIfExists);
                             stdio.WriteLine("insert clauses (SELECT * FROM {0}) generated to {1}", tname, fileName);
                         }
                     }
@@ -124,10 +133,10 @@ namespace sqlcon
                             if (cancelled())
                                 return CancelableState.Cancelled;
 
-                            if (!context.cfg.exportExcludedTables.IsMatch(tn.ShortName))
+                            if (!cfg.exportExcludedTables.IsMatch(tn.ShortName))
                             {
                                 int count = new SqlCmd(tn.Provider, string.Format("SELECT COUNT(*) FROM {0}", tn)).FillObject<int>();
-                                if (count > context.cfg.Export_Max_Count)
+                                if (count > cfg.Export_Max_Count)
                                 {
                                     if (!stdio.YesOrNo("are you sure to export {0} rows on {1} (y/n)?", count, tn.ShortName))
                                     {
@@ -136,7 +145,7 @@ namespace sqlcon
                                     }
                                 }
 
-                                count = context.theSide.GenerateRows(writer, tn, null, cmd.HasIfExists);
+                                count = Compare.GenerateRows(writer, new TableSchema(tn), null, cmd.HasIfExists);
                                 stdio.WriteLine("{0,10} row(s) generated on {1}", count, tn.ShortName);
                             }
                             else
@@ -151,12 +160,12 @@ namespace sqlcon
                 stdio.ErrorFormat("warning: table or database is not selected");
         }
 
-        private void ExportSchema()
+        public void ExportSchema()
         {
             if (dname != null)
             {
-                stdio.WriteLine("start to generate database {0} schema to file: {1}", dname, context.cfg.SchemaFile);
-                using (var writer = context.cfg.SchemaFile.NewStreamWriter())
+                stdio.WriteLine("start to generate database {0} schema to file: {1}", dname, cfg.SchemaFile);
+                using (var writer = cfg.SchemaFile.NewStreamWriter())
                 {
                     DataTable dt = dname.DatabaseSchema();
                     dt.WriteXml(writer, XmlWriteMode.WriteSchema);
@@ -165,11 +174,11 @@ namespace sqlcon
             }
             else
             {
-                ServerName sname = context.mgr.GetCurrentPath<ServerName>();
+                ServerName sname = mgr.GetCurrentPath<ServerName>();
                 if (sname != null)
                 {
-                    stdio.WriteLine("start to generate server {0} schema to file: {1}", sname, context.cfg.SchemaFile);
-                    using (var writer = context.cfg.SchemaFile.NewStreamWriter())
+                    stdio.WriteLine("start to generate server {0} schema to file: {1}", sname, cfg.SchemaFile);
+                    using (var writer = cfg.SchemaFile.NewStreamWriter())
                     {
                         DataSet ds = sname.ServerSchema();
                         ds.WriteXml(writer, XmlWriteMode.WriteSchema);
@@ -181,12 +190,16 @@ namespace sqlcon
             }
         }
 
-
-        private void ExportClass()
+        public void ExportData()
         {
-            string path = context.cfg.GetValue<string>("dpo.path", "c:\\temp\\dpo");
-            string ns = context.cfg.GetValue<string>("dpo.ns", "Sys.DataModel.Dpo");
-            string suffix = context.cfg.GetValue<string>("dpo.suffix", Setting.DPO_CLASS_SUFFIX_CLASS_NAME);
+            throw new NotImplementedException();
+        }
+
+        public void ExportClass()
+        {
+            string path = cfg.GetValue<string>("dpo.path", "c:\\temp\\dpo");
+            string ns = cfg.GetValue<string>("dpo.ns", "Sys.DataModel.Dpo");
+            string suffix = cfg.GetValue<string>("dpo.suffix", Setting.DPO_CLASS_SUFFIX_CLASS_NAME);
 
             Func<string, string> rule = 
                 name =>  name.Substring(0,1).ToUpper() + name.Substring(1).ToLower() + suffix;
@@ -227,63 +240,7 @@ namespace sqlcon
                 stdio.ErrorFormat("warning: database is not selected");
             }
 
-
         }
 
-
-        public bool ExportSqlScript(Command cmd)
-        {
-            if (cmd.HasHelp)
-            {
-                stdio.WriteLine("export data, schema, class, and template");
-                stdio.WriteLine("export insert  : export INSERT INTO script on current table/database");
-                stdio.WriteLine("  [/if]        : option /if generate if exists row then UPDATE else INSERT");
-                stdio.WriteLine("export create  : generate CREATE TABLE script on current table/database");
-                stdio.WriteLine("export select  : generate SELECT FROM WHERE template");
-                stdio.WriteLine("export update  : generate UPDATE SET WHERE template");
-                stdio.WriteLine("export delete  : generate DELETE FROM WHERE template");
-                stdio.WriteLine("export schema  : generate database schema xml file");
-                stdio.WriteLine("export class   : generate C# table class");
-                return true;
-            }
-
-
-            switch (cmd.arg1)
-            {
-                case "insert":
-                    ExportInsert(cmd);
-                    return true;
-
-                case "create":
-                    ExportCreate();
-                    return true;
-
-                case "select":
-                    ExportScud(SqlScriptType.SELECT);
-                    return true;
-
-                case "delete":
-                    ExportScud(SqlScriptType.DELETE);
-                    return true;
-
-                case "update":
-                    ExportScud(SqlScriptType.UPDATE);
-                    return true;
-
-                case "schema":
-                    ExportSchema();
-                    return true;
-
-                case "class":
-                    ExportClass();
-                    return true;
-
-                default:
-                    stdio.ErrorFormat("invalid command");
-                    break;
-            }
-
-            return true;
-        }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Tie;
 using Sys.Data;
+using Sys.Data.Comparison;
 
 namespace sqlcon
 {
@@ -107,12 +108,14 @@ namespace sqlcon
                             {
                                 if (where != null)
                                 {
-                                    count = theSide.GenerateRows(writer, tname, new Locator(where), false);
+                                    //count = theSide.GenerateRows(writer, tname, new Locator(where), false);
+                                    count = Compare.GenerateRows(writer, new TableSchema(tname), new Locator(where), false);
                                     stdio.WriteLine("insert clauses (SELECT * FROM {0} WHERE {1}) generated to {2}", tname, where, fileName);
                                 }
                                 else
                                 {
-                                    count = theSide.GenerateRows(writer, tname, null, false);
+                                    //count = theSide.GenerateRows(writer, tname, null, false);
+                                    count = Compare.GenerateRows(writer, new TableSchema(tname), null, false);
                                     stdio.WriteLine("insert clauses (SELECT * FROM {0}) generated to {1}", tname, fileName);
                                 }
                             }

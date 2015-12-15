@@ -341,8 +341,8 @@ namespace sqlcon
                     return true;
 
                 case "export":
-                    var exporter = new Exporter(this);
-                    return exporter.ExportSqlScript(cmd);
+                    commandee.export(cmd, cfg, this);
+                    return true;
 
                 case "clean":
                     commandee.clean(cmd, cfg);
