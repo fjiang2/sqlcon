@@ -105,15 +105,16 @@ namespace sqlcon
             if (cmd.HasHelp)
             {
                 stdio.WriteLine("command dir or ls");
-                stdio.WriteLine("dir [path]             : display current directory");
-                stdio.WriteLine("options:   /def        : display table structure");
-                stdio.WriteLine("options:   /pk         : display table primary keys");
-                stdio.WriteLine("options:   /fk         : display table foreign keys");
-                stdio.WriteLine("options:   /ik         : display table identity keys");
-                stdio.WriteLine("options:   /dep        : display table dependencies");
-                stdio.WriteLine("options:   /ind        : display table index/indices");
-                stdio.WriteLine("options:   /sto        : display table storage");
-                stdio.WriteLine("options:   /refresh    : refresh table structure");
+                stdio.WriteLine("dir [path]     : display current directory");
+                stdio.WriteLine("options: ");
+                stdio.WriteLine("   /def        : display table structure");
+                stdio.WriteLine("   /pk         : display table primary keys");
+                stdio.WriteLine("   /fk         : display table foreign keys");
+                stdio.WriteLine("   /ik         : display table identity keys");
+                stdio.WriteLine("   /dep        : display table dependencies");
+                stdio.WriteLine("   /ind        : display table index/indices");
+                stdio.WriteLine("   /sto        : display table storage");
+                stdio.WriteLine("   /refresh    : refresh table structure");
                 return;
             }
 
@@ -757,15 +758,16 @@ namespace sqlcon
             if (cmd.HasHelp)
             {
                 stdio.WriteLine("export data, schema, class, and template");
-                stdio.WriteLine("export /insert  : export INSERT INTO script on current table/database");
-                stdio.WriteLine("  [/if]        : option /if generate if exists row then UPDATE else INSERT");
-                stdio.WriteLine("export /create  : generate CREATE TABLE script on current table/database");
-                stdio.WriteLine("export /select  : generate SELECT FROM WHERE template");
-                stdio.WriteLine("export /update  : generate UPDATE SET WHERE template");
-                stdio.WriteLine("export /delete  : generate DELETE FROM WHERE template");
-                stdio.WriteLine("export /schema  : generate database schema xml file");
-                stdio.WriteLine("export /data    : generate database data xml file");
-                stdio.WriteLine("export /class   : generate C# table class");
+                stdio.WriteLine("option:");
+                stdio.WriteLine("   /insert  : export INSERT INTO script on current table/database");
+                stdio.WriteLine("   [/if]    : option /if generate if exists row then UPDATE else INSERT");
+                stdio.WriteLine("   /create  : generate CREATE TABLE script on current table/database");
+                stdio.WriteLine("   /select  : generate SELECT FROM WHERE template");
+                stdio.WriteLine("   /update  : generate UPDATE SET WHERE template");
+                stdio.WriteLine("   /delete  : generate DELETE FROM WHERE template, delete rows with foreign keys constraints");
+                stdio.WriteLine("   /schema  : generate database schema xml file");
+                stdio.WriteLine("   /data    : generate database/table data xml file");
+                stdio.WriteLine("   /class   : generate C# table class");
                 return;
             }
 
