@@ -793,7 +793,7 @@ namespace sqlcon
                 else if (cmd.Has("data"))
                     exporter.ExportData();
                 else if (cmd.Has("class"))
-                    exporter.ExportClass();
+                    exporter.ExportClass(cmd);
                 else
                     stdio.ErrorFormat("invalid command");
             }

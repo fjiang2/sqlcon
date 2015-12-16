@@ -125,7 +125,8 @@ namespace sqlcon
                 stdio.WriteLine("start to generate {0} script to file: {1}", dname, fileName);
                 using (var writer = fileName.NewStreamWriter())
                 {
-                    TableName[] tnames = dname.GetDependencyTableNames();
+                    var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportExcludedTables);
+                    TableName[] tnames = md.DefaultTableNames;
                     CancelableWork.CanCancel(cancelled =>
                     {
                         foreach (var tn in tnames)
@@ -195,7 +196,7 @@ namespace sqlcon
             throw new NotImplementedException();
         }
 
-        public void ExportClass()
+        public void ExportClass(Command cmd)
         {
             string path = cfg.GetValue<string>("dpo.path", "c:\\temp\\dpo");
             string ns = cfg.GetValue<string>("dpo.ns", "Sys.DataModel.Dpo");
@@ -215,7 +216,9 @@ namespace sqlcon
                 stdio.WriteLine("start to generate database {0} class to directory: {1}", dname, path);
                 CancelableWork.CanCancel(cancelled =>
                 {
-                    foreach (var tn in dname.GetTableNames())
+                    var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportExcludedTables);
+                    TableName[] tnames = md.DefaultTableNames;
+                    foreach (var tn in tnames)
                     {
                         if (cancelled())
                             return CancelableState.Cancelled;
