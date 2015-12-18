@@ -24,7 +24,7 @@ namespace sqlcon
         const string _FILE_SYSTEM_CONFIG = "sqlcon.cfg"; 
         const string _FILE_INPUT = "input";
         const string _FILE_OUTPUT = "output";
-        const string _FILE_SCHEMA = "schema";
+        const string _XML_DB_FOLDER = "xmldb";
         const string _FILE_LOG = "log";
         const string _FILE_EDITOR = "editor";
 
@@ -42,7 +42,7 @@ namespace sqlcon
         
         public string InputFile { get; set; }
         public string OutputFile { get; set; }
-        public string SchemaFile { get; set; }
+        public string XmlDbFolder { get; set; }
 
         public string[] compareExcludedTables = new string[] { };
         public string[] exportExcludedTables = new string[] { };
@@ -264,7 +264,7 @@ namespace sqlcon
 
             this.InputFile = Cfg.GetValue<string>(_FILE_INPUT, "script.sql");
             this.OutputFile = Cfg.GetValue<string>(_FILE_OUTPUT, "script.sql");
-            this.SchemaFile = Cfg.GetValue<string>(_FILE_SCHEMA, "schema.xml");
+            this.XmlDbFolder = Cfg.GetValue<string>(_XML_DB_FOLDER, "db");
 
             var limit = Cfg[_LIMIT];
             if (limit["top"].Defined)
@@ -306,7 +306,7 @@ namespace sqlcon
 
         private static string SearchXmlConnectionString(VAL val)
         {
-            if(val.Count != 3)
+            if(val.Size != 3)
             {
                 Console.WriteLine("required 2 parameters on function config(file,path,value), 1: app.config/web.config name; 2: path to reach connection string; 3:connection string attribute");
                 return null;
@@ -383,7 +383,7 @@ namespace sqlcon
 
         private static string SearchTieConnectionString(VAL val)
         {
-            if (val.Count != 2)
+            if (val.Size != 2)
             {
                 Console.WriteLine("required 2 parameters on function config(file,variable), 1: app.config/web.config name; 2: variable to reach connection string");
                 return null;

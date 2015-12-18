@@ -774,7 +774,7 @@ namespace sqlcon
             if (!Navigate(cmd))
                 return;
 
-            if (pt.Item is TableName || pt.Item is DatabaseName)
+            if (pt.Item is TableName || pt.Item is DatabaseName || pt.Item is ServerName)
             {
                 var exporter = new Exporter(mgr, pt, cfg);
 
@@ -791,7 +791,7 @@ namespace sqlcon
                 else if (cmd.Has("schema"))
                     exporter.ExportSchema();
                 else if (cmd.Has("data"))
-                    exporter.ExportData();
+                    exporter.ExportData(cmd);
                 else if (cmd.Has("class"))
                     exporter.ExportClass(cmd);
                 else

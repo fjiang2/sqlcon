@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
@@ -18,6 +19,7 @@ namespace sqlcon
         private string fileName;
         private TableName tname;
         private DatabaseName dname;
+        private ServerName sname;
 
         public Exporter(PathManager mgr, TreeNode<IDataPath> pt, Configuration cfg)
         {
@@ -28,16 +30,33 @@ namespace sqlcon
             if (pt.Item is TableName)
             {
                 this.tname = (TableName)pt.Item;
-                this.dname = (DatabaseName)pt.Parent.Item;
+                this.dname = tname.DatabaseName;
+                this.sname = dname.ServerName;
             }
             else if (pt.Item is DatabaseName)
             {
                 this.tname = null;
                 this.dname = (DatabaseName)pt.Item;
+                this.sname = dname.ServerName;
+            }
+            else if (pt.Item is ServerName)
+            {
+                this.tname = null;
+                this.dname = null;
+                this.sname = (ServerName)pt.Item;
             }
         }
 
-       
+        private string getPath(ServerName sname) => string.Format("{0}\\{1}", cfg.XmlDbFolder, sname.Path);
+
+        private string getPath(DatabaseName dname) => string.Format("{0}\\{1}", getPath(dname.ServerName), dname.Name);
+
+        private string getPath(TableName tname) => string.Format("{0}\\{1}.xml", getPath(tname.DatabaseName), tname.ShortName);
+
+        private string getSchemaFile(ServerName sname) => string.Format("{0}\\{1}.xml", getPath(sname), sname.Path);
+
+        private string getSchemaFile(DatabaseName dname) => string.Format("{0}\\{1}.xml", getPath(sname), dname.Name);
+
         public void ExportScud(SqlScriptType type)
         {
             if (tname != null)
@@ -163,23 +182,25 @@ namespace sqlcon
 
         public void ExportSchema()
         {
+            string file;
             if (dname != null)
             {
-                stdio.WriteLine("start to generate database {0} schema to file: {1}", dname, cfg.SchemaFile);
-                using (var writer = cfg.SchemaFile.NewStreamWriter())
+                file = getSchemaFile(dname);
+                stdio.WriteLine("start to generate database {0} schema to file: {1}", dname, file);
+                using (var writer = file.NewStreamWriter())
                 {
                     DataTable dt = dname.DatabaseSchema();
                     dt.WriteXml(writer, XmlWriteMode.WriteSchema);
                 }
                 stdio.WriteLine("completed");
             }
-            else
+            else if (sname != null)
             {
-                ServerName sname = mgr.GetCurrentPath<ServerName>();
+                file = getSchemaFile(sname);
                 if (sname != null)
                 {
-                    stdio.WriteLine("start to generate server {0} schema to file: {1}", sname, cfg.SchemaFile);
-                    using (var writer = cfg.SchemaFile.NewStreamWriter())
+                    stdio.WriteLine("start to generate server {0} schema to file: {1}", sname, file);
+                    using (var writer = file.NewStreamWriter())
                     {
                         DataSet ds = sname.ServerSchema();
                         ds.WriteXml(writer, XmlWriteMode.WriteSchema);
@@ -191,9 +212,53 @@ namespace sqlcon
             }
         }
 
-        public void ExportData()
+        public void ExportData(Command cmd)
         {
-            throw new NotImplementedException();
+            string file;
+            if (tname != null)
+            {
+                file = getPath(tname);
+
+                stdio.WriteLine("start to generate {0} data file: {1}", tname, file);
+                using (var writer = new StreamWriter(file))
+                {
+                    var dt = new TableReader(tname).Table;
+                    dt.TableName = tname.Name;
+                    dt.DataSet.DataSetName = tname.DatabaseName.Name;
+                    dt.WriteXml(writer, XmlWriteMode.WriteSchema);
+                }
+                stdio.WriteLine("completed");
+            }
+            else if (dname != null)
+            {
+                stdio.WriteLine("start to generate {0} data files", dname);
+                var mt = new MatchedDatabase(dname, cmd.wildcard, cfg.exportExcludedTables);
+                CancelableWork.CanCancel(cancelled =>
+                {
+                    foreach (var tname in mt.DefaultTableNames)
+                    {
+                        if (cancelled())
+                            return CancelableState.Cancelled;
+
+                        file = getPath(tname);
+                        stdio.WriteLine("generate {0} data: {1}", tname, file);
+                        using (var writer = new StreamWriter(file))
+                        {
+                            var dt = new SqlBuilder().SELECT.TOP(cmd.top).COLUMNS().FROM(tname).SqlCmd.FillDataTable();
+                            dt.TableName = tname.Name;
+                            dt.DataSet.DataSetName = tname.DatabaseName.Name;
+                            dt.WriteXml(writer, XmlWriteMode.WriteSchema);
+                        }
+                    }
+                    return CancelableState.Completed;
+                }
+               );
+                stdio.WriteLine("completed");
+            }
+            else
+            {
+                stdio.ErrorFormat("warning: table or database is not seleted");
+            }
         }
 
         public void ExportClass(Command cmd)
@@ -202,8 +267,8 @@ namespace sqlcon
             string ns = cfg.GetValue<string>("dpo.ns", "Sys.DataModel.Dpo");
             string suffix = cfg.GetValue<string>("dpo.suffix", Setting.DPO_CLASS_SUFFIX_CLASS_NAME);
 
-            Func<string, string> rule = 
-                name =>  name.Substring(0,1).ToUpper() + name.Substring(1).ToLower() + suffix;
+            Func<string, string> rule =
+                name => name.Substring(0, 1).ToUpper() + name.Substring(1).ToLower() + suffix;
 
             if (tname != null)
             {

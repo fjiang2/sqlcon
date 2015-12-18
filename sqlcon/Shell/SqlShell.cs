@@ -236,7 +236,7 @@ namespace sqlcon
                             {
                                 if (!theSide.ExecuteScript(file))
                                 {
-                                    if (!stdio.YesOrNo("are you sure to continue(y/n)?"))
+                                    if (!stdio.YesOrNo("are you sure to continue to run next file(y/n)?"))
                                     {
                                         stdio.ErrorFormat("interupted on {0}", file);
                                         return true;
@@ -259,10 +259,6 @@ namespace sqlcon
 
                         case "output":
                             stdio.OpenEditor(cfg.OutputFile);
-                            break;
-
-                        case "schema":
-                            stdio.OpenEditor(cfg.SchemaFile);
                             break;
 
                         case "log":
@@ -601,7 +597,6 @@ namespace sqlcon
             stdio.WriteLine("<open log>              : open log file");
             stdio.WriteLine("<open input>            : open input file");
             stdio.WriteLine("<open output>           : open output file");
-            stdio.WriteLine("<open schema>           : open schema file");
             stdio.WriteLine("<execute inputfile>     : execute sql script file");
             stdio.WriteLine("<execute variable /s>   : execute script file list defined on the configuration file");
             stdio.WriteLine();
