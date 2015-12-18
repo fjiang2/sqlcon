@@ -22,13 +22,16 @@ namespace Sys.Data
 
 
         public override void ChangeDatabase(string databaseName)
-        { }
+        {
+        }
 
         public override void Close()
-        { }
+        {
+        }
 
         public override void Open()
-        { }
+        {
+        }
 
         protected override DbTransaction BeginDbTransaction(IsolationLevel isolationLevel)
         {

@@ -13,5 +13,11 @@ namespace Sys.Data
         public XmlDbDataAdapter()
         {
         }
+
+        public override int Fill(DataSet dataSet)
+        {
+            string sql = this.SelectCommand.CommandText;
+            return -1;
+        }
     }
 }

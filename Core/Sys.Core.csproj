@@ -162,6 +162,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Data\Persistence\Level0\Provider\XmlDbProvider.cs" />
+    <Compile Include="Data\Persistence\Level0\XmlDbCmd.cs" />
     <Compile Include="Data\Persistence\Level0\SqlCmd.cs" />
     <Compile Include="Data\Persistence\Level0\SqlExceptionEventArgs.cs" />
     <Compile Include="Data\Persistence\Level0\SqlScript.cs" />
