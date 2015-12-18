@@ -90,8 +90,8 @@ namespace Sys.Data
                 case DbProviderType.OleDb:
                     return new OleDbProvider(script, provider);
 
-                case  DbProviderType.DataSet:
-                    return new XmlProvider(script, provider);
+                case  DbProviderType.XmlDb:
+                    return new XmlDbProvider(script, provider);
             }
 
             throw new NotImplementedException();

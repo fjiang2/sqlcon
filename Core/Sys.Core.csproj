@@ -152,7 +152,16 @@
     <Compile Include="Data\Persistence\Level0\Provider\IProvider.cs" />
     <Compile Include="Data\Persistence\Level0\Provider\OleDbProvider.cs" />
     <Compile Include="Data\Persistence\Level0\Provider\SqlProvider.cs" />
-    <Compile Include="Data\Persistence\Level0\Provider\XmlProvider.cs" />
+    <Compile Include="Data\Persistence\Level0\Provider\XmlDbCommand.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Data\Persistence\Level0\Provider\XmlDbConnection.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Data\Persistence\Level0\Provider\XmlDbDataAdapter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Data\Persistence\Level0\Provider\XmlDbProvider.cs" />
     <Compile Include="Data\Persistence\Level0\SqlCmd.cs" />
     <Compile Include="Data\Persistence\Level0\SqlExceptionEventArgs.cs" />
     <Compile Include="Data\Persistence\Level0\SqlScript.cs" />

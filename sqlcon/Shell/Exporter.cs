@@ -51,11 +51,11 @@ namespace sqlcon
 
         private string getPath(DatabaseName dname) => string.Format("{0}\\{1}", getPath(dname.ServerName), dname.Name);
 
-        private string getPath(TableName tname) => string.Format("{0}\\{1}.xml", getPath(tname.DatabaseName), tname.ShortName);
+        private string getDataFileName(TableName tname) => string.Format("{0}\\{1}.xml", getPath(tname.DatabaseName), tname.ShortName);
 
-        private string getSchemaFile(ServerName sname) => string.Format("{0}\\{1}.xml", getPath(sname), sname.Path);
+        private string getSchemaFilName(ServerName sname) => string.Format("{0}\\{1}.xml", getPath(sname), sname.Path);
 
-        private string getSchemaFile(DatabaseName dname) => string.Format("{0}\\{1}.xml", getPath(sname), dname.Name);
+        private string getSchemaFilName(DatabaseName dname) => string.Format("{0}\\{1}.xml", getPath(sname), dname.Name);
 
         public void ExportScud(SqlScriptType type)
         {
@@ -185,7 +185,7 @@ namespace sqlcon
             string file;
             if (dname != null)
             {
-                file = getSchemaFile(dname);
+                file = getSchemaFilName(dname);
                 stdio.WriteLine("start to generate database {0} schema to file: {1}", dname, file);
                 using (var writer = file.NewStreamWriter())
                 {
@@ -196,7 +196,7 @@ namespace sqlcon
             }
             else if (sname != null)
             {
-                file = getSchemaFile(sname);
+                file = getSchemaFilName(sname);
                 if (sname != null)
                 {
                     stdio.WriteLine("start to generate server {0} schema to file: {1}", sname, file);
@@ -217,10 +217,10 @@ namespace sqlcon
             string file;
             if (tname != null)
             {
-                file = getPath(tname);
+                file = getDataFileName(tname);
 
                 stdio.WriteLine("start to generate {0} data file: {1}", tname, file);
-                using (var writer = new StreamWriter(file))
+                using (var writer = file.NewStreamWriter())
                 {
                     var dt = new TableReader(tname).Table;
                     dt.TableName = tname.Name;
@@ -240,9 +240,9 @@ namespace sqlcon
                         if (cancelled())
                             return CancelableState.Cancelled;
 
-                        file = getPath(tname);
-                        stdio.WriteLine("generate {0} data: {1}", tname, file);
-                        using (var writer = new StreamWriter(file))
+                        file = getDataFileName(tname);
+                        stdio.WriteLine("generate {0} => {1}", tname.ShortName, file);
+                        using (var writer = file.NewStreamWriter())
                         {
                             var dt = new SqlBuilder().SELECT.TOP(cmd.top).COLUMNS().FROM(tname).SqlCmd.FillDataTable();
                             dt.TableName = tname.Name;

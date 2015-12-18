@@ -241,7 +241,7 @@ namespace Sys.Data
                         return DbProviderType.SqlCe;
 
                     case ConnectionProviderType.XmlFile:
-                        return DbProviderType.DataSet;
+                        return DbProviderType.XmlDb;
 
                     default:
                         return DbProviderType.OleDb;
@@ -261,8 +261,8 @@ namespace Sys.Data
                     case DbProviderType.OleDb:
                         return new OleDbConnection(ConnectionString);
 
-                    case DbProviderType.DataSet:
-                        return null;
+                    case DbProviderType.XmlDb:
+                        return new XmlDbConnection(ConnectionString);
 
                 }
 
