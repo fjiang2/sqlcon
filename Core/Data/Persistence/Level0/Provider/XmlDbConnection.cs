@@ -41,9 +41,7 @@ namespace Sys.Data
         {
             get
             {
-                string folder = Path.GetDirectoryName(Provider.DataSource);
-
-                return Path.Combine(folder, database);
+                return Path.GetDirectoryName(Provider.DataSource);
             }
         }
 

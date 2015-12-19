@@ -70,6 +70,9 @@ namespace Sys.Data
                 case DbProviderType.SqlCe:
                     return "Database";
 
+                case DbProviderType.XmlDb:
+                    return provider.InitialCatalog;
+
                 default:
                     throw new NotSupportedException();
             }

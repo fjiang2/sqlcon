@@ -32,16 +32,19 @@ namespace Sys.Data
 
         private TableName getTableName(string sql)
         {
-            string[] items = sql.Trim().Split(new string[] { "FROM" }, StringSplitOptions.RemoveEmptyEntries);
-            string name = items.Last();
-            return new TableName(connection.Provider, name);
+            string[] items = sql.Trim().Split(new string[] {"SELECT", "FROM" , "WHERE"}, StringSplitOptions.RemoveEmptyEntries);
+            string name = items.Last().Trim();
+             return new TableName(connection.Provider, name);
         }
 
         private int FillDataTable(TableName tname, DataSet ds)
         {
-            var file = Path.Combine(connection.Directory, tname.ShortName);
-            file = Path.ChangeExtension(file, "xml");
+            var file = Path.Combine(connection.Directory, tname.DatabaseName.Name, tname.ShortName);
+            file = file + ".xml";
 
+            if (!File.Exists(file))
+                throw new InvalidDataException($"table {tname.FormalName} data file \"{file}\" not exist");
+            
             using (var reader = new StreamReader(file))
             {
                 ds.ReadXml(reader);

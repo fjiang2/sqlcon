@@ -21,6 +21,7 @@ using System.Text;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Data.OleDb;
+using System.IO;
 using Tie;
 
 namespace Sys.Data
@@ -69,10 +70,14 @@ namespace Sys.Data
 
         public bool CheckConnection()
         {
-            if (Type != ConnectionProviderType.XmlFile)
-                return !InvalidSqlClause("EXEC sp_databases");
-            else
-                return System.IO.File.Exists(DataSource);
+            switch (Type)
+            {
+                case ConnectionProviderType.XmlFile:
+                    return File.Exists(DataSource);
+
+                default:
+                    return !InvalidSqlClause("EXEC sp_databases");
+            }
         }
 
         private bool InvalidSqlClause(string sql)

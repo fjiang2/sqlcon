@@ -229,6 +229,7 @@ namespace sqlcon
                 }
                 stdio.WriteLine("completed");
             }
+
             else if (dname != null)
             {
                 stdio.WriteLine("start to generate {0} data files", dname);
@@ -253,7 +254,11 @@ namespace sqlcon
                     return CancelableState.Completed;
                 }
                );
-                stdio.WriteLine("completed");
+
+                if (cmd.top == 0)
+                    stdio.WriteLine("completed");
+                else
+                    stdio.WriteLine("completed to export TOP {0} row(s) for each table", cmd.top);
             }
             else
             {
