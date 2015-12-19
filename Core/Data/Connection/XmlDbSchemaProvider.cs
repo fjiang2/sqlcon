@@ -7,11 +7,11 @@ using System.Data;
 
 namespace Sys.Data
 {
-    class XmlSchemaProvider : SchemaProvider
+    class XmlDbSchemaProvider : SchemaProvider
     {
         DataSet dbSchema;
 
-        public XmlSchemaProvider(ConnectionProvider provider)
+        public XmlDbSchemaProvider(ConnectionProvider provider)
             : base(provider)
         {
             dbSchema = new DataSet();

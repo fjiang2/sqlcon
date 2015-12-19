@@ -20,11 +20,13 @@ namespace Sys.Data
         protected override DbParameterCollection DbParameterCollection { get; }
         protected override DbTransaction DbTransaction { get; set; }
 
-        public XmlDbCommand()
-        { }
 
         public XmlDbCommand(string cmdText, XmlDbConnection connection)
         {
+            this.CommandText = cmdText;
+            this.CommandType = CommandType.Text;
+            this.DbConnection = connection;
+        
         }
 
         public override void Cancel()

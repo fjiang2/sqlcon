@@ -262,7 +262,7 @@ namespace Sys.Data
                         return new OleDbConnection(ConnectionString);
 
                     case DbProviderType.XmlDb:
-                        return new XmlDbConnection(ConnectionString);
+                        return new XmlDbConnection(this);
 
                 }
 
@@ -316,7 +316,7 @@ namespace Sys.Data
                             break;
 
                         case ConnectionProviderType.XmlFile:
-                            schema = new XmlSchemaProvider(this);
+                            schema = new XmlDbSchemaProvider(this);
                             break;
                     }
                 }

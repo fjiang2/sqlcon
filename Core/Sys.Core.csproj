@@ -128,7 +128,7 @@
     <Compile Include="Data\Connection\SchemaProvider.cs" />
     <Compile Include="Data\Connection\SqlSchemaProvider.cs" />
     <Compile Include="Data\Connection\SqlServer.cs" />
-    <Compile Include="Data\Connection\XmlSchemaProvider.cs" />
+    <Compile Include="Data\Connection\XmlDbSchemaProvider.cs" />
     <Compile Include="Data\Conversion.cs" />
     <Compile Include="Data\DbType.cs" />
     <Compile Include="Data\DefaultRowValue.cs" />
@@ -162,7 +162,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Data\Persistence\Level0\Provider\XmlDbProvider.cs" />
-    <Compile Include="Data\Persistence\Level0\XmlDbCmd.cs" />
     <Compile Include="Data\Persistence\Level0\SqlCmd.cs" />
     <Compile Include="Data\Persistence\Level0\SqlExceptionEventArgs.cs" />
     <Compile Include="Data\Persistence\Level0\SqlScript.cs" />
