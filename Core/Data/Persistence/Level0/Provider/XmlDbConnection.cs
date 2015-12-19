@@ -37,7 +37,10 @@ namespace Sys.Data
             }
         }
 
-        public string Directory
+        /// <summary>
+        /// Server directory
+        /// </summary>
+        public string RootDirectory
         {
             get
             {

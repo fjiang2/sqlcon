@@ -128,6 +128,7 @@
     <Compile Include="Data\Connection\SchemaProvider.cs" />
     <Compile Include="Data\Connection\SqlSchemaProvider.cs" />
     <Compile Include="Data\Connection\SqlServer.cs" />
+    <Compile Include="Data\Connection\XmlDbFile.cs" />
     <Compile Include="Data\Connection\XmlDbSchemaProvider.cs" />
     <Compile Include="Data\Conversion.cs" />
     <Compile Include="Data\DbType.cs" />

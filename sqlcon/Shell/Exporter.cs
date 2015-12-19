@@ -21,11 +21,12 @@ namespace sqlcon
         private DatabaseName dname;
         private ServerName sname;
 
+        XmlDbFile xml;
         public Exporter(PathManager mgr, TreeNode<IDataPath> pt, Configuration cfg)
         {
             this.mgr = mgr;
             this.cfg = cfg;
-
+            this.xml = new XmlDbFile { XmlDbFolder = cfg.XmlDbFolder };
             this.fileName = cfg.OutputFile;
             if (pt.Item is TableName)
             {
@@ -46,16 +47,6 @@ namespace sqlcon
                 this.sname = (ServerName)pt.Item;
             }
         }
-
-        private string getPath(ServerName sname) => string.Format("{0}\\{1}", cfg.XmlDbFolder, sname.Path);
-
-        private string getPath(DatabaseName dname) => string.Format("{0}\\{1}", getPath(dname.ServerName), dname.Name);
-
-        private string getDataFileName(TableName tname) => string.Format("{0}\\{1}.xml", getPath(tname.DatabaseName), tname.ShortName);
-
-        private string getSchemaFilName(ServerName sname) => string.Format("{0}\\{1}.xml", getPath(sname), sname.Path);
-
-        private string getSchemaFilName(DatabaseName dname) => string.Format("{0}\\{1}.xml", getPath(sname), dname.Name);
 
         public void ExportScud(SqlScriptType type)
         {
@@ -182,30 +173,19 @@ namespace sqlcon
 
         public void ExportSchema()
         {
-            string file;
             if (dname != null)
             {
-                file = getSchemaFilName(dname);
-                stdio.WriteLine("start to generate database {0} schema to file: {1}", dname, file);
-                using (var writer = file.NewStreamWriter())
-                {
-                    DataTable dt = dname.DatabaseSchema();
-                    dt.WriteXml(writer, XmlWriteMode.WriteSchema);
-                }
-                stdio.WriteLine("completed");
+                stdio.WriteLine("start to generate database schema {0}", dname);
+                var file = xml.WriteSchema(dname);
+                stdio.WriteLine("completed {0}", file);
             }
             else if (sname != null)
             {
-                file = getSchemaFilName(sname);
                 if (sname != null)
                 {
-                    stdio.WriteLine("start to generate server {0} schema to file: {1}", sname, file);
-                    using (var writer = file.NewStreamWriter())
-                    {
-                        DataSet ds = sname.ServerSchema();
-                        ds.WriteXml(writer, XmlWriteMode.WriteSchema);
-                    }
-                    stdio.WriteLine("completed");
+                    stdio.WriteLine("start to generate server schema {0}", sname);
+                    var file = xml.WriteSchema(sname);
+                    stdio.WriteLine("completed {0}", file);
                 }
                 else
                     stdio.ErrorFormat("warning: server or database is not selected");
@@ -214,25 +194,17 @@ namespace sqlcon
 
         public void ExportData(Command cmd)
         {
-            string file;
             if (tname != null)
             {
-                file = getDataFileName(tname);
-
-                stdio.WriteLine("start to generate {0} data file: {1}", tname, file);
-                using (var writer = file.NewStreamWriter())
-                {
-                    var dt = new TableReader(tname).Table;
-                    dt.TableName = tname.Name;
-                    dt.DataSet.DataSetName = tname.DatabaseName.Name;
-                    dt.WriteXml(writer, XmlWriteMode.WriteSchema);
-                }
-                stdio.WriteLine("completed");
+                stdio.WriteLine("start to generate {0} data file", tname);
+                var dt = new TableReader(tname).Table;
+                var file = xml.Write(tname, dt);
+                stdio.WriteLine("completed {0} =>{1}", tname.ShortName, file);
             }
 
             else if (dname != null)
             {
-                stdio.WriteLine("start to generate {0} data files", dname);
+                stdio.WriteLine("start to generate {0}", dname);
                 var mt = new MatchedDatabase(dname, cmd.wildcard, cfg.exportExcludedTables);
                 CancelableWork.CanCancel(cancelled =>
                 {
@@ -241,15 +213,10 @@ namespace sqlcon
                         if (cancelled())
                             return CancelableState.Cancelled;
 
-                        file = getDataFileName(tname);
-                        stdio.WriteLine("generate {0} => {1}", tname.ShortName, file);
-                        using (var writer = file.NewStreamWriter())
-                        {
-                            var dt = new SqlBuilder().SELECT.TOP(cmd.top).COLUMNS().FROM(tname).SqlCmd.FillDataTable();
-                            dt.TableName = tname.Name;
-                            dt.DataSet.DataSetName = tname.DatabaseName.Name;
-                            dt.WriteXml(writer, XmlWriteMode.WriteSchema);
-                        }
+                        stdio.WriteLine("start to generate {0}", tname);
+                        var dt = new SqlBuilder().SELECT.TOP(cmd.top).COLUMNS().FROM(tname).SqlCmd.FillDataTable();
+                        var file = xml.Write(tname, dt);
+                        stdio.WriteLine("completed {0} => {1}", tname.ShortName, file);
                     }
                     return CancelableState.Completed;
                 }

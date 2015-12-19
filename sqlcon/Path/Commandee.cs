@@ -795,7 +795,7 @@ namespace sqlcon
                 else if (cmd.Has("class"))
                     exporter.ExportClass(cmd);
                 else
-                    stdio.ErrorFormat("invalid command");
+                    stdio.ErrorFormat("invalid command options");
             }
             else
                 stdio.ErrorFormat("select database or table first");

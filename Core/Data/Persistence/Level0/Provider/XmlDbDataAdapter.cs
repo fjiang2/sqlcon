@@ -39,18 +39,8 @@ namespace Sys.Data
 
         private int FillDataTable(TableName tname, DataSet ds)
         {
-            var file = Path.Combine(connection.Directory, tname.DatabaseName.Name, tname.ShortName);
-            file = file + ".xml";
-
-            if (!File.Exists(file))
-                throw new InvalidDataException($"table {tname.FormalName} data file \"{file}\" not exist");
-            
-            using (var reader = new StreamReader(file))
-            {
-                ds.ReadXml(reader);
-            }
-
-            return ds.Tables[0].Rows.Count;
+            var xml = new XmlDbFile();
+            return xml.Read(connection.RootDirectory, tname, ds);
         }
     }
 }
