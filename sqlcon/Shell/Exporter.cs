@@ -145,7 +145,7 @@ namespace sqlcon
                 using (var writer = fileName.NewStreamWriter())
                 {
                     var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportExcludedTables);
-                    TableName[] tnames = md.DefaultTableNames;
+                    TableName[] tnames = md.MatchedTableNames;
                     CancelableWork.CanCancel(cancelled =>
                     {
                         foreach (var tn in tnames)
@@ -235,7 +235,7 @@ namespace sqlcon
                 var mt = new MatchedDatabase(dname, cmd.wildcard, cfg.exportExcludedTables);
                 CancelableWork.CanCancel(cancelled =>
                 {
-                    foreach (var tname in mt.DefaultTableNames)
+                    foreach (var tname in mt.MatchedTableNames)
                     {
                         if (cancelled())
                             return CancelableState.Cancelled;
@@ -282,7 +282,7 @@ namespace sqlcon
                 CancelableWork.CanCancel(cancelled =>
                 {
                     var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportExcludedTables);
-                    TableName[] tnames = md.DefaultTableNames;
+                    TableName[] tnames = md.MatchedTableNames;
                     foreach (var tn in tnames)
                     {
                         if (cancelled())

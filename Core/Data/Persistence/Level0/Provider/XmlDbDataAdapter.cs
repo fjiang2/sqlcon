@@ -32,7 +32,7 @@ namespace Sys.Data
 
         private TableName getTableName(string sql)
         {
-            string[] items = sql.Trim().Split(' ');
+            string[] items = sql.Trim().Split(new string[] { "FROM" }, StringSplitOptions.RemoveEmptyEntries);
             string name = items.Last();
             return new TableName(connection.Provider, name);
         }
