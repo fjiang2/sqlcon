@@ -26,23 +26,13 @@ namespace sqlcon
         }
 
 
+  
+
         public TableName[] MatchedTableNames
         {
             get
             {
-                if (namePattern == null)
-                    return DatabaseName.GetTableNames();
-
-                var names = Search(namePattern, this.DatabaseName.GetDependencyTableNames());
-                return names;
-            }
-        }
-
-        public TableName[] DefaultTableNames
-        {
-            get
-            {
-                TableName[] names = this.DatabaseName.GetTableNames();
+                TableName[] names = this.DatabaseName.GetDependencyTableNames();
 
                 names = names.Where(name => Includes(name)).ToArray();
                 if (namePattern == null)
