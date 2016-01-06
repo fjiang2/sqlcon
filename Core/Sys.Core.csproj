@@ -235,6 +235,7 @@
     <Compile Include="SqlBuilder\SqlExprExtension.cs" />
     <Compile Include="SqlBuilder\SqlValue.cs" />
     <Compile Include="Sys\BackgroundTask.cs" />
+    <Compile Include="Sys\HttpRequest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -15,14 +15,24 @@ namespace Sys.Data
             : base(provider)
         {
             dbSchema = new DataSet();
-            using (var reader = new System.IO.StreamReader(provider.DataSource))
-            {
-                dbSchema = new DataSet();
-                dbSchema.ReadXml(reader);
-                if (dbSchema.Tables.Count == 0)
-                    throw new Exception(string.Format("error in xml schema file: {0}", provider));
-            }
 
+            if (provider.DataSource.StartsWith("file://"))
+            {
+                string file = provider.DataSource.Substring(7);
+                using (var reader = new System.IO.StreamReader(file))
+                {
+                    dbSchema = new DataSet();
+                    dbSchema.ReadXml(reader);
+                    if (dbSchema.Tables.Count == 0)
+                        throw new Exception(string.Format("error in xml schema file: {0}", provider));
+                }
+            }
+            else if (provider.DataSource.StartsWith("http://"))
+            {
+                dbSchema = HttpRequest.ReadXml(new Uri(provider.DataSource));
+            }
+            else
+                throw new Exception($"bad data source defined {provider.DataSource}");
         }
 
       

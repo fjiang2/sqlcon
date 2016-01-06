@@ -68,12 +68,23 @@ namespace Sys.Data
             }
         }
 
+
         public bool CheckConnection()
         {
             switch (Type)
             {
                 case ConnectionProviderType.XmlFile:
-                    return File.Exists(DataSource);
+                    if (DataSource.StartsWith("file://"))
+                    {
+                        string file = DataSource.Substring(7);
+                        return File.Exists(file);
+                    }
+                    else if (DataSource.StartsWith("http://"))
+                    {
+                        return HttpRequest.Exists(new Uri(DataSource));
+                    }
+                    else
+                        return false;
 
                 default:
                     return !InvalidSqlClause("EXEC sp_databases");
