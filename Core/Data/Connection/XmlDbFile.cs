@@ -66,19 +66,17 @@ namespace Sys.Data
         }
 
 
-        public int Read(string root, TableName tname, DataSet ds)
+        public int Read(FileLink root, TableName tname, DataSet ds)
         {
-            var file = Path.Combine(root, tname.DatabaseName.Name, tname.ShortName);
+            var file = root.PathCombine(tname.DatabaseName.Name, tname.ShortName);
             file = string.Format("{0}.{1}", file, EXT);
 
-            if (!File.Exists(file))
+            var link = new FileLink(file);
+            if (!link.Exists)
                 throw new InvalidDataException($"table {tname.FormalName} data file \"{file}\" not exist");
 
-            using (var reader = new StreamReader(file))
-            {
-                ds.ReadXml(reader);
-            }
-
+            link.ReadXml(ds);
+            
             if (ds.Tables.Count > 0)
                 return ds.Tables[0].Rows.Count;
             else

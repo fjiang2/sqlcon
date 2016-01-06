@@ -40,7 +40,7 @@ namespace Sys.Data
         private int FillDataTable(TableName tname, DataSet ds)
         {
             var xml = new XmlDbFile();
-            return xml.Read(connection.RootDirectory, tname, ds);
+            return xml.Read(connection.FileLink, tname, ds);
         }
     }
 }

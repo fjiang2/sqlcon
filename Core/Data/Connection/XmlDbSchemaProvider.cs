@@ -7,29 +7,27 @@ using System.Data;
 
 namespace Sys.Data
 {
-    class XmlDbSchemaProvider : SchemaProvider
+    class XmlDbSchemaProvider : SchemaProvider, IDisposable
     {
         DataSet dbSchema;
 
-        public XmlDbSchemaProvider(ConnectionProvider provider)
-            : base(provider)
+        public void Dispose()
         {
-            dbSchema = new DataSet();
-
-            if (provider.DataSource.StartsWith("file://"))
+            if (dbSchema != null)
             {
-                string file = provider.DataSource.Substring(7);
-                using (var reader = new System.IO.StreamReader(file))
-                {
-                    dbSchema = new DataSet();
-                    dbSchema.ReadXml(reader);
-                    if (dbSchema.Tables.Count == 0)
-                        throw new Exception(string.Format("error in xml schema file: {0}", provider));
-                }
+                dbSchema.Dispose();
+                dbSchema = null;
             }
-            else if (provider.DataSource.StartsWith("http://"))
+        }
+        public XmlDbSchemaProvider(ConnectionProvider provider)
+                    : base(provider)
+        {
+            var link = new FileLink(provider.DataSource);
+            dbSchema = link.ReadXml();
+            if (dbSchema != null)
             {
-                dbSchema = HttpRequest.ReadXml(new Uri(provider.DataSource));
+                if (dbSchema.Tables.Count == 0)
+                    throw new Exception(string.Format("error in xml schema file: {0}", provider));
             }
             else
                 throw new Exception($"bad data source defined {provider.DataSource}");

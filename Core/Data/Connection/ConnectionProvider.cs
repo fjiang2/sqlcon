@@ -74,17 +74,7 @@ namespace Sys.Data
             switch (Type)
             {
                 case ConnectionProviderType.XmlFile:
-                    if (DataSource.StartsWith("file://"))
-                    {
-                        string file = DataSource.Substring(7);
-                        return File.Exists(file);
-                    }
-                    else if (DataSource.StartsWith("http://"))
-                    {
-                        return HttpRequest.Exists(new Uri(DataSource));
-                    }
-                    else
-                        return false;
+                    return new FileLink(DataSource).Exists;
 
                 default:
                     return !InvalidSqlClause("EXEC sp_databases");

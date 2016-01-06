@@ -18,7 +18,7 @@ namespace Sys.Data
         public override ConnectionState State { get { return this.state; } }
 
         public ConnectionProvider Provider { get; }
-
+        public FileLink FileLink { get; }
 
 
         public XmlDbConnection(ConnectionProvider provider)
@@ -27,6 +27,8 @@ namespace Sys.Data
             this.ConnectionString = Provider.ConnectionString;
             this.DataSource = Provider.DataSource;
             this.database = Provider.InitialCatalog;
+
+            this.FileLink = new FileLink(provider.DataSource);
         }
 
         public DatabaseName DatabaseName
@@ -37,16 +39,6 @@ namespace Sys.Data
             }
         }
 
-        /// <summary>
-        /// Server directory
-        /// </summary>
-        public string RootDirectory
-        {
-            get
-            {
-                return Path.GetDirectoryName(Provider.DataSource);
-            }
-        }
 
         public override void ChangeDatabase(string databaseName)
         {
