@@ -89,7 +89,7 @@ namespace Sys
                 case LinkType.Ftp:
                     var items = url.Split('/');
                     root = string.Join("/", items.Take(items.Length - 1));
-                    return string.Format("{0}/path1/path2", root, path1, path2);
+                    return string.Format("{0}/{1}/{2}", root, path1, path2);
             }
 
             return null;
