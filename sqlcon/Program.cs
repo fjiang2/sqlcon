@@ -19,7 +19,7 @@ namespace sqlcon
         static void Main(string[] args)
         {
             Console.WriteLine("SQL Server Command Console [Version {0}]", System.Reflection.Assembly.GetEntryAssembly().GetName().Version);
-            Console.WriteLine("Copyright (c) 2014-2015 Datconn. All rights reserved.");
+            Console.WriteLine("Copyright (c) 2014-2016 Datconn. All rights reserved.");
             Console.WriteLine();
 
             Tie.Constant.MAX_CPU_REG_NUM = 600;
