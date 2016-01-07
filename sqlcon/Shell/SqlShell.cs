@@ -264,6 +264,11 @@ namespace sqlcon
                         case "log":
                             stdio.OpenEditor(Context.GetValue<string>("log"));
                             break;
+
+                        case "config":
+                            stdio.OpenEditor("user.cfg");
+                            break;
+
                     }
 
                     return true;
@@ -597,6 +602,7 @@ namespace sqlcon
             stdio.WriteLine("<open log>              : open log file");
             stdio.WriteLine("<open input>            : open input file");
             stdio.WriteLine("<open output>           : open output file");
+            stdio.WriteLine("<open config>           : open user configure file");
             stdio.WriteLine("<execute inputfile>     : execute sql script file");
             stdio.WriteLine("<execute variable /s>   : execute script file list defined on the configuration file");
             stdio.WriteLine();

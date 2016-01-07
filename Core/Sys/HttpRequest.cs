@@ -102,6 +102,15 @@ namespace Sys
             });
         }
 
+        public static void ReadXml(Uri uri, DataSet ds)
+        {
+            HttpGetReader<DataSet>(uri, reader =>
+            {
+                ds.ReadXml(reader, XmlReadMode.ReadSchema);
+                return ds;
+            });
+        }
+
         /// <summary>
         /// post request text to Uri and read response xml
         /// </summary>

@@ -114,7 +114,7 @@ namespace Sys
 
                 case LinkType.Http:
                 case LinkType.Https:
-                    ds = HttpRequest.ReadXml(new Uri(url));
+                    HttpRequest.ReadXml(new Uri(url), ds);
                     break;
 
                 case LinkType.Ftp:
@@ -123,6 +123,9 @@ namespace Sys
 
             return ds;
         }
-
+        public override string ToString()
+        {
+            return this.url;
+        }
     }
 }
