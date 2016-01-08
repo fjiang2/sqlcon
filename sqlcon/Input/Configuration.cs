@@ -22,7 +22,6 @@ namespace sqlcon
         const string _SERVERS = "servers";
 
         const string _FILE_SYSTEM_CONFIG = "sqlcon.cfg"; 
-        const string _FILE_INPUT = "input";
         const string _FILE_OUTPUT = "output";
         const string _XML_DB_FOLDER = "xmldb";
         const string _FILE_LOG = "log";
@@ -40,7 +39,6 @@ namespace sqlcon
 
         public string CfgFile { get; private set; } = "user.cfg";
         
-        public string InputFile { get; set; }
         public string OutputFile { get; set; }
         public string XmlDbFolder { get; set; }
 
@@ -56,6 +54,8 @@ namespace sqlcon
         {
             Script.FunctionChain.Add(functions);
             HostType.Register(typeof(DateTime), true);
+            HostType.Register(typeof(Environment), true);
+            Cfg.AddObject("MyDocuments", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
         }
 
         private static VAL functions(string func, VAL parameters, Memory DS)
@@ -263,7 +263,6 @@ namespace sqlcon
             }
 
 
-            this.InputFile = Cfg.GetValue<string>(_FILE_INPUT, "script.sql");
             this.OutputFile = Cfg.GetValue<string>(_FILE_OUTPUT, "script.sql");
             this.XmlDbFolder = Cfg.GetValue<string>(_XML_DB_FOLDER, "db");
 

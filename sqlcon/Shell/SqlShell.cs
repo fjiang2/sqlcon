@@ -218,9 +218,14 @@ namespace sqlcon
 
                 case "execute":
                     {
-                        string inputfile = cfg.InputFile;
+                        string inputfile;
                         if (cmd.arg1 != null)
                             inputfile = cmd.arg1;
+                        else
+                        {
+                            stdio.ErrorFormat("input undefined");
+                            return true;
+                        }
 
                         if (cmd.IsSchema)
                         {
@@ -253,10 +258,6 @@ namespace sqlcon
                 case "open":
                     switch (cmd.arg1)
                     {
-                        case "input":
-                            stdio.OpenEditor(cfg.InputFile);
-                            break;
-
                         case "output":
                             stdio.OpenEditor(cfg.OutputFile);
                             break;
@@ -600,7 +601,6 @@ namespace sqlcon
             stdio.WriteLine("<sync table1 table2>    : synchronize, make table2 is the same as table1");
             stdio.WriteLine("<xcopy output>          : copy sql script ouput to clipboard");
             stdio.WriteLine("<open log>              : open log file");
-            stdio.WriteLine("<open input>            : open input file");
             stdio.WriteLine("<open output>           : open output file");
             stdio.WriteLine("<open config>           : open user configure file");
             stdio.WriteLine("<execute inputfile>     : execute sql script file");

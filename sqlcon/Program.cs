@@ -1,14 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Sys.Data;
-using Sys.Data.Comparison;
-using System.Data;
-using System.Data.SqlClient;
 using System.IO;
-using Tie;
 using Sys;
 
 namespace sqlcon
@@ -18,7 +11,7 @@ namespace sqlcon
         [STAThread]
         static void Main(string[] args)
         {
-            Console.Title = "SQL Server Command Console:sqlcon";
+            Console.Title = "sqlcon";
             Console.WriteLine("SQL Server Command Console [Version {0}]", SysExtension.ApplicationVerison);
             Console.WriteLine("Copyright (c) 2014-2016 Datconn. All rights reserved.");
             Console.WriteLine();
@@ -94,14 +87,12 @@ namespace sqlcon
 
             string file = Path.Combine(folder, cfgFile);
             if (!File.Exists(file))
-                File.Copy(cfgFile, file);
-            else
             {
-                //copy if newer
-                if (File.GetCreationTime(cfgFile) > File.GetCreationTime(file))
-                {
-                    File.Copy(cfgFile, file, true);
-                }
+                File.Copy(cfgFile, file);
+            }
+            else if (overwrite)
+            {
+                File.Copy(cfgFile, file, true);
             }
 
             return file;
