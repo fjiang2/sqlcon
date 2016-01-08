@@ -18,7 +18,8 @@ namespace sqlcon
         [STAThread]
         static void Main(string[] args)
         {
-            Console.WriteLine("SQL Server Command Console [Version {0}]", System.Reflection.Assembly.GetEntryAssembly().GetName().Version);
+            Console.Title = "SQL Server Command Console";
+            Console.WriteLine("SQL Server Command Console [Version {0}]", SysExtension.ApplicationVerison);
             Console.WriteLine("Copyright (c) 2014-2016 Datconn. All rights reserved.");
             Console.WriteLine();
 
@@ -85,7 +86,7 @@ namespace sqlcon
        
         public static void Help()
         {
-            stdio.WriteLine("sqlcon v1.0");
+            stdio.WriteLine("SQL Server Command Console");
             stdio.WriteLine("Usage: sqlcon");
             stdio.WriteLine("     [/cfg configuration file(.cfg)]");
             stdio.WriteLine("     [/f sql script file(.sql)]");

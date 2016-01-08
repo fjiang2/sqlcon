@@ -26,6 +26,20 @@ namespace Sys
 {
     public static class SysExtension
     {
+        public static Version ApplicationVerison
+        {
+            get
+            {
+                if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
+                {
+                    System.Deployment.Application.ApplicationDeployment ad = System.Deployment.Application.ApplicationDeployment.CurrentDeployment;
+                    Version version = ad.CurrentVersion;
+                    return version;
+                }
+
+                return System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+            }
+        }
 
         /// <summary>
         /// Make any string be a valid ident, remove invaild letter
