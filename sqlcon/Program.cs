@@ -18,13 +18,14 @@ namespace sqlcon
         [STAThread]
         static void Main(string[] args)
         {
-            Console.Title = "SQL Server Command Console";
+            Console.Title = "SQL Server Command Console:sqlcon";
             Console.WriteLine("SQL Server Command Console [Version {0}]", SysExtension.ApplicationVerison);
             Console.WriteLine("Copyright (c) 2014-2016 Datconn. All rights reserved.");
             Console.WriteLine();
 
             Tie.Constant.MAX_CPU_REG_NUM = 600;
             string cfgFile = "user.cfg";
+            cfgFile = PrepareCfgFile(cfgFile, false);
 
             int i = 0;
             while (i < args.Length)
@@ -83,7 +84,29 @@ namespace sqlcon
                 stdio.Close();
             }
         }
-       
+
+        private static string PrepareCfgFile(string cfgFile, bool overwrite)
+        {
+            var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            folder = Path.Combine(folder, "datconn", "sqlcon");
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+
+            string file = Path.Combine(folder, cfgFile);
+            if (!File.Exists(file))
+                File.Copy(cfgFile, file);
+            else
+            {
+                //copy if newer
+                if (File.GetCreationTime(cfgFile) > File.GetCreationTime(file))
+                {
+                    File.Copy(cfgFile, file, true);
+                }
+            }
+
+            return file;
+        }
+
         public static void Help()
         {
             stdio.WriteLine("SQL Server Command Console");

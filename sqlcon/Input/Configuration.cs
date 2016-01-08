@@ -38,7 +38,7 @@ namespace sqlcon
 
         private Memory Cfg = new Memory();
 
-
+        public string CfgFile { get; private set; } = "user.cfg";
         
         public string InputFile { get; set; }
         public string OutputFile { get; set; }
@@ -247,6 +247,7 @@ namespace sqlcon
             //user.cfg is optional
             if (!string.IsNullOrEmpty(cfgFile) && File.Exists(cfgFile))
             {
+                this.CfgFile = cfgFile;
                 TryReadCfg(cfgFile);
             }
 

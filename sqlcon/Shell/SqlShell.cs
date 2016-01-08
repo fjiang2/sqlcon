@@ -266,7 +266,7 @@ namespace sqlcon
                             break;
 
                         case "config":
-                            stdio.OpenEditor("user.cfg");
+                            stdio.OpenEditor(cfg.CfgFile);
                             break;
 
                     }
