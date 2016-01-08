@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
+using Sys.IO;
 
 namespace Sys.Data
 {
@@ -22,7 +23,7 @@ namespace Sys.Data
         public XmlDbSchemaProvider(ConnectionProvider provider)
                     : base(provider)
         {
-            var link = new FileLink(provider.DataSource);
+            var link = FileLink.Factory(provider.DataSource, provider.UserId, provider.Password);
             dbSchema = link.ReadXml();
             if (dbSchema != null)
             {

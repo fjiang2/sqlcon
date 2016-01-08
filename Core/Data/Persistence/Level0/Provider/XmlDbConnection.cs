@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Data.Common;
 using System.Data;
+using Sys.IO;
 
 namespace Sys.Data
 {
@@ -28,7 +29,7 @@ namespace Sys.Data
             this.DataSource = Provider.DataSource;
             this.database = Provider.InitialCatalog;
 
-            this.FileLink = new FileLink(provider.DataSource);
+            this.FileLink = FileLink.Factory(provider.DataSource, provider.UserId, provider.Password);
         }
 
         public DatabaseName DatabaseName

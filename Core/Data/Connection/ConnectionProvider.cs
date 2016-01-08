@@ -21,7 +21,7 @@ using System.Text;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Data.OleDb;
-using System.IO;
+using Sys.IO;
 using Tie;
 
 namespace Sys.Data
@@ -74,7 +74,7 @@ namespace Sys.Data
             switch (Type)
             {
                 case ConnectionProviderType.XmlFile:
-                    return new FileLink(DataSource).Exists;
+                    return FileLink.Factory(DataSource, this.UserId, this.Password).Exists;
 
                 default:
                     return !InvalidSqlClause("EXEC sp_databases");

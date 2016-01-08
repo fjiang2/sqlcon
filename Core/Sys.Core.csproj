@@ -211,6 +211,10 @@
     <Compile Include="Extension\EnumExtension.cs" />
     <Compile Include="EventArgs\MessageExceptionEventArgs.cs" />
     <Compile Include="EventArgs\MessageEventArgs.cs" />
+    <Compile Include="IO\DiskFileLink.cs" />
+    <Compile Include="IO\FileLink.cs" />
+    <Compile Include="IO\FtpFileLink.cs" />
+    <Compile Include="IO\HttpFileLink.cs" />
     <Compile Include="Log\ILogable.cs" />
     <Compile Include="Log\ILogee.cs" />
     <Compile Include="Log\Log.cs" />
@@ -236,7 +240,7 @@
     <Compile Include="SqlBuilder\SqlExprExtension.cs" />
     <Compile Include="SqlBuilder\SqlValue.cs" />
     <Compile Include="Sys\BackgroundTask.cs" />
-    <Compile Include="Sys\FileLink.cs" />
+    <Compile Include="Sys\FtpClient.cs" />
     <Compile Include="Sys\HttpRequest.cs" />
   </ItemGroup>
   <ItemGroup>

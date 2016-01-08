@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Data;
+using Sys.IO;
 
 namespace Sys.Data
 {
@@ -71,7 +72,7 @@ namespace Sys.Data
             var file = root.PathCombine(tname.DatabaseName.Name, tname.ShortName);
             file = string.Format("{0}.{1}", file, EXT);
 
-            var link = new FileLink(file);
+            var link = FileLink.Factory(file, tname.Provider.UserId, tname.Provider.Password);
             if (!link.Exists)
                 throw new InvalidDataException($"table {tname.FormalName} data file \"{file}\" not exist");
 
