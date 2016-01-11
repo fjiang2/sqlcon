@@ -267,7 +267,10 @@ namespace sqlcon
                             break;
 
                         case "config":
-                            stdio.OpenEditor(cfg.CfgFile);
+                            if (cmd.IsSchema)
+                                stdio.OpenEditor("sqlcon.cfg");
+                            else
+                                stdio.OpenEditor(cfg.CfgFile);
                             break;
 
                     }
@@ -349,6 +352,15 @@ namespace sqlcon
                 case "clean":
                     commandee.clean(cmd, cfg);
                     return true;
+
+                case "mount":
+                    commandee.mount(cmd, cfg);
+                    return true;
+
+                case "umount":
+                    commandee.umount(cmd, cfg);
+                    return true;
+
                 default:
                     break;
             }
@@ -585,6 +597,8 @@ namespace sqlcon
             stdio.WriteLine("          /col:c1,c2    : skip columns defined during comparing");
             stdio.WriteLine("export /?               : see more info");
             stdio.WriteLine("clean /?                : see more info");
+            stdio.WriteLine("mount /?                : see more info");
+            stdio.WriteLine("umount /?               : see more info");
             stdio.WriteLine();
             stdio.WriteLine("<Commands>");
             stdio.WriteLine("<find> pattern          : find table name or column name");
@@ -602,7 +616,7 @@ namespace sqlcon
             stdio.WriteLine("<xcopy output>          : copy sql script ouput to clipboard");
             stdio.WriteLine("<open log>              : open log file");
             stdio.WriteLine("<open output>           : open output file");
-            stdio.WriteLine("<open config>           : open user configure file");
+            stdio.WriteLine("<open config [/s]>      : open user configure file, /s open system configurate");
             stdio.WriteLine("<execute inputfile>     : execute sql script file");
             stdio.WriteLine("<execute variable /s>   : execute script file list defined on the configuration file");
             stdio.WriteLine();

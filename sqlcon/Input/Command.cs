@@ -166,6 +166,17 @@ namespace sqlcon
             return options.IndexOf(name) >= 0;
         }
 
+        public string GetValue(string name)
+        {
+            var result = options.FirstOrDefault(row => row.StartsWith(name + ":"));
+            if (result == null)
+                return null;
+
+            var items = result.Split(':');
+
+            return items[1];
+        }
+
         public PathName Path1
         {
             get

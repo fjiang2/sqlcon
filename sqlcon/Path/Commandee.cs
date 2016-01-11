@@ -39,13 +39,13 @@ namespace sqlcon
             return paths;
         }
 
-        private bool Navigate(Command cmd)
+        private bool Navigate(PathName path)
         {
             this.pt = mgr.current;
 
-            if (cmd.Path1 != null)
+            if (path != null)
             {
-                pt = mgr.Navigate(cmd.Path1);
+                pt = mgr.Navigate(path);
                 if (pt == null)
                 {
                     stdio.ErrorFormat("invalid path");
@@ -89,7 +89,7 @@ namespace sqlcon
                 return false;
             }
 
-            if (!Navigate(cmd))
+            if (!Navigate(cmd.Path1))
                 return false;
             else
             {
@@ -118,7 +118,7 @@ namespace sqlcon
                 return;
             }
 
-            if (!Navigate(cmd))
+            if (!Navigate(cmd.Path1))
                 return;
 
             if (cmd.Refresh)
@@ -295,7 +295,7 @@ namespace sqlcon
 
                 if (T != null && T.Length > 0)
                 {
-                    if(!stdio.YesOrNo("are you sure to drop {0} tables (y/n)?", T.Length))
+                    if (!stdio.YesOrNo("are you sure to drop {0} tables (y/n)?", T.Length))
                         return;
 
                     try
@@ -401,7 +401,7 @@ namespace sqlcon
                 return;
             }
 
-            if (!Navigate(cmd))
+            if (!Navigate(cmd.Path1))
                 return;
 
             pt = pt.Parent;
@@ -416,7 +416,7 @@ namespace sqlcon
             var nodes = pt.Nodes.Where(node => node.Item is Locator && (node.Item as Locator).Path == cmd.Path1.name);
             if (nodes.Count() > 0)
             {
-                if(!stdio.YesOrNo("are you sure to delete (y/n)?"))
+                if (!stdio.YesOrNo("are you sure to delete (y/n)?"))
                     return;
 
                 foreach (var node in nodes)
@@ -434,7 +434,7 @@ namespace sqlcon
 
                     if (result >= 0 && result < pt.Nodes.Count)
                     {
-                        if(!stdio.YesOrNo("are you sure to delete (y/n)?"))
+                        if (!stdio.YesOrNo("are you sure to delete (y/n)?"))
                             return;
 
                         var node = pt.Nodes[result];
@@ -465,7 +465,7 @@ namespace sqlcon
                 return;
             }
 
-            if (!Navigate(cmd))
+            if (!Navigate(cmd.Path1))
                 return;
 
             if (!mgr.TypeFile(pt, cmd))
@@ -473,7 +473,7 @@ namespace sqlcon
         }
 
 
-     
+
 
         public void xcopy(Command cmd, CompareSideType sideType)
         {
@@ -685,7 +685,7 @@ namespace sqlcon
                 return;
             }
 
-            if (!Navigate(cmd))
+            if (!Navigate(cmd.Path1))
                 return;
 
 
@@ -740,7 +740,7 @@ namespace sqlcon
                             else
                                 stdio.WriteLine("{0} duplicated row(s)", count, tn);
                         }
-                  
+
                     }
 
                     return CancelableState.Completed;
@@ -771,7 +771,7 @@ namespace sqlcon
                 return;
             }
 
-            if (!Navigate(cmd))
+            if (!Navigate(cmd.Path1))
                 return;
 
             if (pt.Item is TableName || pt.Item is DatabaseName || pt.Item is ServerName)
@@ -800,6 +800,142 @@ namespace sqlcon
             else
                 stdio.ErrorFormat("select database or table first");
         }
-     
+
+        public void mount(Command cmd, Configuration cfg)
+        {
+            if (cmd.HasHelp)
+            {
+                stdio.WriteLine("mount database server");
+                stdio.WriteLine("mount alias=server_name   : alias must start with letter");
+                stdio.WriteLine("options:");
+                stdio.WriteLine("   /db:database           : initial catalog, default is 'master'");
+                stdio.WriteLine("   /u:username            : user id, default is 'sa'");
+                stdio.WriteLine("   /p:password            : password, default is empty");
+                stdio.WriteLine("   /pvd:provider          : sqloledb,xmlfile, defualt is SQL client");
+                stdio.WriteLine("example:");
+                stdio.WriteLine("  mount ip100=192.168.0.100\\sqlexpress /u:sa /pwd:p@ss");
+                return;
+            }
+
+            if (cmd.arg1 == null)
+            {
+                stdio.ErrorFormat("invalid arguments");
+                return;
+            }
+
+            var items = cmd.arg1.Split('=');
+            if (items.Length != 2)
+            {
+                stdio.ErrorFormat("invalid arguments, correct format is alias=server_name");
+                return;
+            }
+            string serverName = items[0];
+            string dataSource = items[1];
+
+            StringBuilder builder = new StringBuilder();
+            string pvd = cmd.GetValue("pvd");
+            if (pvd != null)
+            {
+                if (pvd != "sqloledb" && pvd != "xmlfile")
+                {
+                    stdio.ErrorFormat("provider={0} is not supported", pvd);
+                    return;
+                }
+                builder.AppendFormat("provider={0};", pvd);
+            }
+
+            builder.AppendFormat("data source={0};", dataSource);
+
+            string db = cmd.GetValue("db");
+            if (db != null)
+                builder.AppendFormat("initial catalog={0};", db);
+            else
+                builder.Append("initial catalog=master;");
+
+            string userId = cmd.GetValue("u");
+            if (userId != null)
+                builder.AppendFormat("User Id={0};", userId);
+            else
+                builder.Append("User Id=sa;");
+
+
+            string password = cmd.GetValue("p");
+            if (password != null)
+                builder.AppendFormat("Password={0}", password);
+            else
+                builder.Append("Password=");
+
+
+            string connectionString = builder.ToString();
+
+            ConnectionProvider provider = ConnectionProviderManager.Register(serverName, connectionString);
+            if (!provider.CheckConnection())
+            {
+                stdio.ErrorFormat("database is offline or wrong parameter");
+                return;
+            }
+            var snode = new TreeNode<IDataPath>(provider.ServerName);
+
+            var result = cfg.Providers.FirstOrDefault(row => row.ServerName.Path == serverName);
+            if (result != null)
+            {
+                cfg.Providers.Remove(result);
+
+                var node = mgr.RootNode.Nodes.FirstOrDefault(row => row.Item.Path == serverName);
+                if (node != null)
+                    mgr.RootNode.Nodes.Remove(node);
+            }
+            
+
+            cfg.Providers.Add(provider);
+            mgr.RootNode.Nodes.Add(snode);
+
+            var xnode = mgr.Navigate(new PathName("\\" + serverName));
+            if (xnode != null)
+            {
+                mgr.current = xnode;
+            }
+        }
+
+        public void umount(Command cmd, Configuration cfg)
+        {
+            if (cmd.HasHelp)
+            {
+                stdio.WriteLine("unmount database server");
+                stdio.WriteLine("unmount alias             : alias must start with letter");
+                stdio.WriteLine("example:");
+                stdio.WriteLine("  umount ip100");
+                return;
+            }
+
+            if (cmd.arg1 == null)
+            {
+                stdio.ErrorFormat("invalid arguments");
+                return;
+            }
+
+            var items = cmd.arg1.Split('=');
+            string serverName = cmd.arg1;
+
+            var result = cfg.Providers.FirstOrDefault(row => row.ServerName.Path == serverName);
+            if (result != null)
+            {
+                cfg.Providers.Remove(result);
+
+                var node = mgr.RootNode.Nodes.FirstOrDefault(row => row.Item.Path == serverName);
+                if (node != null)
+                    mgr.RootNode.Nodes.Remove(node);
+            }
+
+            var sname = mgr.GetCurrentPath<ServerName>();
+            if (sname != null && sname.Path == serverName)
+            {
+                var xnode = mgr.Navigate(new PathName("\\"));
+                if (xnode != null)
+                {
+                    mgr.current = xnode;
+                }
+            }
+        }
     }
 }
