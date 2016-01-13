@@ -20,10 +20,7 @@ namespace Sys.Data
         {
             try
             {
-                //string SQL = string.Format("SELECT * FROM sys.databases WHERE name = '{0}'", dname.Name);
-                //return DataExtension.FillDataRow(dname.Provider, SQL) != null;
-
-                string SQL = "EXEC sp_databases";
+                string SQL = sp_databases(provider);
                 var dnames = DataExtension.FillDataTable(provider, SQL).ToArray<string>("DATABASE_NAME");
                 return dnames.FirstOrDefault(row => row.ToLower().Equals(dname.Name.ToLower())) != null;
             }
@@ -52,10 +49,21 @@ namespace Sys.Data
             return false;
         }
 
+        private static string sp_databases(ConnectionProvider provider)
+        {
+            string SQL;
+            if (provider.Version >= 2005)
+                SQL = "SELECT Name as DATABASE_NAME FROM sys.databases ORDER BY Name"; //Used for SQL Server 2008+
+            else
+                SQL = "EXEC sp_databases";
+
+            return SQL;
+        }
+
         public override DatabaseName[] GetDatabaseNames() 
         {
-            string SQL = "SELECT Name as DATABASE_NAME FROM sys.databases ORDER BY Name"; //Used for SQL Server 2008+
-            SQL = "EXEC sp_databases";
+            string SQL = sp_databases(provider);
+
             string[] dnames;
             switch (provider.DpType)
             {
