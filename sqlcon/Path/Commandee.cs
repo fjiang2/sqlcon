@@ -814,6 +814,7 @@ namespace sqlcon
                 stdio.WriteLine("   /pvd:provider          : sqloledb,xmlfile, defualt is SQL client");
                 stdio.WriteLine("example:");
                 stdio.WriteLine("  mount ip100=192.168.0.100\\sqlexpress /u:sa /pwd:p@ss");
+                stdio.WriteLine("  mount web=http://192.168.0.100/db/northwind.xml /u:sa /pwd:p@ss");
                 return;
             }
 
@@ -829,8 +830,8 @@ namespace sqlcon
                 stdio.ErrorFormat("invalid arguments, correct format is alias=server_name");
                 return;
             }
-            string serverName = items[0];
-            string dataSource = items[1];
+            string serverName = items[0].Trim();
+            string dataSource = items[1].Trim();
 
             StringBuilder builder = new StringBuilder();
             string pvd = cmd.GetValue("pvd");
@@ -843,6 +844,12 @@ namespace sqlcon
                 }
                 builder.AppendFormat("provider={0};", pvd);
             }
+            else
+            {
+                if (dataSource.StartsWith("file://") || dataSource.StartsWith("http://") || dataSource.StartsWith("ftp://"))
+                    builder.Append("provider=xmlfile;");
+            }
+
 
             builder.AppendFormat("data source={0};", dataSource);
 

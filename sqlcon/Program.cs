@@ -85,6 +85,10 @@ namespace sqlcon
             if (!Directory.Exists(folder))
                 Directory.CreateDirectory(folder);
 
+            //create empty text file if file is missing
+            if (!File.Exists(cfgFile))
+                File.Create(cfgFile).Dispose();
+
             string file = Path.Combine(folder, cfgFile);
             if (!File.Exists(file))
             {
