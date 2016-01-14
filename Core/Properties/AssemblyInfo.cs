@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Sys.Core")]
 [assembly: AssemblyDescription("Sys Core library")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Datum Connect Inc.")]
+[assembly: AssemblyCompany("Datum Connect")]
 [assembly: AssemblyProduct("System Core")]
 [assembly: AssemblyCopyright("Copyright ©  DATCONN 2012-2016")]
 [assembly: AssemblyTrademark("")]

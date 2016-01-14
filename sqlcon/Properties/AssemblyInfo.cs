@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("sqlcon")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Datum Connect Inc.")]
+[assembly: AssemblyCompany("Datum Connect")]
 [assembly: AssemblyProduct("sqlcon")]
 [assembly: AssemblyCopyright("Copyright ©  DATCONN 2012-2016")]
 [assembly: AssemblyTrademark("")]

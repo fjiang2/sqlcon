@@ -1,0 +1,11 @@
+﻿sqlcon release notes
+
+1/13/2016 v1.3.1.11
+	Bugs Fixes:
+	1. stored proc sp_databases returns 0 rows in some SQL server.
+
+	New Features:
+	1. command <open release> to open release notes. 
+
+	Improvements/Enhancements:
+	1. command <mount name=database_server> uses Windows authentication if user name and password are not provided.

@@ -757,7 +757,7 @@ namespace sqlcon
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("export data, schema, class, and template");
+                stdio.WriteLine("export data, schema, class, and template on current selected server/db/table");
                 stdio.WriteLine("option:");
                 stdio.WriteLine("   /insert  : export INSERT INTO script on current table/database");
                 stdio.WriteLine("   [/if]    : option /if generate if exists row then UPDATE else INSERT");
@@ -798,7 +798,7 @@ namespace sqlcon
                     stdio.ErrorFormat("invalid command options");
             }
             else
-                stdio.ErrorFormat("select database or table first");
+                stdio.ErrorFormat("select server, database or table first");
         }
 
         public void mount(Command cmd, Configuration cfg)
@@ -810,8 +810,8 @@ namespace sqlcon
                 stdio.WriteLine("options:");
                 stdio.WriteLine("   /db:database           : initial catalog, default is 'master'");
                 stdio.WriteLine("   /u:username            : user id, default is 'sa'");
-                stdio.WriteLine("   /p:password            : password, default is empty");
-                stdio.WriteLine("   /pvd:provider          : sqloledb,xmlfile, defualt is SQL client");
+                stdio.WriteLine("   /p:password            : password, default is empty, use Windows Security when /u /p not setup");
+                stdio.WriteLine("   /pvd:provider          : sqloledb,xmlfile, default is SQL client");
                 stdio.WriteLine("example:");
                 stdio.WriteLine("  mount ip100=192.168.0.100\\sqlexpress /u:sa /pwd:p@ss");
                 stdio.WriteLine("  mount web=http://192.168.0.100/db/northwind.xml /u:sa /pwd:p@ss");
@@ -860,18 +860,24 @@ namespace sqlcon
                 builder.Append("initial catalog=master;");
 
             string userId = cmd.GetValue("u");
-            if (userId != null)
-                builder.AppendFormat("User Id={0};", userId);
-            else
-                builder.Append("User Id=sa;");
-
-
             string password = cmd.GetValue("p");
-            if (password != null)
-                builder.AppendFormat("Password={0}", password);
-            else
-                builder.Append("Password=");
 
+            if (userId == null && password == null)
+            {
+                builder.Append("integrated security=SSPI;packet size=4096");
+            }
+            else
+            {
+                if (userId != null)
+                    builder.AppendFormat("User Id={0};", userId);
+                else
+                    builder.Append("User Id=sa;");
+
+                if (password != null)
+                    builder.AppendFormat("Password={0}", password);
+                else
+                    builder.Append("Password=");
+            }
 
             string connectionString = builder.ToString();
 
@@ -943,6 +949,50 @@ namespace sqlcon
                     mgr.current = xnode;
                 }
             }
+        }
+
+        public void open(Command cmd, Configuration cfg)
+        {
+            if (cmd.HasHelp)
+            {
+                stdio.WriteLine("open files in the editor");
+                stdio.WriteLine("open files");
+                stdio.WriteLine("options:");
+                stdio.WriteLine("   log              : open log file");
+                stdio.WriteLine("   output           : open output file");
+                stdio.WriteLine("   config [/s]      : open user configure file, /s open system configurate");
+                stdio.WriteLine("   release          : open release notes");
+
+                return;
+            }
+
+            switch (cmd.arg1)
+            {
+                case "output":
+                    stdio.OpenEditor(cfg.OutputFile);
+                    break;
+
+                case "log":
+                    stdio.OpenEditor(Context.GetValue<string>("log"));
+                    break;
+
+                case "config":
+                    if (cmd.IsSchema)
+                        stdio.OpenEditor("sqlcon.cfg");
+                    else
+                        stdio.OpenEditor(cfg.CfgFile);
+                    break;
+
+                case "release":
+                    stdio.OpenEditor("ReleaseNotes.txt");
+                    break;
+
+                default:
+                    stdio.ErrorFormat("invalid arguments");
+                    return;
+            }
+
+            
         }
     }
 }

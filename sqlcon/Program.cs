@@ -12,7 +12,7 @@ namespace sqlcon
         static void Main(string[] args)
         {
             Console.Title = "sqlcon";
-            Console.WriteLine("SQL Server Command Console [Version {0}]", SysExtension.ApplicationVerison);
+            Console.WriteLine("SQL Console [Version {0}]", SysExtension.ApplicationVerison);
             Console.WriteLine("Copyright (c) 2014-2016 Datconn. All rights reserved.");
             Console.WriteLine();
 
