@@ -53,7 +53,8 @@ namespace Sys.Data
         {
             string SQL;
             if (provider.Version >= 2005)
-                SQL = "SELECT Name as DATABASE_NAME FROM sys.databases ORDER BY Name"; //Used for SQL Server 2008+
+                //Used for SQL Server 2008+, state==6 means offline database
+                SQL = "SELECT Name as DATABASE_NAME FROM sys.databases WHERE State<>6 ORDER BY Name"; 
             else
                 SQL = "EXEC sp_databases";
 
