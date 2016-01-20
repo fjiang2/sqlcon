@@ -156,6 +156,13 @@ namespace Sys
             }
         }
 
+        public bool Exists(string fileName)
+        {
+            var files = GetFileNames();
+            return files.FirstOrDefault(file => file.ToUpper() == fileName.ToUpper()) != null;
+        }
+
+
         public string Download(string fileName, string localFileName)
         {
            Action<Stream> action = responseStream =>
@@ -226,7 +233,7 @@ namespace Sys
         public string Rename(string fileName, string newFileName)
         {
             FtpWebRequest request = Request(fileName, Method.Rename);
-            request.RenameTo = GetFullPath(newFileName);
+            request.RenameTo = newFileName;
 
             using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
             {

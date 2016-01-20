@@ -20,6 +20,7 @@ namespace sqlcon
         private TableName tname;
         private DatabaseName dname;
         private ServerName sname;
+        private string MyDocuments;
 
         XmlDbFile xml;
         public Exporter(PathManager mgr, TreeNode<IDataPath> pt, Configuration cfg)
@@ -46,6 +47,8 @@ namespace sqlcon
                 this.dname = null;
                 this.sname = (ServerName)pt.Item;
             }
+
+            MyDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\sqlcon";
         }
 
         public void ExportScud(SqlScriptType type)
@@ -235,7 +238,7 @@ namespace sqlcon
 
         public void ExportClass(Command cmd)
         {
-            string path = cfg.GetValue<string>("dpo.path", "c:\\temp\\dpo");
+            string path = cfg.GetValue<string>("dpo.path", $"{MyDocuments}\\dpo");
             string ns = cfg.GetValue<string>("dpo.ns", "Sys.DataModel.Dpo");
             string suffix = cfg.GetValue<string>("dpo.suffix", Setting.DPO_CLASS_SUFFIX_CLASS_NAME);
 
@@ -280,6 +283,61 @@ namespace sqlcon
                 stdio.ErrorFormat("warning: database is not selected");
             }
 
+        }
+
+        public void ExportCsvFile(Command cmd)
+        {
+            string path = cfg.GetValue<string>("csv.path", $"{MyDocuments}\\csv");
+            
+            string file;
+            Func<TableName, string> fullName = tname=> $"{path}\\{sname.Path}\\{dname.Name}\\{tname.ShortName}.csv"; 
+
+            if (tname != null)
+            {
+                stdio.WriteLine("start to generate {0} csv file", tname);
+                file = fullName(tname);
+                var dt = new SqlBuilder().SELECT.COLUMNS(cmd.Columns).FROM(tname).SqlCmd.FillDataTable();
+                using (var writer = file.NewStreamWriter())
+                {
+                    CsvFile.Write(dt, writer, true);
+                }
+                stdio.WriteLine("completed {0} => {1}", tname.ShortName, file);
+            }
+            else if (dname != null)
+            {
+                stdio.WriteLine("start to generate {0} csv to directory: {1}", dname, path);
+                CancelableWork.CanCancel(cancelled =>
+                {
+                    var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportExcludedTables);
+                    TableName[] tnames = md.MatchedTableNames;
+                    foreach (var tn in tnames)
+                    {
+                        if (cancelled())
+                            return CancelableState.Cancelled;
+                        try
+                        {
+                            file = fullName(tn);
+                            var dt = new TableReader(tn).Table;
+                            using (var writer = file.NewStreamWriter())
+                            {
+                                CsvFile.Write(dt, writer, true);
+                            }
+                            stdio.WriteLine("generated for {0} at {1}", tn.ShortName, path);
+                        }
+                        catch (Exception ex)
+                        {
+                            stdio.ErrorFormat("failed to generate {0}, {1}", tn.ShortName, ex.Message);
+                        }
+                    }
+
+                    stdio.WriteLine("completed");
+                    return CancelableState.Completed;
+                });
+            }
+            else
+            {
+                stdio.ErrorFormat("warning: table or database is not seleted");
+            }
         }
 
     }
