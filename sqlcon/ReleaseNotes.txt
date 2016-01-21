@@ -1,5 +1,10 @@
 ﻿sqlcon release notes
 
+1/20/2016 v1.3.1.12
+	New Features:
+	1. command <export /csv> export current database or table to csv file.
+
+
 1/13/2016 v1.3.1.11
 	Bugs Fixes:
 	1. stored proc sp_databases returns 0 rows in some SQL server.

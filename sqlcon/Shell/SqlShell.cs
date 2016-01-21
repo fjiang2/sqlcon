@@ -182,7 +182,7 @@ namespace sqlcon
                     return true;
 
                 case "ver":
-                    stdio.WriteLine("sqlcon [Version {0}]", System.Reflection.Assembly.GetEntryAssembly().GetName().Version);
+                    stdio.WriteLine("sqlcon [Version {0}]", SysExtension.ApplicationVerison);
                     return true;
 
                 case "show":
