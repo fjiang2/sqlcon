@@ -357,7 +357,7 @@ namespace sqlcon
             }
 
             string path = cfg.GetValue<string>("dc.path", $"{MyDocuments}\\dpo");
-            string ns = cfg.GetValue<string>("dc.ns", "Sys.DataContracts");
+            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("dc.ns", "Sys.DataContracts");
             string clss = cmd.GetValue("class") ?? cfg.GetValue<string>("dc.class", "DataContract");
             string mtd = cmd.GetValue("method") ?? cfg.GetValue<string>("dc.method", "ToEnumerable");
 
@@ -384,7 +384,7 @@ namespace sqlcon
 
             Statement sent = new Statement();
             sent.Append("return dt.AsEnumerable()");
-            sent.Append(".Select(row => new DataContract");
+            sent.Append($".Select(row => new {clss}");
             sent.Append("{");
 
             int count = dt.Columns.Count;

@@ -769,8 +769,9 @@ namespace sqlcon
                 stdio.WriteLine("   /data    : generate database/table data xml file");
                 stdio.WriteLine("   /class   : generate C# table class");
                 stdio.WriteLine("   /dc      : generate C# data contract class from last result");
+                stdio.WriteLine("      [/ns:name] default name space is defined on the .cfg");
                 stdio.WriteLine("      [/class:name] default class name is defined on the .cfg");
-                stdio.WriteLine("      [/method:name] default convert method is defined on the .cfg");
+                stdio.WriteLine("      [/method:foo] default convert method is defined on the .cfg");
                 stdio.WriteLine("   /csv     : generate table csv file");
                 return;
             }
