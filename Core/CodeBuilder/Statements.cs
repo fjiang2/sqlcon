@@ -45,7 +45,11 @@ namespace Sys.CodeBuilder
                     if (sent == "")
                         sb.AppendLine();
                     else
-                        sb.Append(TAB2).Append(sent).AppendLine(";");
+                    {
+                        var expr = sent.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                        sb.Append(string.Join(Environment.NewLine, expr.Select(exp => TAB2 + exp)));
+                        sb.AppendLine(";");
+                    }
                 }
 
                 sb.Append(TAB1).AppendLine("}");

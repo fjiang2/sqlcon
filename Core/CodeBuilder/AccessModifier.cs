@@ -38,6 +38,7 @@ namespace Sys.CodeBuilder
         Event = 0x800,
         Extern = 0x10000,
         Unsafe = 0x20000,
-        Volatile = 0x40000
+        Volatile = 0x40000,
+        Partial = 0x80000
     }
 }

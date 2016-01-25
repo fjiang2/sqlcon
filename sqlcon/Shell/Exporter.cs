@@ -9,6 +9,7 @@ using Sys;
 using Sys.Data;
 using Sys.Data.Comparison;
 using Sys.Data.Manager;
+using Sys.CodeBuilder;
 
 namespace sqlcon
 {
@@ -338,6 +339,60 @@ namespace sqlcon
             {
                 stdio.ErrorFormat("warning: table or database is not seleted");
             }
+        }
+
+        public void ExportDataContract(Command cmd, DataTable dt)
+        {
+            string path = cfg.GetValue<string>("dc.path", $"{MyDocuments}\\dpo");
+            string ns = cfg.GetValue<string>("dc.ns", "Sys.DataContracts");
+            string clss = cfg.GetValue<string>("dc.class", "TableDataContract");
+            ClassBuilder builder = new ClassBuilder(ns, AccessModifier.Public | AccessModifier.Partial, clss);
+            builder.AddUsing("System");
+            builder.AddUsing("System.Collections.Generic");
+            builder.AddUsing("System.Data");
+            builder.AddUsing("System.Linq");
+
+            foreach (DataColumn column in dt.Columns)
+            {
+                builder.AddProperty(new Property(column.DataType, column.ColumnName));
+            }
+
+
+            Method method = new Method {
+                modifier = AccessModifier.Public | AccessModifier.Static,
+                userReturnType = $"IEnumerable<{clss}>",
+                methodName = "ToNumerable",
+                args = new Argument[] { new Argument(typeof(DataTable), "dt") }
+              };
+            builder.AddMethod(method);
+
+            Statement sent = new Statement();
+            sent.Append("return dt.AsEnumerable()");
+            sent.Append(".Select(row=>new DataContract");
+            sent.Append("{");
+
+            int count = dt.Columns.Count;
+            int i = 0;
+            foreach (DataColumn column in dt.Columns)
+            {
+                var line = $"\t{column.ColumnName} = row.Field<{column.DataType.Name}>(\"{column.ColumnName}\")";
+                if (++i < count)
+                    line +=",";
+
+                sent.Add(line);
+            }
+            sent.Append("})");
+
+            method.AddStatement(sent);
+            string code = builder.ToString();
+            string file = Path.ChangeExtension(Path.Combine(path, clss), "cs");
+            using (var writer = file.NewStreamWriter())
+            {
+                writer.WriteLine(code);
+            }
+
+            stdio.WriteLine("code generated on {0}", file);
+
         }
 
     }

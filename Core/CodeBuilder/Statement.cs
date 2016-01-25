@@ -21,9 +21,8 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    class Statement : Format
+    public class Statement : Format
     {
-      //  string sent;
 
         public Statement()
         { 
@@ -39,6 +38,10 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-
+        public Statement Append(string exp)
+        {
+            Add(exp);
+            return this;
+        }
     }
 }

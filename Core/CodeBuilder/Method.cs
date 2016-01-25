@@ -23,50 +23,48 @@ namespace Sys.CodeBuilder
 {
     public class Method : Format
     {
-        private string signature;
+        private Statements statements = new Statements(2);
 
-        Statements statements = new Statements(2);
+        public AccessModifier modifier { get; set; } = AccessModifier.Public;
+        public Type returnType { get; set; }
+        public string userReturnType { get; set; } = "void";
 
-        
-        //internal string Method(....)
-        public Method(AccessModifier modifier, Type returnType, string methodName)
-            : this(modifier, returnType, methodName, new Argument[] { })
-        {
-        }
+        public string methodName { get; set; } = "foo";
+        public Argument[] args { get; set; } = new Argument[] { };
 
         //protected void Method(....)
-        public Method(AccessModifier modifier, Type returnType, string methodName, Argument[] args)
-        {
-            this.signature = string.Format("{0}{1} {2}({3})", 
-                new Modifier(modifier), 
-                returnType == null ? "void" : new TypeInfo(returnType).Text, 
-                methodName,
-                string.Join(", ", args.Select(arg=>arg.Text))
-                );
-        }
-
-      
-        public Method(AccessModifier modifier, string methodName)
-            : this(modifier, methodName, new Argument[] { })
+        public Method()
         {
         }
 
-        public Method(AccessModifier modifier, string methodName,  Argument[] args)
+        private string signature
         {
-            this.signature = string.Format("{0}void {1}({2})",
-                new Modifier(modifier), 
-                methodName,
-                string.Join(", ", args.Select(arg => arg.Text))
-                );
+            get
+            {
+                var line = string.Format("{0}{1} {2}({3})",
+                        new Modifier(modifier),
+                        returnType == null ? userReturnType : new TypeInfo(returnType).Text,
+                        methodName,
+                        string.Join(", ", args.Select(arg => arg.Text))
+                    );
+                return line;
+            }
         }
 
-        public Method AddStatements(string format, params object[] args)
+
+        public Method AddStatement(string format, params object[] args)
         {
             statements.Add(string.Format(format, args));
             return this;
         }
 
-        public Method AddStatements()
+        public Method AddStatement(Statement statment)
+        {
+            statements.Add(statment.ToString());
+            return this;
+        }
+
+        public Method AddStatement()
         {
             statements.Add("");
             return this;

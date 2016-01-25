@@ -1,5 +1,10 @@
 ﻿sqlcon release notes
 
+1/25/2016 v1.3.2.0
+	New Features:
+	1. generate C# class from System.Data.DataTable.
+	2. generate method to convert DataTable into IEnumerable<T>
+
 1/20/2016 v1.3.1.12
 	New Features:
 	1. command <export /csv> export current database or table to csv file.

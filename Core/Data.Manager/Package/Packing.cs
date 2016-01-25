@@ -65,7 +65,7 @@ namespace Sys.Data.Manager
             //constructor
             this.clss.AddConstructor(new Constructor(ClassName));
 
-            this.pack = new Method(AccessModifier.Protected | AccessModifier.Override, null, "Pack");
+            this.pack = new Method { modifier = AccessModifier.Protected | AccessModifier.Override, methodName= "Pack" };
             this.clss.AddMethod(pack);
 
          
@@ -113,17 +113,17 @@ namespace Sys.Data.Manager
                             ;
 
 
-                        pack.AddStatements("dpo.{0} = @{1}", fieldInfo.Name, s);
+                        pack.AddStatement("dpo.{0} = @{1}", fieldInfo.Name, s);
                     }
                     else
                     {
-                        pack.AddStatements("dpo.{0} = {1}", fieldInfo.Name, s);
+                        pack.AddStatement("dpo.{0} = {1}", fieldInfo.Name, s);
                     }
                 }
             }
 
-            pack.AddStatements("list.Add(dpo)")
-                .AddStatements();
+            pack.AddStatement("list.Add(dpo)")
+                .AddStatement();
                 
 
          
@@ -141,7 +141,7 @@ namespace Sys.Data.Manager
 
         public bool Pack()
         {
-            pack.AddStatements("var dpo = new {0}()", dpoType.Name);
+            pack.AddStatement("var dpo = new {0}()", dpoType.Name);
 
             PersistentObject dpo = (PersistentObject)Activator.CreateInstance(this.dpoType);
             DataTable dt = new TableReader(dpo.TableName).Table;
@@ -164,7 +164,7 @@ namespace Sys.Data.Manager
             {
                 PackRecord(dataRow);
                 if(i < dt.Rows.Count -1)
-                    pack.AddStatements("dpo = new {0}()", dpoType.Name);
+                    pack.AddStatement("dpo = new {0}()", dpoType.Name);
                 
                 i++;
             }

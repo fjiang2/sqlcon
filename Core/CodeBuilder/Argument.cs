@@ -23,8 +23,8 @@ namespace Sys.CodeBuilder
 {
     public class Argument
     {
-        Type type;
-        string name;
+        public Type type { get; set; }
+        public string name { get; set; }
 
         public Argument(Type type, string name)
         {

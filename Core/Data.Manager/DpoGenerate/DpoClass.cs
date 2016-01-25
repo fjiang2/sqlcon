@@ -254,18 +254,29 @@ namespace Sys.Data.Manager
         private string FillAndCollect()
         {
 
-            Method fill = new Method(AccessModifier.Public | AccessModifier.Override, "Fill", new Argument[] { new Argument(typeof(DataRow), "row") });
-            Method collect = new Method(AccessModifier.Public | AccessModifier.Override, "Collect", new Argument[] { new Argument(typeof(DataRow), "row") });
+            Method fill = new Method
+            {
+                modifier = AccessModifier.Public | AccessModifier.Override,
+                methodName = "Fill",
+                args = new Argument[] { new Argument(typeof(DataRow), "row") }
+            };
+
+            Method collect = new Method
+            {
+                modifier = AccessModifier.Public | AccessModifier.Override,
+                methodName = "Collect",
+                args = new Argument[] { new Argument(typeof(DataRow), "row") }
+            };
 
             foreach (IColumn column in metaTable.Columns)
             {
                 var fieldDef = dict_column_field[column.ColumnName];
                 string fieldName = fieldDef.PropertyName;
-                fill.AddStatements("this.{0} = GetField<{1}>(row, _{0})", fieldName, fieldDef.Type);
-                collect.AddStatements("SetField(row, _{0}, this.{0})", fieldName);
+                fill.AddStatement("this.{0} = GetField<{1}>(row, _{0})", fieldName, fieldDef.Type);
+                collect.AddStatement("SetField(row, _{0}, this.{0})", fieldName);
             }
 
-            return fill.ToString() +"\r\n" + collect.ToString();
+            return fill.ToString() + "\r\n" + collect.ToString();
         }
 
         private string Fields()

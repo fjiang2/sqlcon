@@ -150,6 +150,8 @@ namespace sqlcon
             try
             {
                 DataTable table = builder.SqlCmd.FillDataTable();
+                SqlShell.LastResult = table;
+
                 return Display(cmd, table, top);
             }
             catch (Exception ex)

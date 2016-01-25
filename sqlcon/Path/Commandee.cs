@@ -997,5 +997,40 @@ namespace sqlcon
 
             
         }
+
+
+        public void gen(Command cmd, Configuration cfg)
+        {
+            if (cmd.HasHelp)
+            {
+                stdio.WriteLine("generate c# code based on data table");
+                stdio.WriteLine("gen [select clause]    : display current data, or search pattern");
+                stdio.WriteLine("options:");
+                stdio.WriteLine("   /last               : use data table from last command");
+                stdio.WriteLine("   /dc                 : generate data contract class");
+                stdio.WriteLine("example:");
+                stdio.WriteLine("gen /last /dc          : display rows where id=20");
+                return;
+            }
+
+            DataTable dt = null;
+            if (cmd.Has("last"))
+            {
+                if (SqlShell.LastResult is DataTable)
+                {
+                    dt = SqlShell.LastResult as DataTable;
+                }
+            }
+
+            if (dt == null)
+            {
+                stdio.ErrorFormat("data table cannot find, use command type or select");
+                return;
+            }
+
+            var exporter = new Exporter(mgr, pt, cfg);
+            exporter.ExportDataContract(cmd, dt);
+            
+        }
     }
 }

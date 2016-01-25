@@ -119,6 +119,8 @@ namespace sqlcon
 
         public static void ToConsole(this DataTable table, bool more = false)
         {
+            SqlShell.LastResult = table;
+
             List<string> list = new List<string>();
             foreach (DataColumn column in table.Columns)
                 list.Add(column.ColumnName);
