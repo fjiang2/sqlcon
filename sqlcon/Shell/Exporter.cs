@@ -345,7 +345,9 @@ namespace sqlcon
         {
             string path = cfg.GetValue<string>("dc.path", $"{MyDocuments}\\dpo");
             string ns = cfg.GetValue<string>("dc.ns", "Sys.DataContracts");
-            string clss = cfg.GetValue<string>("dc.class", "TableDataContract");
+            string clss = cfg.GetValue<string>("dc.class", "DataContract");
+            string mtd = cfg.GetValue<string>("dc.method", "ToEnumerable");
+
             ClassBuilder builder = new ClassBuilder(ns, AccessModifier.Public | AccessModifier.Partial, clss);
             builder.AddUsing("System");
             builder.AddUsing("System.Collections.Generic");
@@ -358,17 +360,18 @@ namespace sqlcon
             }
 
 
-            Method method = new Method {
+            Method method = new Method
+            {
                 modifier = AccessModifier.Public | AccessModifier.Static,
                 userReturnType = $"IEnumerable<{clss}>",
-                methodName = "ToNumerable",
+                methodName = mtd,
                 args = new Argument[] { new Argument(typeof(DataTable), "dt") }
-              };
+            };
             builder.AddMethod(method);
 
             Statement sent = new Statement();
             sent.Append("return dt.AsEnumerable()");
-            sent.Append(".Select(row=>new DataContract");
+            sent.Append(".Select(row => new DataContract");
             sent.Append("{");
 
             int count = dt.Columns.Count;
@@ -377,7 +380,7 @@ namespace sqlcon
             {
                 var line = $"\t{column.ColumnName} = row.Field<{column.DataType.Name}>(\"{column.ColumnName}\")";
                 if (++i < count)
-                    line +=",";
+                    line += ",";
 
                 sent.Add(line);
             }

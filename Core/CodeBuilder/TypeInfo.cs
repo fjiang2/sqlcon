@@ -45,6 +45,21 @@ namespace Sys.CodeBuilder
         {
             get
             {
+                if (type == typeof(string))
+                    return "string";
+
+                if (type == typeof(int))
+                    return "int";
+
+                if (type == typeof(double))
+                    return "double";
+
+                if (type == typeof(bool))
+                    return "bool";
+
+                if (type == typeof(byte))
+                    return "byte";
+
                 string ty = type.Name;
                 if (type.IsGenericType)
                 {

@@ -62,8 +62,10 @@ namespace Sys.CodeBuilder
                 s.Append("static ");
             else if ((modifier & AccessModifier.Readonly) == AccessModifier.Readonly)
                 s.Append("readonly ");
+            else if ((modifier & AccessModifier.Partial) == AccessModifier.Partial)
+                s.Append("partial ");
 
-            
+
             if ((modifier & AccessModifier.Virtual) == AccessModifier.Virtual)
                 s.Append("virtual ");
             else if ((modifier & AccessModifier.Override) == AccessModifier.Override)
@@ -77,7 +79,7 @@ namespace Sys.CodeBuilder
             if ((modifier & AccessModifier.Event) == AccessModifier.Event)
                 s.Append("event ");
 
-            return s.ToString();
+            return s.ToString().TrimEnd();
         }
     }
 }

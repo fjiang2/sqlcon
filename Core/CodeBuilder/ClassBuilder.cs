@@ -89,7 +89,7 @@ namespace Sys.CodeBuilder
             s.AppendFormat("namespace {0}", this.nameSpace).AppendLine();
             s.AppendLine("{");
 
-            s.AppendFormat("\t{0}class {1}", classModifier, className);
+            s.AppendFormat("\t{0} class {1}", classModifier, className);
             if(inherits.Length >0)
                 s.AppendFormat(" : {0}", string.Join(", ", inherits.Select(inherit => new TypeInfo(inherit).Text)));
             

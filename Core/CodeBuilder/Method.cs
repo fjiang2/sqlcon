@@ -41,7 +41,7 @@ namespace Sys.CodeBuilder
         {
             get
             {
-                var line = string.Format("{0}{1} {2}({3})",
+                var line = string.Format("{0} {1} {2}({3})",
                         new Modifier(modifier),
                         returnType == null ? userReturnType : new TypeInfo(returnType).Text,
                         methodName,
