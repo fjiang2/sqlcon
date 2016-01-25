@@ -2,8 +2,27 @@
 
 1/25/2016 v1.3.2.0
 	New Features:
-	1. generate C# class from System.Data.DataTable.
+	1. generate C# data contract class from System.Data.DataTable.
 	2. generate method to convert DataTable into IEnumerable<T>
+	3. e.g. generate Northwind.Region: export /dc /class:Region
+
+	public partial class Region
+	{
+		public int RegionID {get; set; }
+		public string RegionDescription {get; set; }
+
+		public static IEnumerable<Region> ToEnumerable(DataTable dt)
+		{
+			return dt.AsEnumerable()
+			.Select(row => new DataContract
+			{
+				RegionID = row.Field<int>("RegionID"),
+				RegionDescription = row.Field<string>("RegionDescription")
+			});
+		}
+	}
+
+
 
 1/20/2016 v1.3.1.12
 	New Features:

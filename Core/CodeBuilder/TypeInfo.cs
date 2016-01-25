@@ -21,7 +21,7 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    class TypeInfo
+    public class TypeInfo
     {
         Type type;
 

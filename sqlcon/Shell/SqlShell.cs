@@ -264,10 +264,6 @@ namespace sqlcon
                     commandee.open(cmd, cfg);
                     return true;
 
-                case "gen":
-                    commandee.gen(cmd, cfg);
-                    return true;
-
                 case "compare":
                     {
                         PathBothSide both = new PathBothSide(mgr, cmd);
@@ -590,7 +586,6 @@ namespace sqlcon
             stdio.WriteLine("mount /?                : see more info");
             stdio.WriteLine("umount /?               : see more info");
             stdio.WriteLine("open /?                 : see more info");
-            stdio.WriteLine("gen /?                  : see more info");
             stdio.WriteLine();
             stdio.WriteLine("<Commands>");
             stdio.WriteLine("<find> pattern          : find table name or column name");

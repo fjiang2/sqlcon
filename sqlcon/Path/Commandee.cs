@@ -768,6 +768,9 @@ namespace sqlcon
                 stdio.WriteLine("   /schema  : generate database schema xml file");
                 stdio.WriteLine("   /data    : generate database/table data xml file");
                 stdio.WriteLine("   /class   : generate C# table class");
+                stdio.WriteLine("   /dc      : generate C# data contract class from last result");
+                stdio.WriteLine("      [/class:name] default class name is defined on the .cfg");
+                stdio.WriteLine("      [/method:name] default convert method is defined on the .cfg");
                 stdio.WriteLine("   /csv     : generate table csv file");
                 return;
             }
@@ -797,6 +800,8 @@ namespace sqlcon
                     exporter.ExportClass(cmd);
                 else if (cmd.Has("csv"))
                     exporter.ExportCsvFile(cmd);
+                else if (cmd.Has("dc"))
+                    exporter.ExportDataContract(cmd);
                 else
                     stdio.ErrorFormat("invalid command options");
             }
@@ -998,39 +1003,5 @@ namespace sqlcon
             
         }
 
-
-        public void gen(Command cmd, Configuration cfg)
-        {
-            if (cmd.HasHelp)
-            {
-                stdio.WriteLine("generate c# code based on data table");
-                stdio.WriteLine("gen [select clause]    : display current data, or search pattern");
-                stdio.WriteLine("options:");
-                stdio.WriteLine("   /last               : use data table from last command");
-                stdio.WriteLine("   /dc                 : generate data contract class");
-                stdio.WriteLine("example:");
-                stdio.WriteLine("gen /last /dc          : display rows where id=20");
-                return;
-            }
-
-            DataTable dt = null;
-            if (cmd.Has("last"))
-            {
-                if (SqlShell.LastResult is DataTable)
-                {
-                    dt = SqlShell.LastResult as DataTable;
-                }
-            }
-
-            if (dt == null)
-            {
-                stdio.ErrorFormat("data table cannot find, use command type or select");
-                return;
-            }
-
-            var exporter = new Exporter(mgr, pt, cfg);
-            exporter.ExportDataContract(cmd, dt);
-            
-        }
     }
 }

@@ -341,12 +341,25 @@ namespace sqlcon
             }
         }
 
-        public void ExportDataContract(Command cmd, DataTable dt)
+        public void ExportDataContract(Command cmd)
         {
+
+            DataTable dt = null;
+            if (SqlShell.LastResult is DataTable)
+            {
+                dt = SqlShell.LastResult as DataTable;
+            }
+
+            if (dt == null)
+            {
+                stdio.ErrorFormat("data table cannot find, use command type or select first");
+                return;
+            }
+
             string path = cfg.GetValue<string>("dc.path", $"{MyDocuments}\\dpo");
             string ns = cfg.GetValue<string>("dc.ns", "Sys.DataContracts");
-            string clss = cfg.GetValue<string>("dc.class", "DataContract");
-            string mtd = cfg.GetValue<string>("dc.method", "ToEnumerable");
+            string clss = cmd.GetValue("class") ?? cfg.GetValue<string>("dc.class", "DataContract");
+            string mtd = cmd.GetValue("method") ?? cfg.GetValue<string>("dc.method", "ToEnumerable");
 
             ClassBuilder builder = new ClassBuilder(ns, AccessModifier.Public | AccessModifier.Partial, clss);
             builder.AddUsing("System");
@@ -378,7 +391,8 @@ namespace sqlcon
             int i = 0;
             foreach (DataColumn column in dt.Columns)
             {
-                var line = $"\t{column.ColumnName} = row.Field<{column.DataType.Name}>(\"{column.ColumnName}\")";
+                var type = new TypeInfo(column.DataType);
+                var line = $"\t{column.ColumnName} = row.Field<{type}>(\"{column.ColumnName}\")";
                 if (++i < count)
                     line += ",";
 
