@@ -24,6 +24,9 @@ namespace Sys.CodeBuilder
 {
     public class ClassBuilder
     {
+        public string nameSpace { get; set; } = "Sys.Unknown";
+        public AccessModifier modifier { get; set; } = AccessModifier.Public;
+
         List<string> usings = new List<string>();
 
         List<Constructor> constructors = new List<Constructor>();
@@ -31,20 +34,16 @@ namespace Sys.CodeBuilder
         List<Method> methods = new List<Method>();
         List<Property> properties = new List<Property>();
 
-        private string nameSpace;
-        private Modifier classModifier;
         private string className;
         private Type[] inherits;
 
-        public ClassBuilder(string nameSpace, AccessModifier modifer, string className)
-            :this(nameSpace, modifer, className, new Type[]{})
+        public ClassBuilder(string className)
+            :this(className, new Type[]{})
         { 
         }
 
-        public ClassBuilder(string nameSpace, AccessModifier modifer, string className, Type[] inherits)
+        public ClassBuilder(string className, Type[] inherits)
         {
-            this.nameSpace = nameSpace;
-            this.classModifier = new Modifier(modifer);
             this.className = className;
             this.inherits = inherits;
         }
@@ -89,7 +88,7 @@ namespace Sys.CodeBuilder
             s.AppendFormat("namespace {0}", this.nameSpace).AppendLine();
             s.AppendLine("{");
 
-            s.AppendFormat("\t{0} class {1}", classModifier, className);
+            s.AppendFormat("\t{0} class {1}", new Modifier(modifier), className);
             if(inherits.Length >0)
                 s.AppendFormat(" : {0}", string.Join(", ", inherits.Select(inherit => new TypeInfo { type = inherit }.ToString())));
             

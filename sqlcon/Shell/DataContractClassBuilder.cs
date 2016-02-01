@@ -42,7 +42,12 @@ namespace sqlcon
         private ClassBuilder CreateDataContract()
         {
 
-            ClassBuilder builder = new ClassBuilder(ns, AccessModifier.Public | AccessModifier.Partial, clss);
+            ClassBuilder builder = new ClassBuilder(clss)
+            {
+                nameSpace = ns,
+                modifier = AccessModifier.Public | AccessModifier.Partial
+            };
+
             builder.AddUsing("System");
             builder.AddUsing("System.Collections.Generic");
             builder.AddUsing("System.Data");
@@ -58,7 +63,11 @@ namespace sqlcon
 
         private ClassBuilder CreateReader()
         {
-            ClassBuilder builder = new ClassBuilder(ns, AccessModifier.Public | AccessModifier.Static, clss + "Reader");
+            ClassBuilder builder = new ClassBuilder(clss + "Reader")
+            {
+                nameSpace = ns,
+                modifier = AccessModifier.Public | AccessModifier.Static
+            };
 
             {
                 Method method = new Method(mtd)

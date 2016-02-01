@@ -47,7 +47,11 @@ namespace Sys.Data.Manager
             Type baseType = typeof(BasePackage<>);
             baseType = baseType.MakeGenericType(dpoType);
 
-            this.clss = new ClassBuilder(dpoType.Assembly.GetName().Name + "." + Setting.DPO_PACKAGE_SUB_NAMESPACE, AccessModifier.Public, ClassName, new Type[] { baseType });
+            this.clss = new ClassBuilder(ClassName, new Type[] { baseType })
+            {
+                nameSpace = dpoType.Assembly.GetName().Name + "." + Setting.DPO_PACKAGE_SUB_NAMESPACE,
+                modifier = AccessModifier.Public
+            };
             
             this.clss.AddUsing("System")
             .AddUsing("System.Data")

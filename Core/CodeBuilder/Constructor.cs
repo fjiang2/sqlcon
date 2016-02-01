@@ -21,46 +21,37 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Constructor
+    public class Constructor : Member
     {
-        private string signature;
+        public Argument[] args { get; set; } = new Argument[] { };
+        public Argument[] baseAgrs { get; set; } = new Argument[] { };
 
         List<string> statements = new List<string>();
-
         
-        //public Constructor(...)
-        public Constructor(string constructorName)
-            : this(AccessModifier.Public, constructorName, new Argument[] { })
+
+        public Constructor(string constructorName )
+            : base(constructorName)
         {
+            base.modifier = AccessModifier.Public;
         }
 
-        //public Constructor(...)
-        public Constructor(AccessModifier modifier, string constructorName)
-            : this(modifier, constructorName, new Argument[] { })
+        protected override string signature
         {
-        }
+            get
+            {
+                string _constructor = string.Format("{0}{1}({2})",
+                        new Modifier(modifier),
+                        name,
+                        string.Join(", ", args.Select(arg => arg.ToString()))
+                        );
 
+                string _base = string.Format(":base({0})", string.Join(", ", baseAgrs.Select(arg => arg.ToString())));
 
-        //protected Constructor(...)
-        public Constructor(AccessModifier modifier, string constructorName, Argument[] args)
-            : this(modifier, constructorName, args, new Argument[] { })
-        {
-        }
-
-        public Constructor(AccessModifier modifier, string constructorName, Argument[] args, Argument[] baseAgrs)
-        {
-            string _constructor = string.Format("{0}{1}({2})",
-                new Modifier(modifier),
-                constructorName,
-                string.Join(", ", args.Select(arg => arg.ToString()))
-                );
-
-            string _base = string.Format(":base({0})", string.Join(", ", baseAgrs.Select(arg => arg.ToString())));
-
-            if (baseAgrs==null || baseAgrs.Length == 0)
-                this.signature = _constructor;
-            else
-                this.signature = string.Format("{0}\r\n\t\t{1}", _constructor, _base);
+                if (baseAgrs == null || baseAgrs.Length == 0)
+                    return _constructor;
+                else
+                    return string.Format("{0}\r\n\t\t{1}", _constructor, _base);
+            }
         }
 
         public Constructor AddStatements(string format, params object[] args)
