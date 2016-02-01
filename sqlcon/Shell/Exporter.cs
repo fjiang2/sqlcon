@@ -356,23 +356,39 @@ namespace sqlcon
                 return;
             }
 
+
+            Dictionary<DataColumn, TypeInfo> dict = new Dictionary<DataColumn, TypeInfo>();
+            foreach (DataColumn column in dt.Columns)
+            {
+                TypeInfo ty = new TypeInfo(column.DataType);
+                foreach (DataRow row in dt.Rows)
+                {
+                    if (row[column] == DBNull.Value)
+                        ty.Nullable = true;
+                    break;
+                }
+
+                dict.Add(column, ty);
+            }
+
+
             string path = cfg.GetValue<string>("dc.path", $"{MyDocuments}\\dpo");
             string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("dc.ns", "Sys.DataContracts");
             string clss = cmd.GetValue("class") ?? cfg.GetValue<string>("dc.class", "DataContract");
             string mtd = cmd.GetValue("method") ?? cfg.GetValue<string>("dc.method", "ToEnumerable");
 
-            ClassBuilder builder = new ClassBuilder(ns, AccessModifier.Public | AccessModifier.Partial, clss);
-            builder.AddUsing("System");
-            builder.AddUsing("System.Collections.Generic");
-            builder.AddUsing("System.Data");
-            builder.AddUsing("System.Linq");
+            ClassBuilder builder1 = new ClassBuilder(ns, AccessModifier.Public | AccessModifier.Partial, clss);
+            builder1.AddUsing("System");
+            builder1.AddUsing("System.Collections.Generic");
+            builder1.AddUsing("System.Data");
+            builder1.AddUsing("System.Linq");
 
             foreach (DataColumn column in dt.Columns)
             {
-                builder.AddProperty(new Property(column.DataType, column.ColumnName));
+                builder1.AddProperty(new Property(dict[column], column.ColumnName));
             }
 
-
+            ClassBuilder builder2 = new ClassBuilder(ns, AccessModifier.Public | AccessModifier.Static, clss + "Reader");
             Method method = new Method
             {
                 modifier = AccessModifier.Public | AccessModifier.Static,
@@ -380,7 +396,7 @@ namespace sqlcon
                 methodName = mtd,
                 args = new Argument[] { new Argument(typeof(DataTable), "dt") }
             };
-            builder.AddMethod(method);
+            builder2.AddMethod(method);
 
             Statement sent = new Statement();
             sent.Append("return dt.AsEnumerable()");
@@ -391,7 +407,7 @@ namespace sqlcon
             int i = 0;
             foreach (DataColumn column in dt.Columns)
             {
-                var type = new TypeInfo(column.DataType);
+                var type = dict[column];
                 var line = $"\t{column.ColumnName} = row.Field<{type}>(\"{column.ColumnName}\")";
                 if (++i < count)
                     line += ",";
@@ -401,7 +417,7 @@ namespace sqlcon
             sent.Append("})");
 
             method.AddStatement(sent);
-            string code = builder.ToString();
+            string code = $"{ builder1}\r\n{builder2}" ;
             string file = Path.ChangeExtension(Path.Combine(path, clss), "cs");
             using (var writer = file.NewStreamWriter())
             {

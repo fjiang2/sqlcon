@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+1/31/2016 v1.3.2.2
+  Bugs Fixes:
+  1. Data contract property of System.Data.DataTable cannot be DBNull
+
 1/25/2016 v1.3.2.0
 	New Features:
 	1. generate C# data contract class from System.Data.DataTable.

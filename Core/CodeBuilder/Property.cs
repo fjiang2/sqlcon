@@ -23,24 +23,30 @@ namespace Sys.CodeBuilder
 {
     public class Property :Format
     {
-        private string signature;
-
         Statements gets = new Statements(3);
         Statements sets = new Statements(3);
 
-        
-        public Property(Type returnType, string methodName)
-            : this(AccessModifier.Public, returnType, methodName)
+        public AccessModifier modifier { get; set; } = AccessModifier.Public;
+        public TypeInfo returnType { get; set; }
+        public string propertyName { get; set; }
+
+        public Property(TypeInfo returnType, string propertyName)
         {
+            this.returnType = returnType;
+            this.propertyName = propertyName;
         }
 
-        public Property(AccessModifier modifier, Type returnType, string propertyName)
+
+        private string signature
         {
-            this.signature = string.Format("{0} {1} {2}", 
-                new Modifier(modifier), 
-                new TypeInfo(returnType), 
+            get
+            {
+                return string.Format("{0} {1} {2}",
+                new Modifier(modifier),
+                returnType,
                 propertyName
                 );
+            }
         }
 
         public Property AddGet(string format, params object[] args)

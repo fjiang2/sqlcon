@@ -24,6 +24,7 @@ namespace Sys.CodeBuilder
     public class TypeInfo
     {
         Type type;
+        public bool Nullable { get; set; } = false;
 
         public TypeInfo(Type type)
         {
@@ -41,33 +42,43 @@ namespace Sys.CodeBuilder
                 );
         }
 
+        private string typeText()
+        {
+            if (type == typeof(string))
+                return "string";
+
+            if (type == typeof(int))
+                return "int";
+
+            if (type == typeof(double))
+                return "double";
+
+            if (type == typeof(bool))
+                return "bool";
+
+            if (type == typeof(byte))
+                return "byte";
+
+            string ty = type.Name;
+            if (type.IsGenericType)
+            {
+                ty = type.Name.Substring(0, ty.IndexOf("`"));
+                ty = string.Format("{0}<{1}>", ty, string.Join(",", type.GetGenericArguments().Select(T => T.Name)));
+            }
+
+            return ty;
+        }
+
         public string Text
         {
             get
             {
-                if (type == typeof(string))
-                    return "string";
-
-                if (type == typeof(int))
-                    return "int";
-
-                if (type == typeof(double))
-                    return "double";
-
-                if (type == typeof(bool))
-                    return "bool";
-
-                if (type == typeof(byte))
-                    return "byte";
-
-                string ty = type.Name;
-                if (type.IsGenericType)
-                {
-                    ty = type.Name.Substring(0, ty.IndexOf("`"));
-                    ty = string.Format("{0}<{1}>", ty, string.Join(",", type.GetGenericArguments().Select(T => T.Name)));
-                }
-
-                return ty;
+                string text = typeText();
+                if (Nullable)
+                    return text + "?";
+                else
+                    return text;
+              
             }
         }
 
