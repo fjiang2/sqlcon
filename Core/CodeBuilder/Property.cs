@@ -23,8 +23,8 @@ namespace Sys.CodeBuilder
 {
     public class Property : Member
     {
-        Statements gets = new Statements(3);
-        Statements sets = new Statements(3);
+        CompoundStatement gets = new CompoundStatement(3);
+        CompoundStatement sets = new CompoundStatement(3);
 
         public Property(TypeInfo returnType, string propertyName)
             :base(propertyName)

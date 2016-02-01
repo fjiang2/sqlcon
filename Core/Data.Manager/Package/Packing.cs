@@ -127,7 +127,7 @@ namespace Sys.Data.Manager
             }
 
             pack.AddStatement("list.Add(dpo)")
-                .AddLine();
+                .AppendLine();
                 
 
          

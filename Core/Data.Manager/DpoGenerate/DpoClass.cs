@@ -257,13 +257,13 @@ namespace Sys.Data.Manager
             Method fill = new Method("Fill")
             {
                 modifier = AccessModifier.Public | AccessModifier.Override,
-                args = new Argument[] { new Argument(new Sys.CodeBuilder.TypeInfo { type = typeof(DataRow) }, "row") }
+                args = new Arguments(new Argument(new Sys.CodeBuilder.TypeInfo { type = typeof(DataRow) }, "row"))
             };
 
             Method collect = new Method("Collect")
             {
                 modifier = AccessModifier.Public | AccessModifier.Override,
-                args = new Argument[] { new Argument(new Sys.CodeBuilder.TypeInfo { type = typeof(DataRow) }, "row") }
+                args = new Arguments(new Argument(new Sys.CodeBuilder.TypeInfo { type = typeof(DataRow) }, "row") )
             };
 
             foreach (IColumn column in metaTable.Columns)

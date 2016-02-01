@@ -23,8 +23,8 @@ namespace Sys.CodeBuilder
 {
     public class Constructor : Member
     {
-        public Argument[] args { get; set; } = new Argument[] { };
-        public Argument[] baseAgrs { get; set; } = new Argument[] { };
+        public Arguments args { get; set; } = new Arguments();
+        public Arguments baseAgrs { get; set; } = new Arguments();
 
         List<string> statements = new List<string>();
         
@@ -39,15 +39,11 @@ namespace Sys.CodeBuilder
         {
             get
             {
-                string _constructor = string.Format("{0}{1}({2})",
-                        new Modifier(modifier),
-                        name,
-                        string.Join(", ", args.Select(arg => arg.ToString()))
-                        );
+                string _constructor = string.Format("{0}{1}({2})", new Modifier(modifier), name, args);
 
-                string _base = string.Format(":base({0})", string.Join(", ", baseAgrs.Select(arg => arg.ToString())));
+                string _base = string.Format(":base({0})", baseAgrs);
 
-                if (baseAgrs == null || baseAgrs.Length == 0)
+                if (baseAgrs.IsEmpty)
                     return _constructor;
                 else
                     return string.Format("{0}\r\n\t\t{1}", _constructor, _base);

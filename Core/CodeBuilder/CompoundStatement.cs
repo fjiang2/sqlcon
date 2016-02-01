@@ -21,11 +21,11 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    class Statements : List<string>
+    class CompoundStatement : List<string>
     {
         int tab;
 
-        public Statements(int tab)
+        public CompoundStatement(int tab)
         {
             this.tab = tab;
         }

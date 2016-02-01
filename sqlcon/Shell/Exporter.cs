@@ -361,7 +361,7 @@ namespace sqlcon
             string path = cfg.GetValue<string>("dc.path", $"{MyDocuments}\\dpo");
             string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("dc.ns", "Sys.DataContracts");
             string clss = cmd.GetValue("class") ?? cfg.GetValue<string>("dc.class", "DataContract");
-            string mtd = cmd.GetValue("method") ?? cfg.GetValue<string>("dc.method", "ToEnumerable");
+            string mtd = cmd.GetValue("method");
 
             DataContractClassBuilder builder = new DataContractClassBuilder(dt)
             {

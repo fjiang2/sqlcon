@@ -23,9 +23,9 @@ namespace Sys.CodeBuilder
 {
     public class Method : Member
     {
-        private Statements statements = new Statements(2);
+        private CompoundStatement statements = new CompoundStatement(2);
 
-        public Argument[] args { get; set; } = new Argument[] { };
+        public Arguments args { get; set; } = new Arguments();
 
         //protected void Method(....)
         public Method(string methodName)
@@ -37,12 +37,7 @@ namespace Sys.CodeBuilder
         {
             get
             {
-                var line = string.Format("{0} {1} {2}({3})",
-                        new Modifier(modifier),
-                        type,
-                        name,
-                        string.Join(", ", args.Select(arg => arg.ToString()))
-                    );
+                var line = string.Format("{0} {1} {2}({3})", new Modifier(modifier), type, name, args);
                 return line;
             }
         }
@@ -60,7 +55,7 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        public Method AddLine()
+        public Method AppendLine()
         {
             statements.Add("");
             return this;

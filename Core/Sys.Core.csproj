@@ -56,6 +56,7 @@
     <Compile Include="Account\ActiveAccount.cs" />
     <Compile Include="Account\IAccount.cs" />
     <Compile Include="CodeBuilder\Argument.cs" />
+    <Compile Include="CodeBuilder\Arguments.cs" />
     <Compile Include="CodeBuilder\ClassBuilder.cs" />
     <Compile Include="CodeBuilder\Constructor.cs" />
     <Compile Include="CodeBuilder\Field.cs" />
@@ -65,8 +66,8 @@
     <Compile Include="CodeBuilder\Modifier.cs" />
     <Compile Include="CodeBuilder\AccessModifier.cs" />
     <Compile Include="CodeBuilder\Property.cs" />
-    <Compile Include="CodeBuilder\Statement.cs" />
-    <Compile Include="CodeBuilder\Statements.cs" />
+    <Compile Include="Compare\Statement.cs" />
+    <Compile Include="CodeBuilder\CompoundStatement.cs" />
     <Compile Include="CodeBuilder\TypeInfo.cs" />
     <Compile Include="Compare\ColumnPair.cs" />
     <Compile Include="Compare\ColumnValue.cs" />

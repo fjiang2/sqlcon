@@ -14,8 +14,8 @@ namespace sqlcon
 
         public string ns { get; set; } = "Sys.DataContracts";
         public string clss { get; set; } = "DataContract";
-        public string mtd { get; set; } =  "ToEnumerable";
-        public string mtd2 { get; set; } = "ToDataTable";
+        public string mtd { get; set; }
+        private const string mtd2 = "ToDataTable";
 
 
         public DataContractClassBuilder(DataTable dt)
@@ -63,18 +63,21 @@ namespace sqlcon
 
         private ClassBuilder CreateReader()
         {
-            ClassBuilder builder = new ClassBuilder(clss + "Reader")
+            ClassBuilder builder = new ClassBuilder(clss + "Extension")
             {
                 nameSpace = ns,
                 modifier = AccessModifier.Public | AccessModifier.Static
             };
 
             {
+                if(mtd==null)
+                    mtd = $"To{clss}Collection";
+
                 Method method = new Method(mtd)
                 {
                     modifier = AccessModifier.Public | AccessModifier.Static,
                     type = new TypeInfo { userType = $"IEnumerable<{clss}>" },
-                    args = new Argument[] { new Argument(new TypeInfo { type = typeof(DataTable) }, "dt") }
+                    args = new Arguments(new Argument(new TypeInfo { type = typeof(DataTable) }, "dt") ) { This = true }
                 };
                 builder.AddMethod(method);
 
@@ -106,7 +109,7 @@ namespace sqlcon
                 {
                     modifier = AccessModifier.Public | AccessModifier.Static,
                     type = new TypeInfo { type = typeof(DataTable) },
-                    args = new Argument[] { new Argument( new TypeInfo { userType = $"IEnumerable<{clss}>" }, "items") }
+                    args = new Arguments(new Argument(new TypeInfo { userType = $"IEnumerable<{clss}>" }, "items")) { This = true }
                 };
                 builder.AddMethod(method);
 
@@ -118,7 +121,7 @@ namespace sqlcon
                     sent.Append($"dt.Columns.Add(new DataColumn(\"{column.ColumnName}\",typeof({ty})));");
                 }
 
-                method.AddLine();
+                method.AppendLine();
 
                 sent.Append("foreach(var item in items)");
                 sent.Append("{");
