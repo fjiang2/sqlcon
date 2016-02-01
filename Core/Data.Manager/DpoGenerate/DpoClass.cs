@@ -254,18 +254,16 @@ namespace Sys.Data.Manager
         private string FillAndCollect()
         {
 
-            Method fill = new Method
+            Method fill = new Method("Fill")
             {
                 modifier = AccessModifier.Public | AccessModifier.Override,
-                methodName = "Fill",
-                args = new Argument[] { new Argument(typeof(DataRow), "row") }
+                args = new Argument[] { new Argument(new Sys.CodeBuilder.TypeInfo { type = typeof(DataRow) }, "row") }
             };
 
-            Method collect = new Method
+            Method collect = new Method("Collect")
             {
                 modifier = AccessModifier.Public | AccessModifier.Override,
-                methodName = "Collect",
-                args = new Argument[] { new Argument(typeof(DataRow), "row") }
+                args = new Argument[] { new Argument(new Sys.CodeBuilder.TypeInfo { type = typeof(DataRow) }, "row") }
             };
 
             foreach (IColumn column in metaTable.Columns)

@@ -60,6 +60,7 @@
     <Compile Include="CodeBuilder\Constructor.cs" />
     <Compile Include="CodeBuilder\Field.cs" />
     <Compile Include="CodeBuilder\Format.cs" />
+    <Compile Include="CodeBuilder\Member.cs" />
     <Compile Include="CodeBuilder\Method.cs" />
     <Compile Include="CodeBuilder\Modifier.cs" />
     <Compile Include="CodeBuilder\AccessModifier.cs" />

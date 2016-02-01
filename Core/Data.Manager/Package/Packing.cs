@@ -65,7 +65,7 @@ namespace Sys.Data.Manager
             //constructor
             this.clss.AddConstructor(new Constructor(ClassName));
 
-            this.pack = new Method { modifier = AccessModifier.Protected | AccessModifier.Override, methodName= "Pack" };
+            this.pack = new Method("Pack") { modifier = AccessModifier.Protected | AccessModifier.Override };
             this.clss.AddMethod(pack);
 
          
@@ -123,7 +123,7 @@ namespace Sys.Data.Manager
             }
 
             pack.AddStatement("list.Add(dpo)")
-                .AddStatement();
+                .AddLine();
                 
 
          

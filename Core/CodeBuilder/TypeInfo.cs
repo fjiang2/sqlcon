@@ -23,20 +23,22 @@ namespace Sys.CodeBuilder
 {
     public class TypeInfo
     {
-        Type type;
+        public Type type { get; set; } = null;
+
         public bool Nullable { get; set; } = false;
 
-        public TypeInfo(Type type)
+        public string userType { get; set; }
+
+        public TypeInfo()
         {
-            this.type = type;
         }
 
         public string NewInstance(params Argument[] args)
         {
-            return string.Format("new {0}({1})", 
-                this.Text, 
+            return string.Format("new {0}({1})",
+                this,
                 string.Join(
-                    ",", 
+                    ",",
                     args.Select(arg => arg.ToString())
                     )
                 );
@@ -44,8 +46,20 @@ namespace Sys.CodeBuilder
 
         private string typeText()
         {
+            if (userType != null)
+                return userType;
+
+            if (type == null)
+            {
+                Nullable = false;
+                return "void";
+            }
+
             if (type == typeof(string))
+            {
+                Nullable = false;
                 return "string";
+            }
 
             if (type == typeof(int))
                 return "int";
@@ -69,22 +83,14 @@ namespace Sys.CodeBuilder
             return ty;
         }
 
-        public string Text
-        {
-            get
-            {
-                string text = typeText();
-                if (Nullable)
-                    return text + "?";
-                else
-                    return text;
-              
-            }
-        }
-
         public override string ToString()
         {
-            return this.Text;
+            string text = typeText();
+
+            if (Nullable)
+                return text + "?";
+            else
+                return text;
         }
     }
 }

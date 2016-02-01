@@ -23,10 +23,10 @@ namespace Sys.CodeBuilder
 {
     public class Argument
     {
-        public Type type { get; set; }
+        public TypeInfo type { get; set; }
         public string name { get; set; }
 
-        public Argument(Type type, string name)
+        public Argument(TypeInfo type, string name)
         {
             this.type = type;
             this.name = name;
@@ -39,20 +39,12 @@ namespace Sys.CodeBuilder
         }
 
 
-        public string Text
-        {
-            get
-            {
-                if (type == null)
-                    return name;
-
-                return string.Format("{0} {1}", new TypeInfo(type).Text, name);
-            }
-        }
-
         public override string ToString()
         {
-            return Text;
+            if (type == null)
+                return name;
+
+            return string.Format("{0} {1}", type, name);
         }
     }
 }

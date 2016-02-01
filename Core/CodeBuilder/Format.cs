@@ -32,6 +32,14 @@ namespace Sys.CodeBuilder
         
         }
 
+        public void Indent(bool yes)
+        {
+            if (yes)
+                tab++;
+            else
+                tab--;
+        }
+
         public Format Add(string str)
         {
             code.Append(TAB).AppendLine(str);

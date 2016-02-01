@@ -21,33 +21,17 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Property :Format
+    public class Property : Member
     {
         Statements gets = new Statements(3);
         Statements sets = new Statements(3);
 
-        public AccessModifier modifier { get; set; } = AccessModifier.Public;
-        public TypeInfo returnType { get; set; }
-        public string propertyName { get; set; }
-
         public Property(TypeInfo returnType, string propertyName)
+            :base(propertyName)
         {
-            this.returnType = returnType;
-            this.propertyName = propertyName;
+            this.type = returnType;
         }
 
-
-        private string signature
-        {
-            get
-            {
-                return string.Format("{0} {1} {2}",
-                new Modifier(modifier),
-                returnType,
-                propertyName
-                );
-            }
-        }
 
         public Property AddGet(string format, params object[] args)
         {

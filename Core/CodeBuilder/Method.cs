@@ -21,31 +21,27 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Method : Format
+    public class Method : Member
     {
         private Statements statements = new Statements(2);
 
-        public AccessModifier modifier { get; set; } = AccessModifier.Public;
-        public Type returnType { get; set; }
-        public string userReturnType { get; set; } = "void";
-
-        public string methodName { get; set; } = "foo";
         public Argument[] args { get; set; } = new Argument[] { };
 
         //protected void Method(....)
-        public Method()
+        public Method(string methodName)
+            :base(methodName)
         {
         }
 
-        private string signature
+        protected override string signature
         {
             get
             {
                 var line = string.Format("{0} {1} {2}({3})",
                         new Modifier(modifier),
-                        returnType == null ? userReturnType : new TypeInfo(returnType).Text,
-                        methodName,
-                        string.Join(", ", args.Select(arg => arg.Text))
+                        type,
+                        name,
+                        string.Join(", ", args.Select(arg => arg.ToString()))
                     );
                 return line;
             }
@@ -64,7 +60,7 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        public Method AddStatement()
+        public Method AddLine()
         {
             statements.Add("");
             return this;
@@ -78,24 +74,14 @@ namespace Sys.CodeBuilder
 
 
 
-        public string Text
-        {
-            get 
-            {
-                this.tab = 2;
-
-                this.Add(this.signature);
-                code.Append(statements.Code);
-
-                return code.ToString();
-            }
-        }
-
         public override string ToString()
         {
-            return Text;
-        }
-        
+            this.tab = 2;
 
+            this.Add(this.signature);
+            code.Append(statements.Code);
+
+            return code.ToString();
+        }
     }
 }

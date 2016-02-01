@@ -21,39 +21,42 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Field
+    public class Field : Member
     {
-        string fieldSignature;
-
-        public Field(Type type, string fieldName)
-            : this(AccessModifier.Private, type, fieldName)
+        private object value;
+        
+        public Field(TypeInfo type, string fieldName)
+            :base(fieldName)
         {
+            this.type = type;
+        }
+
+        
+
+        public Field(TypeInfo type, string fieldName, object value)
+            :base(fieldName)
+        {
+            this.type = type;
+            this.value = value;
         }
 
 
-        public Field(AccessModifier modifier, Type type, string fieldName)
+        private string fieldSignature
         {
-            this.fieldSignature = string.Format("{0}{1} {2};",
-                new Modifier(modifier),
-                new TypeInfo(type),
-                fieldName);
+            get
+            {
+                if (value != null)
+                {
+                    return string.Format("{0}{1} {2} = {3};", new Modifier(modifier), type, name, value);
+                }
+                else
+                {
+                    return  base.signature;
+                }
+            }
         }
 
 
-        public Field(AccessModifier modifier, Type type, string fieldName, object value)
-        {
-            this.fieldSignature = string.Format("{0}{1} {2} = {3};",
-                new Modifier(modifier),
-                new TypeInfo(type),
-                fieldName, 
-                value);
-        }
-
-
-        public string Text
-        {
-            get { return this.fieldSignature; }
-        }
 
         public override string ToString()
         {

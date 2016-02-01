@@ -91,7 +91,7 @@ namespace Sys.CodeBuilder
 
             s.AppendFormat("\t{0} class {1}", classModifier, className);
             if(inherits.Length >0)
-                s.AppendFormat(" : {0}", string.Join(", ", inherits.Select(inherit => new TypeInfo(inherit).Text)));
+                s.AppendFormat(" : {0}", string.Join(", ", inherits.Select(inherit => new TypeInfo { type = inherit }.ToString())));
             
             s.AppendLine();
             s.AppendLine("\t{");

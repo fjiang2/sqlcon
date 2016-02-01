@@ -103,6 +103,7 @@
     <Compile Include="Input\PathName.cs" />
     <Compile Include="Path\PathBothSide.cs" />
     <Compile Include="Path\PathSide.cs" />
+    <Compile Include="Shell\DataContractClassBuilder.cs" />
     <Compile Include="Shell\Exporter.cs" />
     <Compile Include="Output\TableOut.cs" />
     <Compile Include="Path\ColumnName.cs" />
