@@ -50,7 +50,7 @@ namespace Sys.Data.Manager
             this.clss = new ClassBuilder(ClassName, new Type[] { baseType })
             {
                 nameSpace = dpoType.Assembly.GetName().Name + "." + Setting.DPO_PACKAGE_SUB_NAMESPACE,
-                modifier = AccessModifier.Public
+                modifier = Modifier.Public
             };
             
             this.clss.AddUsing("System")
@@ -69,7 +69,7 @@ namespace Sys.Data.Manager
             //constructor
             this.clss.AddConstructor(new Constructor(ClassName));
 
-            this.pack = new Method("Pack") { modifier = AccessModifier.Protected | AccessModifier.Override };
+            this.pack = new Method("Pack") { modifier = Modifier.Protected | Modifier.Override };
             this.clss.AddMethod(pack);
 
          

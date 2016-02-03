@@ -16,7 +16,7 @@ namespace Sys.Data.Manager
         private TableName tableName;
 
         public string NameSpace { get; set; }
-        public AccessModifier Modifier { get; set; }
+        public Modifier Modifier { get; set; }
         public Func<string, string> ClassNameRule { get; set; }
 
         public Level Level { get; set; }
@@ -36,7 +36,7 @@ namespace Sys.Data.Manager
             this.tableName = tableName;
 
             this.NameSpace = Setting.DPO_CLASS_SUB_NAMESPACE;
-            this.Modifier = AccessModifier.Public;
+            this.Modifier = Modifier.Public;
 
             this.Level = Level.Application;
             this.IsPack = false;

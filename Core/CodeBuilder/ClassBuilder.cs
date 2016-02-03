@@ -25,7 +25,7 @@ namespace Sys.CodeBuilder
     public class ClassBuilder : ICodeBlock
     {
         public string nameSpace { get; set; } = "Sys.Unknown";
-        public AccessModifier modifier { get; set; } = AccessModifier.Public;
+        public Modifier modifier { get; set; } = Modifier.Public;
 
         List<string> usings = new List<string>();
 
@@ -95,7 +95,7 @@ namespace Sys.CodeBuilder
             block.AppendFormat("namespace {0}", this.nameSpace);
 
             var clss = new CodeBlock();
-            clss.AppendFormat("{0} class {1}", new Modifier(modifier), className);
+            clss.AppendFormat("{0} class {1}", new ModifierString(modifier), className);
             if (inherits.Length > 0)
                 clss.AppendFormat("\t: {0}", string.Join(", ", inherits.Select(inherit => new TypeInfo { type = inherit }.ToString())));
 

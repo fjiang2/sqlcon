@@ -256,13 +256,13 @@ namespace Sys.Data.Manager
 
             Method fill = new Method("Fill")
             {
-                modifier = AccessModifier.Public | AccessModifier.Override,
+                modifier = Modifier.Public | Modifier.Override,
                 args = new Arguments(new Argument(new Sys.CodeBuilder.TypeInfo { type = typeof(DataRow) }, "row"))
             };
 
             Method collect = new Method("Collect")
             {
-                modifier = AccessModifier.Public | AccessModifier.Override,
+                modifier = Modifier.Public | Modifier.Override,
                 args = new Arguments(new Argument(new Sys.CodeBuilder.TypeInfo { type = typeof(DataRow) }, "row") )
             };
 
@@ -321,7 +321,7 @@ namespace Sys.Data.Manager
         }
 
 
-        public string Generate(AccessModifier modifier, ClassTableName ctname)
+        public string Generate(Modifier modifier, ClassTableName ctname)
         {
             //must run it first to form Dictionary
             string fields = Fields();
@@ -438,11 +438,11 @@ namespace @NAMESPACE
                 CREATE_TABLE = ""; 
 
             string m = "public";
-            if (modifier == AccessModifier.Protected)
+            if (modifier == Modifier.Protected)
                 m = "protected";
-            else if (modifier == AccessModifier.Internal)
+            else if (modifier == Modifier.Internal)
                 m = "internal";
-            else if (modifier == AccessModifier.Private)
+            else if (modifier == Modifier.Private)
                 m = "private";
 
             string attribute = metaTable.GetTableAttribute(ctname);
@@ -509,7 +509,7 @@ namespace @NAMESPACE
             FieldInfo[] fields = type.GetFields();
             foreach (FieldInfo fieldInfo in fields)
             {
-                Attribute[] attributes = (Attribute[])fieldInfo.GetCustomAttributes(typeof(NonValizedAttribute), true);
+                var attributes = (System.Attribute[])fieldInfo.GetCustomAttributes(typeof(NonValizedAttribute), true);
                 if (attributes.Length != 0)
                     list.Add(fieldInfo.Name);
             }

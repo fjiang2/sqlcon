@@ -28,7 +28,7 @@ namespace Sys.CodeBuilder
 
         public Statement statements { get; } = new Statement();
 
-        public AccessModifier modifier { get; set; } = AccessModifier.Public;
+        public Modifier modifier { get; set; } = Modifier.Public;
         private string constructorName;
 
         public Constructor(string constructorName )
@@ -46,7 +46,7 @@ namespace Sys.CodeBuilder
         {
             CodeBlock block = new CodeBlock();
 
-            string _constructor = string.Format("{0}{1}({2})", new Modifier(modifier), constructorName, args);
+            string _constructor = string.Format("{0}{1}({2})", new ModifierString(modifier), constructorName, args);
             string _base = string.Format(":base({0})", baseAgrs);
 
             block.AppendLine(_constructor);

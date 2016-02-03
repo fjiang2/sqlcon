@@ -45,7 +45,7 @@ namespace sqlcon
             ClassBuilder builder = new ClassBuilder(clss)
             {
                 nameSpace = ns,
-                modifier = AccessModifier.Public | AccessModifier.Partial
+                modifier = Modifier.Public | Modifier.Partial
             };
 
             builder.AddUsing("System");
@@ -55,7 +55,7 @@ namespace sqlcon
 
             foreach (DataColumn column in dt.Columns)
             {
-                builder.AddProperty(new Property(dict[column], column.ColumnName) { modifier = AccessModifier.Public });
+                builder.AddProperty(new Property(dict[column], column.ColumnName) { modifier = Modifier.Public });
             }
 
             return builder;
@@ -67,7 +67,7 @@ namespace sqlcon
             ClassBuilder builder = new ClassBuilder(clss + "Extension")
             {
                 nameSpace = ns,
-                modifier = AccessModifier.Public | AccessModifier.Static
+                modifier = Modifier.Public | Modifier.Static
             };
 
             {
@@ -76,7 +76,7 @@ namespace sqlcon
 
                 Method method = new Method(mtd)
                 {
-                    modifier = AccessModifier.Public | AccessModifier.Static,
+                    modifier = Modifier.Public | Modifier.Static,
                     type = new TypeInfo { userType = $"IEnumerable<{clss}>" },
                     args = new Arguments(new Argument(new TypeInfo { type = typeof(DataTable) }, "dt")),
                     IsExtensionMethod = true
@@ -107,7 +107,7 @@ namespace sqlcon
             {
                 Method method = new Method(mtd2)
                 {
-                    modifier = AccessModifier.Public | AccessModifier.Static,
+                    modifier = Modifier.Public | Modifier.Static,
                     type = new TypeInfo { type = typeof(DataTable) },
                     args = new Arguments(new Argument(new TypeInfo { userType = $"IEnumerable<{clss}>" }, "items")),
                     IsExtensionMethod = true

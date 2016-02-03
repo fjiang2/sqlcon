@@ -8,7 +8,9 @@ namespace Sys.CodeBuilder
 {
     public class Declare  
     {
-        public AccessModifier modifier { get; set; } = AccessModifier.Public;
+        public Attribute attribute { get; set; }
+
+        public Modifier modifier { get; set; } = Modifier.Public;
         public TypeInfo type { get; set; } = new TypeInfo();
 
         protected string name;
@@ -20,7 +22,7 @@ namespace Sys.CodeBuilder
 
         protected string Signture
         {
-            get { return string.Format("{0} {1} {2}", new Modifier(modifier), type, name); }
+            get { return string.Format("{0} {1} {2}", new ModifierString(modifier), type, name); }
         }
 
         public override string ToString()

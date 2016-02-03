@@ -30,12 +30,6 @@ namespace Sys.CodeBuilder
         public string line { get; set; }
 
 
-        public CodeLine Append(string str)
-        {
-            line = line + str;
-            return this;
-        }
-
         public override string ToString()
         {
             var t = Tab(tab);

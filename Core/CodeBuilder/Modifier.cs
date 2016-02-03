@@ -21,65 +21,24 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    sealed class Modifier
+    [Flags]
+    public enum Modifier
     {
-        public const string CRLF = "\r\n";
-
-        AccessModifier modifier;
-
-        public Modifier(AccessModifier modifier)
-        {
-            this.modifier = modifier;
-        }
-
-        public AccessModifier ModifierType
-        {
-            get { return this.modifier; }
-        }
-
-        public string Text
-        {
-            get { return this.ToString(); }
-        }
-
-        public override string ToString()
-        {
-            StringBuilder s = new StringBuilder();
-
-            if ((modifier & AccessModifier.Public) == AccessModifier.Public)
-                s.Append("public ");
-            else if ((modifier & AccessModifier.Private) == AccessModifier.Private)
-                s.Append("private ");
-            else if ((modifier & AccessModifier.Internal) == AccessModifier.Internal)
-                s.Append("internal ");
-            else if ((modifier & AccessModifier.Protected) == AccessModifier.Protected)
-                s.Append("protected ");
-
-
-            if ((modifier & AccessModifier.Const) == AccessModifier.Const)
-                s.Append("const ");
-            else if ((modifier & AccessModifier.Static) == AccessModifier.Static)
-                s.Append("static ");
-            else if ((modifier & AccessModifier.Readonly) == AccessModifier.Readonly)
-                s.Append("readonly ");
-            else if ((modifier & AccessModifier.Partial) == AccessModifier.Partial)
-                s.Append("partial ");
-
-
-            if ((modifier & AccessModifier.Virtual) == AccessModifier.Virtual)
-                s.Append("virtual ");
-            else if ((modifier & AccessModifier.Override) == AccessModifier.Override)
-                s.Append("override ");
-
-            if ((modifier & AccessModifier.Abstract) == AccessModifier.Abstract)
-                s.Append("abstract ");
-            else if ((modifier & AccessModifier.Sealed) == AccessModifier.Sealed)
-                s.Append("sealed ");
-
-            if ((modifier & AccessModifier.Event) == AccessModifier.Event)
-                s.Append("event ");
-
-            return s.ToString().TrimEnd();
-        }
+        Public = 0x01,
+        Internal = 0x02,
+        Protected = 0x04,
+        Private = 0x08,
+        Const = 0x10,
+        Static = 0x20,
+        Virtual = 0x40,
+        Override = 0x80,
+        Abstract = 0x100,
+        Sealed = 0x200,
+        Readonly = 0x400,
+        Event = 0x800,
+        Extern = 0x10000,
+        Unsafe = 0x20000,
+        Volatile = 0x40000,
+        Partial = 0x80000
     }
 }

@@ -21,24 +21,54 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    [Flags]
-    public enum AccessModifier
+    sealed class ModifierString
     {
-        Public = 0x01,
-        Internal = 0x02,
-        Protected = 0x04,
-        Private = 0x08,
-        Const = 0x10,
-        Static = 0x20,
-        Virtual = 0x40,
-        Override = 0x80,
-        Abstract = 0x100,
-        Sealed = 0x200,
-        Readonly = 0x400,
-        Event = 0x800,
-        Extern = 0x10000,
-        Unsafe = 0x20000,
-        Volatile = 0x40000,
-        Partial = 0x80000
+        Modifier modifier;
+
+        public ModifierString(Modifier modifier)
+        {
+            this.modifier = modifier;
+        }
+
+
+        public override string ToString()
+        {
+            StringBuilder s = new StringBuilder();
+
+            if ((modifier & Modifier.Public) == Modifier.Public)
+                s.Append("public ");
+            else if ((modifier & Modifier.Private) == Modifier.Private)
+                s.Append("private ");
+            else if ((modifier & Modifier.Internal) == Modifier.Internal)
+                s.Append("internal ");
+            else if ((modifier & Modifier.Protected) == Modifier.Protected)
+                s.Append("protected ");
+
+            if ((modifier & Modifier.Static) == Modifier.Static)
+                s.Append("static ");
+            else if ((modifier & Modifier.Partial) == Modifier.Partial)
+                s.Append("partial ");
+
+
+            if ((modifier & Modifier.Const) == Modifier.Const)
+                s.Append("const ");
+            else if ((modifier & Modifier.Readonly) == Modifier.Readonly)
+                s.Append("readonly ");
+
+            if ((modifier & Modifier.Virtual) == Modifier.Virtual)
+                s.Append("virtual ");
+            else if ((modifier & Modifier.Override) == Modifier.Override)
+                s.Append("override ");
+
+            if ((modifier & Modifier.Abstract) == Modifier.Abstract)
+                s.Append("abstract ");
+            else if ((modifier & Modifier.Sealed) == Modifier.Sealed)
+                s.Append("sealed ");
+
+            if ((modifier & Modifier.Event) == Modifier.Event)
+                s.Append("event ");
+
+            return s.ToString().TrimEnd();
+        }
     }
 }

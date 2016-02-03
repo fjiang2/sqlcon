@@ -24,7 +24,9 @@ namespace Sys.CodeBuilder
     public class Argument
     {
         public TypeInfo type { get; set; }
-        public string name { get; set; }
+        public string name { get; }
+
+        public object value { get; set; }
 
         public Argument(TypeInfo type, string name)
         {
@@ -32,19 +34,13 @@ namespace Sys.CodeBuilder
             this.name = name;
         }
 
-        public Argument(string name)
-        {
-            this.type = null;
-            this.name = name;
-        }
-
 
         public override string ToString()
         {
-            if (type == null)
-                return name;
-
-            return string.Format("{0} {1}", type, name);
+            if (value == null)
+                return string.Format("{0} {1}", type, name);
+            else
+                return string.Format("{0} {1} = {2}", type, name, value);
         }
     }
 }

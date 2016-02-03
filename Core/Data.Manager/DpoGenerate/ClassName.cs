@@ -29,10 +29,10 @@ namespace Sys.Data.Manager
     {
         string nameSpace;
         string className;
-        AccessModifier modifier;
+        Modifier modifier;
 
 
-        public ClassName(string nameSpace, AccessModifier modifier, string className)
+        public ClassName(string nameSpace, Modifier modifier, string className)
         {
             this.nameSpace = nameSpace;
             this.modifier = modifier;
@@ -46,21 +46,21 @@ namespace Sys.Data.Manager
         }
 
         public ClassName(Type ty)
-            : this(ty.Namespace, AccessModifier.Public, ty.Name)
+            : this(ty.Namespace, Modifier.Public, ty.Name)
         {
             if (ty.IsPublic)
-                this.modifier = AccessModifier.Public;
+                this.modifier = Modifier.Public;
             else
-                this.modifier = AccessModifier.Internal;
+                this.modifier = Modifier.Internal;
         }
 
 
-        public ClassName(string nameSpace, AccessModifier modifier, ClassTableName tname)
+        public ClassName(string nameSpace, Modifier modifier, ClassTableName tname)
             :this(nameSpace, modifier, tname.ClassName)
         {
         }
 
-        public ClassName(string nameSpace, AccessModifier modifier, ClassTableName tname, bool subNamespace)
+        public ClassName(string nameSpace, Modifier modifier, ClassTableName tname, bool subNamespace)
             : this(nameSpace, modifier, tname)
         {
             if (subNamespace)  //create sub-namespace for each database
@@ -70,7 +70,7 @@ namespace Sys.Data.Manager
 
         public string Namespace { get { return this.nameSpace; } }
         public string Class { get { return this.className; } }
-        public AccessModifier Modifier { get { return this.modifier; } }
+        public Modifier Modifier { get { return this.modifier; } }
 
        
 

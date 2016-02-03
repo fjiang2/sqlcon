@@ -57,6 +57,7 @@
     <Compile Include="Account\IAccount.cs" />
     <Compile Include="CodeBuilder\Argument.cs" />
     <Compile Include="CodeBuilder\Arguments.cs" />
+    <Compile Include="CodeBuilder\Attribute.cs" />
     <Compile Include="CodeBuilder\ClassBuilder.cs" />
     <Compile Include="CodeBuilder\CodeLine.cs" />
     <Compile Include="CodeBuilder\Constructor.cs" />
@@ -64,8 +65,8 @@
     <Compile Include="CodeBuilder\CodeBlock.cs" />
     <Compile Include="CodeBuilder\Declare.cs" />
     <Compile Include="CodeBuilder\Method.cs" />
+    <Compile Include="CodeBuilder\ModifierString.cs" />
     <Compile Include="CodeBuilder\Modifier.cs" />
-    <Compile Include="CodeBuilder\AccessModifier.cs" />
     <Compile Include="CodeBuilder\Property.cs" />
     <Compile Include="CodeBuilder\Statement.cs" />
     <Compile Include="CodeBuilder\TypeInfo.cs" />

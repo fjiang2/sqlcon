@@ -42,7 +42,7 @@ namespace Sys.CodeBuilder
             lines.Clear();
         }
 
-        public void Append(CodeBlock block, int indent = 0)
+        public void Append(CodeBlock block, int indent)
         {
             foreach (var line in block.lines)
             {
@@ -59,7 +59,7 @@ namespace Sys.CodeBuilder
         public void AppendWrap(CodeBlock block)
         {
             AppendLine("{");
-            Append(Indent(block, tab + 1));
+            Append(block, tab + 1);
             AppendLine("}");
         }
 
@@ -83,7 +83,14 @@ namespace Sys.CodeBuilder
 
         public void AppendLine(string str)
         {
-            lines.Add(new CodeLine { tab = tab, line = str });
+            if (str.IndexOf(Environment.NewLine) > 0)
+            {
+                var items = str.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                foreach(var item in items)
+                    lines.Add(new CodeLine { tab = tab, line = item });
+            }
+            else
+                lines.Add(new CodeLine { tab = tab, line = str });
         }
 
 
@@ -92,21 +99,6 @@ namespace Sys.CodeBuilder
             AppendLine(string.Format(format, args));
         }
 
-        public void Indent(int tab)
-        {
-            Indent(this, tab);
-        }
-
-
-        private static CodeBlock Indent(CodeBlock block, int tab)
-        {
-            foreach (var line in block.lines)
-            {
-                line.tab += tab;
-            }
-
-            return block;
-        }
 
         public override string ToString()
         {
