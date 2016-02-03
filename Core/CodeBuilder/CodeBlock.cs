@@ -42,7 +42,7 @@ namespace Sys.CodeBuilder
             lines.Clear();
         }
 
-        public void Append(CodeBlock block, int indent)
+        public void Add(CodeBlock block, int indent)
         {
             foreach (var line in block.lines)
             {
@@ -51,16 +51,49 @@ namespace Sys.CodeBuilder
             }
         }
 
-        public void Append(ICodeBlock block, int indent)
+        public void Add(ICodeBlock block, int indent)
         {
-            Append(block.GetBlock(), indent);
+            Add(block.GetBlock(), indent);
         }
 
-        public void AppendWrap(CodeBlock block)
+        public void AddBeginEnd(CodeBlock block)
         {
-            AppendLine("{");
-            Append(block, tab + 1);
-            AppendLine("}");
+            Begin();
+            Add(block, tab);
+            End();
+        }
+
+        public CodeBlock Begin(string str = null)
+        {
+            if (str == null)
+                AppendLine("{");
+            else
+                AppendLine(str + "{");
+
+            tab++;
+
+            return this;
+        }
+
+        public CodeBlock End(string str = null)
+        {
+            tab--;
+            if (str == null)
+                AppendLine("}");
+            else
+                AppendLine("}" + str);
+
+            return this;
+        }
+
+        public CodeBlock Append(string str)
+        {
+            var line = lines.Last();
+            if (line != null)
+                line.line += str;
+            else
+                AppendLine(str);
+            return this;
         }
 
         public void Insert(string str, int index = 0)
@@ -69,34 +102,42 @@ namespace Sys.CodeBuilder
             lines.Insert(index, line);
         }
 
-        public void AppendLine()
+        public CodeBlock AppendLine()
         {
             lines.Add(CodeLine.EmptyLine);
+
+            return this;
         }
 
-        public void AppendLine(string str, int indent)
+        public CodeBlock AppendLine(string str, int indent)
         {
             this.tab += indent;
             AppendLine(str);
             this.tab -= indent;
+
+            return this;
         }
 
-        public void AppendLine(string str)
+        public CodeBlock AppendLine(string str)
         {
             if (str.IndexOf(Environment.NewLine) > 0)
             {
                 var items = str.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-                foreach(var item in items)
+                foreach (var item in items)
                     lines.Add(new CodeLine { tab = tab, line = item });
             }
             else
                 lines.Add(new CodeLine { tab = tab, line = str });
+
+            return this;
         }
 
 
-        public void AppendFormat(string format, params object[] args)
+        public CodeBlock AppendFormat(string format, params object[] args)
         {
             AppendLine(string.Format(format, args));
+
+            return this;
         }
 
 

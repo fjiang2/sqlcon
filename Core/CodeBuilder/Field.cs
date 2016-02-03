@@ -38,15 +38,12 @@ namespace Sys.CodeBuilder
             this.value = value;
         }
 
+        
 
-        public override string ToString()
+        public override CodeBlock GetBlock()
         {
-            return GetBlock().ToString();
-        }
+            CodeBlock block = base.GetBlock();
 
-        public CodeBlock GetBlock()
-        {
-            CodeBlock block = new CodeBlock();
             if (value != null)
             {
                 block.AppendFormat("{0} = {1};", Signture, value);

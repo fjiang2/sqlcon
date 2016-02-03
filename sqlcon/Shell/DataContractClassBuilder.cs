@@ -63,7 +63,6 @@ namespace sqlcon
 
         private ClassBuilder CreateReader()
         {
-            int tab = 0;
             ClassBuilder builder = new ClassBuilder(clss + "Extension")
             {
                 nameSpace = ns,
@@ -86,11 +85,10 @@ namespace sqlcon
 
                 sent.AppendLine("return dt.AsEnumerable()");
                 sent.AppendLine($".Select(row => new {clss}");
-                sent.AppendLine("{");
+                sent.Begin();
 
                 int count = dt.Columns.Count;
                 int i = 0;
-                tab = 1;
                 foreach (DataColumn column in dt.Columns)
                 {
                     var type = dict[column];
@@ -98,10 +96,10 @@ namespace sqlcon
                     if (++i < count)
                         line += ",";
 
-                    sent.AppendLine(line, tab);
+                    sent.AppendLine(line);
                 }
 
-                sent.AppendLine("});");
+                sent.End(");");
             }
 
             {
@@ -124,22 +122,28 @@ namespace sqlcon
 
                 method.statements.AppendLine();
 
-                tab = 1;
                 sent.AppendLine("foreach(var item in items)");
-                sent.AppendLine("{");
-                sent.AppendLine("var row = dt.NewRow();", tab);
+                sent.Begin();
+                sent.AppendLine("var row = dt.NewRow();");
                 foreach (DataColumn column in dt.Columns)
                 {
                     var ty = dict[column];
                     var line = $"row[\"{column.ColumnName}\"] = item.{column.ColumnName};";
-                    sent.AppendLine(line, tab);
+                    sent.AppendLine(line);
                 }
-                sent.AppendLine("dt.Rows.Add(row);", tab);
-                sent.AppendLine("}");
+                sent.AppendLine("dt.Rows.Add(row);");
+                sent.End();
 
                 sent.AppendLine("dt.AcceptChanges();");
                 sent.AppendLine("return dt;");
             }
+
+            //Property prop = new Property(new TypeInfo { type = typeof(int) }, "Text");
+            //prop.gets.AppendLine("var i=2;");
+            //prop.gets.AppendLine("return this.text;");
+            //prop.sets.AppendLine("this.text = value;");
+            //builder.AddProperty(prop);
+
             return builder;
         }
 

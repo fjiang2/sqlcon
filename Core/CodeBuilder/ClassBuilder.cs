@@ -103,28 +103,28 @@ namespace Sys.CodeBuilder
             var body = new CodeBlock();
 
             foreach (Field field in fields)
-                body.Append(field, tab);
+                body.Add(field, tab);
 
             foreach (Constructor constructor in constructors)
             {
-                body.Append(constructor, tab);
+                body.Add(constructor, tab);
                 body.AppendLine();
             }
 
             foreach (Property property in properties)
             {
-                body.Append(property, tab);
+                body.Add(property, tab);
                 body.AppendLine();
             }
 
             foreach (Method method in methods)
             {
-                body.Append(method, tab);
+                body.Add(method, tab);
                 body.AppendLine();
             }
 
-            clss.AppendWrap(body);
-            block.AppendWrap(clss);
+            clss.AddBeginEnd(body);
+            block.AddBeginEnd(clss);
 
 
             return block;

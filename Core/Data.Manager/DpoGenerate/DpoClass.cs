@@ -275,9 +275,9 @@ namespace Sys.Data.Manager
             }
 
             CodeBlock block = new CodeBlock();
-            block.Append(fill, 2);
+            block.Add(fill, 2);
             block.AppendLine();
-            block.Append(collect, 2);
+            block.Add(collect, 2);
             return block.ToString();
         }
 

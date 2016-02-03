@@ -21,32 +21,26 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Constructor : ICodeBlock
+    public class Constructor : Declare, ICodeBlock
     {
         public Arguments args { get; set; } = new Arguments();
         public Arguments baseAgrs { get; set; } = new Arguments();
 
         public Statement statements { get; } = new Statement();
 
-        public Modifier modifier { get; set; } = Modifier.Public;
-        private string constructorName;
 
         public Constructor(string constructorName )
+            :base(constructorName)
         {
-            this.constructorName = constructorName;
+            base.modifier = Modifier.Public;
+            base.type = null;
         }
 
-    
-        public override string ToString()
+        public override CodeBlock GetBlock()
         {
-            return GetBlock().ToString();
-        }
+            CodeBlock block = base.GetBlock();
 
-        public CodeBlock GetBlock()
-        {
-            CodeBlock block = new CodeBlock();
-
-            string _constructor = string.Format("{0}{1}({2})", new ModifierString(modifier), constructorName, args);
+            string _constructor = string.Format("{0}({1})", Signture, args);
             string _base = string.Format(":base({0})", baseAgrs);
 
             block.AppendLine(_constructor);
@@ -55,7 +49,7 @@ namespace Sys.CodeBuilder
                 block.AppendLine(_base, 1);
             }
 
-            block.AppendWrap(statements);
+            block.AddBeginEnd(statements);
             return block;
         }
         

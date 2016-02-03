@@ -33,14 +33,10 @@ namespace Sys.CodeBuilder
         }
 
 
-        public override string ToString()
+        public override CodeBlock GetBlock()
         {
-            return GetBlock().ToString();
-        }
+            CodeBlock block = base.GetBlock();
 
-        public CodeBlock GetBlock()
-        {
-            CodeBlock block = new CodeBlock();
             if (gets.Count == 0 && sets.Count == 0)
             {
                 block.AppendFormat("{0} {{get; set; }}", Signture);
@@ -48,20 +44,20 @@ namespace Sys.CodeBuilder
             else
             {
                 block.AppendLine(Signture);
-                block.AppendLine("{");
+                block.Begin();
                 if (gets.Count != 0)
                 {
-                    block.AppendLine("get", 1);
-                    block.AppendWrap(gets);
+                    block.AppendLine("get");
+                    block.AddBeginEnd(gets);
                 }
 
                 if (sets.Count != 0)
                 {
-                    block.AppendLine("set" ,1);
-                    block.AppendWrap(sets);
+                    block.AppendLine("set");
+                    block.AddBeginEnd(sets);
                 }
 
-                block.AppendLine("}");
+                block.End();
             }
 
             return block;
