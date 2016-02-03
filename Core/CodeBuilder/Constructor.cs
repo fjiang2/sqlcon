@@ -21,71 +21,42 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Constructor : Member
+    public class Constructor : ICodeBlock
     {
         public Arguments args { get; set; } = new Arguments();
         public Arguments baseAgrs { get; set; } = new Arguments();
 
-        List<string> statements = new List<string>();
-        
+        public Statement statements { get; } = new Statement();
+
+        public AccessModifier modifier { get; set; } = AccessModifier.Public;
+        private string constructorName;
 
         public Constructor(string constructorName )
-            : base(constructorName)
         {
-            base.modifier = AccessModifier.Public;
+            this.constructorName = constructorName;
         }
 
-        protected override string signature
-        {
-            get
-            {
-                string _constructor = string.Format("{0}{1}({2})", new Modifier(modifier), name, args);
-
-                string _base = string.Format(":base({0})", baseAgrs);
-
-                if (baseAgrs.IsEmpty)
-                    return _constructor;
-                else
-                    return string.Format("{0}\r\n\t\t{1}", _constructor, _base);
-            }
-        }
-
-        public Constructor AddStatements(string format, params object[] args)
-        {
-            statements.Add(string.Format(format, args));
-            return this;
-        }
-
-        public Constructor AddStatements()
-        {
-            statements.Add("");
-            return this;
-        }
-
-        public Constructor AddField(Field field)
-        {
-            statements.Add(field.ToString());
-            return this;
-        }
-
+    
         public override string ToString()
         {
-            StringBuilder s = new StringBuilder();
+            return GetBlock().ToString();
+        }
 
-            s.Append("\t\t").Append(this.signature).AppendLine()
-                .AppendLine("\t\t{");
+        public CodeBlock GetBlock()
+        {
+            CodeBlock block = new CodeBlock();
 
-            foreach (string sent in statements)
+            string _constructor = string.Format("{0}{1}({2})", new Modifier(modifier), constructorName, args);
+            string _base = string.Format(":base({0})", baseAgrs);
+
+            block.AppendLine(_constructor);
+            if (!baseAgrs.IsEmpty)
             {
-                if (sent == "")
-                    s.AppendLine();
-                else
-                    s.Append("\t\t\t").Append(sent).AppendLine(";");
+                block.AppendLine(_base, 1);
             }
 
-            s.AppendLine("\t\t}");
-
-            return s.ToString();
+            block.AppendWrap(statements);
+            return block;
         }
         
 

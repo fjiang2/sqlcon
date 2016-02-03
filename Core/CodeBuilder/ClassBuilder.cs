@@ -22,7 +22,7 @@ using System.Reflection;
 
 namespace Sys.CodeBuilder
 {
-    public class ClassBuilder
+    public class ClassBuilder : ICodeBlock
     {
         public string nameSpace { get; set; } = "Sys.Unknown";
         public AccessModifier modifier { get; set; } = AccessModifier.Public;
@@ -38,8 +38,8 @@ namespace Sys.CodeBuilder
         private Type[] inherits;
 
         public ClassBuilder(string className)
-            :this(className, new Type[]{})
-        { 
+            : this(className, new Type[] { })
+        {
         }
 
         public ClassBuilder(string className, Type[] inherits)
@@ -59,7 +59,7 @@ namespace Sys.CodeBuilder
             this.constructors.Add(constructor);
             return this;
         }
-  
+
         public ClassBuilder AddField(Field field)
         {
             this.fields.Add(field);
@@ -80,41 +80,54 @@ namespace Sys.CodeBuilder
 
         public override string ToString()
         {
-            StringBuilder s = new StringBuilder();
-            
-            s.Append(string.Join("", usings.Select(name =>string.Format("using {0};\r\n",name))));
-            s.AppendLine();
+            return GetBlock().ToString();
+        }
 
-            s.AppendFormat("namespace {0}", this.nameSpace).AppendLine();
-            s.AppendLine("{");
+        public CodeBlock GetBlock()
+        {
+            CodeBlock block = new CodeBlock();
 
-            s.AppendFormat("\t{0} class {1}", new Modifier(modifier), className);
-            if(inherits.Length >0)
-                s.AppendFormat(" : {0}", string.Join(", ", inherits.Select(inherit => new TypeInfo { type = inherit }.ToString())));
-            
-            s.AppendLine();
-            s.AppendLine("\t{");
+            foreach (var name in usings)
+                block.AppendFormat("using {0};", name);
+
+            block.AppendLine();
+
+            block.AppendFormat("namespace {0}", this.nameSpace);
+
+            var clss = new CodeBlock();
+            clss.AppendFormat("{0} class {1}", new Modifier(modifier), className);
+            if (inherits.Length > 0)
+                clss.AppendFormat("\t: {0}", string.Join(", ", inherits.Select(inherit => new TypeInfo { type = inherit }.ToString())));
+
+            int tab = 0;
+            var body = new CodeBlock();
 
             foreach (Field field in fields)
-                s.Append("\t\t").AppendLine(field.ToString());
-
-            s.AppendLine();
+                body.Append(field, tab);
 
             foreach (Constructor constructor in constructors)
-                s.AppendLine(constructor.ToString());
+            {
+                body.Append(constructor, tab);
+                body.AppendLine();
+            }
 
             foreach (Property property in properties)
-                s.AppendLine(property.ToString());
+            {
+                body.Append(property, tab);
+                body.AppendLine();
+            }
 
             foreach (Method method in methods)
-                s.AppendLine(method.ToString());
+            {
+                body.Append(method, tab);
+                body.AppendLine();
+            }
+
+            clss.AppendWrap(body);
+            block.AppendWrap(clss);
 
 
-            s.AppendLine("\t}");
-            s.AppendLine("}");
-
-
-            return s.ToString();
+            return block;
         }
 
     }

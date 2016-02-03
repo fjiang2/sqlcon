@@ -21,29 +21,56 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Statement : Format
+    public class Statement : CodeBlock
     {
-
         public Statement()
-        { 
+        {
         }
+
+        public Statement COMPOUND(Statement statements)
+        {
+            AppendWrap(statements);
+            return this;
+        }
+
 
         public Statement IF(string exp, Statement sent)
         {
+            AppendLine($"if({exp})");
+            Append(sent, 1);
             return this;
         }
-        
+
+        public Statement IF(string exp, Statement sent1, Statement sent2)
+        {
+            AppendLine($"if({exp})");
+            Append(sent1, 1);
+            AppendLine("else");
+            Append(sent2, 1);
+            return this;
+        }
+
+        public Statement FOREACH(string exp1, string exp2, Statement sent)
+        {
+            AppendLine($"foreach({exp1} in {exp2})");
+            Append(sent, 1);
+            return this;
+        }
+
+
         public Statement WHILE(string exp, Statement sent)
         {
+            AppendLine($"while({exp})");
+            Append(sent, 1);
             return this;
         }
 
-        
-
-        public Statement Append(string exp)
+        public Statement RETURN(string exp)
         {
-            Add(exp);
+            AppendLine($"return {exp};");
             return this;
         }
+
+
     }
 }

@@ -10,8 +10,6 @@ namespace Sys.CodeBuilder
     {
         public Argument[] args { get; set; } = new Argument[] { };
 
-        public bool This { get; set; }
-
         public Arguments()
         {
         }
@@ -37,11 +35,7 @@ namespace Sys.CodeBuilder
 
         public override string ToString()
         {
-            string text = string.Join(", ", args.Select(arg => arg.ToString()));
-            if (This)
-                return $"this {text}";
-            else
-                return text;
+            return string.Join(", ", args.Select(arg => arg.ToString()));
         }
     }
 }

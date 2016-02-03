@@ -21,62 +21,51 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Method : Member
+    public class Method  : Declare, ICodeBlock
     {
-        private CompoundStatement statements = new CompoundStatement(2);
+        public Statement statements { get; } = new Statement();
 
         public Arguments args { get; set; } = new Arguments();
 
-        //protected void Method(....)
+        public bool IsExtensionMethod { get; set; } = false;
+
+        public Method(TypeInfo returnType, string methodName)
+            :base(methodName)
+        {
+            base.type = returnType;
+        }
+
         public Method(string methodName)
             :base(methodName)
         {
         }
 
-        protected override string signature
+        protected string signature
         {
             get
             {
-                var line = string.Format("{0} {1} {2}({3})", new Modifier(modifier), type, name, args);
-                return line;
+                if (IsExtensionMethod)
+                {
+                    return string.Format("{0}(this {1})", Signture, args);
+                }
+                else
+                {
+                    return string.Format("{0}({1})", Signture, args);
+                }
             }
         }
 
-
-        public Method AddStatement(string format, params object[] args)
-        {
-            statements.Add(string.Format(format, args));
-            return this;
-        }
-
-        public Method AddStatement(Statement statment)
-        {
-            statements.Add(statment.ToString());
-            return this;
-        }
-
-        public Method AppendLine()
-        {
-            statements.Add("");
-            return this;
-        }
-
-        public Method AddField(Field field)
-        {
-            statements.Add(field.ToString());
-            return this;
-        }
-
-
-
         public override string ToString()
         {
-            this.tab = 2;
+            return GetBlock().ToString();
+        }
 
-            this.Add(this.signature);
-            code.Append(statements.Code);
-
-            return code.ToString();
+        public CodeBlock GetBlock()
+        {
+            CodeBlock block = new CodeBlock();
+            block.AppendLine(signature);
+            block.AppendWrap(statements);
+            return block;
         }
     }
 }

@@ -21,10 +21,10 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Property : Member
+    public class Property  : Declare, ICodeBlock
     {
-        CompoundStatement gets = new CompoundStatement(3);
-        CompoundStatement sets = new CompoundStatement(3);
+        public Statement gets { get; } = new Statement();
+        public Statement sets { get; } = new Statement();
 
         public Property(TypeInfo returnType, string propertyName)
             :base(propertyName)
@@ -33,78 +33,38 @@ namespace Sys.CodeBuilder
         }
 
 
-        public Property AddGet(string format, params object[] args)
-        {
-            gets.Add(string.Format(format, args));
-            return this;
-        }
-
-        public Property AddGet()
-        {
-            gets.Add("");
-
-            return this;
-        }
-
-
-        public Property AddSet(string format, params object[] args)
-        {
-            sets.Add(string.Format(format, args));
-            return this;
-        }
-
-        public Property AddSet()
-        {
-            sets.Add("");
-            return this;
-        }
-
-        public Property AddGetField(Field field)
-        {
-            gets.Add(field.ToString());
-            return this;
-        }
-
-        public Property AddSetField(Field field)
-        {
-            gets.Add(field.ToString());
-            return this;
-        }
-
-
         public override string ToString()
         {
-            this.tab = 2;
+            return GetBlock().ToString();
+        }
 
+        public CodeBlock GetBlock()
+        {
+            CodeBlock block = new CodeBlock();
             if (gets.Count == 0 && sets.Count == 0)
             {
-                this.AddFormat("{0} {{get; set; }}", this.signature);
+                block.AppendFormat("{0} {{get; set; }}", Signture);
             }
             else
             {
-                this.Add(this.signature);
-                this.Add("{");
-                this.tab++;
+                block.AppendLine(Signture);
+                block.AppendLine("{");
                 if (gets.Count != 0)
                 {
-                    this.Add("get");
-                    code.Append(gets.Code);
-
+                    block.AppendLine("get", 1);
+                    block.AppendWrap(gets);
                 }
 
                 if (sets.Count != 0)
                 {
-                    this.Add("set");
-                    code.Append(sets.Code);
+                    block.AppendLine("set" ,1);
+                    block.AppendWrap(sets);
                 }
 
-                this.tab--;
-                this.Add("}");
+                block.AppendLine("}");
             }
 
-            return code.ToString();
+            return block;
         }
-        
-
     }
 }

@@ -21,45 +21,63 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    class CompoundStatement : List<string>
+    public class Statements : CodeBlock
     {
-        int tab;
-
-        public CompoundStatement(int tab)
+        public Statements()
         {
-            this.tab = tab;
         }
 
-        public string Code
+        public int Count
         {
-            get
-            {
-                StringBuilder sb = new StringBuilder();
-
-                string TAB1 = new string('\t', tab);
-                string TAB2 = new string('\t', tab + 1);
-
-                sb.Append(TAB1).AppendLine("{");
-                foreach (string sent in this)
-                {
-                    if (sent == "")
-                        sb.AppendLine();
-                    else
-                    {
-                        var expr = sent.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-                        sb.Append(string.Join(Environment.NewLine, expr.Select(exp => TAB2 + exp)));
-                        sb.AppendLine(";");
-                    }
-                }
-
-                sb.Append(TAB1).AppendLine("}");
-                return sb.ToString();
-            }
+            get { return this.list.Count; }
         }
 
-        public override string ToString()
+        public Statements COMPOUND(Statements statements)
         {
-            return Code;
+            Statements statement = new Statements();
+            statement.IsCompound = true;
+            statement.Append(statements);
+            return this;
         }
+
+
+        public Statements IF(string exp, Statements sent)
+        {
+            AppendLine($"if({exp})");
+            Append(sent, 1);
+            return this;
+        }
+
+        public Statements IF(string exp, Statements sent1, Statements sent2)
+        {
+            AppendLine($"if({exp})");
+            Append(sent1, 1);
+            AppendLine("else");
+            Append(sent2, 1);
+            return this;
+        }
+
+        public Statements FOREACH(string exp1, string exp2, Statements sent)
+        {
+            AppendLine($"foreach({exp1} in {exp2})");
+            Append(sent, 1);
+            return this;
+        }
+
+
+        public Statements WHILE(string exp, Statements sent)
+        {
+            AppendLine($"while({exp})");
+            Append(sent, 1);
+            return this;
+        }
+
+        public Statements RETURN(string exp)
+        {
+            AppendLine($"return {exp};");
+            return this;
+        }
+
+
     }
 }

@@ -94,8 +94,8 @@ namespace Sys.Data.Manager
 
         private void PackRecord(DataRow dataRow)
         {
-            PersistentObject dpo = (PersistentObject)Activator.CreateInstance(this.dpoType, new object[] { dataRow});
-          
+            PersistentObject dpo = (PersistentObject)Activator.CreateInstance(this.dpoType, new object[] { dataRow });
+
             foreach (FieldInfo fieldInfo in this.publicFields)
             {
                 object obj = fieldInfo.GetValue(dpo);
@@ -117,20 +117,17 @@ namespace Sys.Data.Manager
                             ;
 
 
-                        pack.AddStatement("dpo.{0} = @{1}", fieldInfo.Name, s);
+                        pack.statements.AppendFormat("dpo.{0} = @{1}", fieldInfo.Name, s);
                     }
                     else
                     {
-                        pack.AddStatement("dpo.{0} = {1}", fieldInfo.Name, s);
+                        pack.statements.AppendFormat("dpo.{0} = {1}", fieldInfo.Name, s);
                     }
                 }
             }
 
-            pack.AddStatement("list.Add(dpo)")
-                .AppendLine();
-                
-
-         
+            pack.statements.AppendLine("list.Add(dpo)");
+            pack.statements.AppendLine();
         }
 
 
@@ -145,7 +142,7 @@ namespace Sys.Data.Manager
 
         public bool Pack()
         {
-            pack.AddStatement("var dpo = new {0}()", dpoType.Name);
+            pack.statements.AppendFormat("var dpo = new {0}()", dpoType.Name);
 
             PersistentObject dpo = (PersistentObject)Activator.CreateInstance(this.dpoType);
             DataTable dt = new TableReader(dpo.TableName).Table;
@@ -168,7 +165,7 @@ namespace Sys.Data.Manager
             {
                 PackRecord(dataRow);
                 if(i < dt.Rows.Count -1)
-                    pack.AddStatement("dpo = new {0}()", dpoType.Name);
+                    pack.statements.AppendFormat("dpo = new {0}()", dpoType.Name);
                 
                 i++;
             }

@@ -21,56 +21,97 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Format
+    public class CodeBlock
     {
-        protected int tab = 0;
-        protected StringBuilder code = new StringBuilder();
+        private int tab = 0;
+        private List<CodeLine> lines = new List<CodeLine>();
 
-        private static string[] TABS = new string[] { "", "\t", "\t\t", "\t\t\t", "\t\t\t\t", "\t\t\t\t\t" };
-        public Format()
-        { 
-        
+
+        public CodeBlock()
+        {
         }
 
-        public void Indent(bool yes)
+        public int Count
         {
-            if (yes)
-                tab++;
-            else
-                tab--;
+            get { return lines.Count; }
         }
 
-        public Format Add(string str)
+        public void Clear()
         {
-            code.Append(TAB).AppendLine(str);
-            return this;
+            this.tab = 0;
+            lines.Clear();
         }
 
-        public Format AddFormat(string format, params object[] args)
+        public void Append(CodeBlock block, int indent = 0)
         {
-            code.Append(TAB).AppendFormat(format, args).AppendLine();
-            return this;
-        }
-
-        protected string Tab(int n)
-        {
-            return new string('\t', n);
-        }
-
-        public string TAB
-        {
-            get
+            foreach (var line in block.lines)
             {
-                if (tab < TABS.Length)
-                    return TABS[tab];
-
-                return new string('\t', tab);
+                line.tab += indent;
+                lines.Add(line);
             }
+        }
+
+        public void Append(ICodeBlock block, int indent)
+        {
+            Append(block.GetBlock(), indent);
+        }
+
+        public void AppendWrap(CodeBlock block)
+        {
+            AppendLine("{");
+            Append(Indent(block, tab + 1));
+            AppendLine("}");
+        }
+
+        public void Insert(string str, int index = 0)
+        {
+            var line = new CodeLine { tab = tab, line = str };
+            lines.Insert(index, line);
+        }
+
+        public void AppendLine()
+        {
+            lines.Add(CodeLine.EmptyLine);
+        }
+
+        public void AppendLine(string str, int indent)
+        {
+            this.tab += indent;
+            AppendLine(str);
+            this.tab -= indent;
+        }
+
+        public void AppendLine(string str)
+        {
+            lines.Add(new CodeLine { tab = tab, line = str });
+        }
+
+
+        public void AppendFormat(string format, params object[] args)
+        {
+            AppendLine(string.Format(format, args));
+        }
+
+        public void Indent(int tab)
+        {
+            Indent(this, tab);
+        }
+
+
+        private static CodeBlock Indent(CodeBlock block, int tab)
+        {
+            foreach (var line in block.lines)
+            {
+                line.tab += tab;
+            }
+
+            return block;
         }
 
         public override string ToString()
         {
-            return code.ToString();
+            return string.Join(Environment.NewLine, lines);
         }
+
     }
 }

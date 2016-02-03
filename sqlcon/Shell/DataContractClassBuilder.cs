@@ -63,6 +63,7 @@ namespace sqlcon
 
         private ClassBuilder CreateReader()
         {
+            int tab = 0;
             ClassBuilder builder = new ClassBuilder(clss + "Extension")
             {
                 nameSpace = ns,
@@ -70,25 +71,26 @@ namespace sqlcon
             };
 
             {
-                if(mtd==null)
+                if (mtd == null)
                     mtd = $"To{clss}Collection";
 
                 Method method = new Method(mtd)
                 {
                     modifier = AccessModifier.Public | AccessModifier.Static,
                     type = new TypeInfo { userType = $"IEnumerable<{clss}>" },
-                    args = new Arguments(new Argument(new TypeInfo { type = typeof(DataTable) }, "dt") ) { This = true }
+                    args = new Arguments(new Argument(new TypeInfo { type = typeof(DataTable) }, "dt")),
+                    IsExtensionMethod = true
                 };
                 builder.AddMethod(method);
+                var sent = method.statements;
 
-                Statement sent = new Statement();
-                sent.Append("return dt.AsEnumerable()");
-                sent.Append($".Select(row => new {clss}");
-                sent.Append("{");
+                sent.AppendLine("return dt.AsEnumerable()");
+                sent.AppendLine($".Select(row => new {clss}");
+                sent.AppendLine("{");
 
                 int count = dt.Columns.Count;
                 int i = 0;
-                sent.Indent(true);
+                tab = 1;
                 foreach (DataColumn column in dt.Columns)
                 {
                     var type = dict[column];
@@ -96,12 +98,10 @@ namespace sqlcon
                     if (++i < count)
                         line += ",";
 
-                    sent.Add(line);
+                    sent.AppendLine(line, tab);
                 }
-                sent.Indent(false);
-                sent.Append("})");
 
-                method.AddStatement(sent);
+                sent.AppendLine("});");
             }
 
             {
@@ -109,42 +109,36 @@ namespace sqlcon
                 {
                     modifier = AccessModifier.Public | AccessModifier.Static,
                     type = new TypeInfo { type = typeof(DataTable) },
-                    args = new Arguments(new Argument(new TypeInfo { userType = $"IEnumerable<{clss}>" }, "items")) { This = true }
+                    args = new Arguments(new Argument(new TypeInfo { userType = $"IEnumerable<{clss}>" }, "items")),
+                    IsExtensionMethod = true
                 };
                 builder.AddMethod(method);
 
-                Statement sent = new Statement();
-                sent.Append("DataTable dt = new DataTable();");
+                var sent = method.statements;
+                sent.AppendLine("DataTable dt = new DataTable();");
                 foreach (DataColumn column in dt.Columns)
                 {
                     Type ty = dict[column].type;
-                    sent.Append($"dt.Columns.Add(new DataColumn(\"{column.ColumnName}\",typeof({ty})));");
+                    sent.AppendLine($"dt.Columns.Add(new DataColumn(\"{column.ColumnName}\",typeof({ty})));");
                 }
 
-                method.AppendLine();
+                method.statements.AppendLine();
 
-                sent.Append("foreach(var item in items)");
-                sent.Append("{");
-                sent.Indent(true);
-                sent.Append("var row = dt.NewRow();");
+                tab = 1;
+                sent.AppendLine("foreach(var item in items)");
+                sent.AppendLine("{");
+                sent.AppendLine("var row = dt.NewRow();", tab);
                 foreach (DataColumn column in dt.Columns)
                 {
                     var ty = dict[column];
                     var line = $"row[\"{column.ColumnName}\"] = item.{column.ColumnName};";
-                    sent.Add(line);
-                    //if (ty.Nullable)
-                    //{
-                    //    sent.Add($"if(item.{column.ColumnName} == null)");
-                    //    sent.Add($"\trow[\"{column.ColumnName}\"] = DBNull.Value;");
-                    //}
+                    sent.AppendLine(line, tab);
                 }
-                sent.Append("dt.Rows.Add(row);");
-                sent.Indent(false);
-                sent.Append("}");
+                sent.AppendLine("dt.Rows.Add(row);", tab);
+                sent.AppendLine("}");
 
-                method.AddStatement(sent);
-                method.AddStatement("dt.AcceptChanges()");
-                method.AddStatement("return dt");
+                sent.AppendLine("dt.AcceptChanges();");
+                sent.AppendLine("return dt;");
             }
             return builder;
         }

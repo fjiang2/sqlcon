@@ -270,11 +270,15 @@ namespace Sys.Data.Manager
             {
                 var fieldDef = dict_column_field[column.ColumnName];
                 string fieldName = fieldDef.PropertyName;
-                fill.AddStatement("this.{0} = GetField<{1}>(row, _{0})", fieldName, fieldDef.Type);
-                collect.AddStatement("SetField(row, _{0}, this.{0})", fieldName);
+                fill.statements.AppendFormat("this.{0} = GetField<{1}>(row, _{0});", fieldName, fieldDef.Type);
+                collect.statements.AppendFormat("SetField(row, _{0}, this.{0});", fieldName);
             }
 
-            return fill.ToString() + "\r\n" + collect.ToString();
+            CodeBlock block = new CodeBlock();
+            block.Append(fill, 2);
+            block.AppendLine();
+            block.Append(collect, 2);
+            return block.ToString();
         }
 
         private string Fields()

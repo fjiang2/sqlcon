@@ -21,17 +21,15 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Field : Member
+    public class Field : Declare, ICodeBlock
     {
         private object value;
-        
+
         public Field(TypeInfo type, string fieldName)
-            :base(fieldName)
+            :this(type, fieldName, null)
         {
-            this.type = type;
         }
 
-        
 
         public Field(TypeInfo type, string fieldName, object value)
             :base(fieldName)
@@ -41,26 +39,24 @@ namespace Sys.CodeBuilder
         }
 
 
-        private string fieldSignature
-        {
-            get
-            {
-                if (value != null)
-                {
-                    return string.Format("{0}{1} {2} = {3};", new Modifier(modifier), type, name, value);
-                }
-                else
-                {
-                    return  base.signature;
-                }
-            }
-        }
-
-
-
         public override string ToString()
         {
-            return this.fieldSignature;
+            return GetBlock().ToString();
+        }
+
+        public CodeBlock GetBlock()
+        {
+            CodeBlock block = new CodeBlock();
+            if (value != null)
+            {
+                block.AppendFormat("{0} = {1};", Signture, value);
+            }
+            else
+            {
+                block.AppendLine(Signture);
+            }
+
+            return block;
         }
     }
 }
