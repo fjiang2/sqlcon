@@ -77,7 +77,7 @@ namespace sqlcon
                 {
                     modifier = Modifier.Public | Modifier.Static,
                     type = new TypeInfo { userType = $"IEnumerable<{clss}>" },
-                    args = new Arguments(new Argument(new TypeInfo { type = typeof(DataTable) }, "dt")),
+                    args = new Arguments().Add<DataTable>("dt"),
                     IsExtensionMethod = true
                 };
                 builder.AddMethod(method);
@@ -107,7 +107,7 @@ namespace sqlcon
                 {
                     modifier = Modifier.Public | Modifier.Static,
                     type = new TypeInfo { type = typeof(DataTable) },
-                    args = new Arguments(new Argument(new TypeInfo { userType = $"IEnumerable<{clss}>" }, "items")),
+                    args = new Arguments().Add($"IEnumerable<{clss}>", "items"),
                     IsExtensionMethod = true
                 };
                 builder.AddMethod(method);

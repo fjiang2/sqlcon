@@ -257,13 +257,13 @@ namespace Sys.Data.Manager
             Method fill = new Method("Fill")
             {
                 modifier = Modifier.Public | Modifier.Override,
-                args = new Arguments(new Argument(new Sys.CodeBuilder.TypeInfo { type = typeof(DataRow) }, "row"))
+                args = new Arguments().Add<DataRow>("row")
             };
 
             Method collect = new Method("Collect")
             {
                 modifier = Modifier.Public | Modifier.Override,
-                args = new Arguments(new Argument(new Sys.CodeBuilder.TypeInfo { type = typeof(DataRow) }, "row") )
+                args = new Arguments().Add<DataRow>("row")
             };
 
             foreach (IColumn column in metaTable.Columns)

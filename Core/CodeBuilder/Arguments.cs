@@ -8,28 +8,45 @@ namespace Sys.CodeBuilder
 {
     public class Arguments
     {
-        public Argument[] args { get; set; } = new Argument[] { };
+        private List<Argument> args = new List<Argument>();
 
         public Arguments()
         {
         }
 
-        public Arguments(Argument arg)
+        public Arguments(IEnumerable<Argument> args)
         {
-            args = new Argument[] { arg };
+            foreach (var arg in args)
+                this.args.Add(arg);
         }
 
-        public Arguments(Argument arg1, Argument arg2)
+        public Arguments Add(Argument arg)
         {
-            args = new Argument[] { arg1, arg2 };
+            args.Add(arg);
+            return this;
         }
 
+        public Arguments Add(string userType, string name)
+        {
+            var arg = new Argument(new TypeInfo { userType = userType }, name);
+
+            args.Add(arg);
+            return this;
+        }
+
+        public Arguments Add<T>(string name)
+        {
+            var arg = new Argument(new TypeInfo { type = typeof(T) }, name);
+            args.Add(arg);
+
+            return this;
+        }
 
         public bool IsEmpty
         {
             get
             {
-                return args == null || args.Length == 0;
+                return args.Count == 0;
             }
         }
 

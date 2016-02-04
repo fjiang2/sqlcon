@@ -34,7 +34,6 @@ namespace Sys.CodeBuilder
             this.name = name;
         }
 
-
         public override string ToString()
         {
             if (value == null)
