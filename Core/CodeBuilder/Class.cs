@@ -103,11 +103,13 @@ namespace Sys.CodeBuilder
                 body.Add(constructor, tab);
                 body.AppendLine();
             }
-
+            
             foreach (Property property in properties)
             {
                 body.Add(property, tab);
-                body.AppendLine();
+
+                if (property.GetBlock().Count > 1)
+                    body.AppendLine();
             }
 
             foreach (Method method in methods)

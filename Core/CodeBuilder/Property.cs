@@ -39,7 +39,7 @@ namespace Sys.CodeBuilder
 
             if (gets.Count == 0 && sets.Count == 0)
             {
-                block.AppendFormat("{0} {{get; set; }}", Signture);
+                block.AppendFormat("{0} {{ get; set; }}", Signture);
             }
             else
             {

@@ -57,8 +57,14 @@ namespace Sys.CodeBuilder
 
             block.AppendFormat("namespace {0}", this.nameSpace);
 
-            foreach(var clss in classes)
-                block.AddBeginEnd(clss.GetBlock());
+            var c = new CodeBlock();
+            foreach (var clss in classes)
+            {
+                c.Add(clss.GetBlock(), 0);
+                c.AppendLine();
+            }
+
+            block.AddBeginEnd(c);
 
             return block;
         }

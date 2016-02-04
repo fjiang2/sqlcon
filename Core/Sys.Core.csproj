@@ -216,6 +216,7 @@
     <Compile Include="Extension\EnumExtension.cs" />
     <Compile Include="EventArgs\MessageExceptionEventArgs.cs" />
     <Compile Include="EventArgs\MessageEventArgs.cs" />
+    <Compile Include="Extension\Joinable.cs" />
     <Compile Include="IO\DiskFileLink.cs" />
     <Compile Include="IO\FileLink.cs" />
     <Compile Include="IO\FtpFileLink.cs" />

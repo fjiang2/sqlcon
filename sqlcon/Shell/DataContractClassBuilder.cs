@@ -59,11 +59,10 @@ namespace sqlcon
             return builder;
         }
 
-        private ClassBuilder CreateReader()
+        private ClassBuilder CreateReader(ClassBuilder builder)
         {
 
-            ClassBuilder builder = new ClassBuilder { nameSpace = ns, };
-            var clss = new Class(cn + "Extension") { modifier = Modifier.Public | Modifier.Partial };
+            var clss = new Class(cn + "Extension") { modifier = Modifier.Public | Modifier.Static };
             builder.AddClass(clss);
 
             {
@@ -146,10 +145,10 @@ namespace sqlcon
 
         public string WriteFile(string path)
         {
-            var builder1 = CreateDataContract();
-            var builder2 = CreateReader();
+            var builder = CreateDataContract();
+            CreateReader(builder);
 
-            string code = $"{ builder1}\r\n{builder2}";
+            string code = $"{ builder}";
             string file = Path.ChangeExtension(Path.Combine(path, cn), "cs");
             using (var writer = file.NewStreamWriter())
             {
