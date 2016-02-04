@@ -22,6 +22,7 @@ using System.IO;
 using Sys.Data;
 using System.Reflection;
 using Tie;
+using Sys.CodeBuilder;
 
 
 namespace Sys.Data.Manager
@@ -115,9 +116,18 @@ namespace Sys.Data.Manager
 
         public string GetConstStringColumnName()
         {
+            string _columnName = dpoClass.dict_column_field[column.ColumnName].PropertyName;
+
             string line = "        ";
-            line += string.Format("public const string _{0} = \"{1}\";", dpoClass.dict_column_field[column.ColumnName].PropertyName, column.ColumnName);
-            
+            line += string.Format("public const string _{0} = \"{1}\";", _columnName, column.ColumnName);
+
+            Field field = new Field(new CodeBuilder.TypeInfo { type = typeof(string) }, $"_{_columnName}", $"\"{column.ColumnName}\"")
+            {
+                modifier= Modifier.Public | Modifier.Const
+            };
+
+            dpoClass.code.AddField(field);
+
             return line;
         }
 

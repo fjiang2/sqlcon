@@ -55,12 +55,13 @@ namespace Sys.CodeBuilder
             }
         }
 
-        public override CodeBlock GetBlock()
+        protected override CodeBlock BuildBlock()
         {
-            CodeBlock block = base.GetBlock();
+            CodeBlock block = base.BuildBlock();
 
             block.AppendLine(signature);
             block.AddBeginEnd(statements);
+
             return block;
         }
     }

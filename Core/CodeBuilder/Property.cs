@@ -33,9 +33,9 @@ namespace Sys.CodeBuilder
         }
 
 
-        public override CodeBlock GetBlock()
+        protected override CodeBlock BuildBlock()
         {
-            CodeBlock block = base.GetBlock();
+            CodeBlock block = base.BuildBlock();
 
             if (gets.Count == 0 && sets.Count == 0)
             {

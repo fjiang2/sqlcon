@@ -66,6 +66,18 @@ namespace Sys.CodeBuilder
             return this;
         }
 
+        public ClassBuilder AddField<T>(Modifier modifer, string name, object value)
+        {
+            var field = new Field(new TypeInfo { type = typeof(T) }, name, value)
+            {
+                modifier = modifier
+            };
+
+            this.fields.Add(field);
+            return this;
+        }
+
+
         public ClassBuilder AddMethod(Method method)
         {
             this.methods.Add(method);
@@ -102,8 +114,12 @@ namespace Sys.CodeBuilder
             int tab = 0;
             var body = new CodeBlock();
 
-            foreach (Field field in fields)
+            foreach (Field field in fields.Where(fld=> (fld.modifier & Modifier.Const) != Modifier.Const) )
+            {
                 body.Add(field, tab);
+                body.AppendLine();
+            }
+
 
             foreach (Constructor constructor in constructors)
             {
@@ -122,6 +138,13 @@ namespace Sys.CodeBuilder
                 body.Add(method, tab);
                 body.AppendLine();
             }
+
+            body.AppendLine();
+            foreach (Field field in fields.Where(fld => (fld.modifier & Modifier.Const) == Modifier.Const))
+            {
+                body.Add(field, tab);
+            }
+
 
             clss.AddBeginEnd(body);
             block.AddBeginEnd(clss);

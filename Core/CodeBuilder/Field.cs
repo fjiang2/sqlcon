@@ -38,11 +38,11 @@ namespace Sys.CodeBuilder
             this.value = value;
         }
 
-        
 
-        public override CodeBlock GetBlock()
+
+        protected override CodeBlock BuildBlock()
         {
-            CodeBlock block = base.GetBlock();
+            CodeBlock block = base.BuildBlock();
 
             if (value != null)
             {

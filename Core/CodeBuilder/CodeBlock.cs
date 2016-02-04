@@ -23,7 +23,11 @@ namespace Sys.CodeBuilder
 {
     public class CodeBlock
     {
-        private int tab = 0;
+        public int tab { get; set; }
+
+        //current tab number
+        private int curruent = 0;
+
         private List<CodeLine> lines = new List<CodeLine>();
 
 
@@ -38,7 +42,7 @@ namespace Sys.CodeBuilder
 
         public void Clear()
         {
-            this.tab = 0;
+            this.curruent = 0;
             lines.Clear();
         }
 
@@ -59,7 +63,7 @@ namespace Sys.CodeBuilder
         public void AddBeginEnd(CodeBlock block)
         {
             Begin();
-            Add(block, tab);
+            Add(block, curruent);
             End();
         }
 
@@ -70,14 +74,14 @@ namespace Sys.CodeBuilder
             else
                 AppendLine(str + "{");
 
-            tab++;
+            curruent++;
 
             return this;
         }
 
         public CodeBlock End(string str = null)
         {
-            tab--;
+            curruent--;
             if (str == null)
                 AppendLine("}");
             else
@@ -98,7 +102,7 @@ namespace Sys.CodeBuilder
 
         public void Insert(string str, int index = 0)
         {
-            var line = new CodeLine { tab = tab, line = str };
+            var line = new CodeLine { tab = curruent, line = str };
             lines.Insert(index, line);
         }
 
@@ -111,9 +115,9 @@ namespace Sys.CodeBuilder
 
         public CodeBlock AppendLine(string str, int indent)
         {
-            this.tab += indent;
+            this.curruent += indent;
             AppendLine(str);
-            this.tab -= indent;
+            this.curruent -= indent;
 
             return this;
         }
@@ -124,10 +128,10 @@ namespace Sys.CodeBuilder
             {
                 var items = str.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var item in items)
-                    lines.Add(new CodeLine { tab = tab, line = item });
+                    lines.Add(new CodeLine { tab = curruent, line = item });
             }
             else
-                lines.Add(new CodeLine { tab = tab, line = str });
+                lines.Add(new CodeLine { tab = curruent, line = str });
 
             return this;
         }
@@ -144,6 +148,11 @@ namespace Sys.CodeBuilder
         public override string ToString()
         {
             return string.Join(Environment.NewLine, lines);
+        }
+
+        public string ToString(int indent)
+        {
+            return string.Join(Environment.NewLine, lines.Select(line => CodeLine.Tab(indent) + line.ToString()));
         }
 
     }

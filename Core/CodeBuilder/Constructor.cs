@@ -36,9 +36,9 @@ namespace Sys.CodeBuilder
             base.type = null;
         }
 
-        public override CodeBlock GetBlock()
+        protected override CodeBlock BuildBlock()
         {
-            CodeBlock block = base.GetBlock();
+            CodeBlock block = base.BuildBlock();
 
             string _constructor = string.Format("{0}({1})", Signture, args);
             string _base = string.Format(":base({0})", baseAgrs);

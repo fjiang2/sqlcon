@@ -59,6 +59,7 @@
     <Compile Include="CodeBuilder\Arguments.cs" />
     <Compile Include="CodeBuilder\Attribute.cs" />
     <Compile Include="CodeBuilder\ClassBuilder.cs" />
+    <Compile Include="CodeBuilder\Buildable.cs" />
     <Compile Include="CodeBuilder\CodeLine.cs" />
     <Compile Include="CodeBuilder\Constructor.cs" />
     <Compile Include="CodeBuilder\Field.cs" />

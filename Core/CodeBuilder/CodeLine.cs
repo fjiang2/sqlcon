@@ -17,7 +17,7 @@ namespace Sys.CodeBuilder
 
         private static readonly string[] TABS = new string[] { "", "\t", "\t\t", "\t\t\t", "\t\t\t\t", "\t\t\t\t\t" };
 
-        private static string Tab(int n)
+        internal static string Tab(int n)
         {
             if (n < TABS.Length)
                 return TABS[n];

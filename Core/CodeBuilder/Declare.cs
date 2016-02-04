@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
-    public class Declare  : ICodeBlock
+    public class Declare  : Buildable
     {
         public Attribute attribute { get; set; }
 
@@ -31,19 +31,16 @@ namespace Sys.CodeBuilder
             }
         }
 
-        protected CodeBlock block = new CodeBlock();
 
-        public virtual CodeBlock GetBlock()
+        protected override CodeBlock BuildBlock()
         {
+            CodeBlock block = base.BuildBlock();
+
             if (attribute != null)
                 block.AppendLine(attribute.ToString());
 
             return block;
         }
 
-        public override string ToString()
-        {
-            return GetBlock().ToString();
-        }
     }
 }

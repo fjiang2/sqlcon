@@ -44,6 +44,8 @@ namespace Sys.Data.Manager
         
         Dictionary<TableName, Type> dict;
 
+        internal ClassBuilder code;
+
         public DpoClass(ITable metaTable, ClassName cname,  Dictionary<TableName, Type> dict)
         {
             this.metaTable = metaTable;
@@ -52,6 +54,20 @@ namespace Sys.Data.Manager
             this.className = cname.Class;
 
             this.dict = dict;
+
+            this.code = new ClassBuilder(cname.Class, new Type[] { typeof(DPObject) })
+            {
+                nameSpace = cname.Namespace,
+                modifier = Modifier.Public | Modifier.Partial
+            };
+
+            code.AddUsing("System");
+            code.AddUsing("System.Collections.Generic");
+            code.AddUsing("System.Text");
+            code.AddUsing("System.Data");
+            code.AddUsing("System.Drawing");
+            code.AddUsing("Sys.Data");
+            code.AddUsing("Sys.Data.Manager");
 
             nonvalized = NonvalizedList(nameSpace, className);
             nullableFields = NullableList(nameSpace, className);
@@ -274,11 +290,15 @@ namespace Sys.Data.Manager
                 collect.statements.AppendFormat("SetField(row, _{0}, this.{0});", fieldName);
             }
 
+            code.AddMethod(fill);
+            code.AddMethod(collect);
+
             CodeBlock block = new CodeBlock();
-            block.Add(fill, 2);
+            block.Add(fill, 0);
             block.AppendLine();
-            block.Add(collect, 2);
-            return block.ToString();
+            block.Add(collect, 0);
+            return block.ToString(2);
+
         }
 
         private string Fields()
@@ -466,7 +486,7 @@ namespace @NAMESPACE
                       .Replace("@FILL_COLLECT", FillAndCollect());
 
 
-            return clss;
+            return clss + code.ToString();
 
 
         }
