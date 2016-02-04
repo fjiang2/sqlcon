@@ -27,7 +27,7 @@ using Sys.CodeBuilder;
 
 namespace Sys.Data.Manager
 {
- 
+
 
     class DpoClass
     {
@@ -41,25 +41,22 @@ namespace Sys.Data.Manager
         public Dictionary<string, PropertyDefinition> dict_column_field = new Dictionary<string, PropertyDefinition>();
         public bool HasColumnAttribute = true;
         public bool HasTableAttribute = true;
-        
+
         Dictionary<TableName, Type> dict;
 
         internal ClassBuilder code;
+        internal Class clss;
 
-        public DpoClass(ITable metaTable, ClassName cname,  Dictionary<TableName, Type> dict)
+        public DpoClass(ITable metaTable, ClassName cname, Dictionary<TableName, Type> dict)
         {
             this.metaTable = metaTable;
-            
+
             this.nameSpace = cname.Namespace;
             this.className = cname.Class;
 
             this.dict = dict;
 
-            this.code = new ClassBuilder(cname.Class, new Type[] { typeof(DPObject) })
-            {
-                nameSpace = cname.Namespace,
-                modifier = Modifier.Public | Modifier.Partial
-            };
+            this.code = new ClassBuilder { nameSpace = cname.Namespace, };
 
             code.AddUsing("System");
             code.AddUsing("System.Collections.Generic");
@@ -68,6 +65,13 @@ namespace Sys.Data.Manager
             code.AddUsing("System.Drawing");
             code.AddUsing("Sys.Data");
             code.AddUsing("Sys.Data.Manager");
+
+            clss = new Class(cname.Class, new Type[] { typeof(DPObject) })
+            {
+                modifier = Modifier.Public | Modifier.Partial
+            };
+
+            this.code.AddClass(clss);
 
             nonvalized = NonvalizedList(nameSpace, className);
             nullableFields = NullableList(nameSpace, className);
@@ -78,7 +82,7 @@ namespace Sys.Data.Manager
         {
             get { return this.dict; }
         }
-        
+
         public ITable MetaTable
         {
             get { return this.metaTable; }
@@ -123,7 +127,7 @@ namespace Sys.Data.Manager
             }}
         }}
 ";
-            
+
 
             if (metaTable.Identity.Length > 0)
             {
@@ -138,7 +142,7 @@ namespace Sys.Data.Manager
                 {
                     return string.Format(DPObjectIdProperty, dict_column_field[key].PropertyName);
                 }
-                
+
             }
 
             return DPObjectId;
@@ -290,8 +294,8 @@ namespace Sys.Data.Manager
                 collect.statements.AppendFormat("SetField(row, _{0}, this.{0});", fieldName);
             }
 
-            code.AddMethod(fill);
-            code.AddMethod(collect);
+            clss.AddMethod(fill);
+            clss.AddMethod(collect);
 
             CodeBlock block = new CodeBlock();
             block.Add(fill, 0);
@@ -350,9 +354,9 @@ namespace Sys.Data.Manager
 
             Type type = GetType(nameSpace, className);
             if (type != null)
-            { 
+            {
                 RevisionAttribute[] attributes = type.GetAttributes<RevisionAttribute>();
-                if(attributes.Length > 0)
+                if (attributes.Length > 0)
                 {
                     revision = attributes[0].Revision + 1;
                 }
@@ -384,7 +388,7 @@ using Sys.Data.Manager;
             comment = string.Format(usingString, comment);
             if (nonvalized.Count > 0)
                 comment += "using Tie;";
-            
+
             string clss = @"@COMMENT
 
 namespace @NAMESPACE
@@ -421,12 +425,12 @@ namespace @NAMESPACE
 
 ";
 
-        //public DPCollection<@CLASSNAME> DPCollection(string where, params object[] args)
-        //{ 
-        //    return new DPCollection<@CLASSNAME>(SELECT(where, args));
-        //}
+            //public DPCollection<@CLASSNAME> DPCollection(string where, params object[] args)
+            //{ 
+            //    return new DPCollection<@CLASSNAME>(SELECT(where, args));
+            //}
 
-  
+
             string constString = @"
         #region CONSTANT
 
@@ -436,7 +440,7 @@ namespace @NAMESPACE
 ";
 
             string CONSTANT = string.Format(constString, ConstStringColumnNames());
-            
+
             string CREATE_TABLE = @"
         #region CREATE TABLE 
 
@@ -454,8 +458,8 @@ namespace @NAMESPACE
 
             SQL_CREATE_TABLE_STRING = Sys.Data.TableSchema.GenerateCREATE_TABLE(metaTable);
             CREATE_TABLE = string.Format(CREATE_TABLE, SQL_CREATE_TABLE_STRING);
-            if(this.HasColumnAttribute || !this.HasTableAttribute)
-                CREATE_TABLE = ""; 
+            if (this.HasColumnAttribute || !this.HasTableAttribute)
+                CREATE_TABLE = "";
 
             string m = "public";
             if (modifier == Modifier.Protected)
@@ -494,7 +498,7 @@ namespace @NAMESPACE
         private string SQL_CREATE_TABLE_STRING;
         public bool IsTableChanged(TableName name)
         {
-            DPObject dpo = (DPObject)HostType.NewInstance(string.Format("{0}.{1}",nameSpace, className), new object[] {});
+            DPObject dpo = (DPObject)HostType.NewInstance(string.Format("{0}.{1}", nameSpace, className), new object[] { });
             if (dpo == null)
                 return true;
             else
@@ -551,7 +555,7 @@ namespace @NAMESPACE
             {
                 if (fieldInfo.FieldType.IsGenericType && fieldInfo.FieldType != typeof(Nullable<DateTime>))
                 {
-                    if(fieldInfo.FieldType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                    if (fieldInfo.FieldType.GetGenericTypeDefinition() == typeof(Nullable<>))
                         list.Add(fieldInfo.Name);
                 }
             }

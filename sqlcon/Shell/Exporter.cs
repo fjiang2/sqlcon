@@ -366,7 +366,7 @@ namespace sqlcon
             DataContractClassBuilder builder = new DataContractClassBuilder(dt)
             {
                 ns = ns,
-                clss = clss,
+                cn = clss,
                 mtd = mtd
             };
 

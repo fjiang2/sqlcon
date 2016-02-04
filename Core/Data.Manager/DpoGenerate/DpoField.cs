@@ -126,7 +126,7 @@ namespace Sys.Data.Manager
                 modifier= Modifier.Public | Modifier.Const
             };
 
-            dpoClass.code.AddField(field);
+            dpoClass.clss.AddField(field);
 
             return line;
         }

@@ -13,7 +13,7 @@ namespace sqlcon
         private DataTable dt;
 
         public string ns { get; set; } = "Sys.DataContracts";
-        public string clss { get; set; } = "DataContract";
+        public string cn { get; set; } = "DataContract";
         public string mtd { get; set; }
         private const string mtd2 = "ToDataTable";
 
@@ -42,11 +42,9 @@ namespace sqlcon
         private ClassBuilder CreateDataContract()
         {
 
-            ClassBuilder builder = new ClassBuilder(clss)
-            {
-                nameSpace = ns,
-                modifier = Modifier.Public | Modifier.Partial
-            };
+            ClassBuilder builder = new ClassBuilder { nameSpace = ns, };
+            var clss = new Class(cn) { modifier = Modifier.Public | Modifier.Partial };
+            builder.AddClass(clss);
 
             builder.AddUsing("System");
             builder.AddUsing("System.Collections.Generic");
@@ -55,7 +53,7 @@ namespace sqlcon
 
             foreach (DataColumn column in dt.Columns)
             {
-                builder.AddProperty(new Property(dict[column], column.ColumnName) { modifier = Modifier.Public });
+                clss.AddProperty(new Property(dict[column], column.ColumnName) { modifier = Modifier.Public });
             }
 
             return builder;
@@ -63,28 +61,27 @@ namespace sqlcon
 
         private ClassBuilder CreateReader()
         {
-            ClassBuilder builder = new ClassBuilder(clss + "Extension")
-            {
-                nameSpace = ns,
-                modifier = Modifier.Public | Modifier.Static
-            };
+
+            ClassBuilder builder = new ClassBuilder { nameSpace = ns, };
+            var clss = new Class(cn + "Extension") { modifier = Modifier.Public | Modifier.Partial };
+            builder.AddClass(clss);
 
             {
                 if (mtd == null)
-                    mtd = $"To{clss}Collection";
+                    mtd = $"To{cn}Collection";
 
                 Method method = new Method(mtd)
                 {
                     modifier = Modifier.Public | Modifier.Static,
-                    type = new TypeInfo { userType = $"IEnumerable<{clss}>" },
+                    type = new TypeInfo { userType = $"IEnumerable<{cn}>" },
                     args = new Arguments().Add<DataTable>("dt"),
                     IsExtensionMethod = true
                 };
-                builder.AddMethod(method);
+                clss.AddMethod(method);
                 var sent = method.statements;
 
                 sent.AppendLine("return dt.AsEnumerable()");
-                sent.AppendLine($".Select(row => new {clss}");
+                sent.AppendLine($".Select(row => new {cn}");
                 sent.Begin();
 
                 int count = dt.Columns.Count;
@@ -107,10 +104,10 @@ namespace sqlcon
                 {
                     modifier = Modifier.Public | Modifier.Static,
                     type = new TypeInfo { type = typeof(DataTable) },
-                    args = new Arguments().Add($"IEnumerable<{clss}>", "items"),
+                    args = new Arguments().Add($"IEnumerable<{cn}>", "items"),
                     IsExtensionMethod = true
                 };
-                builder.AddMethod(method);
+                clss.AddMethod(method);
 
                 var sent = method.statements;
                 sent.AppendLine("DataTable dt = new DataTable();");
@@ -153,7 +150,7 @@ namespace sqlcon
             var builder2 = CreateReader();
 
             string code = $"{ builder1}\r\n{builder2}";
-            string file = Path.ChangeExtension(Path.Combine(path, clss), "cs");
+            string file = Path.ChangeExtension(Path.Combine(path, cn), "cs");
             using (var writer = file.NewStreamWriter())
             {
                 writer.WriteLine(code);

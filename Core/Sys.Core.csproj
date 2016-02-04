@@ -58,6 +58,7 @@
     <Compile Include="CodeBuilder\Argument.cs" />
     <Compile Include="CodeBuilder\Arguments.cs" />
     <Compile Include="CodeBuilder\Attribute.cs" />
+    <Compile Include="CodeBuilder\Class.cs" />
     <Compile Include="CodeBuilder\ClassBuilder.cs" />
     <Compile Include="CodeBuilder\Buildable.cs" />
     <Compile Include="CodeBuilder\CodeLine.cs" />

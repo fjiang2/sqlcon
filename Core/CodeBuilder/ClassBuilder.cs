@@ -22,31 +22,17 @@ using System.Reflection;
 
 namespace Sys.CodeBuilder
 {
-    public class ClassBuilder : ICodeBlock
+    public class ClassBuilder : Buildable
     {
         public string nameSpace { get; set; } = "Sys.Unknown";
-        public Modifier modifier { get; set; } = Modifier.Public;
 
         List<string> usings = new List<string>();
+        List<Class> classes = new List<Class>();
 
-        List<Constructor> constructors = new List<Constructor>();
-        List<Field> fields = new List<Field>();
-        List<Method> methods = new List<Method>();
-        List<Property> properties = new List<Property>();
-
-        private string className;
-        private Type[] inherits;
-
-        public ClassBuilder(string className)
-            : this(className, new Type[] { })
+        public ClassBuilder()
         {
         }
 
-        public ClassBuilder(string className, Type[] inherits)
-        {
-            this.className = className;
-            this.inherits = inherits;
-        }
 
         public ClassBuilder AddUsing(string name)
         {
@@ -54,50 +40,15 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        public ClassBuilder AddConstructor(Constructor constructor)
+        public ClassBuilder AddClass(Class clss)
         {
-            this.constructors.Add(constructor);
+            classes.Add(clss);
             return this;
         }
 
-        public ClassBuilder AddField(Field field)
+        protected override CodeBlock BuildBlock()
         {
-            this.fields.Add(field);
-            return this;
-        }
-
-        public ClassBuilder AddField<T>(Modifier modifer, string name, object value)
-        {
-            var field = new Field(new TypeInfo { type = typeof(T) }, name, value)
-            {
-                modifier = modifier
-            };
-
-            this.fields.Add(field);
-            return this;
-        }
-
-
-        public ClassBuilder AddMethod(Method method)
-        {
-            this.methods.Add(method);
-            return this;
-        }
-
-        public ClassBuilder AddProperty(Property property)
-        {
-            this.properties.Add(property);
-            return this;
-        }
-
-        public override string ToString()
-        {
-            return GetBlock().ToString();
-        }
-
-        public CodeBlock GetBlock()
-        {
-            CodeBlock block = new CodeBlock();
+            CodeBlock block = base.BuildBlock();
 
             foreach (var name in usings)
                 block.AppendFormat("using {0};", name);
@@ -106,49 +57,8 @@ namespace Sys.CodeBuilder
 
             block.AppendFormat("namespace {0}", this.nameSpace);
 
-            var clss = new CodeBlock();
-            clss.AppendFormat("{0} class {1}", new ModifierString(modifier), className);
-            if (inherits.Length > 0)
-                clss.AppendFormat("\t: {0}", string.Join(", ", inherits.Select(inherit => new TypeInfo { type = inherit }.ToString())));
-
-            int tab = 0;
-            var body = new CodeBlock();
-
-            foreach (Field field in fields.Where(fld=> (fld.modifier & Modifier.Const) != Modifier.Const) )
-            {
-                body.Add(field, tab);
-                body.AppendLine();
-            }
-
-
-            foreach (Constructor constructor in constructors)
-            {
-                body.Add(constructor, tab);
-                body.AppendLine();
-            }
-
-            foreach (Property property in properties)
-            {
-                body.Add(property, tab);
-                body.AppendLine();
-            }
-
-            foreach (Method method in methods)
-            {
-                body.Add(method, tab);
-                body.AppendLine();
-            }
-
-            body.AppendLine();
-            foreach (Field field in fields.Where(fld => (fld.modifier & Modifier.Const) == Modifier.Const))
-            {
-                body.Add(field, tab);
-            }
-
-
-            clss.AddBeginEnd(body);
-            block.AddBeginEnd(clss);
-
+            foreach(var clss in classes)
+                block.AddBeginEnd(clss.GetBlock());
 
             return block;
         }

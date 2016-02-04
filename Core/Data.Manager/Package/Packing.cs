@@ -34,7 +34,7 @@ namespace Sys.Data.Manager
         private Type dpoType;
         PersistentObject instance;
 
-        ClassBuilder clss;
+        ClassBuilder classBuilder;
         Method pack;
 
         public Packing(Type dpoType)
@@ -47,13 +47,12 @@ namespace Sys.Data.Manager
             Type baseType = typeof(BasePackage<>);
             baseType = baseType.MakeGenericType(dpoType);
 
-            this.clss = new ClassBuilder(ClassName, new Type[] { baseType })
+            this.classBuilder = new ClassBuilder()
             {
                 nameSpace = dpoType.Assembly.GetName().Name + "." + Setting.DPO_PACKAGE_SUB_NAMESPACE,
-                modifier = Modifier.Public
             };
             
-            this.clss.AddUsing("System")
+            this.classBuilder.AddUsing("System")
             .AddUsing("System.Data")
             .AddUsing("System.Text")
             .AddUsing("System.Collections.Generic")
@@ -62,17 +61,21 @@ namespace Sys.Data.Manager
             .AddUsing("Sys.Data.Manager")
             .AddUsing(dpoType.Namespace);
 
-          
 
-          
+            var clss = new Class(ClassName, new Type[] { baseType })
+            {
+                modifier = Modifier.Public
+            };
+
+
 
             //constructor
-            this.clss.AddConstructor(new Constructor(ClassName));
+            clss.AddConstructor(new Constructor(ClassName));
 
             this.pack = new Method("Pack") { modifier = Modifier.Protected | Modifier.Override };
-            this.clss.AddMethod(pack);
+            clss.AddMethod(pack);
 
-         
+            classBuilder.AddClass(clss);
         }
 
 
@@ -185,7 +188,7 @@ namespace Sys.Data.Manager
             comment = string.Format(comment, ActiveAccount.Account.UserName);
             string classFormat = @"{0}{1}";
 
-            return string.Format(classFormat, comment, this.clss);
+            return string.Format(classFormat, comment, this.classBuilder);
         }
 
     }
