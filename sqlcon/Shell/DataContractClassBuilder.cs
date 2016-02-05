@@ -39,10 +39,10 @@ namespace sqlcon
 
         private Dictionary<DataColumn, TypeInfo> dict = new Dictionary<DataColumn, TypeInfo>();
 
-        private ClassBuilder CreateDataContract()
+        private CSharpBuilder CreateDataContract()
         {
 
-            ClassBuilder builder = new ClassBuilder { nameSpace = ns, };
+            CSharpBuilder builder = new CSharpBuilder { nameSpace = ns, };
             var clss = new Class(cn) { modifier = Modifier.Public | Modifier.Partial };
             builder.AddClass(clss);
 
@@ -59,7 +59,7 @@ namespace sqlcon
             return builder;
         }
 
-        private ClassBuilder CreateReader(ClassBuilder builder)
+        private CSharpBuilder CreateReader(CSharpBuilder builder)
         {
 
             var clss = new Class(cn + "Extension") { modifier = Modifier.Public | Modifier.Static };

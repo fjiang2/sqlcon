@@ -24,7 +24,7 @@ namespace Sys.Data
     /// <summary>
     /// used for user defined data enum type from database
     /// </summary>
-    [System.AttributeUsage(System.AttributeTargets.Enum)]
+    [System.AttributeUsage(System.AttributeTargets.Enum | AttributeTargets.Field)]
     public class DataEnumAttribute : Attribute
     {
         /// <summary>

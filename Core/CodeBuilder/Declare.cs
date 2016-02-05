@@ -38,7 +38,7 @@ namespace Sys.CodeBuilder
         }
 
 
-        protected string Signture
+        protected string Signature 
         {
             get
             {

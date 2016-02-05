@@ -40,7 +40,7 @@ namespace Sys.CodeBuilder
         {
             CodeBlock block = base.BuildBlock();
 
-            block.AppendFormat("{0}({1})", Signture, args);
+            block.AppendFormat("{0}({1})", Signature, args);
             if (baseArgs != null)
             {
                 block.Indent().AppendFormat(": base({0})", string.Join(",", baseArgs)).Unindent();

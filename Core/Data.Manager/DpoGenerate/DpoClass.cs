@@ -40,7 +40,7 @@ namespace Sys.Data.Manager
 
         public Dictionary<string, PropertyDefinition> dict_column_field = new Dictionary<string, PropertyDefinition>();
 
-        internal ClassBuilder code;
+        internal CSharpBuilder code;
         internal Class clss;
 
         public Option option;
@@ -54,7 +54,7 @@ namespace Sys.Data.Manager
 
             this.option = option;
 
-            this.code = new ClassBuilder { nameSpace = cname.Namespace, };
+            this.code = new CSharpBuilder { nameSpace = cname.Namespace, };
 
             code.AddUsing("System");
             code.AddUsing("System.Collections.Generic");
@@ -332,7 +332,7 @@ namespace Sys.Data.Manager
 
             ConstStringColumnNames();
 
-            clss.AddCopyFunc();
+            clss.AddCopyCloneEqualsFunc();
             //var utils = new Utils(clss.name, metaTable.Columns.Select(column => column.ColumnName.FieldName()));
             //clss.Add(utils.Copy());
             //clss.Add(utils.Clone());

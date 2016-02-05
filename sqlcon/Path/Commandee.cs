@@ -768,6 +768,7 @@ namespace sqlcon
                 stdio.WriteLine("   /schema  : generate database schema xml file");
                 stdio.WriteLine("   /data    : generate database/table data xml file");
                 stdio.WriteLine("   /class   : generate C# table class");
+                stdio.WriteLine("   /enum    : generate C# enum class");
                 stdio.WriteLine("   /dc      : generate C# data contract class from last result");
                 stdio.WriteLine("      [/ns:name] default name space is defined on the .cfg");
                 stdio.WriteLine("      [/class:name] default class name is defined on the .cfg");
@@ -799,6 +800,8 @@ namespace sqlcon
                     exporter.ExportData(cmd);
                 else if (cmd.Has("class"))
                     exporter.ExportClass(cmd);
+                else if (cmd.Has("enum"))
+                    exporter.ExportEnum(cmd);
                 else if (cmd.Has("csv"))
                     exporter.ExportCsvFile(cmd);
                 else if (cmd.Has("dc"))

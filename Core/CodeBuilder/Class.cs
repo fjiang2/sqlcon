@@ -199,9 +199,11 @@ namespace Sys.CodeBuilder
             return clss;
         }
 
-        public void AddCopyFunc()
+        public void AddCopyCloneEqualsFunc()
         {
-            var rw = properties.Where(p => p.CanRead && p.CanWrite).Select(p => p.name);
+            var rw = properties
+                .Where(p => (p.modifier & Modifier.Public) == Modifier.Public && p.CanRead && p.CanWrite)
+                .Select(p => p.name);
 
             var x = new Utils(this.name, rw);
             this.Add(x.Copy());

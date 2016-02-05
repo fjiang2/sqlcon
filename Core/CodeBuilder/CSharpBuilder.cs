@@ -18,72 +18,62 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Reflection;
 
 namespace Sys.CodeBuilder
 {
-    public class Property : Declare, ICodeBlock
+    public class CSharpBuilder : Buildable
     {
-        private object value;
+        public string nameSpace { get; set; } = "Sys.Unknown";
 
-        public Statement gets { get; } = new Statement();
-        public Statement sets { get; } = new Statement();
+        List<string> usings = new List<string>();
+        List<Declare> classes = new List<Declare>();
 
-        public Property(TypeInfo returnType, string propertyName)
-            : this(returnType, propertyName, null)
+        public CSharpBuilder()
         {
         }
 
-        public Property(TypeInfo returnType, string propertyName, object value)
-            : base(propertyName)
+
+        public CSharpBuilder AddUsing(string name)
         {
-            this.type = returnType;
-            this.value = value;
+            this.usings.Add(name);
+            return this;
         }
 
-        public bool CanRead
+        public CSharpBuilder AddClass(Class clss)
         {
-            get
-            {
-                return (gets.Count == 0 && sets.Count == 0) || gets.Count > 0;
-            }
-        }
-        public bool CanWrite
-        {
-            get
-            {
-                return (gets.Count == 0 && sets.Count == 0) || sets.Count > 0;
-            }
+            classes.Add(clss);
+            return this;
         }
 
+        public CSharpBuilder AddEnum(Enum _enum)
+        {
+            classes.Add(_enum);
+            return this;
+        }
 
         protected override CodeBlock BuildBlock()
         {
             CodeBlock block = base.BuildBlock();
 
-            if (gets.Count == 0 && sets.Count == 0)
-            {
-                block.AppendFormat("{0}{1}", $"{Signature} {{ get; set; }}", comment);
-            }
-            else
-            {
-                block.AppendLine(Signature + comment);
-                block.Begin();
-                if (gets.Count != 0)
-                {
-                    block.AppendLine("get");
-                    block.AddWithBeginEnd(gets);
-                }
+            foreach (var name in usings)
+                block.AppendFormat("using {0};", name);
 
-                if (sets.Count != 0)
-                {
-                    block.AppendLine("set");
-                    block.AddWithBeginEnd(sets);
-                }
+            block.AppendLine();
 
-                block.End();
-            }
+            block.AppendFormat("namespace {0}", this.nameSpace);
+
+            var c = new CodeBlock();
+
+            classes.ForEach(
+                    clss => c.Add(clss.GetBlock()),
+                    clss => c.AppendLine()
+                );
+
+            block.AddWithBeginEnd(c);
 
             return block;
         }
+
     }
 }

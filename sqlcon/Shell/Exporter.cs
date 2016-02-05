@@ -380,5 +380,65 @@ namespace sqlcon
 
         }
 
+
+        public void ExportEnum(Command cmd)
+        {
+
+            DataTable dt = null;
+            if (SqlShell.LastResult is DataTable)
+            {
+                dt = SqlShell.LastResult as DataTable;
+            }
+
+            if (dt == null)
+            {
+                stdio.ErrorFormat("data table cannot find, use command type or select first");
+                return;
+            }
+
+            string path = cfg.GetValue<string>("enum.path", $"{MyDocuments}\\enum");
+            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("enum.ns", "Sys.DataEnum");
+
+            CSharpBuilder builder = new CSharpBuilder()
+            {
+                nameSpace = ns
+            };
+            builder.AddUsing("Sys.Data");
+
+            var rows = dt
+                .AsEnumerable()
+                .Select(row => new 
+                {
+                    Category = row.Field<string>("Category"),
+                    Feature = row.Field<string>("Feature"),
+                    Value = row.Field<int>("Value"),
+                    Label = row.Field<string>("Label")
+                });
+
+            var groups = rows.GroupBy(row => row.Category);
+
+            foreach (var group in groups)
+            {
+                var _enum = new Sys.CodeBuilder.Enum(group.First().Category);
+                foreach (var row in group)
+                    _enum.Add(row.Feature, row.Value, row.Label);
+
+                builder.AddEnum(_enum);
+            }
+
+
+            string name = "DataEnum";
+
+            string code = builder.ToString();
+            string file = Path.ChangeExtension(Path.Combine(path, name), "cs");
+            using (var writer = file.NewStreamWriter())
+            {
+                writer.WriteLine(code);
+            }
+
+
+            stdio.WriteLine("code generated on {0}", file);
+
+        }
     }
 }

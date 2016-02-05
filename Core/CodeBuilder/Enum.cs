@@ -18,56 +18,45 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Reflection;
 
 namespace Sys.CodeBuilder
 {
-    public class ClassBuilder : Buildable
+    public class Enum : Declare, ICodeBlock
     {
-        public string nameSpace { get; set; } = "Sys.Unknown";
+        public Statement statements { get; } = new Statement();
 
-        List<string> usings = new List<string>();
-        List<Class> classes = new List<Class>();
 
-        public ClassBuilder()
+        public Enum(string enumName)
+            :base(enumName)
         {
+            type = new TypeInfo { userType = "enum" };
         }
 
-
-        public ClassBuilder AddUsing(string name)
+        public void Add(string feature)
         {
-            this.usings.Add(name);
-            return this;
+            statements.AppendLine($"{feature},");
         }
 
-        public ClassBuilder AddClass(Class clss)
+        public void Add(string feature, int value)
         {
-            classes.Add(clss);
-            return this;
+            statements.AppendLine($"{feature} = {value},");
+        }
+
+        public void Add(string feature, int value, string label)
+        {
+            statements.AppendLine($"[DataEnum(\"{label}\")]");
+            statements.AppendLine($"{feature} = {value},");
+            statements.AppendLine();
         }
 
         protected override CodeBlock BuildBlock()
         {
             CodeBlock block = base.BuildBlock();
 
-            foreach (var name in usings)
-                block.AppendFormat("using {0};", name);
-
-            block.AppendLine();
-
-            block.AppendFormat("namespace {0}", this.nameSpace);
-
-            var c = new CodeBlock();
-
-            classes.ForEach(
-                    clss => c.Add(clss.GetBlock()),
-                    clss => c.AppendLine()
-                );
-
-            block.AddWithBeginEnd(c);
+            block.AppendLine(Signature);
+            block.AddWithBeginEnd(statements);
 
             return block;
         }
-
     }
 }

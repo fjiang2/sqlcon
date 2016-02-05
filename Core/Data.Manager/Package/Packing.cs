@@ -34,7 +34,7 @@ namespace Sys.Data.Manager
         private Type dpoType;
         PersistentObject instance;
 
-        ClassBuilder classBuilder;
+        CSharpBuilder classBuilder;
         Method pack;
 
         public Packing(Type dpoType)
@@ -47,7 +47,7 @@ namespace Sys.Data.Manager
             Type baseType = typeof(BasePackage<>);
             baseType = baseType.MakeGenericType(dpoType);
 
-            this.classBuilder = new ClassBuilder()
+            this.classBuilder = new CSharpBuilder()
             {
                 nameSpace = dpoType.Assembly.GetName().Name + "." + Setting.DPO_PACKAGE_SUB_NAMESPACE,
             };

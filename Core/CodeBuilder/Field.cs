@@ -46,11 +46,11 @@ namespace Sys.CodeBuilder
 
             if (value != null)
             {
-                block.AppendFormat("{0} = {1};", Signture, value);
+                block.AppendFormat("{0} = {1};", Signature, value);
             }
             else
             {
-                block.AppendLine(Signture);
+                block.AppendLine(Signature);
             }
 
             return block;
