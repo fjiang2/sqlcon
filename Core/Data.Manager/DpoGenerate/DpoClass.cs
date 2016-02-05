@@ -106,21 +106,8 @@ namespace Sys.Data.Manager
 
         private void DPObjectId()
         {
-
-            string DPObjectId = @"
-        //must override when logger is used
-        protected override int DPObjectId
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-        ";
-
-
             Property prop = clss.AddProperty<int>(Modifier.Protected | Modifier.Override, "DPObjectId");
-
+            prop.comment = new Comment("must override when logger is used");
             if (metaTable.Identity.Length > 0)
             {
                 prop.gets.AppendFormat("return this.{0};", metaTable.Identity.ColumnNames[0]);
@@ -331,10 +318,11 @@ namespace Sys.Data.Manager
 
             SQL_CREATE_TABLE_STRING = Sys.Data.TableSchema.GenerateCREATE_TABLE(metaTable);
 
-            var attr = clss.AddAttribute<TableAttribute>();
-            GetTableAttribute(attr, metaTable, ctname);
             if (HasTableAttribute)
-                this.clss.attribute = attr;
+            {
+                var attr = clss.AddAttribute<TableAttribute>();
+                GetTableAttribute(attr, metaTable, ctname);
+            }
 
             PrimaryConstructor();
             DPObjectId();

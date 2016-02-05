@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
-    public class Declare  : Buildable
+    public class Declare : Buildable
     {
-        public AttributeInfo attribute { get; set; }
+        private List<AttributeInfo> attributes { get; set; } = new List<AttributeInfo>();
 
         public Modifier modifier { get; set; } = Modifier.Public;
         public TypeInfo type { get; set; } = new TypeInfo();
@@ -22,13 +22,19 @@ namespace Sys.CodeBuilder
             this.name = name;
         }
 
+        public void AddAttribute(AttributeInfo attr)
+        {
+            attributes.Add(attr);
+        }
+
         public AttributeInfo AddAttribute<T>() where T : Attribute
         {
             var name = typeof(T).Name;
             name = name.Substring(0, name.Length - nameof(Attribute).Length);
-            attribute = new AttributeInfo(name);
+            var attr = new AttributeInfo(name);
+            attributes.Add(attr);
 
-            return attribute;
+            return attr;
         }
 
 
@@ -36,22 +42,25 @@ namespace Sys.CodeBuilder
         {
             get
             {
-                if(type != null)
+                if (type != null)
                     return string.Format("{0} {1} {2}", new ModifierString(modifier), type, name);
                 else
                     return string.Format("{0} {1}", new ModifierString(modifier), name);
             }
         }
 
-      
+
 
 
         protected override CodeBlock BuildBlock()
         {
             CodeBlock block = base.BuildBlock();
 
-            if (attribute != null)
-                block.AppendLine(attribute.ToString());
+            if (attributes.Count != 0)
+            {
+                foreach (var attr in attributes)
+                    block.AppendLine(attr.ToString());
+            }
 
             return block;
         }

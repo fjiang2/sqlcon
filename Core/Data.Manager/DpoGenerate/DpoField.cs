@@ -44,20 +44,19 @@ namespace Sys.Data.Manager
 
         public void GenerateField()
         {
-            string line = "";
-
+            
             string fieldName = column.ColumnName.FieldName();
             string ty = ColumnSchema.GetFieldType(column.DataType, column.Nullable);
 
             Property prop = new Property(new CodeBuilder.TypeInfo { userType = ty }, fieldName);
-
+            var attr = prop.AddAttribute<ColumnAttribute>();
             if (dpoClass.HasColumnAttribute || column.ColumnName != fieldName)
             {
-                Attribute(prop.AddAttribute<ColumnAttribute>(), column);
+                Attribute(attr, column);
             }
 
             if (dpoClass.Nonvalized.IndexOf(fieldName) != -1)
-                line += "[NonValized] ";
+                prop.AddAttribute<NonValizedAttribute>();
 
             //When programmer make field Nullable, it must be Nullable
             //if(dgc.NullableFields.IndexOf(fieldName) != -1)
@@ -67,7 +66,7 @@ namespace Sys.Data.Manager
 
 
             if(dpoClass.HasColumnAttribute)
-                prop.attribute.comment = new Comment(string.Format("{0}({1}) {2}", column.DataType, column.AdjuestedLength(), column.Nullable ? "null" : "not null"));
+                attr.comment = new Comment(string.Format("{0}({1}) {2}", column.DataType, column.AdjuestedLength(), column.Nullable ? "null" : "not null"));
 
             dpoClass.dict_column_field.Add(column.ColumnName, new PropertyDefinition(ty, fieldName));
 
@@ -83,7 +82,7 @@ namespace Sys.Data.Manager
                 if (dpoClass.Dict.ContainsKey(pkTableName))
                 {
                     Type type = dpoClass.Dict[pkTableName];
-                    line = string.Format("{0}\r\n", ForeignKey.GetAttribute(column.ForeignKey, type)) + line;
+                    ForeignKey.GetAttribute(column.ForeignKey, type);
                 }
                 else
                 {
@@ -123,36 +122,24 @@ namespace Sys.Data.Manager
             return;
         }
 
-        public string GenerateImageField()
+        public void GenerateImageField()
         {
-            string imageProperty = @"
-        public Image {0}Image
-        {{
-            get
-            {{
-                if ({0} != null)
-                {{
-                    System.IO.MemoryStream stream = new System.IO.MemoryStream({0});
-                    return System.Drawing.Image.FromStream(stream);
-                }}
-                
-                return null;
-            }}
-            set
-            {{
-                if (value != null)
-                {{
-                    System.IO.MemoryStream stream = new System.IO.MemoryStream();
-                    value.Save(stream, System.Drawing.Imaging.ImageFormat.Jpeg);
-                    {0} = stream.ToArray();
-                }}
-            }}
-        }}
-";
-            string sent = string.Format(imageProperty, column.ColumnName.FieldName());
-            dpoClass.clss.AddMember(sent);
-            return sent;
+            string fieldName = column.ColumnName.FieldName();
+            
+            Property prop = new Property(new CodeBuilder.TypeInfo { userType = "Image" }, $"{fieldName}Image");
+            prop.gets.IF($"{fieldName} != null", new CodeBlock()
+                    .AppendLine($"System.IO.MemoryStream stream = new System.IO.MemoryStream({fieldName});")
+                    .AppendLine("return System.Drawing.Image.FromStream(stream);")
+                    .WrapByBeginEnd())
+                .AppendLine("return null;");
 
+            prop.sets.IF("value != null", new CodeBlock()
+                    .AppendLine("System.IO.MemoryStream stream = new System.IO.MemoryStream();")
+                    .AppendLine("value.Save(stream, System.Drawing.Imaging.ImageFormat.Jpeg);")
+                    .AppendLine($"{fieldName} = stream.ToArray();")
+                    .WrapByBeginEnd());
+
+            dpoClass.clss.Add(prop);
         }
 
 

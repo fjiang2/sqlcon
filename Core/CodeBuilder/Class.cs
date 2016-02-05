@@ -183,13 +183,14 @@ namespace Sys.CodeBuilder
                     item => body.Add(item),
                     item =>
                         {
-                            if (item.Count == 1 && (item is Field || item is Property || item is Member))
+                            if (item.Count == 1 && (item is Field || item is Property))
                                 return;
 
                             body.AppendLine();
                         }
                     );
             }
+
             clss.AddWithBeginEnd(body);
             return clss;
         }

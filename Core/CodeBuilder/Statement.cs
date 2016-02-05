@@ -36,14 +36,14 @@ namespace Sys.CodeBuilder
 
         public Statement IF(string exp, CodeBlock sent)
         {
-            AppendLine($"if({exp})");
+            AppendLine($"if ({exp})");
             Add(sent);
             return this;
         }
 
         public Statement IF(string exp, CodeBlock sent1, CodeBlock sent2)
         {
-            AppendLine($"if({exp})");
+            AppendLine($"if ({exp})");
             Add(sent1);
             AppendLine("else");
             Add(sent2);
@@ -52,7 +52,7 @@ namespace Sys.CodeBuilder
 
         public Statement FOREACH(string exp1, string exp2, CodeBlock sent)
         {
-            AppendLine($"foreach({exp1} in {exp2})");
+            AppendLine($"foreach ({exp1} in {exp2})");
             Add(sent);
             return this;
         }
@@ -60,7 +60,7 @@ namespace Sys.CodeBuilder
 
         public Statement WHILE(string exp, CodeBlock sent)
         {
-            AppendLine($"while({exp})");
+            AppendLine($"while ({exp})");
             Add(sent);
             return this;
         }

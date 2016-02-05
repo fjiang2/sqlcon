@@ -27,8 +27,15 @@ namespace Sys.CodeBuilder
             else
                 text = string.Format("[{0}({1})]", name, string.Join(", ", args));
 
+            int pad = 70;
+            pad = pad - text.Length;
+            if (pad < 0)
+                pad = 0;
+
+            string sp = new string(' ',  pad);
+
             if (comment != null)
-                return $"{text}{comment}";
+                return $"{text}{sp}{comment}";
             else
                 return text;
         }
