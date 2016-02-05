@@ -15,7 +15,7 @@ namespace Sys.CodeBuilder
 
         public Comment comment { get; set; }
 
-        protected string name;
+        public string name { get; }
 
         public Declare(string name)
         {

@@ -332,9 +332,11 @@ namespace Sys.Data.Manager
 
             ConstStringColumnNames();
 
-            var utils = new Utils(clss.ClassName, metaTable.Columns.Select(column => column.ColumnName.FieldName()));
-            clss.Add(utils.Copy());
-            clss.Add(utils.Clone());
+            clss.AddCopyFunc();
+            //var utils = new Utils(clss.name, metaTable.Columns.Select(column => column.ColumnName.FieldName()));
+            //clss.Add(utils.Copy());
+            //clss.Add(utils.Clone());
+            //clss.Add(utils.Equals());
 
             return code.ToString();
         }

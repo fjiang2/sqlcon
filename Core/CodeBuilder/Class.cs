@@ -43,10 +43,6 @@ namespace Sys.CodeBuilder
         }
 
 
-        public string ClassName
-        {
-            get { return this.name; }
-        }
         public Class Add(Buildable code)
         {
             this.list.Add(code);
@@ -201,6 +197,16 @@ namespace Sys.CodeBuilder
 
             clss.AddWithBeginEnd(body);
             return clss;
+        }
+
+        public void AddCopyFunc()
+        {
+            var rw = properties.Where(p => p.CanRead && p.CanWrite).Select(p => p.name);
+
+            var x = new Utils(this.name, rw);
+            this.Add(x.Copy());
+            this.Add(x.Clone());
+            this.Add(x.Equals());
         }
 
     }

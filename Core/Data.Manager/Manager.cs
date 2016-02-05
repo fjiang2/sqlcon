@@ -34,36 +34,6 @@ namespace Sys.Data.Manager
             this.assembly = assembly;
         }
 
-
-
-        /// <summary>
-        /// Upgrade DPO classes from SQL SERVER
-        /// </summary>
-        /// <param name="path"></param>
-        public void UpgradeClass(string path, Dictionary<TableName, Type> dict)
-        {
-            foreach (Type type in assembly.GetTypes())
-            {
-                if (type.BaseType != typeof(DPObject))
-                    continue;
-                {
-
-                    DPObject dpo = (DPObject)Activator.CreateInstance(type);
-                    ClassTableName ctname = new ClassTableName(dpo.TableName)
-                    {
-                        Level = dpo.Level,
-                        Pack = dpo.IsPack,
-                        HasProvider = dpo.HasProvider
-                    };
-                    ClassName cname = new ClassName(dpo);
-                    TableClass clss = new TableClass(ctname);
-                    clss.option.MustGenerate = true;
-                    clss.option.dict = dict;
-                    clss.CreateClass(path); ;
-                }
-            }
-        }
-
         /// <summary>
         /// Upgrade DPO packages from SQL SERVER
         /// </summary>

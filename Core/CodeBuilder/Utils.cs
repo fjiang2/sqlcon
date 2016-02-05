@@ -14,6 +14,7 @@ namespace Sys.CodeBuilder
         TypeInfo classType;
         public Utils(string className, IEnumerable<string> variables)
         {
+            this.className = className;
             this.variables = variables;
             this.classType = new TypeInfo { userType = className };
 
@@ -21,16 +22,18 @@ namespace Sys.CodeBuilder
 
         public Method Copy()
         {
-            Method mtd = new Method(classType, "Copy")
+            Method mtd = new Method("Copy")
             {
                 modifier = Modifier.Public,
             };
 
-            mtd.args.Add(new Argument(classType, "obj"));
+            mtd.args.Add(className, "obj");
+
+            var sent = mtd.statements;
 
             foreach (var variable in variables)
             {
-                mtd.statements.AppendFormat("this.{0} = obj.{0};", variable);
+                sent.AppendFormat("this.{0} = obj.{0};", variable);
             }
 
             return mtd;
@@ -43,14 +46,44 @@ namespace Sys.CodeBuilder
                 modifier = Modifier.Public,
             };
 
-            mtd.statements.AppendFormat("var obj = new {0}();", className);
+            var sent = mtd.statements;
+
+            sent.AppendFormat("var obj = new {0}();", className);
+            sent.AppendLine();
+
             foreach (var variable in variables)
             {
-                mtd.statements.AppendFormat("obj.{0} = this.{0};", variable);
+                sent.AppendFormat("obj.{0} = this.{0};", variable);
             }
+
+            sent.AppendLine();
+            sent.RETURN("obj");
 
             return mtd;
         }
 
+        public Method Equals()
+        {
+            Method mtd = new Method(new TypeInfo { type = typeof(bool)}, "Equals")
+            {
+                modifier = Modifier.Public | Modifier.Override,
+            };
+
+            mtd.args.Add<object>("obj");
+
+            var sent = mtd.statements;
+            sent.AppendFormat("var x = ({0})obj;", className);
+            sent.AppendLine();
+
+            sent.AppendLine("return ");
+
+            variables.ForEach(
+                variable => sent.Append($"this.{variable} == x.{variable}"),
+                variable => sent.AppendLine("&& ")
+                );
+
+            sent.Append(";");
+            return mtd;
+        }
     }
 }

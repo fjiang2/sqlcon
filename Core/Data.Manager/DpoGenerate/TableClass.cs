@@ -67,7 +67,7 @@ namespace Sys.Data.Manager
 
 
 
-        public bool CreateClass(string path)
+        public bool CreateClass()
         {
             ClassTableName ctname = new ClassTableName(tableName)
             {
@@ -79,36 +79,11 @@ namespace Sys.Data.Manager
 
             ClassName cname = new ClassName(NameSpace, Modifier, ctname);
 
-            return GenTableDpo(ctname, tableName.GetSchema(), path, cname);
-        }
+            ITable metatable = tableName.GetSchema();
 
-
-        public bool CreateClass(DataTable table, string path)
-        {
-            ITable schema = new DataTableDpoClass(table);
-            ClassTableName ctname = new ClassTableName(schema.TableName);
-            ClassName cname = new ClassName(NameSpace, Modifier, ctname);
-            option.HasTableAttribute = false;
-            option.HasTableAttribute = false;
-            return GenTableDpo(ctname, schema, path, cname);
-        }
-
-
-        private bool GenTableDpo(ClassTableName tname, ITable metatable, string path,  ClassName cname)
-        {
-
-            DpoGenerator gen = new DpoGenerator(tname, metatable, cname, option);
-
+            DpoGenerator gen = new DpoGenerator(ctname, metatable, cname, option);
             gen.Generate();
-
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-
             bool result = gen.Save();
-
-
             return result;
         }
 

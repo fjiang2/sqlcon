@@ -21,7 +21,7 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Property  : Declare, ICodeBlock
+    public class Property : Declare, ICodeBlock
     {
         private object value;
 
@@ -34,10 +34,25 @@ namespace Sys.CodeBuilder
         }
 
         public Property(TypeInfo returnType, string propertyName, object value)
-            :base(propertyName)
+            : base(propertyName)
         {
             this.type = returnType;
             this.value = value;
+        }
+
+        public bool CanRead
+        {
+            get
+            {
+                return (gets.Count == 0 && sets.Count == 0) || gets.Count > 0;
+            }
+        }
+        public bool CanWrite
+        {
+            get
+            {
+                return (gets.Count == 0 && sets.Count == 0) || sets.Count > 0;
+            }
         }
 
 
