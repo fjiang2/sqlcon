@@ -39,15 +39,15 @@ namespace Sys.Data.Manager
         private List<string> nullableFields;
 
         public Dictionary<string, PropertyDefinition> dict_column_field = new Dictionary<string, PropertyDefinition>();
-        public bool HasColumnAttribute = true;
-        public bool HasTableAttribute = true;
 
         Dictionary<TableName, Type> dict;
 
         internal ClassBuilder code;
         internal Class clss;
 
-        public DpoClass(ITable metaTable, ClassName cname, Dictionary<TableName, Type> dict)
+        public Option option;
+
+        public DpoClass(ITable metaTable, ClassName cname, Option option, Dictionary<TableName, Type> dict)
         {
             this.metaTable = metaTable;
 
@@ -55,6 +55,7 @@ namespace Sys.Data.Manager
             this.className = cname.Class;
 
             this.dict = dict;
+            this.option = option;
 
             this.code = new ClassBuilder { nameSpace = cname.Namespace, };
 
@@ -68,7 +69,8 @@ namespace Sys.Data.Manager
 
             clss = new Class(cname.Class, new Type[] { typeof(DPObject) })
             {
-                modifier = Modifier.Public | Modifier.Partial
+                modifier = Modifier.Public | Modifier.Partial,
+                Sorted = option.CodeSorted
             };
 
             this.code.AddClass(clss);
@@ -318,7 +320,7 @@ namespace Sys.Data.Manager
 
             SQL_CREATE_TABLE_STRING = Sys.Data.TableSchema.GenerateCREATE_TABLE(metaTable);
 
-            if (HasTableAttribute)
+            if (option.HasTableAttribute)
             {
                 var attr = clss.AddAttribute<TableAttribute>();
                 GetTableAttribute(attr, metaTable, ctname);

@@ -243,12 +243,14 @@ namespace sqlcon
             string ns = cfg.GetValue<string>("dpo.ns", "Sys.DataModel.Dpo");
             string suffix = cfg.GetValue<string>("dpo.suffix", Setting.DPO_CLASS_SUFFIX_CLASS_NAME);
 
+            bool sort = cmd.Has("sort");
             Func<string, string> rule =
                 name => name.Substring(0, 1).ToUpper() + name.Substring(1).ToLower() + suffix;
 
             if (tname != null)
             {
                 TableClass clss = new TableClass(tname) { NameSpace = ns, ClassNameRule = rule };
+                clss.option.CodeSorted = sort;
                 clss.CreateClass(path);
                 stdio.WriteLine("generated class {0} at {1}", tname.ShortName, path);
             }
@@ -266,6 +268,7 @@ namespace sqlcon
                         try
                         {
                             TableClass clss = new TableClass(tn) { NameSpace = ns, ClassNameRule = rule };
+                            clss.option.CodeSorted = sort;
                             clss.CreateClass(path);
                             stdio.WriteLine("generated class for {0} at {1}", tn.ShortName, path);
                         }
@@ -289,9 +292,9 @@ namespace sqlcon
         public void ExportCsvFile(Command cmd)
         {
             string path = cfg.GetValue<string>("csv.path", $"{MyDocuments}\\csv");
-            
+
             string file;
-            Func<TableName, string> fullName = tname=> $"{path}\\{sname.Path}\\{dname.Name}\\{tname.ShortName}.csv"; 
+            Func<TableName, string> fullName = tname => $"{path}\\{sname.Path}\\{dname.Name}\\{tname.ShortName}.csv";
 
             if (tname != null)
             {

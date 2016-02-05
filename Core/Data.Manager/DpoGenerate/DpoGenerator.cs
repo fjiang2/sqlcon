@@ -37,21 +37,19 @@ namespace Sys.Data.Manager
 
 
         public bool RegisterTable { get; set; }
-        public bool HasTableAttribute { get; set; }
-        public bool HasColumnAttribute { get; set; }
         public Dictionary<TableName, Type> Dict { get; set; }
         
         public string OutputPath { get; set; }
-        public bool MustGenerate { get; set;}
+        
 
-        public DpoGenerator(ClassTableName ctname, ITable schema, ClassName cname)
+        private Option option { get; set; }
+
+        public DpoGenerator(ClassTableName ctname, ITable schema, ClassName cname, Option option)
         {
-            this.HasTableAttribute = true;
-            this.HasColumnAttribute = false;
+            this.option = option;
             this.Dict = new Dictionary<TableName, Type>();
             this.RegisterTable = true;
             this.OutputPath = "C:\\temp\\dpo";
-            this.MustGenerate = true;
 
             this.ctname = ctname;
             this.cname = cname;
@@ -65,10 +63,7 @@ namespace Sys.Data.Manager
                 //###DictTable.MustRegister(ctname);
             }
 
-            dpoClass = new DpoClass(schema, cname, Dict);
-            dpoClass.HasTableAttribute = HasTableAttribute;
-            dpoClass.HasColumnAttribute = HasColumnAttribute;
-
+            dpoClass = new DpoClass(schema, cname, option, Dict);
             this.sourceCode = dpoClass.Generate(cname.Modifier, ctname);
 
         }
@@ -77,7 +72,7 @@ namespace Sys.Data.Manager
         {
             string fileName = string.Format("{0}\\{1}.cs", OutputPath, cname.Class);
 
-            if (!MustGenerate)
+            if (!option.MustGenerate)
             {
                 if (File.Exists(fileName))
                 {

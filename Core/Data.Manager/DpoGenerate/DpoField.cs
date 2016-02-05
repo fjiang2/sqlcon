@@ -50,7 +50,7 @@ namespace Sys.Data.Manager
 
             Property prop = new Property(new CodeBuilder.TypeInfo { userType = ty }, fieldName);
             var attr = prop.AddAttribute<ColumnAttribute>();
-            if (dpoClass.HasColumnAttribute || column.ColumnName != fieldName)
+            if (dpoClass.option.HasColumnAttribute || column.ColumnName != fieldName)
             {
                 Attribute(attr, column);
             }
@@ -65,7 +65,7 @@ namespace Sys.Data.Manager
             dpoClass.clss.Add(prop);
 
 
-            if(dpoClass.HasColumnAttribute)
+            if(dpoClass.option.HasColumnAttribute)
                 attr.comment = new Comment(string.Format("{0}({1}) {2}", column.DataType, column.AdjuestedLength(), column.Nullable ? "null" : "not null"));
 
             dpoClass.dict_column_field.Add(column.ColumnName, new PropertyDefinition(ty, fieldName));

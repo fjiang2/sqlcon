@@ -11,6 +11,35 @@ using Sys.CodeBuilder;
 
 namespace Sys.Data.Manager
 {
+
+    public class Option
+    {
+
+        public Level Level { get; set; }
+        public bool IsPack { get; set; }
+        public bool HasProvider { get; set; }
+
+
+        public bool HasColumnAttribute { get; set; }
+        public bool HasTableAttribute { get; set; }
+        public bool MustGenerate { get; set; }
+
+        public bool CodeSorted { get; set; }
+
+
+        public Option()
+        {
+            Level = Level.Application;
+            IsPack = false;
+            HasProvider = false;
+
+            HasColumnAttribute = true;
+            HasTableAttribute = true;
+            MustGenerate = true;
+            CodeSorted = false;
+        }
+    }
+
     public class TableClass
     {
         private TableName tableName;
@@ -19,17 +48,10 @@ namespace Sys.Data.Manager
         public Modifier Modifier { get; set; }
         public Func<string, string> ClassNameRule { get; set; }
 
-        public Level Level { get; set; }
-        public bool IsPack { get; set; }
-        public bool HasProvider { get; set; }
-
-        
-        public bool HasColumnAttribute { get; set; }
-        public bool HasTableAttribute { get; set; }
-        public bool MustGenerate { get; set; }
-
 
         public Dictionary<TableName, Type> dict { get; set; }
+
+        public Option option { get; set; } = new Option();
 
         public TableClass(TableName tableName)
         {
@@ -37,14 +59,6 @@ namespace Sys.Data.Manager
 
             this.NameSpace = Setting.DPO_CLASS_SUB_NAMESPACE;
             this.Modifier = Modifier.Public;
-
-            this.Level = Level.Application;
-            this.IsPack = false;
-            this.HasProvider = false;
-
-            this.HasColumnAttribute = true;
-            this.HasTableAttribute = true;
-            this.MustGenerate = true;
         }
 
 
@@ -53,9 +67,9 @@ namespace Sys.Data.Manager
         {
             ClassTableName ctname = new ClassTableName(tableName)
             {
-                Level = Level,
-                Pack = IsPack,
-                HasProvider = HasProvider,
+                Level = option.Level,
+                Pack = option.IsPack,
+                HasProvider = option.HasProvider,
                 ClassNameRule = ClassNameRule
             };
 
@@ -70,8 +84,8 @@ namespace Sys.Data.Manager
             ITable schema = new DataTableDpoClass(table);
             ClassTableName ctname = new ClassTableName(schema.TableName);
             ClassName cname = new ClassName(NameSpace, Modifier, ctname);
-            HasTableAttribute = false;
-            HasTableAttribute = false;
+            option.HasTableAttribute = false;
+            option.HasTableAttribute = false;
             return GenTableDpo(ctname, schema, path, cname);
         }
 
@@ -79,13 +93,10 @@ namespace Sys.Data.Manager
         private bool GenTableDpo(ClassTableName tname, ITable metatable, string path,  ClassName cname)
         {
 
-            DpoGenerator gen = new DpoGenerator(tname, metatable, cname)
+            DpoGenerator gen = new DpoGenerator(tname, metatable, cname, option)
             {
-                HasTableAttribute = HasTableAttribute,
-                HasColumnAttribute = HasColumnAttribute,
                 Dict = dict,
                 OutputPath = path,
-                MustGenerate = MustGenerate
             };
 
             gen.Generate();

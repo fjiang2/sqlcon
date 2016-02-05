@@ -81,9 +81,9 @@ namespace Sys.CodeBuilder
 
         public Member AddMember(string text)
         {
-            var comment = new Member().Add(text);
-            list.Add(comment);
-            return comment;
+            var member = new Member(text);
+            list.Add(member);
+            return member;
         }
 
         private IEnumerable<Constructor> constructors
@@ -185,6 +185,9 @@ namespace Sys.CodeBuilder
                         {
                             if (item.Count == 1 && (item is Field || item is Property))
                                 return;
+
+                            //if (item.Count == 1 && (item is Member))
+                            //    return;
 
                             body.AppendLine();
                         }

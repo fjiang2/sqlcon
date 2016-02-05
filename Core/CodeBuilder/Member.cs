@@ -8,22 +8,23 @@ namespace Sys.CodeBuilder
 {
     public class Member : Buildable
     {
-        private CodeBlock comments = new CodeBlock();
+        private CodeBlock code = new CodeBlock();
 
-        public Member()
+        public Member(string line)
         {
+            code.AppendLine(line);
         }
 
-        public Member Add(string comment)
+        public Member Add(string line)
         {
-            comments.AppendLine(comment);
+            code.AppendLine(line);
             return this;
         }
 
         protected override CodeBlock BuildBlock()
         {
             CodeBlock block = base.BuildBlock();
-            block.Add(comments);
+            block.Add(code);
             return block;
         }
 

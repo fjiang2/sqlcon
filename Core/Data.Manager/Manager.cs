@@ -56,7 +56,8 @@ namespace Sys.Data.Manager
                         HasProvider = dpo.HasProvider
                     };
                     ClassName cname = new ClassName(dpo);
-                    TableClass clss = new TableClass(ctname) { MustGenerate = true, dict = dict };
+                    TableClass clss = new TableClass(ctname) { dict = dict };
+                    clss.option.MustGenerate = true;
                     clss.CreateClass(path); ;
                 }
             }
