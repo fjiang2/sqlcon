@@ -70,10 +70,10 @@ namespace Sys.Data.Manager
 
 
             //constructor
-            clss.AddConstructor(new Constructor(ClassName));
+            clss.Add(new Constructor(ClassName));
 
             this.pack = new Method("Pack") { modifier = Modifier.Protected | Modifier.Override };
-            clss.AddMethod(pack);
+            clss.Add(pack);
 
             classBuilder.AddClass(clss);
         }

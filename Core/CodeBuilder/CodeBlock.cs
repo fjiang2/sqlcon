@@ -23,7 +23,7 @@ namespace Sys.CodeBuilder
 {
     public class CodeBlock
     {
-        public int tab { get; set; }
+     //   public int tab { get; set; }
 
         //current tab number
         private int curruent = 0;

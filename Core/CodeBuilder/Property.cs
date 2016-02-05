@@ -23,13 +23,21 @@ namespace Sys.CodeBuilder
 {
     public class Property  : Declare, ICodeBlock
     {
+        private object value;
+
         public Statement gets { get; } = new Statement();
         public Statement sets { get; } = new Statement();
 
         public Property(TypeInfo returnType, string propertyName)
+            : this(returnType, propertyName, null)
+        {
+        }
+
+        public Property(TypeInfo returnType, string propertyName, object value)
             :base(propertyName)
         {
             this.type = returnType;
+            this.value = value;
         }
 
 

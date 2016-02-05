@@ -116,6 +116,7 @@ namespace Sys.Data.Manager
 
         public string GetConstStringColumnName()
         {
+            var clss = dpoClass.clss;
             string _columnName = dpoClass.dict_column_field[column.ColumnName].PropertyName;
 
             string line = "        ";
@@ -126,7 +127,8 @@ namespace Sys.Data.Manager
                 modifier= Modifier.Public | Modifier.Const
             };
 
-            dpoClass.clss.AddField(field);
+            clss.Add(field);
+            
 
             return line;
         }

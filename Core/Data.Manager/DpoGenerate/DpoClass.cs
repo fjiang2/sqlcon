@@ -294,8 +294,8 @@ namespace Sys.Data.Manager
                 collect.statements.AppendFormat("SetField(row, _{0}, this.{0});", fieldName);
             }
 
-            clss.AddMethod(fill);
-            clss.AddMethod(collect);
+            clss.Add(fill);
+            clss.Add(collect);
 
             CodeBlock block = new CodeBlock();
             block.Add(fill, 0);
@@ -334,12 +334,15 @@ namespace Sys.Data.Manager
 
         private string ConstStringColumnNames()
         {
+            clss.AddComment("#region CONSTANT");
             string columns = "";
             foreach (IColumn column in metaTable.Columns)
             {
                 DpoField field = new DpoField(this, column);
                 columns += field.GetConstStringColumnName() + "\r\n";
             }
+
+            clss.AddComment("#endregion");
 
             return columns;
         }

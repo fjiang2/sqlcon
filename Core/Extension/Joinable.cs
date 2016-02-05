@@ -8,14 +8,14 @@ namespace Sys
 {
     public static class Joinable
     {
-        public static void Foreach<TSource>(this IEnumerable<TSource> source, Action<TSource> action, Action delimiter)
+        public static void Foreach<TSource>(this IEnumerable<TSource> source, Action<TSource> action, Action<TSource> delimiter)
         {
             bool first = true;
 
             foreach (var i in source)
             {
                 if (!first)
-                    delimiter();
+                    delimiter(i);
 
                 first = false;
                 action(i);
@@ -25,7 +25,7 @@ namespace Sys
         public static string Join<TSource>(this IEnumerable<TSource> source, string delimiter)
         {
             StringBuilder builder = new StringBuilder();
-            source.Foreach(i => builder.Append(i), () => builder.Append(delimiter));
+            source.Foreach(i => builder.Append(i), _ => builder.Append(delimiter));
             return builder.ToString();
         }
     }

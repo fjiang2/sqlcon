@@ -18,6 +18,13 @@ namespace Sys.CodeBuilder
             return block;
         }
 
+        public int Count
+        {
+            get
+            {
+                return GetBlock().Count;
+            }
+        }
         /// <summary>
         /// Generate code, BuildBlock can be invoked only once
         /// </summary>

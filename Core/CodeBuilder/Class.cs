@@ -19,20 +19,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using Sys;
 
 namespace Sys.CodeBuilder
 {
-    public class Class : Buildable
+    public class Class : Declare
     {
-        public Modifier modifier { get; set; } = Modifier.Public;
+        List<Buildable> list = new List<Buildable>();
 
-        List<Constructor> constructors = new List<Constructor>();
-        List<Field> fields = new List<Field>();
-        List<Method> methods = new List<Method>();
-        List<Property> properties = new List<Property>();
-
-        private string className;
         private Type[] inherits;
+        public bool Sorted { get; set; } = false;
 
         public Class(string className)
             : this(className, new Type[] { })
@@ -40,20 +36,15 @@ namespace Sys.CodeBuilder
         }
 
         public Class(string className, Type[] inherits)
+            :base(className)
         {
-            this.className = className;
             this.inherits = inherits;
+            base.modifier = Modifier.Public;
         }
 
-        public Class AddConstructor(Constructor constructor)
+        public Class Add(Buildable code)
         {
-            this.constructors.Add(constructor);
-            return this;
-        }
-
-        public Class AddField(Field field)
-        {
-            this.fields.Add(field);
+            this.list.Add(code);
             return this;
         }
 
@@ -64,71 +55,134 @@ namespace Sys.CodeBuilder
                 modifier = modifier
             };
 
-            this.fields.Add(field);
+            this.list.Add(field);
             return this;
         }
 
-
-        public Class AddMethod(Method method)
+        public Class AddProperty<T>(Modifier modifer, string name, object value = null)
         {
-            this.methods.Add(method);
+            var property = new Property(new TypeInfo { type = typeof(T) }, name, value)
+            {
+                modifier = modifier
+            };
+
+            this.list.Add(property);
             return this;
         }
 
-        public Class AddProperty(Property property)
+
+        public Class AddComment(string text)
         {
-            this.properties.Add(property);
+            var comment = new Comment().Add(text);
+            list.Add(comment);
             return this;
         }
+
+        private IEnumerable<Constructor> constructors
+        {
+            get
+            {
+                return list
+                    .Where(item => item is Constructor)
+                    .Select(item=>(Constructor)item);
+            }
+        }
+
+        private IEnumerable<Field> fields
+        {
+            get
+            {
+                return list
+                    .Where(item => item is Field)
+                    .Select(item => (Field)item);
+            }
+        }
+
+        private IEnumerable<Method> methods
+        {
+            get
+            {
+                return list
+                    .Where(item => item is Method)
+                    .Select(item => (Method)item);
+            }
+        }
+
+        private IEnumerable<Property> properties
+        {
+            get
+            {
+                return list
+                    .Where(item => item is Property)
+                    .Select(item => (Property)item);
+            }
+        }
+
+
 
         protected override CodeBlock BuildBlock()
         {
             CodeBlock clss = base.BuildBlock();
 
-            clss.AppendFormat("{0} class {1}", new ModifierString(modifier), className);
+            clss.AppendFormat("{0} class {1}", new ModifierString(modifier), base.name);
             if (inherits.Length > 0)
                 clss.AppendFormat("\t: {0}", string.Join(", ", inherits.Select(inherit => new TypeInfo { type = inherit }.ToString())));
 
             int tab = 0;
             var body = new CodeBlock();
 
-            var flds = fields.Where(fld => (fld.modifier & Modifier.Const) != Modifier.Const);
-            foreach (Field field in flds)
+            if (Sorted)
             {
-                body.Add(field, tab);
-            }
-
-            foreach (Constructor constructor in constructors)
-            {
-                body.Add(constructor, tab);
-                body.AppendLine();
-            }
-            
-            foreach (Property property in properties)
-            {
-                body.Add(property, tab);
-
-                if (property.GetBlock().Count > 1)
-                    body.AppendLine();
-            }
-
-            foreach (Method method in methods)
-            {
-                body.Add(method, tab);
-                body.AppendLine();
-            }
-
-            flds = fields.Where(fld => (fld.modifier & Modifier.Const) == Modifier.Const);
-            if (flds.Count() > 0)
-            {
-                body.AppendLine();
+                var flds = fields.Where(fld => (fld.modifier & Modifier.Const) != Modifier.Const);
                 foreach (Field field in flds)
                 {
                     body.Add(field, tab);
                 }
+
+                foreach (Constructor constructor in constructors)
+                {
+                    body.Add(constructor, tab);
+                    body.AppendLine();
+                }
+
+                foreach (Property property in properties)
+                {
+                    body.Add(property, tab);
+
+                    if (property.GetBlock().Count > 1)
+                        body.AppendLine();
+                }
+
+                foreach (Method method in methods)
+                {
+                    body.Add(method, tab);
+                    body.AppendLine();
+                }
+
+                flds = fields.Where(fld => (fld.modifier & Modifier.Const) == Modifier.Const);
+                if (flds.Count() > 0)
+                {
+                    body.AppendLine();
+                    foreach (Field field in flds)
+                    {
+                        body.Add(field, tab);
+                    }
+                }
+
             }
+            else
+            {
+                list.Foreach(
+                    item => body.Add(item, tab), 
+                    item => 
+                        {
+                            if (item.Count == 1 && (item is Field || item is Property || item is Comment))
+                                return;
 
-
+                            body.AppendLine();
+                        }
+                    );
+            }
             clss.AddBeginEnd(body);
             return clss;
         }

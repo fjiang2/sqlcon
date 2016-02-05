@@ -63,6 +63,7 @@
     <Compile Include="CodeBuilder\Buildable.cs" />
     <Compile Include="CodeBuilder\CodeLine.cs" />
     <Compile Include="CodeBuilder\Constructor.cs" />
+    <Compile Include="CodeBuilder\Comment.cs" />
     <Compile Include="CodeBuilder\Field.cs" />
     <Compile Include="CodeBuilder\CodeBlock.cs" />
     <Compile Include="CodeBuilder\Declare.cs" />

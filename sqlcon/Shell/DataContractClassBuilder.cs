@@ -53,7 +53,7 @@ namespace sqlcon
 
             foreach (DataColumn column in dt.Columns)
             {
-                clss.AddProperty(new Property(dict[column], column.ColumnName) { modifier = Modifier.Public });
+                clss.Add(new Property(dict[column], column.ColumnName) { modifier = Modifier.Public });
             }
 
             return builder;
@@ -76,7 +76,7 @@ namespace sqlcon
                     args = new Arguments().Add<DataTable>("dt"),
                     IsExtensionMethod = true
                 };
-                clss.AddMethod(method);
+                clss.Add(method);
                 var sent = method.statements;
 
                 sent.AppendLine("return dt.AsEnumerable()");
@@ -106,7 +106,7 @@ namespace sqlcon
                     args = new Arguments().Add($"IEnumerable<{cn}>", "items"),
                     IsExtensionMethod = true
                 };
-                clss.AddMethod(method);
+                clss.Add(method);
 
                 var sent = method.statements;
                 sent.AppendLine("DataTable dt = new DataTable();");
