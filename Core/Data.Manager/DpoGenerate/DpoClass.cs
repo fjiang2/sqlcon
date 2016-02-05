@@ -132,7 +132,7 @@ namespace Sys.Data.Manager
 
             if (metaTable.Identity.Length > 0)
             {
-                prop.gets.Add(new CodeBlock().AppendFormat("return this.{0};", metaTable.Identity.ColumnNames[0]));
+                prop.gets.AppendFormat("return this.{0};", metaTable.Identity.ColumnNames[0]);
                 return string.Format(DPObjectIdProperty, metaTable.Identity.ColumnNames[0]);
             }
             else if (metaTable.PrimaryKeys.Length == 1)
@@ -142,7 +142,7 @@ namespace Sys.Data.Manager
 
                 if (column.CType == CType.Int)
                 {
-                    prop.gets.Add(new CodeBlock().AppendFormat("return this.{0};", dict_column_field[key].PropertyName));
+                    prop.gets.AppendFormat("return this.{0};", dict_column_field[key].PropertyName);
                     return string.Format(DPObjectIdProperty, dict_column_field[key].PropertyName);
                 }
 
@@ -173,7 +173,7 @@ namespace Sys.Data.Manager
         {{
             get
             {{
-                return new PrimaryKeys(new string[]{{ {0} }});
+                return new PrimaryKeys(new string[] {{ {0} }});
             }}
         }}
 ";
@@ -181,13 +181,13 @@ namespace Sys.Data.Manager
 
             if (metaTable.PrimaryKeys.Length == 0)
             {
-                prop.gets.Add(new CodeBlock().AppendLine("return new PrimaryKeys(new string[] {});"));
+                prop.gets.AppendLine("return new PrimaryKeys(new string[] {});");
                 return prop1;
             }
 
             if (metaTable.PrimaryKeys.Length > 0)
             {
-                prop.gets.Add(new CodeBlock().AppendFormat("return new PrimaryKeys(new string[]{{ {0} }});", stringQL(metaTable.PrimaryKeys.Keys)));
+                prop.gets.AppendFormat("return new PrimaryKeys(new string[] {{ {0} }});", stringQL(metaTable.PrimaryKeys.Keys));
                 return string.Format(prop2, stringQL(metaTable.PrimaryKeys.Keys));
             }
 
@@ -213,7 +213,7 @@ namespace Sys.Data.Manager
         {{
             get
             {{
-                return new IdentityKeys(new string[]{{ {0} }});
+                return new IdentityKeys(new string[] {{ {0} }});
             }}
         }}
 ";
@@ -223,13 +223,13 @@ namespace Sys.Data.Manager
 
             if (metaTable.Identity.Length == 0)
             {
-                prop.gets.Add(new CodeBlock().AppendLine("return new IdentityKeys();"));
+                prop.gets.AppendLine("return new IdentityKeys();");
                 return prop1;
             }
 
             if (metaTable.Identity.Length > 0)
             {
-                prop.gets.Add(new CodeBlock().AppendFormat(" return new IdentityKeys(new string[]{{ {0} }});", stringQL(metaTable.Identity.ColumnNames)));
+                prop.gets.AppendFormat(" return new IdentityKeys(new string[] {{ {0} }});", stringQL(metaTable.Identity.ColumnNames));
                 return string.Format(prop2, stringQL(metaTable.Identity.ColumnNames));
             }
 
@@ -265,6 +265,10 @@ namespace Sys.Data.Manager
            }
         }
         ";
+
+
+            var cons = clss.AddConstructor();
+
             if (metaTable.PrimaryKeys.Length == 0)
                 return string.Empty;
 
@@ -276,13 +280,22 @@ namespace Sys.Data.Manager
                     s1 += ", ";
 
                 s1 += string.Format("{0} {1}", dict_column_field[p].Type, dict_column_field[p].PropertyName.ToLower());
+                cons.args.Add(dict_column_field[p].Type, dict_column_field[p].PropertyName.ToLower());
             }
 
+            Statement sent1 = new Statement();
+            Statement sent2 = new Statement();
             string s2 = "";
             foreach (string p in keys)
             {
                 s2 += string.Format("this.{0} = {1}; ", dict_column_field[p].PropertyName, dict_column_field[p].PropertyName.ToLower());
+                sent1.AppendFormat("this.{0} = {1};", dict_column_field[p].PropertyName, dict_column_field[p].PropertyName.ToLower());
+                sent2.AppendFormat("this.{0} = {1};", dict_column_field[p].PropertyName, dict_column_field[p].PropertyName.ToLower());
             }
+
+            cons.statements.Add(sent1);
+            cons.statements.AppendLine("this.Load();");
+            cons.statements.IF("!this.Exists", sent2.WrapByBeginEnd());
 
             return constructor
                 .Replace("@PARM", s1)
@@ -340,11 +353,13 @@ namespace Sys.Data.Manager
             {
                 fields += "\r\n";
                 fields += "        #region IMAGE PROPERTIES";
+                clss.AddComment("#region IMAGE PROPERTIES");
                 foreach (DpoField field in imageFields)
                 {
                     fields += field.GenerateImageField() + "\r\n";
                 }
                 fields += "        #endregion";
+                clss.AddComment("#endregion");
             }
 
             return fields;
@@ -446,6 +461,12 @@ namespace @NAMESPACE
 }
 
 ";
+
+            this.clss.AddConstructor();
+            var cons = this.clss.AddConstructor();
+            cons.args.Add<DataRow>("row");
+            cons.baseArgs = new string[] { "row" };
+
 
             //public DPCollection<@CLASSNAME> DPCollection(string where, params object[] args)
             //{ 

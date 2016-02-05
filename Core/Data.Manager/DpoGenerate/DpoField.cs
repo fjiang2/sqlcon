@@ -40,7 +40,7 @@ namespace Sys.Data.Manager
             this.column = column;
         }
 
-       
+
 
         public string GenerateField()
         {
@@ -51,8 +51,8 @@ namespace Sys.Data.Manager
 
             if (dpoClass.HasColumnAttribute || column.ColumnName != fieldName)
             {
-                line = string.Format("{0}{1}", tab, column.Attribute());
-                if(line.Length < 90)
+                line = string.Format("{0}[{1}]", tab, column.Attribute());
+                if (line.Length < 90)
                     line += new string(' ', 90 - line.Length);      //padding
             }
 
@@ -66,8 +66,11 @@ namespace Sys.Data.Manager
 
 
             string ty = ColumnSchema.GetFieldType(column.DataType, column.Nullable);
-            //string declare = string.Format("public {0} {1};", ty, column.FieldName);
             string declare = string.Format("public {0} {1} {{get; set;}} ", ty, fieldName);
+
+            Property prop = new Property(new CodeBuilder.TypeInfo { userType = ty }, fieldName);
+            prop.attribute = new CodeBuilder.Attribute(column.Attribute());
+            dpoClass.clss.Add(prop);
 
             line += declare;
             if(declare.Length < 30)
@@ -159,7 +162,9 @@ namespace Sys.Data.Manager
             }}
         }}
 ";
-            return string.Format(imageProperty,  column.ColumnName.FieldName());
+            string sent = string.Format(imageProperty, column.ColumnName.FieldName());
+            dpoClass.clss.AddComment(sent);
+            return sent;
 
         }
     

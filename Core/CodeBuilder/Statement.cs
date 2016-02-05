@@ -27,41 +27,41 @@ namespace Sys.CodeBuilder
         {
         }
 
-        public Statement COMPOUND(Statement statements)
+        public Statement COMPOUND(CodeBlock statements)
         {
-            AddBeginEnd(statements);
+            AddWithBeginEnd(statements);
             return this;
         }
 
 
-        public Statement IF(string exp, Statement sent)
+        public Statement IF(string exp, CodeBlock sent)
         {
             AppendLine($"if({exp})");
-            Add(sent, 1);
+            Add(sent);
             return this;
         }
 
-        public Statement IF(string exp, Statement sent1, Statement sent2)
+        public Statement IF(string exp, CodeBlock sent1, CodeBlock sent2)
         {
             AppendLine($"if({exp})");
-            Add(sent1, 1);
+            Add(sent1);
             AppendLine("else");
-            Add(sent2, 1);
+            Add(sent2);
             return this;
         }
 
-        public Statement FOREACH(string exp1, string exp2, Statement sent)
+        public Statement FOREACH(string exp1, string exp2, CodeBlock sent)
         {
             AppendLine($"foreach({exp1} in {exp2})");
-            Add(sent, 1);
+            Add(sent);
             return this;
         }
 
 
-        public Statement WHILE(string exp, Statement sent)
+        public Statement WHILE(string exp, CodeBlock sent)
         {
             AppendLine($"while({exp})");
-            Add(sent, 1);
+            Add(sent);
             return this;
         }
 

@@ -23,7 +23,7 @@ namespace Sys.CodeBuilder
 {
     public class CodeBlock
     {
-     //   public int tab { get; set; }
+        //   public int tab { get; set; }
 
         //current tab number
         private int curruent = 0;
@@ -46,6 +46,18 @@ namespace Sys.CodeBuilder
             lines.Clear();
         }
 
+        public CodeBlock Indent()
+        {
+            curruent++;
+            return this;
+        }
+
+        public CodeBlock Unindent()
+        {
+            curruent--;
+            return this;
+        }
+
         public void Add(CodeBlock block, int indent = 0)
         {
             foreach (var line in block.lines)
@@ -60,11 +72,22 @@ namespace Sys.CodeBuilder
             Add(block.GetBlock(), 0);
         }
 
-        public void AddBeginEnd(CodeBlock block)
+        public void AddWithBeginEnd(CodeBlock block)
         {
             Begin();
             Add(block, curruent);
             End();
+        }
+
+        public CodeBlock WrapByBeginEnd()
+        {
+            foreach (var line in lines)
+            {
+                line.tab++;
+            }
+            Insert("{");
+            AppendLine("}");
+            return this;
         }
 
         public CodeBlock Begin(string str = null)

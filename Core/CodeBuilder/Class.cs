@@ -48,6 +48,14 @@ namespace Sys.CodeBuilder
             return this;
         }
 
+        public Constructor AddConstructor()
+        {
+            var constructor = new Constructor(base.name);
+
+            this.list.Add(constructor);
+            return constructor;
+        }
+
         public Field AddField<T>(Modifier modifier, string name, object value = null)
         {
             var field = new Field(new TypeInfo { type = typeof(T) }, name, value)
@@ -182,7 +190,7 @@ namespace Sys.CodeBuilder
                         }
                     );
             }
-            clss.AddBeginEnd(body);
+            clss.AddWithBeginEnd(body);
             return clss;
         }
 

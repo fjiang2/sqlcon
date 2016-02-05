@@ -267,7 +267,7 @@ namespace Sys.Data
 
             }
 
-            string attribute = string.Format("[Column(_{0}, CType.{1}", column.ColumnName.FieldName(), column.CType);
+            string attribute = string.Format("Column(_{0}, CType.{1}", column.ColumnName.FieldName(), column.CType);
 
             if (column.Nullable)
                 attribute += ", Nullable = true";   //see: bool Nullable = false; in class DataColumnAttribute
@@ -284,7 +284,7 @@ namespace Sys.Data
             if (attr != "")
                 attribute += attr;
 
-            attribute += ")]";
+            attribute += ")";
 
             return attribute;
         }

@@ -56,13 +56,13 @@ namespace Sys.CodeBuilder
                 if (gets.Count != 0)
                 {
                     block.AppendLine("get");
-                    block.AddBeginEnd(gets);
+                    block.AddWithBeginEnd(gets);
                 }
 
                 if (sets.Count != 0)
                 {
                     block.AppendLine("set");
-                    block.AddBeginEnd(sets);
+                    block.AddWithBeginEnd(sets);
                 }
 
                 block.End();

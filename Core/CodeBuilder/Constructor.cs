@@ -24,7 +24,7 @@ namespace Sys.CodeBuilder
     public class Constructor : Declare, ICodeBlock
     {
         public Arguments args { get; set; } = new Arguments();
-        public Arguments baseAgrs { get; set; } = new Arguments();
+        public string[] baseArgs { get; set; }
 
         public Statement statements { get; } = new Statement();
 
@@ -40,16 +40,13 @@ namespace Sys.CodeBuilder
         {
             CodeBlock block = base.BuildBlock();
 
-            string _constructor = string.Format("{0}({1})", Signture, args);
-            string _base = string.Format(":base({0})", baseAgrs);
-
-            block.AppendLine(_constructor);
-            if (!baseAgrs.IsEmpty)
+            block.AppendFormat("{0}({1})", Signture, args);
+            if (baseArgs != null)
             {
-                block.AppendLine(_base, 1);
+                block.Indent().AppendFormat(":base({0})", string.Join(",", baseArgs)).Unindent();
             }
 
-            block.AddBeginEnd(statements);
+            block.AddWithBeginEnd(statements);
             return block;
         }
         

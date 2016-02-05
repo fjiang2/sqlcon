@@ -64,7 +64,7 @@ namespace Sys.CodeBuilder
                     clss => c.AppendLine()
                 );
 
-            block.AddBeginEnd(c);
+            block.AddWithBeginEnd(c);
 
             return block;
         }

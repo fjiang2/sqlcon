@@ -60,7 +60,7 @@ namespace Sys.CodeBuilder
             CodeBlock block = base.BuildBlock();
 
             block.AppendLine(signature);
-            block.AddBeginEnd(statements);
+            block.AddWithBeginEnd(statements);
 
             return block;
         }

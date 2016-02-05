@@ -34,6 +34,14 @@ namespace Sys.CodeBuilder
             return this;
         }
 
+        public Arguments Add(Type type, string name)
+        {
+            var arg = new Argument(new TypeInfo { type = type }, name);
+
+            args.Add(arg);
+            return this;
+        }
+
         public Arguments Add<T>(string name)
         {
             var arg = new Argument(new TypeInfo { type = typeof(T) }, name);
