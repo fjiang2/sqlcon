@@ -128,9 +128,11 @@ namespace Sys.Data.Manager
         }}
 ";
 
+            Property prop = clss.AddProperty<int>(Modifier.Protected | Modifier.Override, "DPObjectId");
 
             if (metaTable.Identity.Length > 0)
             {
+                prop.gets.Add(new CodeBlock().AppendFormat("return this.{0};", metaTable.Identity.ColumnNames[0]));
                 return string.Format(DPObjectIdProperty, metaTable.Identity.ColumnNames[0]);
             }
             else if (metaTable.PrimaryKeys.Length == 1)
@@ -140,10 +142,13 @@ namespace Sys.Data.Manager
 
                 if (column.CType == CType.Int)
                 {
+                    prop.gets.Add(new CodeBlock().AppendFormat("return this.{0};", dict_column_field[key].PropertyName));
                     return string.Format(DPObjectIdProperty, dict_column_field[key].PropertyName);
                 }
 
             }
+
+            prop.gets.Add(new CodeBlock().AppendLine("throw new NotImplementedException();"));
 
             return DPObjectId;
         }
@@ -172,13 +177,19 @@ namespace Sys.Data.Manager
             }}
         }}
 ";
-
+            Property prop = clss.AddProperty<IPrimaryKeys>(Modifier.Public | Modifier.Override, "Primary");
 
             if (metaTable.PrimaryKeys.Length == 0)
+            {
+                prop.gets.Add(new CodeBlock().AppendLine("return new PrimaryKeys(new string[] {});"));
                 return prop1;
+            }
 
             if (metaTable.PrimaryKeys.Length > 0)
+            {
+                prop.gets.Add(new CodeBlock().AppendFormat("return new PrimaryKeys(new string[]{{ {0} }});", stringQL(metaTable.PrimaryKeys.Keys)));
                 return string.Format(prop2, stringQL(metaTable.PrimaryKeys.Keys));
+            }
 
             return "";
         }
@@ -207,12 +218,20 @@ namespace Sys.Data.Manager
         }}
 ";
 
+            Property prop = clss.AddProperty<IIdentityKeys>(Modifier.Public | Modifier.Override, "Identity");
+
 
             if (metaTable.Identity.Length == 0)
+            {
+                prop.gets.Add(new CodeBlock().AppendLine("return new IdentityKeys();"));
                 return prop1;
+            }
 
             if (metaTable.Identity.Length > 0)
+            {
+                prop.gets.Add(new CodeBlock().AppendFormat(" return new IdentityKeys(new string[]{{ {0} }});", stringQL(metaTable.Identity.ColumnNames)));
                 return string.Format(prop2, stringQL(metaTable.Identity.ColumnNames));
+            }
 
             return "";
         }
@@ -298,9 +317,9 @@ namespace Sys.Data.Manager
             clss.Add(collect);
 
             CodeBlock block = new CodeBlock();
-            block.Add(fill, 0);
+            block.Add(fill);
             block.AppendLine();
-            block.Add(collect, 0);
+            block.Add(collect);
             return block.ToString(2);
 
         }

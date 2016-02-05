@@ -46,7 +46,7 @@ namespace Sys.CodeBuilder
             lines.Clear();
         }
 
-        public void Add(CodeBlock block, int indent)
+        public void Add(CodeBlock block, int indent = 0)
         {
             foreach (var line in block.lines)
             {
@@ -55,9 +55,9 @@ namespace Sys.CodeBuilder
             }
         }
 
-        public void Add(ICodeBlock block, int indent)
+        public void Add(ICodeBlock block)
         {
-            Add(block.GetBlock(), indent);
+            Add(block.GetBlock(), 0);
         }
 
         public void AddBeginEnd(CodeBlock block)

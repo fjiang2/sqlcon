@@ -36,7 +36,7 @@ namespace Sys.CodeBuilder
         }
 
         public Class(string className, Type[] inherits)
-            :base(className)
+            : base(className)
         {
             this.inherits = inherits;
             base.modifier = Modifier.Public;
@@ -48,7 +48,7 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        public Class AddField<T>(Modifier modifer, string name, object value = null)
+        public Field AddField<T>(Modifier modifier, string name, object value = null)
         {
             var field = new Field(new TypeInfo { type = typeof(T) }, name, value)
             {
@@ -56,10 +56,10 @@ namespace Sys.CodeBuilder
             };
 
             this.list.Add(field);
-            return this;
+            return field;
         }
 
-        public Class AddProperty<T>(Modifier modifer, string name, object value = null)
+        public Property AddProperty<T>(Modifier modifier, string name, object value = null)
         {
             var property = new Property(new TypeInfo { type = typeof(T) }, name, value)
             {
@@ -67,15 +67,15 @@ namespace Sys.CodeBuilder
             };
 
             this.list.Add(property);
-            return this;
+            return property;
         }
 
 
-        public Class AddComment(string text)
+        public Comment AddComment(string text)
         {
             var comment = new Comment().Add(text);
             list.Add(comment);
-            return this;
+            return comment;
         }
 
         private IEnumerable<Constructor> constructors
@@ -84,7 +84,7 @@ namespace Sys.CodeBuilder
             {
                 return list
                     .Where(item => item is Constructor)
-                    .Select(item=>(Constructor)item);
+                    .Select(item => (Constructor)item);
             }
         }
 
@@ -128,26 +128,25 @@ namespace Sys.CodeBuilder
             if (inherits.Length > 0)
                 clss.AppendFormat("\t: {0}", string.Join(", ", inherits.Select(inherit => new TypeInfo { type = inherit }.ToString())));
 
-            int tab = 0;
             var body = new CodeBlock();
 
             if (Sorted)
             {
                 var flds = fields.Where(fld => (fld.modifier & Modifier.Const) != Modifier.Const);
-                foreach (Field field in flds)
+                foreach (Field field in flds.OrderBy(fld => fld.modifier))
                 {
-                    body.Add(field, tab);
+                    body.Add(field);
                 }
 
                 foreach (Constructor constructor in constructors)
                 {
-                    body.Add(constructor, tab);
+                    body.Add(constructor);
                     body.AppendLine();
                 }
 
                 foreach (Property property in properties)
                 {
-                    body.Add(property, tab);
+                    body.Add(property);
 
                     if (property.GetBlock().Count > 1)
                         body.AppendLine();
@@ -155,7 +154,7 @@ namespace Sys.CodeBuilder
 
                 foreach (Method method in methods)
                 {
-                    body.Add(method, tab);
+                    body.Add(method);
                     body.AppendLine();
                 }
 
@@ -165,16 +164,16 @@ namespace Sys.CodeBuilder
                     body.AppendLine();
                     foreach (Field field in flds)
                     {
-                        body.Add(field, tab);
+                        body.Add(field);
                     }
                 }
 
             }
             else
             {
-                list.Foreach(
-                    item => body.Add(item, tab), 
-                    item => 
+                list.ForEach(
+                    item => body.Add(item),
+                    item =>
                         {
                             if (item.Count == 1 && (item is Field || item is Property || item is Comment))
                                 return;

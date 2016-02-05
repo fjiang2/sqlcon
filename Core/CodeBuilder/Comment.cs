@@ -23,7 +23,7 @@ namespace Sys.CodeBuilder
         protected override CodeBlock BuildBlock()
         {
             CodeBlock block = base.BuildBlock();
-            block.Add(comments, 0);
+            block.Add(comments);
             return block;
         }
 
