@@ -42,6 +42,11 @@ namespace Sys.CodeBuilder
             base.modifier = Modifier.Public;
         }
 
+
+        public string ClassName
+        {
+            get { return this.name; }
+        }
         public Class Add(Buildable code)
         {
             this.list.Add(code);

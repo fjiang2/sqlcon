@@ -27,13 +27,7 @@ namespace Sys.CodeBuilder
         {
         }
 
-        public Statement COMPOUND(CodeBlock statements)
-        {
-            AddWithBeginEnd(statements);
-            return this;
-        }
-
-
+   
         public Statement IF(string exp, CodeBlock sent)
         {
             AppendLine($"if ({exp})");
@@ -62,6 +56,34 @@ namespace Sys.CodeBuilder
         {
             AppendLine($"while ({exp})");
             Add(sent);
+            return this;
+        }
+
+        public Statement SWITCH(string exp, CodeBlock sent)
+        {
+            AppendLine($"switch ({exp})");
+            Begin();
+            Add(sent);
+            End();
+            return this;
+        }
+
+        public Statement CASE(string exp, CodeBlock sent)
+        {
+            AppendLine($"case {exp}:");
+            Indent();
+            Add(sent);
+            AppendLine($"break;");
+            Unindent();
+            return this;
+        }
+        public Statement DEFAULT(CodeBlock sent)
+        {
+            AppendLine($"default:");
+            Indent();
+            Add(sent);
+            AppendLine($"break;");
+            Unindent();
             return this;
         }
 

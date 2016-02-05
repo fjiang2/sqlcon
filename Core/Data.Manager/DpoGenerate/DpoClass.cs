@@ -202,16 +202,17 @@ namespace Sys.Data.Manager
             }
 
             Statement sent1 = new Statement();
-            Statement sent2 = new Statement();
+            var sent2 = new Statement().Begin();
             foreach (string p in keys)
             {
                 sent1.AppendFormat("this.{0} = {1};", dict_column_field[p].PropertyName, dict_column_field[p].PropertyName.ToLower());
                 sent2.AppendFormat("this.{0} = {1};", dict_column_field[p].PropertyName, dict_column_field[p].PropertyName.ToLower());
             }
+            sent2.End();
 
             cons.statements.Add(sent1);
             cons.statements.AppendLine("this.Load();");
-            cons.statements.IF("!this.Exists", sent2.WrapByBeginEnd());
+            cons.statements.IF("!this.Exists", sent2);
 
 
         }
@@ -330,6 +331,10 @@ namespace Sys.Data.Manager
             FillAndCollect();
 
             ConstStringColumnNames();
+
+            var utils = new Utils(clss.ClassName, metaTable.Columns.Select(column => column.ColumnName.FieldName()));
+            clss.Add(utils.Copy());
+            clss.Add(utils.Clone());
 
             return code.ToString();
         }

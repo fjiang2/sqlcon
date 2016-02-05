@@ -127,17 +127,20 @@ namespace Sys.Data.Manager
             string fieldName = column.ColumnName.FieldName();
             
             Property prop = new Property(new CodeBuilder.TypeInfo { userType = "Image" }, $"{fieldName}Image");
-            prop.gets.IF($"{fieldName} != null", new CodeBlock()
+            prop.gets.IF($"{fieldName} != null", new Statement()
+                    .Begin()
                     .AppendLine($"System.IO.MemoryStream stream = new System.IO.MemoryStream({fieldName});")
                     .AppendLine("return System.Drawing.Image.FromStream(stream);")
-                    .WrapByBeginEnd())
+                    .End())
                 .AppendLine("return null;");
 
-            prop.sets.IF("value != null", new CodeBlock()
+            prop.sets.IF("value != null", new Statement()
+                    .Begin()
                     .AppendLine("System.IO.MemoryStream stream = new System.IO.MemoryStream();")
                     .AppendLine("value.Save(stream, System.Drawing.Imaging.ImageFormat.Jpeg);")
                     .AppendLine($"{fieldName} = stream.ToArray();")
-                    .WrapByBeginEnd());
+                    .End()
+                    );
 
             dpoClass.clss.Add(prop);
         }
