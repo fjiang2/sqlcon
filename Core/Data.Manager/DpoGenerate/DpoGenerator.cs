@@ -35,22 +35,14 @@ namespace Sys.Data.Manager
         private ITable schema;
         private DpoClass dpoClass;
 
-
-        public bool RegisterTable { get; set; }
-        public Dictionary<TableName, Type> Dict { get; set; }
-        
-        public string OutputPath { get; set; }
-        
-
+ 
         private Option option { get; set; }
 
         public DpoGenerator(ClassTableName ctname, ITable schema, ClassName cname, Option option)
         {
             this.option = option;
-            this.Dict = new Dictionary<TableName, Type>();
-            this.RegisterTable = true;
-            this.OutputPath = "C:\\temp\\dpo";
-
+            option.RegisterTable = true;
+            
             this.ctname = ctname;
             this.cname = cname;
             this.schema = schema;
@@ -58,19 +50,19 @@ namespace Sys.Data.Manager
 
         public void Generate()
         {
-            if (schema.TableID == -1 && RegisterTable)
+            if (schema.TableID == -1 && option.RegisterTable)
             {
                 //###DictTable.MustRegister(ctname);
             }
 
-            dpoClass = new DpoClass(schema, cname, option, Dict);
+            dpoClass = new DpoClass(schema, cname, option);
             this.sourceCode = dpoClass.Generate(cname.Modifier, ctname);
 
         }
 
         public bool Save()
         {
-            string fileName = string.Format("{0}\\{1}.cs", OutputPath, cname.Class);
+            string fileName = string.Format("{0}\\{1}.cs", option.OutputPath, cname.Class);
 
             if (!option.MustGenerate)
             {
@@ -92,9 +84,9 @@ namespace Sys.Data.Manager
             //if (schema.TableID == -1 && RegisterTable)
             //    throw new MessageException("Table ID {0} is not defined", ctname);
 
-            if (!Directory.Exists(OutputPath))
+            if (!Directory.Exists(option.OutputPath))
             {
-                Directory.CreateDirectory(OutputPath);
+                Directory.CreateDirectory(option.OutputPath);
             }
 
             StreamWriter sw = new StreamWriter(fileName);

@@ -26,6 +26,11 @@ namespace Sys.Data.Manager
 
         public bool CodeSorted { get; set; }
 
+        public bool RegisterTable { get; set; }
+
+        public Dictionary<TableName, Type> dict { get; set; }
+
+        public string OutputPath { get; set; }
 
         public Option()
         {
@@ -37,6 +42,8 @@ namespace Sys.Data.Manager
             HasTableAttribute = true;
             MustGenerate = true;
             CodeSorted = false;
+            dict = new Dictionary<TableName, Type>();
+            OutputPath = "C:\\temp\\dpo";
         }
     }
 
@@ -47,9 +54,6 @@ namespace Sys.Data.Manager
         public string NameSpace { get; set; }
         public Modifier Modifier { get; set; }
         public Func<string, string> ClassNameRule { get; set; }
-
-
-        public Dictionary<TableName, Type> dict { get; set; }
 
         public Option option { get; set; } = new Option();
 
@@ -93,11 +97,7 @@ namespace Sys.Data.Manager
         private bool GenTableDpo(ClassTableName tname, ITable metatable, string path,  ClassName cname)
         {
 
-            DpoGenerator gen = new DpoGenerator(tname, metatable, cname, option)
-            {
-                Dict = dict,
-                OutputPath = path,
-            };
+            DpoGenerator gen = new DpoGenerator(tname, metatable, cname, option);
 
             gen.Generate();
 

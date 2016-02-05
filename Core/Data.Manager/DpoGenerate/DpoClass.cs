@@ -40,21 +40,18 @@ namespace Sys.Data.Manager
 
         public Dictionary<string, PropertyDefinition> dict_column_field = new Dictionary<string, PropertyDefinition>();
 
-        Dictionary<TableName, Type> dict;
-
         internal ClassBuilder code;
         internal Class clss;
 
         public Option option;
 
-        public DpoClass(ITable metaTable, ClassName cname, Option option, Dictionary<TableName, Type> dict)
+        public DpoClass(ITable metaTable, ClassName cname, Option option)
         {
             this.metaTable = metaTable;
 
             this.nameSpace = cname.Namespace;
             this.className = cname.Class;
 
-            this.dict = dict;
             this.option = option;
 
             this.code = new ClassBuilder { nameSpace = cname.Namespace, };
@@ -82,7 +79,7 @@ namespace Sys.Data.Manager
 
         public Dictionary<TableName, Type> Dict
         {
-            get { return this.dict; }
+            get { return option.dict; }
         }
 
         public ITable MetaTable
