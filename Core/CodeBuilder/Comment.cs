@@ -6,26 +6,21 @@ using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
-    public class Comment : Buildable
+    public class Comment
     {
-        private CodeBlock comments = new CodeBlock();
+        private string comment;
 
-        public Comment()
+        public Comment(string text)
         {
+            this.comment = text;
         }
 
-        public Comment Add(string comment)
+        public override string ToString()
         {
-            comments.AppendLine(comment);
-            return this;
-        }
+            if (comment == null)
+                return string.Empty;
 
-        protected override CodeBlock BuildBlock()
-        {
-            CodeBlock block = base.BuildBlock();
-            block.Add(comments);
-            return block;
+            return $"\t\t//{comment}";
         }
-
     }
 }

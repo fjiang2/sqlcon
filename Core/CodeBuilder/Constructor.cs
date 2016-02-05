@@ -43,7 +43,7 @@ namespace Sys.CodeBuilder
             block.AppendFormat("{0}({1})", Signture, args);
             if (baseArgs != null)
             {
-                block.Indent().AppendFormat(":base({0})", string.Join(",", baseArgs)).Unindent();
+                block.Indent().AppendFormat(": base({0})", string.Join(",", baseArgs)).Unindent();
             }
 
             block.AddWithBeginEnd(statements);

@@ -278,12 +278,12 @@ namespace Sys.Data.Manager
 
             if (imageFields.Count > 0)
             {
-                clss.AddComment("#region IMAGE PROPERTIES");
+                clss.AddMember("#region IMAGE PROPERTIES");
                 foreach (DpoField field in imageFields)
                 {
                     field.GenerateImageField();
                 }
-                clss.AddComment("#endregion");
+                clss.AddMember("#endregion");
             }
 
             return;
@@ -292,7 +292,7 @@ namespace Sys.Data.Manager
 
         private void ConstStringColumnNames()
         {
-            clss.AddComment("#region CONSTANT");
+            clss.AddMember("#region CONSTANT");
 
             foreach (IColumn column in metaTable.Columns)
             {
@@ -300,7 +300,7 @@ namespace Sys.Data.Manager
                 field.GetConstStringColumnName();
             }
 
-            clss.AddComment("#endregion");
+            clss.AddMember("#endregion");
 
             return;
         }
@@ -331,11 +331,10 @@ namespace Sys.Data.Manager
 
             SQL_CREATE_TABLE_STRING = Sys.Data.TableSchema.GenerateCREATE_TABLE(metaTable);
 
-            string attribute = metaTable.GetTableAttribute(ctname);
-            if (!HasTableAttribute)
-                attribute = "";
-
-            this.clss.attribute = new CodeBuilder.Attribute(attribute);
+            var attr = clss.AddAttribute<TableAttribute>();
+            GetTableAttribute(attr, metaTable, ctname);
+            if (HasTableAttribute)
+                this.clss.attribute = attr;
 
             PrimaryConstructor();
             DPObjectId();
@@ -415,5 +414,63 @@ namespace Sys.Data.Manager
 
             return list;
         }
+
+
+        #region Table Attribute Generate
+
+
+        /// <summary>
+        /// [TableName.Level] is not updated in [this.tname], then parameter [level] must be passed in
+        /// </summary>
+        /// <param name="level"></param>
+        /// <returns></returns>
+        internal static void GetTableAttribute(AttributeInfo attr, ITable metaTable, ClassTableName ctname)
+        {
+            attr.comment = new Comment(string.Format("Primary Keys = {0};  Identity = {1};", metaTable.PrimaryKeys, metaTable.Identity));
+
+            List<string> args = new List<string>();
+
+            TableName tableName = metaTable.TableName;
+            switch (ctname.Level)
+            {
+
+                case Level.Application:
+                    args.Add($"\"{tableName.Name}\"");
+                    args.Add("Level.Application");
+                    break;
+
+                case Level.System:
+                    args.Add($"\"{tableName.Name}\"");
+                    args.Add("Level.System");
+                    break;
+
+                case Level.Fixed:
+                    args.Add($"\"{tableName.DatabaseName.Name}\"");
+                    args.Add("Level.Fixed");
+                    break;
+            }
+
+
+            if (ctname.HasProvider)
+            {
+                if (!tableName.Provider.Equals(ConnectionProviderManager.DefaultProvider))
+                {
+                    
+                    args.Add(string.Format("Provider = {0}", (int)tableName.Provider));
+                }
+            }
+
+            if (!ctname.Pack)
+                args.Add("Pack = false");
+
+            attr.args = args.ToArray();
+            return;
+        }
+
+
+
+        #endregion
+
+
     }
 }

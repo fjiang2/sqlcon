@@ -239,55 +239,6 @@ namespace Sys.Data
         }
 
 
-        internal static string Attribute(this IColumn column)
-        {
-            string attr = "";
-            switch (column.CType)
-            {
-                case CType.VarBinary:
-                case CType.Binary:
-                    attr = string.Format(", Length = {0}", column.AdjuestedLength());
-                    break;
-
-                case CType.Char:
-                case CType.VarChar:
-                case CType.NChar:
-                case CType.NVarChar:
-                    int len = column.AdjuestedLength();
-                    if(len != -1)
-                        attr = string.Format(", Length = {0}", len);
-                    break;
-
-
-                //case CType.Numeric:
-                case CType.Decimal:
-                    attr = string.Format(", Precision = {0}, Scale = {1}", column.Precision, column.Scale);
-                    break;
-
-
-            }
-
-            string attribute = string.Format("Column(_{0}, CType.{1}", column.ColumnName.FieldName(), column.CType);
-
-            if (column.Nullable)
-                attribute += ", Nullable = true";   //see: bool Nullable = false; in class DataColumnAttribute
-
-            if (column.IsIdentity)
-                attribute += ", Identity = true";
-
-            if (column.IsPrimary)
-                attribute += ", Primary = true";
-
-            if (column.IsComputed)
-                attribute += ", Computed = true";
-
-            if (attr != "")
-                attribute += attr;
-
-            attribute += ")";
-
-            return attribute;
-        }
 
 
         internal static bool Oversize(this IColumn column, object value)

@@ -8,10 +8,12 @@ namespace Sys.CodeBuilder
 {
     public class Declare  : Buildable
     {
-        public Attribute attribute { get; set; }
+        public AttributeInfo attribute { get; set; }
 
         public Modifier modifier { get; set; } = Modifier.Public;
         public TypeInfo type { get; set; } = new TypeInfo();
+
+        public Comment comment { get; set; }
 
         protected string name;
 
@@ -19,6 +21,16 @@ namespace Sys.CodeBuilder
         {
             this.name = name;
         }
+
+        public AttributeInfo AddAttribute<T>() where T : Attribute
+        {
+            var name = typeof(T).Name;
+            name = name.Substring(0, name.Length - nameof(Attribute).Length);
+            attribute = new AttributeInfo(name);
+
+            return attribute;
+        }
+
 
         protected string Signture
         {
@@ -30,6 +42,8 @@ namespace Sys.CodeBuilder
                     return string.Format("{0} {1}", new ModifierString(modifier), name);
             }
         }
+
+      
 
 
         protected override CodeBlock BuildBlock()

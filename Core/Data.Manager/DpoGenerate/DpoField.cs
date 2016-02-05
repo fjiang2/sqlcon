@@ -53,7 +53,7 @@ namespace Sys.Data.Manager
 
             if (dpoClass.HasColumnAttribute || column.ColumnName != fieldName)
             {
-                prop.attribute = new CodeBuilder.Attribute(column.Attribute());
+                Attribute(prop.AddAttribute<ColumnAttribute>(), column);
             }
 
             if (dpoClass.Nonvalized.IndexOf(fieldName) != -1)
@@ -67,7 +67,7 @@ namespace Sys.Data.Manager
 
 
             if(dpoClass.HasColumnAttribute)
-                line += string.Format("//{0}({1}) {2}", column.DataType, column.AdjuestedLength(), column.Nullable ? "null" : "not null");
+                prop.attribute.comment = new Comment(string.Format("{0}({1}) {2}", column.DataType, column.AdjuestedLength(), column.Nullable ? "null" : "not null"));
 
             dpoClass.dict_column_field.Add(column.ColumnName, new PropertyDefinition(ty, fieldName));
 
@@ -150,11 +150,58 @@ namespace Sys.Data.Manager
         }}
 ";
             string sent = string.Format(imageProperty, column.ColumnName.FieldName());
-            dpoClass.clss.AddComment(sent);
+            dpoClass.clss.AddMember(sent);
             return sent;
 
         }
-    
 
+
+        private static void Attribute(AttributeInfo attr, IColumn column)
+        {
+            List<string> args = new List<string>();
+            string _columnName = column.ColumnName.FieldName();
+            args.Add($"_{_columnName}");
+            args.Add($"CType.{column.CType}");
+
+            switch (column.CType)
+            {
+                case CType.VarBinary:
+                case CType.Binary:
+                    args.Add(string.Format("Length = {0}", column.AdjuestedLength()));
+                    break;
+
+                case CType.Char:
+                case CType.VarChar:
+                case CType.NChar:
+                case CType.NVarChar:
+                    int len = column.AdjuestedLength();
+                    if (len != -1)
+                        args.Add(string.Format("Length = {0}", len));
+                    break;
+
+
+                //case CType.Numeric:
+                case CType.Decimal:
+                    args.Add($"Precision = {column.Precision}");
+                    args.Add($" Scale = {column.Scale}");
+                    break;
+            }
+
+            
+
+            if (column.Nullable)
+                args.Add("Nullable = true");   //see: bool Nullable = false; in class DataColumnAttribute
+
+            if (column.IsIdentity)
+                args.Add("Identity = true");
+
+            if (column.IsPrimary)
+                args.Add("Primary = true");
+
+            if (column.IsComputed)
+                args.Add("Computed = true");
+
+            attr.args = args.ToArray();
+        }
     }
 }

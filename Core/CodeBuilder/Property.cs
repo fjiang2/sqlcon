@@ -47,11 +47,11 @@ namespace Sys.CodeBuilder
 
             if (gets.Count == 0 && sets.Count == 0)
             {
-                block.AppendFormat("{0} {{ get; set; }}", Signture);
+                block.AppendFormat("{0}{1}", $"{Signture} {{ get; set; }}", comment);
             }
             else
             {
-                block.AppendLine(Signture);
+                block.AppendLine(Signture + comment);
                 block.Begin();
                 if (gets.Count != 0)
                 {

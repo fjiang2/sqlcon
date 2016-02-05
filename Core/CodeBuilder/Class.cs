@@ -79,9 +79,9 @@ namespace Sys.CodeBuilder
         }
 
 
-        public Comment AddComment(string text)
+        public Member AddMember(string text)
         {
-            var comment = new Comment().Add(text);
+            var comment = new Member().Add(text);
             list.Add(comment);
             return comment;
         }
@@ -183,7 +183,7 @@ namespace Sys.CodeBuilder
                     item => body.Add(item),
                     item =>
                         {
-                            if (item.Count == 1 && (item is Field || item is Property || item is Comment))
+                            if (item.Count == 1 && (item is Field || item is Property || item is Member))
                                 return;
 
                             body.AppendLine();
