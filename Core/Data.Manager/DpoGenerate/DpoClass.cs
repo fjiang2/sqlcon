@@ -104,7 +104,7 @@ namespace Sys.Data.Manager
             }
         }
 
-        private string DPObjectId()
+        private void DPObjectId()
         {
 
             string DPObjectId = @"
@@ -118,22 +118,13 @@ namespace Sys.Data.Manager
         }
         ";
 
-            string DPObjectIdProperty = @"
-        protected override int DPObjectId
-        {{
-            get
-            {{
-                return this.{0};
-            }}
-        }}
-";
 
             Property prop = clss.AddProperty<int>(Modifier.Protected | Modifier.Override, "DPObjectId");
 
             if (metaTable.Identity.Length > 0)
             {
                 prop.gets.AppendFormat("return this.{0};", metaTable.Identity.ColumnNames[0]);
-                return string.Format(DPObjectIdProperty, metaTable.Identity.ColumnNames[0]);
+                return;
             }
             else if (metaTable.PrimaryKeys.Length == 1)
             {
@@ -143,80 +134,40 @@ namespace Sys.Data.Manager
                 if (column.CType == CType.Int)
                 {
                     prop.gets.AppendFormat("return this.{0};", dict_column_field[key].PropertyName);
-                    return string.Format(DPObjectIdProperty, dict_column_field[key].PropertyName);
+                    return;
                 }
 
             }
 
             prop.gets.Add(new CodeBlock().AppendLine("throw new NotImplementedException();"));
 
-            return DPObjectId;
+            return;
         }
 
 
 
-        private string PrimaryKeys()
+        private void PrimaryKeys()
         {
-
-            string prop1 = @"
-        public override IPrimaryKeys Primary
-        {
-            get
-            {
-                return new PrimaryKeys(new string[] {});
-            }
-        }
-        ";
-
-            string prop2 = @"
-        public override IPrimaryKeys Primary
-        {{
-            get
-            {{
-                return new PrimaryKeys(new string[] {{ {0} }});
-            }}
-        }}
-";
             Property prop = clss.AddProperty<IPrimaryKeys>(Modifier.Public | Modifier.Override, "Primary");
 
             if (metaTable.PrimaryKeys.Length == 0)
             {
                 prop.gets.AppendLine("return new PrimaryKeys(new string[] {});");
-                return prop1;
+                return;
             }
 
             if (metaTable.PrimaryKeys.Length > 0)
             {
                 prop.gets.AppendFormat("return new PrimaryKeys(new string[] {{ {0} }});", stringQL(metaTable.PrimaryKeys.Keys));
-                return string.Format(prop2, stringQL(metaTable.PrimaryKeys.Keys));
+                return;
             }
 
-            return "";
+            return;
         }
 
 
-        private string IdentitiyKeys()
+        private void IdentitiyKeys()
         {
-
-            string prop1 = @"
-        public override IIdentityKeys Identity
-        {
-            get
-            {
-                return new IdentityKeys();
-            }
-        }
-        ";
-
-            string prop2 = @"
-        public override IIdentityKeys Identity
-        {{
-            get
-            {{
-                return new IdentityKeys(new string[] {{ {0} }});
-            }}
-        }}
-";
 
             Property prop = clss.AddProperty<IIdentityKeys>(Modifier.Public | Modifier.Override, "Identity");
 
@@ -224,16 +175,16 @@ namespace Sys.Data.Manager
             if (metaTable.Identity.Length == 0)
             {
                 prop.gets.AppendLine("return new IdentityKeys();");
-                return prop1;
+                return;
             }
 
             if (metaTable.Identity.Length > 0)
             {
                 prop.gets.AppendFormat(" return new IdentityKeys(new string[] {{ {0} }});", stringQL(metaTable.Identity.ColumnNames));
-                return string.Format(prop2, stringQL(metaTable.Identity.ColumnNames));
+                return;
             }
 
-            return "";
+            return;
         }
 
         private string stringQL(string[] S)
@@ -250,45 +201,24 @@ namespace Sys.Data.Manager
             return s;
         }
 
-        private string PrimaryConstructor()
+        private void PrimaryConstructor()
         {
-
-            string constructor = @"
-        public @CLASSNAME(@PARM)
-        {
-           @ASSIGNMENT
-
-           this.Load();
-           if(!this.Exists)
-           {
-              @ASSIGNMENT    
-           }
-        }
-        ";
-
 
             var cons = clss.AddConstructor();
 
             if (metaTable.PrimaryKeys.Length == 0)
-                return string.Empty;
+                return;
 
             string[] keys = metaTable.PrimaryKeys.Keys;
-            string s1 = "";
             foreach (string p in keys)
             {
-                if (s1 != "")
-                    s1 += ", ";
-
-                s1 += string.Format("{0} {1}", dict_column_field[p].Type, dict_column_field[p].PropertyName.ToLower());
                 cons.args.Add(dict_column_field[p].Type, dict_column_field[p].PropertyName.ToLower());
             }
 
             Statement sent1 = new Statement();
             Statement sent2 = new Statement();
-            string s2 = "";
             foreach (string p in keys)
             {
-                s2 += string.Format("this.{0} = {1}; ", dict_column_field[p].PropertyName, dict_column_field[p].PropertyName.ToLower());
                 sent1.AppendFormat("this.{0} = {1};", dict_column_field[p].PropertyName, dict_column_field[p].PropertyName.ToLower());
                 sent2.AppendFormat("this.{0} = {1};", dict_column_field[p].PropertyName, dict_column_field[p].PropertyName.ToLower());
             }
@@ -297,9 +227,6 @@ namespace Sys.Data.Manager
             cons.statements.AppendLine("this.Load();");
             cons.statements.IF("!this.Exists", sent2.WrapByBeginEnd());
 
-            return constructor
-                .Replace("@PARM", s1)
-                .Replace("@ASSIGNMENT", s2);
 
         }
 
@@ -337,205 +264,88 @@ namespace Sys.Data.Manager
 
         }
 
-        private string Fields()
+        private void Fields()
         {
             List<DpoField> imageFields = new List<DpoField>();
-            string fields = "";
+
             foreach (IColumn column in metaTable.Columns)
             {
                 DpoField field = new DpoField(this, column);
-                fields += field.GenerateField() + "\r\n";
+                field.GenerateField();
                 if (column.CType == CType.Image)
                     imageFields.Add(field);
             }
 
             if (imageFields.Count > 0)
             {
-                fields += "\r\n";
-                fields += "        #region IMAGE PROPERTIES";
                 clss.AddComment("#region IMAGE PROPERTIES");
                 foreach (DpoField field in imageFields)
                 {
-                    fields += field.GenerateImageField() + "\r\n";
+                    field.GenerateImageField();
                 }
-                fields += "        #endregion";
                 clss.AddComment("#endregion");
             }
 
-            return fields;
+            return;
         }
 
 
-        private string ConstStringColumnNames()
+        private void ConstStringColumnNames()
         {
             clss.AddComment("#region CONSTANT");
-            string columns = "";
+
             foreach (IColumn column in metaTable.Columns)
             {
                 DpoField field = new DpoField(this, column);
-                columns += field.GetConstStringColumnName() + "\r\n";
+                field.GetConstStringColumnName();
             }
 
             clss.AddComment("#endregion");
 
-            return columns;
+            return;
         }
 
 
         public string Generate(Modifier modifier, ClassTableName ctname)
         {
             //must run it first to form Dictionary
-            string fields = Fields();
-
-            long revision = 0;
-
-            Type type = GetType(nameSpace, className);
-            if (type != null)
-            {
-                RevisionAttribute[] attributes = type.GetAttributes<RevisionAttribute>();
-                if (attributes.Length > 0)
-                {
-                    revision = attributes[0].Revision + 1;
-                }
-            }
-
-            string rev = string.Format("[Revision({0})]", revision);
-            if (!HasTableAttribute)
-                rev = "";
+            Fields();
 
             string comment = @"//
 // Machine Generated Code
-//   by {0}
 //
 ";
-            string who = "devel";
-            if (ActiveAccount.Account != null)
-                who = ActiveAccount.Account.UserName;
 
-            comment = string.Format(comment, who);
-            string usingString = @"{0}
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Data;
-using System.Drawing;
-using Sys.Data;
-using Sys.Data.Manager;
-";
-            comment = string.Format(usingString, comment);
+
             if (nonvalized.Count > 0)
+            {
+                this.code.AddUsing("Tie");
                 comment += "using Tie;";
+            }
 
-            string clss = @"@COMMENT
-
-namespace @NAMESPACE
-{
-    @REVISION
-    @ATTRIBUTE
-    @MODIFIER partial class @CLASSNAME : DPObject
-    {
-@FIELDS
-        public @CLASSNAME()
-        {
-        }
-
-        public @CLASSNAME(DataRow row)
-            :base(row)
-        {
-        }
-
-@PRIMARYCONSTRUCTOR
-
-@DPOOBJECTID
-
-@PRIMARYKEYS
-
-@IDENTITYKEYS
- 
-@CONSTANT
-
-@CREATE_TABLE
-
-@FILL_COLLECT
-    }
-}
-
-";
 
             this.clss.AddConstructor();
             var cons = this.clss.AddConstructor();
             cons.args.Add<DataRow>("row");
             cons.baseArgs = new string[] { "row" };
 
-
-            //public DPCollection<@CLASSNAME> DPCollection(string where, params object[] args)
-            //{ 
-            //    return new DPCollection<@CLASSNAME>(SELECT(where, args));
-            //}
-
-
-            string constString = @"
-        #region CONSTANT
-
-{0}
-       
-        #endregion 
-";
-
-            string CONSTANT = string.Format(constString, ConstStringColumnNames());
-
-            string CREATE_TABLE = @"
-        #region CREATE TABLE 
-
-        protected override string CreateTableString 
-        {{ 
-            get {{ return CREATE_TABLE_STRING; }}
-        }}    
-        
-        private const string CREATE_TABLE_STRING =@""{0}"";
-
-
-        #endregion 
-";
-
-
             SQL_CREATE_TABLE_STRING = Sys.Data.TableSchema.GenerateCREATE_TABLE(metaTable);
-            CREATE_TABLE = string.Format(CREATE_TABLE, SQL_CREATE_TABLE_STRING);
-            if (this.HasColumnAttribute || !this.HasTableAttribute)
-                CREATE_TABLE = "";
-
-            string m = "public";
-            if (modifier == Modifier.Protected)
-                m = "protected";
-            else if (modifier == Modifier.Internal)
-                m = "internal";
-            else if (modifier == Modifier.Private)
-                m = "private";
 
             string attribute = metaTable.GetTableAttribute(ctname);
             if (!HasTableAttribute)
                 attribute = "";
 
-            clss = clss
-                      .Replace("@COMMENT", comment)
-                      .Replace("@NAMESPACE", nameSpace)
-                      .Replace("@REVISION", rev)
-                      .Replace("@ATTRIBUTE", attribute)
-                      .Replace("@MODIFIER", m)
-                      .Replace("@PRIMARYCONSTRUCTOR", PrimaryConstructor())
-                      .Replace("@CLASSNAME", className)
-                      .Replace("@FIELDS", fields)
-                      .Replace("@DPOOBJECTID", DPObjectId())
-                      .Replace("@PRIMARYKEYS", PrimaryKeys())
-                      .Replace("@IDENTITYKEYS", IdentitiyKeys())
-                      .Replace("@CONSTANT", CONSTANT)
-                      .Replace("@CREATE_TABLE", CREATE_TABLE)
-                      .Replace("@FILL_COLLECT", FillAndCollect());
+            this.clss.attribute = new CodeBuilder.Attribute(attribute);
 
+            PrimaryConstructor();
+            DPObjectId();
+            PrimaryKeys();
+            IdentitiyKeys();
+            FillAndCollect();
 
-            return clss + code.ToString();
+            ConstStringColumnNames();
 
-
+            return code.ToString();
         }
 
         private string SQL_CREATE_TABLE_STRING;

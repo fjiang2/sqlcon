@@ -42,21 +42,20 @@ namespace Sys.Data.Manager
 
 
 
-        public string GenerateField()
+        public void GenerateField()
         {
             string line = "";
-            string tab = "        ";
 
             string fieldName = column.ColumnName.FieldName();
+            string ty = ColumnSchema.GetFieldType(column.DataType, column.Nullable);
+
+            Property prop = new Property(new CodeBuilder.TypeInfo { userType = ty }, fieldName);
 
             if (dpoClass.HasColumnAttribute || column.ColumnName != fieldName)
             {
-                line = string.Format("{0}[{1}]", tab, column.Attribute());
-                if (line.Length < 90)
-                    line += new string(' ', 90 - line.Length);      //padding
+                prop.attribute = new CodeBuilder.Attribute(column.Attribute());
             }
 
-            line += "        ";
             if (dpoClass.Nonvalized.IndexOf(fieldName) != -1)
                 line += "[NonValized] ";
 
@@ -64,17 +63,8 @@ namespace Sys.Data.Manager
             //if(dgc.NullableFields.IndexOf(fieldName) != -1)
             //    nullable = true;
 
-
-            string ty = ColumnSchema.GetFieldType(column.DataType, column.Nullable);
-            string declare = string.Format("public {0} {1} {{get; set;}} ", ty, fieldName);
-
-            Property prop = new Property(new CodeBuilder.TypeInfo { userType = ty }, fieldName);
-            prop.attribute = new CodeBuilder.Attribute(column.Attribute());
             dpoClass.clss.Add(prop);
 
-            line += declare;
-            if(declare.Length < 30)
-                line += new string(' ', 30 - declare.Length);
 
             if(dpoClass.HasColumnAttribute)
                 line += string.Format("//{0}({1}) {2}", column.DataType, column.AdjuestedLength(), column.Nullable ? "null" : "not null");
@@ -93,7 +83,7 @@ namespace Sys.Data.Manager
                 if (dpoClass.Dict.ContainsKey(pkTableName))
                 {
                     Type type = dpoClass.Dict[pkTableName];
-                    line = string.Format("{0}{1}\r\n", tab, ForeignKey.GetAttribute(column.ForeignKey, type)) + line;
+                    line = string.Format("{0}\r\n", ForeignKey.GetAttribute(column.ForeignKey, type)) + line;
                 }
                 else
                 {
@@ -112,18 +102,16 @@ namespace Sys.Data.Manager
                 }
             }
 
-            return line;
+            return;
         }
 
        
 
-        public string GetConstStringColumnName()
+        public void GetConstStringColumnName()
         {
             var clss = dpoClass.clss;
             string _columnName = dpoClass.dict_column_field[column.ColumnName].PropertyName;
 
-            string line = "        ";
-            line += string.Format("public const string _{0} = \"{1}\";", _columnName, column.ColumnName);
 
             Field field = new Field(new CodeBuilder.TypeInfo { type = typeof(string) }, $"_{_columnName}", $"\"{column.ColumnName}\"")
             {
@@ -132,8 +120,7 @@ namespace Sys.Data.Manager
 
             clss.Add(field);
             
-
-            return line;
+            return;
         }
 
         public string GenerateImageField()
