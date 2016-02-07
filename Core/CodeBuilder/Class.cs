@@ -211,5 +211,13 @@ namespace Sys.CodeBuilder
             this.Add(x.Equals());
         }
 
+        public void AddCopyCloneCompareExtension(IEnumerable<string> propertyNames)
+        {
+          
+            var x = new Utils(this.name, propertyNames);
+            this.Add(x.CopyTo());
+            this.Add(x.CloneFrom());
+            this.Add(x.ComparTo());
+        }
     }
 }

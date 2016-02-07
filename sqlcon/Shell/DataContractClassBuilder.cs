@@ -134,12 +134,8 @@ namespace sqlcon
                 sent.AppendLine("return dt;");
             }
 
-            //Property prop = new Property(new TypeInfo { type = typeof(int) }, "Text");
-            //prop.gets.AppendLine("var i=2;");
-            //prop.gets.AppendLine("return this.text;");
-            //prop.sets.AppendLine("this.text = value;");
-            //builder.AddProperty(prop);
 
+            clss.AddCopyCloneCompareExtension(dict.Keys.Select(column=>column.ColumnName));
             return builder;
         }
 

@@ -38,6 +38,27 @@ namespace Sys.CodeBuilder
 
             return mtd;
         }
+        public Method CopyTo()
+        {
+            Method mtd = new Method("CopyTo")
+            {
+                modifier = Modifier.Public | Modifier.Static,
+                IsExtensionMethod = true
+            };
+
+            mtd.args.Add(className, "from");
+            mtd.args.Add(className, "to");
+
+            var sent = mtd.statements;
+
+            foreach (var variable in variables)
+            {
+                sent.AppendFormat("to.{0} = from.{0};", variable);
+            }
+
+            return mtd;
+        }
+
 
         public Method Clone()
         {
@@ -54,6 +75,31 @@ namespace Sys.CodeBuilder
             foreach (var variable in variables)
             {
                 sent.AppendFormat("obj.{0} = this.{0};", variable);
+            }
+
+            sent.AppendLine();
+            sent.RETURN("obj");
+
+            return mtd;
+        }
+
+        public Method CloneFrom()
+        {
+            Method mtd = new Method(classType, "Clone")
+            {
+                modifier = Modifier.Public | Modifier.Static,
+                IsExtensionMethod = true
+            };
+
+            mtd.args.Add(className, "from");
+            var sent = mtd.statements;
+
+            sent.AppendFormat("var obj = new {0}();", className);
+            sent.AppendLine();
+
+            foreach (var variable in variables)
+            {
+                sent.AppendFormat("obj.{0} = from.{0};", variable);
             }
 
             sent.AppendLine();
@@ -79,6 +125,30 @@ namespace Sys.CodeBuilder
 
             variables.ForEach(
                 variable => sent.Append($"this.{variable} == x.{variable}"),
+                variable => sent.AppendLine("&& ")
+                );
+
+            sent.Append(";");
+            return mtd;
+        }
+
+
+        public Method ComparTo()
+        {
+            Method mtd = new Method(new TypeInfo { type = typeof(bool) }, "CompareTo")
+            {
+                modifier = Modifier.Public | Modifier.Override,
+            };
+
+            mtd.args.Add(className, "obj1");
+            mtd.args.Add(className, "obj2");
+
+            var sent = mtd.statements;
+
+            sent.AppendLine("return ");
+
+            variables.ForEach(
+                variable => sent.Append($"obj1.{variable} == obj2.{variable}"),
                 variable => sent.AppendLine("&& ")
                 );
 
