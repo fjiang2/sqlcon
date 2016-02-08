@@ -34,18 +34,10 @@ namespace Sys.Data.Manager
         public ClassTableName(TableName tname)
             : base(new DatabaseName(tname.Provider, tname.DatabaseName.Name), tname.SchemaName, tname.Name)
         {
-            Level = Level.Fixed;
-            Pack = true;
-            HasProvider = true;
         }
 
-
-        public Level Level { get; set;}
-        public bool Pack { get; set;}
-        public bool HasProvider { get; set; }
-
-        public Func<string, string> ClassNameRule { get; set; }
-
+        public DpoOption Option { get; set; } = new DpoOption();
+        
         public string SubNamespace
         {
             get { return ident.Identifier(this.DatabaseName.Name); }
@@ -84,8 +76,8 @@ namespace Sys.Data.Manager
                     className = className.Substring(0, className.Length - 1);
             }
 
-            if (ClassNameRule != null)
-                className = ClassNameRule(className);
+            if (Option.ClassNameRule != null)
+                className = Option.ClassNameRule(className);
 
             return className;
 

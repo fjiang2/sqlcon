@@ -43,9 +43,9 @@ namespace Sys.Data.Manager
         internal CSharpBuilder code;
         internal Class clss;
 
-        public Option option;
+        public DpoOption option;
 
-        public DpoClass(ITable metaTable, ClassName cname, Option option)
+        public DpoClass(ITable metaTable, ClassName cname, DpoOption option)
         {
             this.metaTable = metaTable;
 
@@ -342,26 +342,6 @@ namespace Sys.Data.Manager
         }
 
         private string SQL_CREATE_TABLE_STRING;
-        public bool IsTableChanged(TableName name)
-        {
-            DPObject dpo = (DPObject)HostType.NewInstance(string.Format("{0}.{1}", nameSpace, className), new object[] { });
-            if (dpo == null)
-                return true;
-            else
-            {
-                if (!dpo.TableName.Equals(name))
-                    return true;
-
-                if (dpo.SQL_CREATE_TABLE_STRING != SQL_CREATE_TABLE_STRING)
-                    return true;
-
-                if (dpo.TableName.Id == dpo.TableId)
-                    return true;
-            }
-
-            return false;
-        }
-
 
         private static Type GetType(string nameSpace, string className)
         {
@@ -425,7 +405,7 @@ namespace Sys.Data.Manager
             List<string> args = new List<string>();
 
             TableName tableName = metaTable.TableName;
-            switch (ctname.Level)
+            switch (ctname.Option.Level)
             {
 
                 case Level.Application:
@@ -445,7 +425,7 @@ namespace Sys.Data.Manager
             }
 
 
-            if (ctname.HasProvider)
+            if (ctname.Option.HasProvider)
             {
                 if (!tableName.Provider.Equals(ConnectionProviderManager.DefaultProvider))
                 {
@@ -454,7 +434,7 @@ namespace Sys.Data.Manager
                 }
             }
 
-            if (!ctname.Pack)
+            if (!ctname.Option.IsPack)
                 args.Add("Pack = false");
 
             attr.args = args.ToArray();

@@ -113,18 +113,18 @@ namespace sqlcon
                 foreach (DataColumn column in dt.Columns)
                 {
                     Type ty = dict[column].type;
-                    sent.AppendLine($"dt.Columns.Add(new DataColumn(\"{column.ColumnName}\",typeof({ty})));");
+                    sent.AppendLine($"dt.Columns.Add(new DataColumn(\"{column.ColumnName}\", typeof({ty})));");
                 }
 
                 method.statements.AppendLine();
 
-                sent.AppendLine("foreach(var item in items)");
+                sent.AppendLine("foreach (var item in items)");
                 sent.Begin();
                 sent.AppendLine("var row = dt.NewRow();");
                 foreach (DataColumn column in dt.Columns)
                 {
                     var ty = dict[column];
-                    var line = $"row[\"{column.ColumnName}\"] = item.{column.ColumnName};";
+                    var line = $"row.SetField(\"{column.ColumnName}\", item.{column.ColumnName});";
                     sent.AppendLine(line);
                 }
                 sent.AppendLine("dt.Rows.Add(row);");

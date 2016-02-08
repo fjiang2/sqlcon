@@ -49,10 +49,11 @@ namespace Sys.Data.Manager
             string ty = ColumnSchema.GetFieldType(column.DataType, column.Nullable);
 
             Property prop = new Property(new CodeBuilder.TypeInfo { userType = ty }, fieldName);
-            var attr = prop.AddAttribute<ColumnAttribute>();
             if (dpoClass.option.HasColumnAttribute || column.ColumnName != fieldName)
             {
+                var attr = prop.AddAttribute<ColumnAttribute>();
                 Attribute(attr, column);
+                attr.comment = new Comment(string.Format("{0}({1}) {2}", column.DataType, column.AdjuestedLength(), column.Nullable ? "null" : "not null"));
             }
 
             if (dpoClass.Nonvalized.IndexOf(fieldName) != -1)
@@ -65,8 +66,6 @@ namespace Sys.Data.Manager
             dpoClass.clss.Add(prop);
 
 
-            if(dpoClass.option.HasColumnAttribute)
-                attr.comment = new Comment(string.Format("{0}({1}) {2}", column.DataType, column.AdjuestedLength(), column.Nullable ? "null" : "not null"));
 
             dpoClass.dict_column_field.Add(column.ColumnName, new PropertyDefinition(ty, fieldName));
 

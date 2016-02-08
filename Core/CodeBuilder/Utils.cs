@@ -170,16 +170,21 @@ namespace Sys.CodeBuilder
             var sent = mtd.statements;
 
 
-            StringBuilder builder = new StringBuilder("$\"{{");
-
+            StringBuilder builder = new StringBuilder("\"{{");
+            int index = 0;
             variables.ForEach(
-                variable => builder.Append($"{variable} : {{obj.{variable}}}"),
+                variable => builder.Append($"{variable}:{{{index++}}}"),
                 variable => builder.Append(", ")
                 );
 
-            builder.Append("}}\"");
+            builder.AppendLine("}}\", ");
 
-            sent.AppendFormat("return {0};", builder);
+            variables.ForEach(
+                variable => builder.Append($"obj.{variable}"),
+                variable => builder.AppendLine(", ")
+                );
+
+            sent.AppendFormat("return string.Format({0});", builder);
             return mtd;
         }
 

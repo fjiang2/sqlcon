@@ -239,25 +239,30 @@ namespace sqlcon
 
         public void ExportClass(Command cmd)
         {
-            string path = cfg.GetValue<string>("dpo.path", $"{MyDocuments}\\dpo");
-            string ns = cfg.GetValue<string>("dpo.ns", "Sys.DataModel.Dpo");
-            string suffix = cfg.GetValue<string>("dpo.suffix", Setting.DPO_CLASS_SUFFIX_CLASS_NAME);
+            DpoOption option = new DpoOption();
 
-            bool sort = cmd.Has("sort");
-            Func<string, string> rule =
-                name => name.Substring(0, 1).ToUpper() + name.Substring(1).ToLower() + suffix;
+            option.NameSpace = cfg.GetValue<string>("dpo.ns", "Sys.DataModel.Dpo");
+            option.OutputPath = cfg.GetValue<string>("dpo.path", $"{MyDocuments}\\dpo");
+            option.Level = cfg.GetValue<Level>("dpo.level", Level.Application);
+            option.HasProvider = cfg.GetValue<bool>("dpo.hasProvider", false);
+            option.HasTableAttribute = cfg.GetValue<bool>("dpo.hasTableAttr", true);
+            option.HasColumnAttribute = cfg.GetValue<bool>("dpo.hasColumnAttr", true);
+            option.IsPack = cfg.GetValue<bool>("dpo.isPack", true);
+            option.CodeSorted = cmd.Has("sort");
+
+            option.ClassNameSuffix = cfg.GetValue<string>("dpo.suffix", Setting.DPO_CLASS_SUFFIX_CLASS_NAME);
+            option.ClassNameRule =
+                name => name.Substring(0, 1).ToUpper() + name.Substring(1).ToLower() + option.ClassNameSuffix;
 
             if (tname != null)
             {
-                TableClass clss = new TableClass(tname) { NameSpace = ns, ClassNameRule = rule };
-                clss.option.CodeSorted = sort;
-                clss.option.OutputPath = path;
+                var clss = new DpoGenerator(tname) { Option = option };
                 clss.CreateClass();
-                stdio.WriteLine("generated class {0} at {1}", tname.ShortName, path);
+                stdio.WriteLine("generated class {0} at {1}", tname.ShortName, option.OutputPath);
             }
             else if (dname != null)
             {
-                stdio.WriteLine("start to generate database {0} class to directory: {1}", dname, path);
+                stdio.WriteLine("start to generate database {0} class to directory: {1}", dname, option.OutputPath);
                 CancelableWork.CanCancel(cancelled =>
                 {
                     var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportExcludedTables);
@@ -268,11 +273,9 @@ namespace sqlcon
                             return CancelableState.Cancelled;
                         try
                         {
-                            TableClass clss = new TableClass(tn) { NameSpace = ns, ClassNameRule = rule };
-                            clss.option.CodeSorted = sort;
-                            clss.option.OutputPath = path;
+                            var clss = new DpoGenerator(tn) { Option = option };
                             clss.CreateClass();
-                            stdio.WriteLine("generated class for {0} at {1}", tn.ShortName, path);
+                            stdio.WriteLine("generated class for {0} at {1}", tn.ShortName, option.OutputPath);
                         }
                         catch (Exception ex)
                         {
@@ -407,7 +410,7 @@ namespace sqlcon
 
             var rows = dt
                 .AsEnumerable()
-                .Select(row => new 
+                .Select(row => new
                 {
                     Category = row.Field<string>("Category"),
                     Feature = row.Field<string>("Feature"),

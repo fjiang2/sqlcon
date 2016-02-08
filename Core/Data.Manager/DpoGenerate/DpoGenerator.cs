@@ -23,77 +23,48 @@ using Sys.Data;
 using System.Reflection;
 using Tie;
 using Sys.Data.Manager;
+using Sys.CodeBuilder;
 
 namespace Sys.Data.Manager
 {
-    class DpoGenerator
+    public class DpoGenerator
     {
-        private string sourceCode;
-        private ClassTableName ctname;
-        private ClassName cname;
+        private TableName tableName;
 
-        private ITable schema;
-        private DpoClass dpoClass;
+        
+        public DpoOption Option { get; set; }
 
- 
-        private Option option { get; set; }
-
-        public DpoGenerator(ClassTableName ctname, ITable schema, ClassName cname, Option option)
+        public DpoGenerator(TableName tableName)
         {
-            this.option = option;
-            option.RegisterTable = true;
-            
-            this.ctname = ctname;
-            this.cname = cname;
-            this.schema = schema;
+            this.tableName = tableName;
         }
 
-        public void Generate()
+        public void CreateClass()
         {
-            if (schema.TableID == -1 && option.RegisterTable)
+            ClassTableName ctname = new ClassTableName(tableName)
             {
-                //###DictTable.MustRegister(ctname);
-            }
+                Option = Option
+            };
 
-            dpoClass = new DpoClass(schema, cname, option);
-            this.sourceCode = dpoClass.Generate(cname.Modifier, ctname);
+            ClassName cname = new ClassName(Option.NameSpace, Option.Modifier, ctname);
 
-        }
+            ITable schema = tableName.GetSchema();
 
-        public bool Save()
-        {
-            string fileName = string.Format("{0}\\{1}.cs", option.OutputPath, cname.Class);
+            var dpoClass = new DpoClass(schema, cname, Option);
 
-            if (!option.MustGenerate)
+            var sourceCode = dpoClass.Generate(cname.Modifier, ctname);
+
+            string fileName = string.Format("{0}\\{1}.cs", Option.OutputPath, cname.Class);
+
+            if (!Directory.Exists(Option.OutputPath))
             {
-                if (File.Exists(fileName))
-                {
-                    if ((File.GetAttributes(fileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)    //this file is not checked out
-                    {
-                        if (dpoClass.IsTableChanged(ctname))
-                            throw new MessageException("{0} is modified, please check out class {1} to refresh", ctname, cname.Class);
-
-                        return false;
-                    }
-                }
-
-                if (!dpoClass.IsTableChanged(ctname))
-                    return false;
-            }
-
-            //if (schema.TableID == -1 && RegisterTable)
-            //    throw new MessageException("Table ID {0} is not defined", ctname);
-
-            if (!Directory.Exists(option.OutputPath))
-            {
-                Directory.CreateDirectory(option.OutputPath);
+                Directory.CreateDirectory(Option.OutputPath);
             }
 
             StreamWriter sw = new StreamWriter(fileName);
             sw.Write(sourceCode);
             sw.Close();
         
-            return true;
         }
 
     }
