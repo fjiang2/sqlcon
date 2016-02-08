@@ -73,6 +73,15 @@ namespace Sys.CodeBuilder
             if (type == typeof(byte))
                 return "byte";
 
+            if (type == typeof(byte[]))
+            {
+                Nullable = false;
+                return "byte[]";
+            }
+
+            if (type.IsArray)
+                Nullable = false;
+
             string ty = type.Name;
             if (type.IsGenericType)
             {

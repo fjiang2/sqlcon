@@ -13,7 +13,7 @@ namespace sqlcon
         private DataTable dt;
 
         public string ns { get; set; } = "Sys.DataContracts";
-        public string cn { get; set; } = "DataContract";
+        public string cname { get; set; } = "DataContract";
         public string mtd { get; set; }
         private const string mtd2 = "ToDataTable";
 
@@ -43,7 +43,7 @@ namespace sqlcon
         {
 
             CSharpBuilder builder = new CSharpBuilder { nameSpace = ns, };
-            var clss = new Class(cn) { modifier = Modifier.Public | Modifier.Partial };
+            var clss = new Class(cname) { modifier = Modifier.Public | Modifier.Partial };
             builder.AddClass(clss);
 
             builder.AddUsing("System");
@@ -62,17 +62,17 @@ namespace sqlcon
         private CSharpBuilder CreateReader(CSharpBuilder builder)
         {
 
-            var clss = new Class(cn + "Extension") { modifier = Modifier.Public | Modifier.Static };
+            var clss = new Class(cname + "Extension") { modifier = Modifier.Public | Modifier.Static };
             builder.AddClass(clss);
 
             {
                 if (mtd == null)
-                    mtd = $"To{cn}Collection";
+                    mtd = $"To{cname}Collection";
 
                 Method method = new Method(mtd)
                 {
                     modifier = Modifier.Public | Modifier.Static,
-                    type = new TypeInfo { userType = $"IEnumerable<{cn}>" },
+                    type = new TypeInfo { userType = $"IEnumerable<{cname}>" },
                     args = new Arguments().Add<DataTable>("dt"),
                     IsExtensionMethod = true
                 };
@@ -80,7 +80,7 @@ namespace sqlcon
                 var sent = method.statements;
 
                 sent.AppendLine("return dt.AsEnumerable()");
-                sent.AppendLine($".Select(row => new {cn}");
+                sent.AppendLine($".Select(row => new {cname}");
                 sent.Begin();
 
                 int count = dt.Columns.Count;
@@ -103,7 +103,7 @@ namespace sqlcon
                 {
                     modifier = Modifier.Public | Modifier.Static,
                     type = new TypeInfo { type = typeof(DataTable) },
-                    args = new Arguments().Add($"IEnumerable<{cn}>", "items"),
+                    args = new Arguments().Add($"IEnumerable<{cname}>", "items"),
                     IsExtensionMethod = true
                 };
                 clss.Add(method);
@@ -135,7 +135,7 @@ namespace sqlcon
             }
 
 
-            clss.AddCopyCloneCompareExtension(dict.Keys.Select(column=>column.ColumnName));
+            clss.AddCopyCloneCompareExtension(cname, dict.Keys.Select(column=>column.ColumnName));
             return builder;
         }
 
@@ -145,7 +145,7 @@ namespace sqlcon
             CreateReader(builder);
 
             string code = $"{ builder}";
-            string file = Path.ChangeExtension(Path.Combine(path, cn), "cs");
+            string file = Path.ChangeExtension(Path.Combine(path, cname), "cs");
             using (var writer = file.NewStreamWriter())
             {
                 writer.WriteLine(code);

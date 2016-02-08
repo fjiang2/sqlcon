@@ -137,23 +137,51 @@ namespace Sys.CodeBuilder
         {
             Method mtd = new Method(new TypeInfo { type = typeof(bool) }, "CompareTo")
             {
-                modifier = Modifier.Public | Modifier.Override,
+                modifier = Modifier.Public | Modifier.Static,
+                IsExtensionMethod = true
             };
 
-            mtd.args.Add(className, "obj1");
-            mtd.args.Add(className, "obj2");
+            mtd.args.Add(className, "a");
+            mtd.args.Add(className, "b");
 
             var sent = mtd.statements;
 
             sent.AppendLine("return ");
 
             variables.ForEach(
-                variable => sent.Append($"obj1.{variable} == obj2.{variable}"),
+                variable => sent.Append($"a.{variable} == b.{variable}"),
                 variable => sent.AppendLine("&& ")
                 );
 
             sent.Append(";");
             return mtd;
         }
+
+        public Method ToSimpleString()
+        {
+            Method mtd = new Method(new TypeInfo { type = typeof(string) }, "ToSimpleString")
+            {
+                modifier = Modifier.Public | Modifier.Static,
+                IsExtensionMethod = true
+            };
+
+            mtd.args.Add(className, "obj");
+
+            var sent = mtd.statements;
+
+
+            StringBuilder builder = new StringBuilder("$\"{{");
+
+            variables.ForEach(
+                variable => builder.Append($"{variable} : {{obj.{variable}}}"),
+                variable => builder.Append(", ")
+                );
+
+            builder.Append("}}\"");
+
+            sent.AppendFormat("return {0};", builder);
+            return mtd;
+        }
+
     }
 }

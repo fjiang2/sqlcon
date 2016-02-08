@@ -14,7 +14,7 @@ using Tie;
 
 namespace sqlcon
 {
-    class SqlShell :ShellContext
+    class SqlShell : ShellContext
     {
         /// <summary>
         /// keep last answer
@@ -22,7 +22,7 @@ namespace sqlcon
         public static object LastResult;
 
         public SqlShell(Configuration cfg)
-            :base(cfg)
+            : base(cfg)
         {
         }
 
@@ -34,9 +34,9 @@ namespace sqlcon
 
             while (true)
             {
-                L1:
+            L1:
                 stdio.Write("{0}> ", mgr);
-                L2:
+            L2:
                 line = stdio.ReadLine();
 
                 //ctrl-c captured
@@ -354,9 +354,9 @@ namespace sqlcon
             return false;
         }
 
-       
 
-    
+
+
         private void chdir(Command cmd)
         {
             if (commandee.chdir(cmd))
@@ -427,9 +427,9 @@ namespace sqlcon
                     try
                     {
                         int count = new SqlCmd(theSide.Provider, text).ExecuteNonQuery();
-                        if (count >0)
+                        if (count > 0)
                             stdio.WriteLine("{0} of row(s) affected", count);
-                        else if(count == 0)
+                        else if (count == 0)
                             stdio.WriteLine("nothing affected");
                         else
                             stdio.WriteLine("command(s) completed successfully");
@@ -441,20 +441,12 @@ namespace sqlcon
                     break;
 
                 default:
-                    if (char.IsDigit(cmd[0]))
-                    {
-                        stdio.ErrorFormat("invalid command");
-                        break;
-                    }
+                    if (text.EndsWith(";"))
+                        Tie.Script.Execute(text, Context.DS);
                     else
                     {
-                        if (text.EndsWith(";"))
-                            Tie.Script.Execute(text, Context.DS);
-                        else
-                        {
-                            var val = Tie.Script.Evaluate(text, Context.DS);
-                            stdio.WriteLine(string.Format("{0} results {1}", text, val));
-                        }
+                        var val = Tie.Script.Evaluate(text, Context.DS);
+                        stdio.WriteLine(string.Format("{0} results {1}", text, val));
                     }
 
                     break;

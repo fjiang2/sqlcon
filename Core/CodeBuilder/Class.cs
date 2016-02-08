@@ -206,18 +206,21 @@ namespace Sys.CodeBuilder
                 .Select(p => p.name);
 
             var x = new Utils(this.name, rw);
-            this.Add(x.Copy());
-            this.Add(x.Clone());
-            this.Add(x.Equals());
+
+            Add(x.Copy())
+            .Add(x.Clone())
+            .Add(x.Equals());
         }
 
-        public void AddCopyCloneCompareExtension(IEnumerable<string> propertyNames)
+        public void AddCopyCloneCompareExtension(string className, IEnumerable<string> propertyNames)
         {
           
-            var x = new Utils(this.name, propertyNames);
-            this.Add(x.CopyTo());
-            this.Add(x.CloneFrom());
-            this.Add(x.ComparTo());
+            var x = new Utils(className, propertyNames);
+
+            Add(x.CopyTo())
+            .Add(x.CloneFrom())
+            .Add(x.ComparTo())
+            .Add(x.ToSimpleString());
         }
     }
 }
