@@ -33,15 +33,14 @@ namespace Sys.CodeBuilder
         {
         }
 
-        public string NewInstance(params Argument[] args)
+        public TypeInfo(string userType)
         {
-            return string.Format("new {0}({1})",
-                this,
-                string.Join(
-                    ",",
-                    args.Select(arg => arg.ToString())
-                    )
-                );
+            this.userType = userType;
+        }
+
+        public TypeInfo(Type type)
+        {
+            this.type = type;
         }
 
         private string typeText()
@@ -79,7 +78,7 @@ namespace Sys.CodeBuilder
                 return "byte[]";
             }
 
-            if (type.IsArray)
+            if (type.IsClass || type.IsArray)
                 Nullable = false;
 
             string ty = type.Name;

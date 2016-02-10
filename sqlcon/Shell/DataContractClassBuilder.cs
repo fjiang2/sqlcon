@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Data;
+using Sys;
 using Sys.CodeBuilder;
 
 namespace sqlcon
@@ -146,10 +147,7 @@ namespace sqlcon
 
             string code = $"{ builder}";
             string file = Path.ChangeExtension(Path.Combine(path, cname), "cs");
-            using (var writer = file.NewStreamWriter())
-            {
-                writer.WriteLine(code);
-            }
+            code.WriteIntoFile(file);
 
             return file;
         }

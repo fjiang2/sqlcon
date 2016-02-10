@@ -430,16 +430,11 @@ namespace sqlcon
             }
 
 
-            string name = "DataEnum";
+            string filename = "DataEnum";
 
             string code = builder.ToString();
-            string file = Path.ChangeExtension(Path.Combine(path, name), "cs");
-            using (var writer = file.NewStreamWriter())
-            {
-                writer.WriteLine(code);
-            }
-
-
+            string file = Path.ChangeExtension(Path.Combine(path, filename), "cs");
+            code.WriteIntoFile(file);
             stdio.WriteLine("code generated on {0}", file);
 
         }

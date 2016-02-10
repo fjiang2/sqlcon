@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
-    class Utils
+    class UtilsMethod
     {
         private string className;
         private IEnumerable<string> variables;
 
         TypeInfo classType;
-        public Utils(string className, IEnumerable<string> variables)
+        public UtilsMethod(string className, IEnumerable<string> variables)
         {
             this.className = className;
             this.variables = variables;
@@ -125,6 +125,28 @@ namespace Sys.CodeBuilder
 
             variables.ForEach(
                 variable => sent.Append($"this.{variable} == x.{variable}"),
+                variable => sent.AppendLine("&& ")
+                );
+
+            sent.Append(";");
+            return mtd;
+        }
+
+        public Method Compare()
+        {
+            Method mtd = new Method(new TypeInfo { type = typeof(bool) }, "Compare")
+            {
+                modifier = Modifier.Public,
+            };
+
+            mtd.args.Add(className, "obj");
+
+            var sent = mtd.statements;
+
+            sent.AppendLine("return ");
+
+            variables.ForEach(
+                variable => sent.Append($"this.{variable} == obj.{variable}"),
                 variable => sent.AppendLine("&& ")
                 );
 

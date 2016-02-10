@@ -205,17 +205,17 @@ namespace Sys.CodeBuilder
                 .Where(p => (p.modifier & Modifier.Public) == Modifier.Public && p.CanRead && p.CanWrite)
                 .Select(p => p.name);
 
-            var x = new Utils(this.name, rw);
+            var x = new UtilsMethod(this.name, rw);
 
             Add(x.Copy())
             .Add(x.Clone())
-            .Add(x.Equals());
+            .Add(x.Compare());
         }
 
         public void AddCopyCloneCompareExtension(string className, IEnumerable<string> propertyNames)
         {
           
-            var x = new Utils(className, propertyNames);
+            var x = new UtilsMethod(className, propertyNames);
 
             Add(x.CopyTo())
             .Add(x.CloneFrom())

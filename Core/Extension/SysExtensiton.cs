@@ -166,15 +166,16 @@ namespace Sys
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="text"></param>
-        public static void WriteFile(this string fileName, string text)
+        public static void WriteIntoFile(this string text, string fileName)
         {
             string path = System.IO.Path.GetDirectoryName(fileName);
             if (!System.IO.Directory.Exists(path))
                 System.IO.Directory.CreateDirectory(path);
 
-            System.IO.StreamWriter sw = new System.IO.StreamWriter(fileName);
-            sw.Write(text);
-            sw.Close();
+            using (var writer = new System.IO.StreamWriter(fileName))
+            {
+                writer.Write(text);
+            }
         }
 
     }

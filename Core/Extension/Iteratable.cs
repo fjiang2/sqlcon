@@ -21,6 +21,13 @@ namespace Sys
                 action(item);
             }
         }
+        public static void ForEach<T>(this IEnumerable<T> items, Action<T> action)
+        {
+            foreach (var item in items)
+            {
+                action(item);
+            }
+        }
 
         public static string Join<T>(this IEnumerable<T> items, string delimiter)
         {

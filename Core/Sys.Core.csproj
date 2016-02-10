@@ -75,7 +75,7 @@
     <Compile Include="CodeBuilder\Property.cs" />
     <Compile Include="CodeBuilder\Statement.cs" />
     <Compile Include="CodeBuilder\TypeInfo.cs" />
-    <Compile Include="CodeBuilder\Utils.cs" />
+    <Compile Include="CodeBuilder\UtilsMethod.cs" />
     <Compile Include="Compare\ColumnPair.cs" />
     <Compile Include="Compare\ColumnValue.cs" />
     <Compile Include="Compare\Compare.cs" />
