@@ -38,7 +38,7 @@ namespace Sys.Data
                           .Replace("$DB_APPLICATION", Const.DB_APPLICATION);
 
             this.provider = provider;
-            this.dbProvider = ConnectionProvider.Factory(script, provider);
+            this.dbProvider = provider.CreateDbProvider(script);
         }
 
         protected DbCommand command
@@ -63,7 +63,7 @@ namespace Sys.Data
             if (this.connection.State != ConnectionState.Closed)
                 this.connection.Close();
 
-            this.dbProvider = ConnectionProvider.Factory(this.script, provider);
+            this.dbProvider = provider.CreateDbProvider(this.script);
             this.command.Connection = provider.NewDbConnection; 
         }
 

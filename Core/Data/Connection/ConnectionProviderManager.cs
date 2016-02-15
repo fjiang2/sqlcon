@@ -197,30 +197,26 @@ namespace Sys.Data
         }
 
 
-        public static ConnectionProvider Register(string name, SqlConnectionStringBuilder builder)
-        {
-            return Register(name, ConnectionProviderType.SqlServer, builder.ConnectionString);
-        }
-
-        public static ConnectionProvider Register(string name, OleDbConnectionStringBuilder builder)
-        {
-            return Register(name, ConnectionProviderType.OleDbServer, builder.ConnectionString);
-        }
-
         public static ConnectionProvider Register(string serverName, string connectionString)
         {
-            if (connectionString.ToLower().IndexOf("provider=xmlfile") >= 0)
+            ConnectionProviderType ty = ConnectionProviderType.SqlServer;
+            var conn = connectionString.ToLower();
+
+            if (conn.IndexOf("provider=xmlfile") >= 0)
             {
-                return ConnectionProviderManager.Register(serverName, ConnectionProviderType.XmlFile, connectionString);
+                ty = ConnectionProviderType.XmlFile;
             }
-            if (connectionString.ToLower().IndexOf("provider=riadb") >= 0)
+            if (conn.IndexOf("provider=riadb") >= 0)
             {
-                return ConnectionProviderManager.Register(serverName, ConnectionProviderType.SqlServerRia, connectionString);
+                ty = ConnectionProviderType.SqlServerRia;
             }
-            else
+            if (conn.IndexOf("provider=sqloledb") >= 0)
             {
-                return ConnectionProviderManager.Register(serverName, new SqlConnectionStringBuilder(connectionString));
+                ty = ConnectionProviderType.OleDbServer;
             }
+
+
+            return Register(serverName, ty, connectionString);
         }
 
         public static ConnectionProvider CloneConnectionProvider(ConnectionProvider provider, string serverName, string databaseName)

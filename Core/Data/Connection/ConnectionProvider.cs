@@ -93,40 +93,7 @@ namespace Sys.Data
             return false;
         }
 
-        private int version = -1;
-        public int Version
-        {
-            get
-            {
-                if (version != -1)
-                    return version;
-
-                if (this.Type == ConnectionProviderType.SqlServer)
-                {
-                    SqlConnection conn = new SqlConnection(ConnectionString);
-                    try
-                    {
-                        conn.Open();
-                        SqlCommand cmd = new SqlCommand("SELECT @@version", conn);
-                        string text = (string)cmd.ExecuteScalar();
-                        string[] items = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                        version = int.Parse(items[3]);
-                    }
-                    catch (Exception)
-                    {
-                        version = 0;
-                    }
-                    finally
-                    {
-                        conn.Close();
-                    }
-                }
-                else
-                    version = 2005;
-
-                return version;
-            }
-        }
+      
 
 
         public string InitialCatalog
@@ -263,6 +230,42 @@ namespace Sys.Data
             }
         }
 
+
+        private int version = -1;
+        public int Version
+        {
+            get
+            {
+                if (version != -1)
+                    return version;
+
+                if (this.Type == ConnectionProviderType.SqlServer)
+                {
+                    SqlConnection conn = new SqlConnection(ConnectionString);
+                    try
+                    {
+                        conn.Open();
+                        SqlCommand cmd = new SqlCommand("SELECT @@version", conn);
+                        string text = (string)cmd.ExecuteScalar();
+                        string[] items = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        version = int.Parse(items[3]);
+                    }
+                    catch (Exception)
+                    {
+                        version = 0;
+                    }
+                    finally
+                    {
+                        conn.Close();
+                    }
+                }
+                else
+                    version = 2005;
+
+                return version;
+            }
+        }
+
         public bool CheckConnection()
         {
             switch (Type)
@@ -333,7 +336,7 @@ namespace Sys.Data
             }
         }
 
-        public DbConnection NewDbConnection
+        internal DbConnection NewDbConnection
         {
             get
             {
@@ -380,21 +383,21 @@ namespace Sys.Data
             }
         }
 
-        public static DbProvider Factory(string script, ConnectionProvider provider)
+        internal DbProvider CreateDbProvider(string script)
         {
-            switch (provider.DpType)
+            switch (this.DpType)
             {
                 case DbProviderType.SqlDb:
-                    return new SqlDbProvider(script, provider);
+                    return new SqlDbProvider(script, this);
 
                 case DbProviderType.OleDb:
-                    return new OleDbProvider(script, provider);
+                    return new OleDbProvider(script, this);
 
                 case DbProviderType.XmlDb:
-                    return new XmlDbProvider(script, provider);
+                    return new XmlDbProvider(script, this);
 
                 case DbProviderType.RiaDb:
-                    return new RiaDbProvider(script, provider);
+                    return new RiaDbProvider(script, this);
             }
 
             throw new NotImplementedException();
