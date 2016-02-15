@@ -38,7 +38,7 @@ namespace Sys.Data
                           .Replace("$DB_APPLICATION", Const.DB_APPLICATION);
 
             this.provider = provider;
-            this.dbProvider = DbProvider.Factory(script, provider);
+            this.dbProvider = ConnectionProvider.Factory(script, provider);
         }
 
         protected DbCommand command
@@ -63,19 +63,11 @@ namespace Sys.Data
             if (this.connection.State != ConnectionState.Closed)
                 this.connection.Close();
 
-            this.dbProvider = DbProvider.Factory(this.script, provider);
+            this.dbProvider = ConnectionProvider.Factory(this.script, provider);
             this.command.Connection = provider.NewDbConnection; 
         }
 
-        protected DbProviderType DbType
-        {
-            get
-            {
-                return this.dbProvider.DbType;
-            }
-        }
-
-      
+           
 
         public void ChangeDatabase(string database)
         {

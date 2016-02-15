@@ -56,28 +56,7 @@ namespace Sys.Data
             return serverName.Provider.Schema.GetServerSchema(serverName);
         }
 
-        public static string CurrentDatabaseName(this ConnectionProvider provider)
-        {
-            switch (provider.DpType)
-            {
-                case DbProviderType.SqlDb:
-                    {
-                        return (string)DataExtension.ExecuteScalar(provider, "SELECT DB_NAME()");
-                        //var connection = new SqlCmd(provider, string.Empty).DbProvider.DbConnection;
-                        //return connection.Database.ToString();
-                    }
-
-                case DbProviderType.SqlCe:
-                    return "Database";
-
-                case DbProviderType.XmlDb:
-                    return provider.InitialCatalog;
-
-                default:
-                    throw new NotSupportedException();
-            }
-        }
-
+  
 
         public static DatabaseName[] GetDatabaseNames(this ServerName serverName)
         {

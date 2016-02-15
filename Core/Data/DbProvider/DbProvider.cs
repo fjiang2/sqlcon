@@ -49,11 +49,7 @@ namespace Sys.Data
         public DbConnection DbConnection { get; private set; }
         public DbCommand DbCommand { get; private set; }
 
-        public DbProviderType DbType
-        {
-            get { return this.provider.DpType; }
-        }
-
+       
         protected abstract DbDataAdapter NewDbDataAdapter();
         protected abstract DbCommand NewDbCommand();
 
@@ -80,25 +76,7 @@ namespace Sys.Data
         public abstract DbParameter AddParameter(string parameterName, object value);
         
 
-        public static DbProvider Factory(string script, ConnectionProvider provider)
-        {
-            switch (provider.DpType)
-            {
-                case DbProviderType.SqlDb:
-                    return new SqlDbProvider(script, provider);
-
-                case DbProviderType.OleDb:
-                    return new OleDbProvider(script, provider);
-
-                case  DbProviderType.XmlDb:
-                    return new XmlDbProvider(script, provider);
-
-                case DbProviderType.RiaDb:
-                    return new RiaDbProvider(script, provider);
-            }
-
-            throw new NotImplementedException();
-        }
+      
         
     }
 }

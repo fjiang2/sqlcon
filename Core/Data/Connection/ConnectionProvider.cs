@@ -70,20 +70,7 @@ namespace Sys.Data
         }
 
 
-        public bool CheckConnection()
-        {
-            switch (Type)
-            {
-                case ConnectionProviderType.XmlFile:
-                    return FileLink.Factory(DataSource, this.UserId, this.Password).Exists;
-
-                case ConnectionProviderType.SqlServerRia:
-                    return HttpRequest.GetHttpStatus(new Uri(DataSource)) == System.Net.HttpStatusCode.OK;
-
-                default:
-                    return !InvalidSqlClause("EXEC sp_databases");
-            }
-        }
+    
 
         private bool InvalidSqlClause(string sql)
         {
@@ -243,6 +230,85 @@ namespace Sys.Data
             return val;
         }
        
+      
+
+        
+        private static Dictionary<string, ServerName> _serverNames = new Dictionary<string, ServerName>();
+        public ServerName ServerName
+        {
+            get
+            {
+                string key = this.DataSource;
+                key = this.Name;
+                if (!_serverNames.ContainsKey(key))
+                {
+                    _serverNames.Add(key, new ServerName(this, Name));
+                }
+
+                var sname = _serverNames[key];
+                return sname;
+            }
+        }
+
+
+        private DatabaseName _defaultDatabaseName = null;
+        public DatabaseName DefaultDatabaseName
+        {
+            get
+            {
+                if (_defaultDatabaseName == null)
+                    _defaultDatabaseName = new DatabaseName(this, InitialCatalog);
+
+                return _defaultDatabaseName;
+            }
+        }
+
+        public bool CheckConnection()
+        {
+            switch (Type)
+            {
+                case ConnectionProviderType.XmlFile:
+                    return FileLink.Factory(DataSource, this.UserId, this.Password).Exists;
+
+                case ConnectionProviderType.SqlServerRia:
+                    return HttpRequest.GetHttpStatus(new Uri(DataSource)) == System.Net.HttpStatusCode.OK;
+
+                default:
+                    return !InvalidSqlClause("EXEC sp_databases");
+            }
+        }
+
+        private DbSchemaProvider schema = null;
+        public DbSchemaProvider Schema
+        {
+            get
+            {
+                if (schema == null)
+                {
+                    switch (Type)
+                    {
+                        case ConnectionProviderType.SqlServer:
+                            schema = new SqlDbSchemaProvider(this);
+                            break;
+
+                        case ConnectionProviderType.XmlFile:
+                            schema = new XmlDbSchemaProvider(this);
+                            break;
+
+                        case ConnectionProviderType.SqlServerRia:
+                            schema = new SqlDbSchemaProvider(this);
+                            break;
+
+                        default:
+                            throw new NotImplementedException($"schema provider not implemented on {Type}");
+                    }
+                }
+
+                return schema;
+            }
+        }
+
+
         internal DbProviderType DpType
         {
             get
@@ -291,66 +357,47 @@ namespace Sys.Data
             }
         }
 
-        
-        private static Dictionary<string, ServerName> _serverNames = new Dictionary<string, ServerName>();
-        public ServerName ServerName
+        public string CurrentDatabaseName()
         {
-            get
+            switch (DpType)
             {
-                string key = this.DataSource;
-                key = this.Name;
-                if (!_serverNames.ContainsKey(key))
-                {
-                    _serverNames.Add(key, new ServerName(this, Name));
-                }
-
-                var sname = _serverNames[key];
-                return sname;
-            }
-        }
-
-
-        private DatabaseName _defaultDatabaseName = null;
-        public DatabaseName DefaultDatabaseName
-        {
-            get
-            {
-                if (_defaultDatabaseName == null)
-                    _defaultDatabaseName = new DatabaseName(this, InitialCatalog);
-
-                return _defaultDatabaseName;
-            }
-        }
-
-
-        private DbSchemaProvider schema = null;
-        public DbSchemaProvider Schema
-        {
-            get
-            {
-                if (schema == null)
-                {
-                    switch (Type)
+                case DbProviderType.SqlDb:
                     {
-                        case ConnectionProviderType.SqlServer:
-                            schema = new SqlDbSchemaProvider(this);
-                            break;
-
-                        case ConnectionProviderType.XmlFile:
-                            schema = new XmlDbSchemaProvider(this);
-                            break;
-
-                        case ConnectionProviderType.SqlServerRia:
-                            schema = new SqlDbSchemaProvider(this);
-                            break;
-
-                        default:
-                            throw new NotImplementedException($"schema provider not implemented on {Type}");
+                        return (string)DataExtension.ExecuteScalar(this, "SELECT DB_NAME()");
+                        //var connection = new SqlCmd(provider, string.Empty).DbProvider.DbConnection;
+                        //return connection.Database.ToString();
                     }
-                }
 
-                return schema;
+                case DbProviderType.SqlCe:
+                    return "Database";
+
+                case DbProviderType.RiaDb:
+                case DbProviderType.XmlDb:
+                    return InitialCatalog;
+
+                default:
+                    throw new NotSupportedException();
             }
+        }
+
+        public static DbProvider Factory(string script, ConnectionProvider provider)
+        {
+            switch (provider.DpType)
+            {
+                case DbProviderType.SqlDb:
+                    return new SqlDbProvider(script, provider);
+
+                case DbProviderType.OleDb:
+                    return new OleDbProvider(script, provider);
+
+                case DbProviderType.XmlDb:
+                    return new XmlDbProvider(script, provider);
+
+                case DbProviderType.RiaDb:
+                    return new RiaDbProvider(script, provider);
+            }
+
+            throw new NotImplementedException();
         }
     }
 }
