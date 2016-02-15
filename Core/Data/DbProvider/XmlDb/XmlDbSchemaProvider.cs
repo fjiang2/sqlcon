@@ -8,7 +8,7 @@ using Sys.IO;
 
 namespace Sys.Data
 {
-    class XmlDbSchemaProvider : SchemaProvider, IDisposable
+    class XmlDbSchemaProvider : DbSchemaProvider, IDisposable
     {
         DataSet dbSchema;
 

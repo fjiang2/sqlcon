@@ -24,7 +24,7 @@ using System.Data.SqlClient;
 
 namespace Sys.Data
 {
-    public class SqlServer
+    public class SqlDbServer
     {
         private const int SQL_NEED_DATA = 99;
         private const int SQL_SUCCESS = 0;

@@ -15,12 +15,6 @@
 //                                                                                                  //
 //--------------------------------------------------------------------------------------------------//
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data.Common;
 
 namespace Sys.Data
 {
@@ -29,7 +23,12 @@ namespace Sys.Data
         OleDb,
         SqlDb,
         SqlCe,
-        XmlDb
+        XmlDb,
+
+        /// <summary>
+        /// Sql server remote invoke, e.g. invoke through http web site
+        /// </summary>
+        SqlRi
     }
 
 

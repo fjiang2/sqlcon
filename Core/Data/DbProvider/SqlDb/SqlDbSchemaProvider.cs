@@ -7,11 +7,11 @@ using System.Data;
 
 namespace Sys.Data
 {
-    class SqlSchemaProvider : SchemaProvider
+    class SqlDbSchemaProvider : DbSchemaProvider
     {
         private static string[] __sys_tables = { "master", "model", "msdb", "tempdb" };
 
-        public SqlSchemaProvider(ConnectionProvider provider)
+        public SqlDbSchemaProvider(ConnectionProvider provider)
             : base(provider)
         {
         }

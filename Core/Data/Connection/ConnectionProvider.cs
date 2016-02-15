@@ -249,6 +249,9 @@ namespace Sys.Data
                     case ConnectionProviderType.XmlFile:
                         return DbProviderType.XmlDb;
 
+                    case ConnectionProviderType.SqlServerRi:
+                        return DbProviderType.SqlRi;
+
                     default:
                         return DbProviderType.OleDb;
                 }
@@ -308,8 +311,8 @@ namespace Sys.Data
         }
 
 
-        private SchemaProvider schema = null;
-        public SchemaProvider Schema
+        private DbSchemaProvider schema = null;
+        public DbSchemaProvider Schema
         {
             get
             {
@@ -318,7 +321,7 @@ namespace Sys.Data
                     switch (Type)
                     {
                         case ConnectionProviderType.SqlServer:
-                            schema = new SqlSchemaProvider(this);
+                            schema = new SqlDbSchemaProvider(this);
                             break;
 
                         case ConnectionProviderType.XmlFile:

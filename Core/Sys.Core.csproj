@@ -134,12 +134,12 @@
     <Compile Include="Data\Connection\Name\DatabaseName.cs" />
     <Compile Include="Data\Connection\Name\ServerName.cs" />
     <Compile Include="Data\Connection\Name\TableName.cs" />
-    <Compile Include="Data\Connection\OleDbServer.cs" />
-    <Compile Include="Data\Connection\SchemaProvider.cs" />
-    <Compile Include="Data\Connection\SqlSchemaProvider.cs" />
-    <Compile Include="Data\Connection\SqlServer.cs" />
-    <Compile Include="Data\Connection\XmlDbFile.cs" />
-    <Compile Include="Data\Connection\XmlDbSchemaProvider.cs" />
+    <Compile Include="Data\DbProvider\OleDb\OleDbServer.cs" />
+    <Compile Include="Data\DbProvider\DbSchemaProvider.cs" />
+    <Compile Include="Data\DbProvider\SqlDb\SqlDbSchemaProvider.cs" />
+    <Compile Include="Data\DbProvider\SqlDb\SqlDbServer.cs" />
+    <Compile Include="Data\DbProvider\XmlDb\XmlDbFile.cs" />
+    <Compile Include="Data\DbProvider\XmlDb\XmlDbSchemaProvider.cs" />
     <Compile Include="Data\Conversion.cs" />
     <Compile Include="Data\DbType.cs" />
     <Compile Include="Data\DefaultRowValue.cs" />
@@ -159,20 +159,20 @@
     <Compile Include="Data\Metadata\TableScript.cs" />
     <Compile Include="Data\Persistence\DataExtension.cs" />
     <Compile Include="Data\Persistence\Level0\DbCmd.cs" />
-    <Compile Include="Data\Persistence\Level0\Provider\DbProvider.cs" />
-    <Compile Include="Data\Persistence\Level0\Provider\IProvider.cs" />
-    <Compile Include="Data\Persistence\Level0\Provider\OleDbProvider.cs" />
-    <Compile Include="Data\Persistence\Level0\Provider\SqlProvider.cs" />
-    <Compile Include="Data\Persistence\Level0\Provider\XmlDbCommand.cs">
+    <Compile Include="Data\DbProvider\DbProvider.cs" />
+    <Compile Include="Data\DbProvider\DbProviderType.cs" />
+    <Compile Include="Data\DbProvider\OleDb\OleDbProvider.cs" />
+    <Compile Include="Data\DbProvider\SqlDb\SqlDbProvider.cs" />
+    <Compile Include="Data\DbProvider\XmlDb\XmlDbCommand.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Data\Persistence\Level0\Provider\XmlDbConnection.cs">
+    <Compile Include="Data\DbProvider\XmlDb\XmlDbConnection.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Data\Persistence\Level0\Provider\XmlDbDataAdapter.cs">
+    <Compile Include="Data\DbProvider\XmlDb\XmlDbDataAdapter.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Data\Persistence\Level0\Provider\XmlDbProvider.cs" />
+    <Compile Include="Data\DbProvider\XmlDb\XmlDbProvider.cs" />
     <Compile Include="Data\Persistence\Level0\SqlCmd.cs" />
     <Compile Include="Data\Persistence\Level0\SqlExceptionEventArgs.cs" />
     <Compile Include="Data\Persistence\Level0\SqlScript.cs" />
@@ -256,6 +256,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

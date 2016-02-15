@@ -32,7 +32,8 @@ namespace Sys.Data
         Excel = 7,
         Excel2007 = 8,
         Excel2010 = 9,
-        XmlFile = 10
+        XmlFile = 10,
+        SqlServerRi = 11
     }
 
 }

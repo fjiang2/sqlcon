@@ -26,9 +26,9 @@ using System.Data;
 
 namespace Sys.Data
 {
-    class SqlProvider : DbProvider
+    class SqlDbProvider : DbProvider
     {
-        public SqlProvider(string script, ConnectionProvider provider)
+        public SqlDbProvider(string script, ConnectionProvider provider)
             : base(script, provider)
         { 
         }

@@ -85,7 +85,7 @@ namespace Sys.Data
             switch (provider.DpType)
             {
                 case DbProviderType.SqlDb:
-                    return new SqlProvider(script, provider);
+                    return new SqlDbProvider(script, provider);
 
                 case DbProviderType.OleDb:
                     return new OleDbProvider(script, provider);

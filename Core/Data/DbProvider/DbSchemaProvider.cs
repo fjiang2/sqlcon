@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Data;
 
 namespace Sys.Data
 {
-    public abstract class SchemaProvider
+    public abstract class DbSchemaProvider
     {
         protected ConnectionProvider provider;
 
-        protected SchemaProvider(ConnectionProvider provider)
+        protected DbSchemaProvider(ConnectionProvider provider)
         {
             this.provider = provider;
         }
