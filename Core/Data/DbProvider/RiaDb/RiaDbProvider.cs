@@ -15,21 +15,38 @@
 //                                                                                                  //
 //--------------------------------------------------------------------------------------------------//
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data.Common;
+using System.Data;
 
 namespace Sys.Data
 {
-    public enum DbProviderType
+    class RiaDbProvider : SqlDbProvider
     {
-        OleDb,
-        SqlDb,
-        SqlCe,
-        XmlDb,
+        public RiaDbProvider(string script, ConnectionProvider provider)
+            : base(script, provider)
+        { 
+        }
 
-        /// <summary>
-        /// Sql server remote invoke agent (ria), e.g. invoke through http web site
-        /// </summary>
-        RiaDb
+      
+
+        protected override DbDataAdapter NewDbDataAdapter()
+        {
+            RiaDbDataAdapter adapter = new RiaDbDataAdapter();
+            adapter.SelectCommand = (RiaDbCommand)base.DbCommand;
+            return adapter;
+        }
+
+        protected override DbCommand NewDbCommand()
+        {
+            return new RiaDbCommand(script, (RiaDbConnection)DbConnection);
+        }
+
+      
+
     }
-
-
 }

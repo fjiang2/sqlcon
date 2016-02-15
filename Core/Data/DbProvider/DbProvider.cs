@@ -92,6 +92,9 @@ namespace Sys.Data
 
                 case  DbProviderType.XmlDb:
                     return new XmlDbProvider(script, provider);
+
+                case DbProviderType.RiaDb:
+                    return new RiaDbProvider(script, provider);
             }
 
             throw new NotImplementedException();

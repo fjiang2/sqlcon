@@ -249,8 +249,8 @@ namespace Sys.Data
                     case ConnectionProviderType.XmlFile:
                         return DbProviderType.XmlDb;
 
-                    case ConnectionProviderType.SqlServerRi:
-                        return DbProviderType.SqlRi;
+                    case ConnectionProviderType.SqlServerRia:
+                        return DbProviderType.RiaDb;
 
                     default:
                         return DbProviderType.OleDb;
@@ -327,6 +327,13 @@ namespace Sys.Data
                         case ConnectionProviderType.XmlFile:
                             schema = new XmlDbSchemaProvider(this);
                             break;
+
+                        case ConnectionProviderType.SqlServerRia:
+                            schema = new SqlDbSchemaProvider(this);
+                            break;
+
+                        default:
+                            throw new NotImplementedException($"schema provider not implemented on {Type}");
                     }
                 }
 
