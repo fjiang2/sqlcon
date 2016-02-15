@@ -178,5 +178,96 @@ namespace Sys
             }
         }
 
+
+        #region Xml <==> DataSet
+
+        public static DataSet ToDataSet(this string xml)
+        {
+            DataSet ds = new DataSet();
+            return ToDataSet(xml, ds);
+        }
+
+        public static DataSet ToDataSet(this string xml, DataSet ds)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            using (StreamWriter writer = new StreamWriter(stream))
+            {
+                writer.Write(xml);
+                writer.Flush();
+                stream.Position = 0;
+
+                try
+                {
+                    ds.ReadXml(stream, XmlReadMode.ReadSchema);
+                }
+                catch (Exception)
+                {
+                    throw new Exception(xml);
+                }
+            }
+            return ds;
+        }
+
+
+        public static string ToXml(this DataSet ds)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                ds.WriteXml(stream, XmlWriteMode.WriteSchema);
+                stream.Flush();
+                stream.Position = 0;
+
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+        }
+
+        #endregion
+
+
+        #region Xml <==> DataTable
+
+        public static DataTable ToDataTable(this string xml, DataTable dt)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            using (StreamWriter writer = new StreamWriter(stream))
+            {
+                writer.Write(xml);
+                writer.Flush();
+                stream.Position = 0;
+
+                try
+                {
+                    dt.ReadXml(stream);
+                }
+                catch (Exception)
+                {
+                    throw new Exception(xml);
+                }
+            }
+            return dt;
+        }
+
+
+        public static string ToXml(this DataTable dt)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                dt.WriteXml(stream, XmlWriteMode.WriteSchema);
+                stream.Flush();
+                stream.Position = 0;
+
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+        }
+
+        #endregion
+
+
     }
 }

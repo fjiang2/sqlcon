@@ -43,6 +43,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Deployment" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
@@ -231,6 +232,7 @@
     <Compile Include="EventArgs\MessageExceptionEventArgs.cs" />
     <Compile Include="EventArgs\MessageEventArgs.cs" />
     <Compile Include="Extension\Iteratable.cs" />
+    <Compile Include="Extension\JsonExtension.cs" />
     <Compile Include="IO\DiskFileLink.cs" />
     <Compile Include="IO\FileLink.cs" />
     <Compile Include="IO\FtpFileLink.cs" />
@@ -260,8 +262,14 @@
     <Compile Include="SqlBuilder\SqlExprExtension.cs" />
     <Compile Include="SqlBuilder\SqlValue.cs" />
     <Compile Include="Sys\BackgroundTask.cs" />
-    <Compile Include="Sys\FtpClient.cs" />
-    <Compile Include="Sys\HttpRequest.cs" />
+    <Compile Include="Networking\FtpClient.cs" />
+    <Compile Include="Networking\HttpRequest.cs" />
+    <Compile Include="Networking\RemoteAgent.cs" />
+    <Compile Include="Networking\RemoteExtension.cs" />
+    <Compile Include="Networking\RemoteInputBlock.cs" />
+    <Compile Include="Networking\RemoteInvoke.cs" />
+    <Compile Include="Networking\RemoteOutputBlock.cs" />
+    <Compile Include="Networking\RemoteProxy.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

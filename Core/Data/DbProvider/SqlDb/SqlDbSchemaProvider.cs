@@ -69,6 +69,7 @@ namespace Sys.Data
             switch (provider.DpType)
             {
                 case DbProviderType.SqlDb:
+                case DbProviderType.RiaDb:
                     dnames = DataExtension.FillDataTable(provider, SQL).ToArray<string>("DATABASE_NAME");
                     List<string> L = new List<string>();
                     foreach (var dname in dnames)

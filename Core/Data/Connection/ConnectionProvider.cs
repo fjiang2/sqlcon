@@ -23,6 +23,7 @@ using System.Data.SqlClient;
 using System.Data.OleDb;
 using Sys.IO;
 using Tie;
+using Sys.Networking;
 
 namespace Sys.Data
 {
@@ -76,6 +77,9 @@ namespace Sys.Data
                 case ConnectionProviderType.XmlFile:
                     return FileLink.Factory(DataSource, this.UserId, this.Password).Exists;
 
+                case ConnectionProviderType.SqlServerRia:
+                    return HttpRequest.GetHttpStatus(new Uri(DataSource)) == System.Net.HttpStatusCode.OK;
+
                 default:
                     return !InvalidSqlClause("EXEC sp_databases");
             }
@@ -110,23 +114,28 @@ namespace Sys.Data
                 if (version != -1)
                     return version;
 
-                SqlConnection conn = new SqlConnection(ConnectionString);
-                try
+                if (this.Type == ConnectionProviderType.SqlServer)
                 {
-                    conn.Open();
-                    SqlCommand cmd = new SqlCommand("SELECT @@version", conn);
-                    string text = (string)cmd.ExecuteScalar();
-                    string[] items = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                    version = int.Parse(items[3]);
+                    SqlConnection conn = new SqlConnection(ConnectionString);
+                    try
+                    {
+                        conn.Open();
+                        SqlCommand cmd = new SqlCommand("SELECT @@version", conn);
+                        string text = (string)cmd.ExecuteScalar();
+                        string[] items = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        version = int.Parse(items[3]);
+                    }
+                    catch (Exception)
+                    {
+                        version = 0;
+                    }
+                    finally
+                    {
+                        conn.Close();
+                    }
                 }
-                catch (Exception)
-                {
-                    version = 0;
-                }
-                finally
-                {
-                    conn.Close();
-                }
+                else
+                    version = 2005;
 
                 return version;
             }
@@ -272,6 +281,9 @@ namespace Sys.Data
 
                     case DbProviderType.XmlDb:
                         return new XmlDbConnection(this);
+
+                    case DbProviderType.RiaDb:
+                        return new RiaDbConnection(this);
 
                 }
 

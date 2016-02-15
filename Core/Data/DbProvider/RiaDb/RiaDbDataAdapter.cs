@@ -7,13 +7,14 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Data;
 using System.IO;
+using Sys.Networking;
 
 namespace Sys.Data
 {
     public class RiaDbDataAdapter : DbDataAdapter
     {
-        SqlCommand command;
-        SqlConnection connection;
+        RiaDbCommand command;
+        RiaDbConnection connection;
         ConnectionProvider provider;
 
         public RiaDbDataAdapter()
@@ -22,11 +23,24 @@ namespace Sys.Data
 
         public override int Fill(DataSet dataSet)
         {
-            command = (SqlCommand)this.SelectCommand;
-            connection = (SqlConnection)command.Connection;
-           // provider = connection.Provider;
+            command = (RiaDbCommand)this.SelectCommand;
+            connection = (RiaDbConnection)command.Connection;
+            provider = connection.Provider;
 
+            RemoteInvoke agent = new RemoteInvoke(new Uri(provider.DataSource));
             string sql = command.CommandText;
+            string code = $"var cmd=new tw.Common.SqlCmdDirect('{sql}');ds=cmd.FillDataSet();";
+            agent.Execute(code);
+
+            var ds = agent.GetValue<DataSet>("ds");
+            if (ds != null)
+            {
+                foreach (DataTable dt in ds.Tables)
+                {
+                    dataSet.Tables.Add(dt.Copy());
+                }
+            }
+
             return 0;
         }
     }

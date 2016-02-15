@@ -8,7 +8,7 @@ using System.IO;
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
 
-namespace Sys
+namespace Sys.Networking
 {
     public class FtpClient  
     {

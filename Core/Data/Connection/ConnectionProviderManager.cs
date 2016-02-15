@@ -213,6 +213,10 @@ namespace Sys.Data
             {
                 return ConnectionProviderManager.Register(serverName, ConnectionProviderType.XmlFile, connectionString);
             }
+            if (connectionString.ToLower().IndexOf("provider=riadb") >= 0)
+            {
+                return ConnectionProviderManager.Register(serverName, ConnectionProviderType.SqlServerRia, connectionString);
+            }
             else
             {
                 return ConnectionProviderManager.Register(serverName, new SqlConnectionStringBuilder(connectionString));

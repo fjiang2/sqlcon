@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Common;
 using System.Data;
-
+using Sys.Networking;
 
 namespace Sys.Data
 {
@@ -21,26 +21,34 @@ namespace Sys.Data
         protected override DbTransaction DbTransaction { get; set; }
 
 
-        public RiaDbCommand(string cmdText, RiaDbConnection connection)
+        private RemoteInvoke agent;
+
+            public RiaDbCommand(string cmdText, RiaDbConnection connection)
         {
             this.CommandText = cmdText;
             this.CommandType = CommandType.Text;
             this.DbConnection = connection;
-        
+
+            this.agent = new RemoteInvoke(new Uri(connection.Provider.DataSource));
         }
 
         public override void Cancel()
         {
         }
 
+        
         public override int ExecuteNonQuery()
         {
-            return -1;
+            string code = $"var cmd=new SqlCmd('{CommandText}'); result= cmd.ExecuteNonQuery();";
+            agent.Execute(code);
+            return agent.GetValue<int>("result");
         }
 
         public override object ExecuteScalar()
         {
-            return null;
+            string code = $"var cmd=new SqlCmd('{CommandText}'); result= cmd.ExecuteScalar();";
+            agent.Execute(code);
+            return agent.GetValue<object>("result");
         }
 
         public override void Prepare()

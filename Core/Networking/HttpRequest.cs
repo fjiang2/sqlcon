@@ -9,7 +9,7 @@ using System.Net;
 using System.IO;
 using System.Data;
 
-namespace Sys
+namespace Sys.Networking
 {
     public static class HttpRequest
     {
@@ -284,6 +284,31 @@ namespace Sys
         }
 
         #endregion
+
+        public static HttpStatusCode GetHttpStatus(Uri uri)
+        {
+            HttpStatusCode result = HttpStatusCode.BadRequest;
+
+            var request = HttpWebRequest.Create(uri);
+            request.Method = "HEAD";
+            try
+            {
+                using (var response = request.GetResponse() as HttpWebResponse)
+                {
+                    if (response != null)
+                    {
+                        result = response.StatusCode;
+                        response.Close();
+                    }
+                }
+            }
+            catch (WebException ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
+
+            return result;
+        }
 
     }
 }
