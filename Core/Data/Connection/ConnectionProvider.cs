@@ -27,7 +27,7 @@ using Sys.Networking;
 
 namespace Sys.Data
 {
-    public class ConnectionProvider : IValizable, IComparable<ConnectionProvider>, IComparable
+    public abstract class ConnectionProvider : IValizable, IComparable<ConnectionProvider>, IComparable
     {
         internal const int DEFAULT_HANDLE = 0;
         internal const int USER_HANDLE_BASE = DEFAULT_HANDLE + 1000;
@@ -71,27 +71,6 @@ namespace Sys.Data
 
 
     
-
-        private bool InvalidSqlClause(string sql)
-        {
-            SqlConnection conn = new SqlConnection(ConnectionString);
-            try
-            {
-                conn.Open();
-                SqlCommand cmd = new SqlCommand(sql, conn);
-                cmd.ExecuteScalar();
-            }
-            catch (Exception)
-            {
-                return true;
-            }
-            finally
-            {
-                conn.Close();
-            }
-
-            return false;
-        }
 
       
 
@@ -231,176 +210,38 @@ namespace Sys.Data
         }
 
 
-        private int version = -1;
-        public int Version
-        {
-            get
-            {
-                if (version != -1)
-                    return version;
-
-                if (this.Type == ConnectionProviderType.SqlServer)
-                {
-                    SqlConnection conn = new SqlConnection(ConnectionString);
-                    try
-                    {
-                        conn.Open();
-                        SqlCommand cmd = new SqlCommand("SELECT @@version", conn);
-                        string text = (string)cmd.ExecuteScalar();
-                        string[] items = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                        version = int.Parse(items[3]);
-                    }
-                    catch (Exception)
-                    {
-                        version = 0;
-                    }
-                    finally
-                    {
-                        conn.Close();
-                    }
-                }
-                else
-                    version = 2005;
-
-                return version;
-            }
-        }
-
-        public bool CheckConnection()
-        {
-            switch (Type)
-            {
-                case ConnectionProviderType.XmlFile:
-                    return FileLink.Factory(DataSource, this.UserId, this.Password).Exists;
-
-                case ConnectionProviderType.SqlServerRia:
-                    return HttpRequest.GetHttpStatus(new Uri(DataSource)) == System.Net.HttpStatusCode.OK;
-
-                default:
-                    return !InvalidSqlClause("EXEC sp_databases");
-            }
-        }
-
         private DbSchemaProvider schema = null;
         public DbSchemaProvider Schema
         {
             get
             {
                 if (schema == null)
-                {
-                    switch (Type)
-                    {
-                        case ConnectionProviderType.SqlServer:
-                            schema = new SqlDbSchemaProvider(this);
-                            break;
-
-                        case ConnectionProviderType.XmlFile:
-                            schema = new XmlDbSchemaProvider(this);
-                            break;
-
-                        case ConnectionProviderType.SqlServerRia:
-                            schema = new SqlDbSchemaProvider(this);
-                            break;
-
-                        default:
-                            throw new NotImplementedException($"schema provider not implemented on {Type}");
-                    }
-                }
+                    schema = GetSchema();
 
                 return schema;
             }
         }
 
-
-        internal DbProviderType DpType
+        public virtual int Version
         {
             get
             {
-                switch (Type)
-                {
-                    case ConnectionProviderType.SqlServer:
-                        return DbProviderType.SqlDb;
-
-                    case ConnectionProviderType.SqlServerCe:
-                        return DbProviderType.SqlCe;
-
-                    case ConnectionProviderType.XmlFile:
-                        return DbProviderType.XmlDb;
-
-                    case ConnectionProviderType.SqlServerRia:
-                        return DbProviderType.RiaDb;
-
-                    default:
-                        return DbProviderType.OleDb;
-                }
+              return  2005;
             }
         }
 
-        internal DbConnection NewDbConnection
-        {
-            get
-            {
-                switch (DpType)
-                {
-                    case DbProviderType.SqlDb:
-                        return new SqlConnection(ConnectionString);
+        public abstract bool CheckConnection();
 
-                    case DbProviderType.OleDb:
-                        return new OleDbConnection(ConnectionString);
+      
 
-                    case DbProviderType.XmlDb:
-                        return new XmlDbConnection(this);
+        protected abstract DbSchemaProvider GetSchema();
 
-                    case DbProviderType.RiaDb:
-                        return new RiaDbConnection(this);
+        internal abstract DbProviderType DpType { get; }
 
-                }
+        internal abstract DbConnection NewDbConnection { get;}
 
-                throw new NotImplementedException();
-            }
-        }
+        internal abstract string CurrentDatabaseName();
 
-        public string CurrentDatabaseName()
-        {
-            switch (DpType)
-            {
-                case DbProviderType.SqlDb:
-                    {
-                        return (string)DataExtension.ExecuteScalar(this, "SELECT DB_NAME()");
-                        //var connection = new SqlCmd(provider, string.Empty).DbProvider.DbConnection;
-                        //return connection.Database.ToString();
-                    }
-
-                case DbProviderType.SqlCe:
-                    return "Database";
-
-                case DbProviderType.RiaDb:
-                case DbProviderType.XmlDb:
-                    return InitialCatalog;
-
-                default:
-                    throw new NotSupportedException();
-            }
-        }
-
-        internal DbProvider CreateDbProvider(string script)
-        {
-            switch (this.DpType)
-            {
-                case DbProviderType.SqlDb:
-                    return new SqlDbProvider(script, this);
-
-                case DbProviderType.OleDb:
-                    return new OleDbProvider(script, this);
-
-                case DbProviderType.XmlDb:
-                    return new XmlDbProvider(script, this);
-
-                case DbProviderType.RiaDb:
-                    return new RiaDbProvider(script, this);
-            }
-
-            throw new NotImplementedException();
-        }
+        internal abstract DbProvider CreateDbProvider(string script);
     }
 }

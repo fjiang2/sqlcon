@@ -105,6 +105,10 @@ namespace sqlcon
 
         private bool TrySingleLineCommand(string text)
         {
+
+#if DEBUG
+            return DoSingleLineCommand(text);
+#else
             try
             {
                 return DoSingleLineCommand(text);
@@ -119,7 +123,10 @@ namespace sqlcon
             }
 
             return true;
+#endif
         }
+
+
         private bool DoSingleLineCommand(string text)
         {
             text = text.Trim();

@@ -137,10 +137,13 @@
     <Compile Include="Data\Connection\Name\TableName.cs" />
     <Compile Include="Data\DbProvider\OleDb\OleDbServer.cs" />
     <Compile Include="Data\DbProvider\DbSchemaProvider.cs" />
+    <Compile Include="Data\DbProvider\RiaDb\RiaDbConnectionProvider.cs" />
     <Compile Include="Data\DbProvider\RiaDb\RiaDbCommand.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Data\DbProvider\RiaDb\RiaDbProvider.cs" />
+    <Compile Include="Data\DbProvider\OleDb\OleDbConnectionProvider.cs" />
+    <Compile Include="Data\DbProvider\SqlDb\SqlDbConnectionProvider.cs" />
     <Compile Include="Data\DbProvider\SqlDb\SqlDbSchemaProvider.cs" />
     <Compile Include="Data\DbProvider\SqlDb\SqlDbServer.cs" />
     <Compile Include="Data\DbProvider\RiaDb\RiaDbDataAdapter.cs">
@@ -149,6 +152,7 @@
     <Compile Include="Data\DbProvider\RiaDb\RiaDbConnection.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Data\DbProvider\XmlDb\XmlDbConnectionProvider.cs" />
     <Compile Include="Data\DbProvider\XmlDb\XmlDbFile.cs" />
     <Compile Include="Data\DbProvider\XmlDb\XmlDbSchemaProvider.cs" />
     <Compile Include="Data\Conversion.cs" />

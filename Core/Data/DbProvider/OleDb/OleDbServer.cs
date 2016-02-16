@@ -33,7 +33,7 @@ namespace Sys.Data
             
         public static ConnectionProvider RegisterExcel2007(string xlsName, bool HasHeader = false)
         {
-            return ConnectionProviderManager.Register(xlsName, ConnectionProviderType.Excel2007, 
+            return ConnectionProviderManager.RegisterOleDb(xlsName, ConnectionProviderType.Excel2007, 
                 Excel2007
                     .Replace("@XLS", xlsName)
                     .Replace("@HDR", HasHeader ? "Yes" : "No")
@@ -42,7 +42,7 @@ namespace Sys.Data
 
         public static ConnectionProvider RegisterExcel2010(string xlsName, bool HasHeader = false)
         {
-            return ConnectionProviderManager.Register(xlsName, ConnectionProviderType.Excel2010, 
+            return ConnectionProviderManager.RegisterOleDb(xlsName, ConnectionProviderType.Excel2010, 
                 Excel2010
                     .Replace("@XLS", xlsName)
                     .Replace("@HDR", HasHeader ? "Yes" : "No")
@@ -51,7 +51,7 @@ namespace Sys.Data
 
         public static ConnectionProvider RegisterMySQL(string serverName, string userName, string password)
         {
-            return ConnectionProviderManager.Register(
+            return ConnectionProviderManager.RegisterOleDb(
                 serverName, 
                 ConnectionProviderType.MySQL,
                 MySQL
@@ -63,7 +63,7 @@ namespace Sys.Data
 
         public static ConnectionProvider RegisterOracle(string database, string userName, string password)
         {
-            return ConnectionProviderManager.Register(
+            return ConnectionProviderManager.RegisterOleDb(
                 database,
                 ConnectionProviderType.Oracle,
                 Oracle

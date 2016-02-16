@@ -60,6 +60,10 @@ namespace sqlcon
                 return;
             }
 
+#if DEBUG
+            var site = new CompareConsole(cfg);
+            site.Run(args);
+#else
             try
             {
                 var site = new CompareConsole(cfg);
@@ -76,6 +80,7 @@ namespace sqlcon
             {
                 stdio.Close();
             }
+#endif
         }
 
         private static string PrepareCfgFile(string cfgFile, bool overwrite)

@@ -100,33 +100,6 @@ namespace Sys.Data
         }
 
 
-        public VAL Configuration
-        {
-            get
-            {
-                VAL val = VAL.Array(this.providers.Count);
-                int i = 0;
-                foreach (var pair in this.providers)
-                {
-                    val[i]["handle"] = pair.Value.GetVAL();
-                    i++;
-                }
-
-                return val;
-
-            }
-            set
-            {
-                VAL val = value;
-                for (int i = 0; i < val.Size; i++)
-                {
-                    ConnectionProvider provider = new ConnectionProvider(val[i]["handle"]);
-                    Add(provider );
-                }
-
-              
-            }
-        }
 
 
 //-----------------------------------------------------------------------------------------------------------------------------------
@@ -149,7 +122,7 @@ namespace Sys.Data
             else
                 Const.DB_SYSTEM = sysDatabase;
 
-            defaultProvider = new ConnectionProvider(ConnectionProvider.DEFAULT_HANDLE, "Default", ConnectionProviderType.SqlServer, connectionString);
+            defaultProvider = new SqlDbConnectionProvider(ConnectionProvider.DEFAULT_HANDLE, "Default",  connectionString);
             Instance.Add(ConnectionProviderManager.DefaultProvider);
 
             return ConnectionProviderManager.DefaultProvider;
@@ -162,7 +135,7 @@ namespace Sys.Data
             get 
             {
                 if (defaultProvider == null)
-                    defaultProvider = new ConnectionProvider(ConnectionProvider.DEFAULT_HANDLE, "Default", ConnectionProviderType.SqlServer, Const.CONNECTION_STRING);
+                    defaultProvider = new SqlDbConnectionProvider(ConnectionProvider.DEFAULT_HANDLE, "Default", Const.CONNECTION_STRING);
 
                 return defaultProvider; 
             }
@@ -183,9 +156,9 @@ namespace Sys.Data
         /// <param name="type"></param>
         /// <param name="connectionString"></param>
         /// <returns></returns>
-        public static ConnectionProvider Register(string name, ConnectionProviderType type, string connectionString)
+        internal static ConnectionProvider RegisterOleDb(string name, ConnectionProviderType type, string connectionString)
         {
-            ConnectionProvider pvd = new ConnectionProvider(++PROVIDER, name, type, connectionString);
+            ConnectionProvider pvd = new OleDbConnectionProvider(++PROVIDER, name, type, connectionString);
             Instance.Add(pvd);
             return pvd;
         }
@@ -199,30 +172,34 @@ namespace Sys.Data
 
         public static ConnectionProvider Register(string serverName, string connectionString)
         {
-            ConnectionProviderType ty = ConnectionProviderType.SqlServer;
+            
             var conn = connectionString.ToLower();
+
+            ConnectionProvider pvd;
 
             if (conn.IndexOf("provider=xmlfile") >= 0)
             {
-                ty = ConnectionProviderType.XmlFile;
+                pvd = new XmlDbConnectionProvider(++PROVIDER, serverName, connectionString);
             }
-            if (conn.IndexOf("provider=riadb") >= 0)
+            else if (conn.IndexOf("provider=riadb") >= 0)
             {
-                ty = ConnectionProviderType.SqlServerRia;
+                pvd = new RiaDbConnectionProvider(++PROVIDER, serverName, connectionString);
             }
-            if (conn.IndexOf("provider=sqloledb") >= 0)
+            else if (conn.IndexOf("provider=sqloledb") >= 0)
             {
-                ty = ConnectionProviderType.OleDbServer;
+                pvd = new OleDbConnectionProvider(++PROVIDER, serverName, connectionString);
             }
+            else
+                pvd = new SqlDbConnectionProvider(++PROVIDER, serverName, connectionString);
 
-
-            return Register(serverName, ty, connectionString);
+            Instance.Add(pvd);
+            return pvd;
         }
 
         public static ConnectionProvider CloneConnectionProvider(ConnectionProvider provider, string serverName, string databaseName)
         {
             provider.InitialCatalog = databaseName;
-            var pvd = ConnectionProviderManager.Register(serverName, provider.Type, provider.ConnectionString);
+            var pvd = ConnectionProviderManager.Register(serverName, provider.ConnectionString);
             return pvd;
         }
     }
