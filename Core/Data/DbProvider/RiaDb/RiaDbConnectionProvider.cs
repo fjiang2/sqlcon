@@ -13,8 +13,8 @@ namespace Sys.Data
     class RiaDbConnectionProvider : ConnectionProvider
     {
 
-        public RiaDbConnectionProvider(int handle, string name, string connectionString)
-            : base(handle, name, ConnectionProviderType.SqlServerRia, connectionString)
+        public RiaDbConnectionProvider(string name, string connectionString)
+            : base(name, ConnectionProviderType.SqlServerRia, connectionString)
         {
         }
 

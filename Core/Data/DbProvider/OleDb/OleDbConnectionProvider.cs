@@ -12,13 +12,13 @@ namespace Sys.Data
     class OleDbConnectionProvider : ConnectionProvider
     {
 
-        public OleDbConnectionProvider(int handle, string name, ConnectionProviderType type,  string connectionString)
-            : base(handle, name, type, connectionString)
+        public OleDbConnectionProvider(string name, ConnectionProviderType type,  string connectionString)
+            : base(name, type, connectionString)
         {
         }
 
-        public OleDbConnectionProvider(int handle, string name, string connectionString)
-            : base(handle, name, ConnectionProviderType.OleDbServer, connectionString)
+        public OleDbConnectionProvider(string name, string connectionString)
+            : base(name, ConnectionProviderType.OleDbServer, connectionString)
         {
         }
 

@@ -28,12 +28,26 @@ namespace Sys.Data
         private const string Excel2007 = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=@XLS;Extended Properties=\"Excel 8.0;HDR=@HDR;\"";
         private const string MySQL      = "Provider=MySqlProv;Data Source=@ServerName; User id=@UserName; Password=@Password";
         private const string Oracle     = "Provider=MSDAORA;Data Source= @Database;UserId=@UserName;Password=@Password;";
-        private const string Access     = "Provider=Microsoft.Jet.OLEDB.4.0; Data Source=@mdb; Jet OLEDB:Database Password=@Password"; 
-        
-            
+        private const string Access     = "Provider=Microsoft.Jet.OLEDB.4.0; Data Source=@mdb; Jet OLEDB:Database Password=@Password";
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name">used to display and search</param>
+        /// <param name="type"></param>
+        /// <param name="connectionString"></param>
+        /// <returns></returns>
+        private static ConnectionProvider RegisterOleDb(string name, ConnectionProviderType type, string connectionString)
+        {
+            ConnectionProvider pvd = new OleDbConnectionProvider(name, type, connectionString);
+            ConnectionProviderManager.Register(pvd);
+            return pvd;
+        }
+
         public static ConnectionProvider RegisterExcel2007(string xlsName, bool HasHeader = false)
         {
-            return ConnectionProviderManager.RegisterOleDb(xlsName, ConnectionProviderType.Excel2007, 
+            return RegisterOleDb(xlsName, ConnectionProviderType.Excel2007, 
                 Excel2007
                     .Replace("@XLS", xlsName)
                     .Replace("@HDR", HasHeader ? "Yes" : "No")
@@ -42,7 +56,7 @@ namespace Sys.Data
 
         public static ConnectionProvider RegisterExcel2010(string xlsName, bool HasHeader = false)
         {
-            return ConnectionProviderManager.RegisterOleDb(xlsName, ConnectionProviderType.Excel2010, 
+            return RegisterOleDb(xlsName, ConnectionProviderType.Excel2010, 
                 Excel2010
                     .Replace("@XLS", xlsName)
                     .Replace("@HDR", HasHeader ? "Yes" : "No")
@@ -51,7 +65,7 @@ namespace Sys.Data
 
         public static ConnectionProvider RegisterMySQL(string serverName, string userName, string password)
         {
-            return ConnectionProviderManager.RegisterOleDb(
+            return RegisterOleDb(
                 serverName, 
                 ConnectionProviderType.MySQL,
                 MySQL
@@ -63,7 +77,7 @@ namespace Sys.Data
 
         public static ConnectionProvider RegisterOracle(string database, string userName, string password)
         {
-            return ConnectionProviderManager.RegisterOleDb(
+            return RegisterOleDb(
                 database,
                 ConnectionProviderType.Oracle,
                 Oracle

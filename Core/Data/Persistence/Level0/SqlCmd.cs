@@ -87,7 +87,7 @@ namespace Sys.Data
                 userName, 
                 password);
 
-            ChangeConnection(new SqlDbConnectionProvider(base.provider.Handle, serverName, connectionString));
+            ChangeConnection(new SqlDbConnectionProvider(serverName, connectionString) { Handle = base.provider.Handle } );
         }
 
   

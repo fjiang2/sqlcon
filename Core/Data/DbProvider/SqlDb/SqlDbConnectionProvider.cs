@@ -12,8 +12,8 @@ namespace Sys.Data
     class SqlDbConnectionProvider : ConnectionProvider
     {
 
-        public SqlDbConnectionProvider(int handle, string name, string connectionString)
-            : base(handle, name, ConnectionProviderType.SqlServer, connectionString)
+        public SqlDbConnectionProvider(string name, string connectionString)
+            : base(name, ConnectionProviderType.SqlServer, connectionString)
         {
         }
 

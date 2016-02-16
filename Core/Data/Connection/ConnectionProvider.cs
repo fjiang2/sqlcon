@@ -35,9 +35,8 @@ namespace Sys.Data
         private DbConnectionStringBuilder ConnectionBuilder;
 
 
-        internal ConnectionProvider(int handle, string name, ConnectionProviderType type, string connectionString)
+        internal ConnectionProvider(string name, ConnectionProviderType type, string connectionString)
         {
-            this.Handle = handle;
             this.Name = name;
             this.Type = type;
 
@@ -47,7 +46,7 @@ namespace Sys.Data
     
         public string Name { get; private set; }
 
-        internal int Handle { get; private set;}
+        internal int Handle { get; set; } = DEFAULT_HANDLE;
         internal ConnectionProviderType Type { get; private set; }
 
         internal string ConnectionString

@@ -26,15 +26,15 @@ using Tie;
 
 namespace Sys.Data
 {
-    
-    public class ConnectionProviderManager 
+
+    public class ConnectionProviderManager
     {
         private static ConnectionProviderManager instance = null;
 
         private Dictionary<int, ConnectionProvider> providers = new Dictionary<int, ConnectionProvider>();
 
         private ConnectionProviderManager()
-        { 
+        {
         }
 
         public static ConnectionProviderManager Instance
@@ -43,7 +43,7 @@ namespace Sys.Data
             {
                 if (ConnectionProviderManager.instance == null)
                     ConnectionProviderManager.instance = new ConnectionProviderManager();
-                
+
                 return ConnectionProviderManager.instance;
             }
 
@@ -60,10 +60,10 @@ namespace Sys.Data
 
         }
 
-     
+
         private void Remove(ConnectionProvider provider)
         {
-             providers.Remove(provider.Handle);
+            providers.Remove(provider.Handle);
         }
 
 
@@ -72,7 +72,7 @@ namespace Sys.Data
             return string.Format("Registered Providers = #{0}", providers.Count);
         }
 
-        
+
 
         public IEnumerable<ConnectionProvider> Providers
         {
@@ -102,8 +102,8 @@ namespace Sys.Data
 
 
 
-//-----------------------------------------------------------------------------------------------------------------------------------
- 
+        //-----------------------------------------------------------------------------------------------------------------------------------
+
         #region Default Data Provider
 
         public static ConnectionProvider RegisterDefaultProvider(string connectionString)
@@ -122,22 +122,22 @@ namespace Sys.Data
             else
                 Const.DB_SYSTEM = sysDatabase;
 
-            defaultProvider = new SqlDbConnectionProvider(ConnectionProvider.DEFAULT_HANDLE, "Default",  connectionString);
+            defaultProvider = new SqlDbConnectionProvider("Default", connectionString);
             Instance.Add(ConnectionProviderManager.DefaultProvider);
 
             return ConnectionProviderManager.DefaultProvider;
         }
 
-      
+
         private static ConnectionProvider defaultProvider = null;
         public static ConnectionProvider DefaultProvider
         {
-            get 
+            get
             {
                 if (defaultProvider == null)
-                    defaultProvider = new SqlDbConnectionProvider(ConnectionProvider.DEFAULT_HANDLE, "Default", Const.CONNECTION_STRING);
+                    defaultProvider = new SqlDbConnectionProvider("Default", Const.CONNECTION_STRING);
 
-                return defaultProvider; 
+                return defaultProvider;
             }
         }
 
@@ -148,21 +148,14 @@ namespace Sys.Data
         /// provider's handle is assigned during runtime
         /// </summary>
         private static int PROVIDER = ConnectionProvider.USER_HANDLE_BASE;
-            
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="name">used to display and search</param>
-        /// <param name="type"></param>
-        /// <param name="connectionString"></param>
-        /// <returns></returns>
-        internal static ConnectionProvider RegisterOleDb(string name, ConnectionProviderType type, string connectionString)
-        {
-            ConnectionProvider pvd = new OleDbConnectionProvider(++PROVIDER, name, type, connectionString);
-            Instance.Add(pvd);
-            return pvd;
-        }
 
+
+        public static int Register(ConnectionProvider pvd)
+        {
+            pvd.Handle = ++PROVIDER;
+            Instance.Add(pvd);
+            return pvd.Handle;
+        }
 
         public static void Unregister(ConnectionProvider provider)
         {
@@ -172,27 +165,46 @@ namespace Sys.Data
 
         public static ConnectionProvider Register(string serverName, string connectionString)
         {
-            
-            var conn = connectionString.ToLower();
+            DbConnectionStringBuilder conn = new DbConnectionStringBuilder();
+            conn.ConnectionString = connectionString.ToLower();
 
-            ConnectionProvider pvd;
+            string providerName = "sqldb";
+            object value;
+            if (conn.TryGetValue("provider", out value))
+            {
+                if (value is string)
+                    providerName = (string)value;
+            }
 
-            if (conn.IndexOf("provider=xmlfile") >= 0)
+            ConnectionProvider pvd = null;
+            switch (providerName)
             {
-                pvd = new XmlDbConnectionProvider(++PROVIDER, serverName, connectionString);
+                case "xmlfile":
+                    pvd = new XmlDbConnectionProvider(serverName, connectionString);
+                    break;
+
+                case "riadb":                   //Remote Invoke Agent
+                    pvd = new RiaDbConnectionProvider(serverName, connectionString);
+                    break;
+
+                case "Microsoft.ACE.OLEDB.12.0": //Excel 2010
+                case "Microsoft.Jet.OLEDB.4.0":  //Excel 2007 or Access
+                case "MySqlProv":                //MySql
+                case "MSDAORA":                  //Oracle
+                case "sqloledb":
+                    pvd = new OleDbConnectionProvider(serverName, connectionString);
+                    break;
+
+                case "sqldb":                   //Sql Server
+                    pvd = new SqlDbConnectionProvider(serverName, connectionString);
+                    break;
             }
-            else if (conn.IndexOf("provider=riadb") >= 0)
-            {
-                pvd = new RiaDbConnectionProvider(++PROVIDER, serverName, connectionString);
-            }
-            else if (conn.IndexOf("provider=sqloledb") >= 0)
-            {
-                pvd = new OleDbConnectionProvider(++PROVIDER, serverName, connectionString);
-            }
+
+            if (pvd != null)
+                Register(pvd);
             else
-                pvd = new SqlDbConnectionProvider(++PROVIDER, serverName, connectionString);
+                throw new Exception($"invlaid connection string {connectionString}");
 
-            Instance.Add(pvd);
             return pvd;
         }
 

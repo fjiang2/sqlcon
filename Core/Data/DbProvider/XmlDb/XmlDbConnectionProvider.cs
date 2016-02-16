@@ -13,8 +13,8 @@ namespace Sys.Data
     class XmlDbConnectionProvider : ConnectionProvider
     {
 
-        public XmlDbConnectionProvider(int handle, string name, string connectionString)
-            : base(handle, name, ConnectionProviderType.XmlFile, connectionString)
+        public XmlDbConnectionProvider(string name, string connectionString)
+            : base(name, ConnectionProviderType.XmlFile, connectionString)
         {
         }
         public override bool CheckConnection()
