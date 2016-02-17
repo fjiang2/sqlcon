@@ -25,7 +25,7 @@ namespace Sys.Data
 {
     public class Const
     {
-        public static string CONNECTION_STRING = "data source=localhost\\SQLEXPRESS;initial catalog=medsys;integrated security=SSPI;packet size=4096";
+        public static string CONNECTION_STRING = "data source=localhost\\SQLEXPRESS;initial catalog=master;integrated security=SSPI;packet size=4096";
 
  
         public static string DB_APPLICATION = "";

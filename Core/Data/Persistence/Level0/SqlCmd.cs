@@ -16,7 +16,7 @@
 //--------------------------------------------------------------------------------------------------//
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Data;
@@ -24,29 +24,8 @@ using Tie;
 
 namespace Sys.Data
 {
-    public class SqlCmd : DbCmd
+    public sealed class SqlCmd : DbCmd
     {
-
-        public SqlCmd(ConnectionProvider provider, string script, object parameters)
-            : base(provider, script)
-        {
-            if (parameters == null)
-                return;
-
-            if (parameters is VAL)
-            {
-                foreach (var parameter in (VAL)parameters)
-                {
-                    AddParameter("@" + (string)parameter[0], parameter[1].HostValue);
-                }
-            }
-            else
-                foreach (var propertyInfo in parameters.GetType().GetProperties())
-                {
-                    AddParameter("@" + propertyInfo.Name, propertyInfo.GetValue(parameters));
-                }
-
-        }
 
         public SqlCmd(ConnectionProvider provider, string script)
             : base(provider, script)
@@ -59,10 +38,85 @@ namespace Sys.Data
         {
         }
 
+        public SqlCmd(string script, object parameters)
+         : this(ConnectionProviderManager.DefaultProvider, script)
+        {
+            ParseParameters(parameters);
+        }
+
         public SqlCmd(ISqlBuilder builder)
             : this(builder.Provider, builder.Clause)
-        { 
-        
+        {
+        }
+
+        public SqlCmd ParseParameters(object parameters)
+        {
+            if (parameters == null)
+                return this;
+
+            if (parameters is VAL)
+            {
+                foreach (var parameter in (VAL)parameters)
+                {
+                    AddParameter((string)parameter[0], parameter[1].HostValue);
+                }
+            }
+            //Dictionary
+            else if (parameters is IEnumerable<KeyValuePair<string, object>>)
+            {
+                var args = (IEnumerable<KeyValuePair<string, object>>)parameters;
+                foreach (var kvp in args)
+                {
+                    AddParameter(kvp.Key, kvp.Value);
+                }
+            }
+            //JSON
+            else if (parameters is string)
+            {
+                string args = (string)parameters;
+                if (string.IsNullOrEmpty(args))
+                    return this;
+
+                VAL val = Script.Evaluate(args);
+                if (val.IsAssociativeArray())
+                {
+                    foreach (var element in val)
+                    {
+                        if (element[0].Value is string)
+                        {
+                            string name = (string)element[0];
+                            object value = element[1].HostValue;
+
+                            AddParameter(name, value);
+                        }
+                    }
+                }
+                else
+                {
+                    throw new Exception($"invalid json parameters: {parameters}");
+                }
+            }
+            //DbParameters
+            else if (parameters is IEnumerable<IDataParameter>)
+            {
+                var args = (IEnumerable<IDataParameter>)parameters;
+                foreach (var arg in args)
+                {
+                    var p = AddParameter(arg.ParameterName, arg.Value);
+                    p.DbType = arg.DbType;
+                    p.Direction = arg.Direction;
+                }
+            }
+            else
+            {
+                var args = parameters.GetType().GetProperties().Where(p => p.CanRead);
+                foreach (var propertyInfo in args)
+                {
+                    AddParameter(propertyInfo.Name, propertyInfo.GetValue(parameters));
+                }
+            }
+
+            return this;
         }
 
 
@@ -81,21 +135,24 @@ namespace Sys.Data
 
             }
 
-            string connectionString = string.Format("data source={0};initial catalog={1};user id={2};password={3};persist security info=True;packet size=4096", 
+            string connectionString = string.Format("data source={0};initial catalog={1};user id={2};password={3};persist security info=True;packet size=4096",
                 serverName,
-                initialCatalog, 
-                userName, 
+                initialCatalog,
+                userName,
                 password);
 
-            ChangeConnection(new SqlDbConnectionProvider(serverName, connectionString) { Handle = base.provider.Handle } );
+            ChangeConnection(new SqlDbConnectionProvider(serverName, connectionString) { Handle = base.provider.Handle });
         }
 
-  
 
-     
+
+
 
         public DbParameter AddParameter(string parameterName, object value)
         {
+            if (!parameterName.StartsWith("@"))
+                parameterName = "@" + parameterName;
+
             DbParameter param = dbProvider.AddParameter(parameterName, value);
             return param;
         }
@@ -106,7 +163,7 @@ namespace Sys.Data
             get { return this.dbProvider; }
         }
 
-    
+
         public override DataSet FillDataSet(DataSet dataSet)
         {
             try
@@ -170,10 +227,10 @@ namespace Sys.Data
         }
 
 
-      
+
         public int ExecuteNonQueryTransaction()
         {
-            string splitter = TableScript.GO + "\r\n";
+            string splitter = TableScript.GO + Environment.NewLine;
             string[] clauses = base.script.Split(new string[] { splitter }, StringSplitOptions.RemoveEmptyEntries);
             return ExecuteNonQueryTransaction(clauses);
         }

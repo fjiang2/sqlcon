@@ -326,7 +326,7 @@ namespace sqlcon
                                 return true;
                             }
 
-                            DataSet ds = new SqlCmd(theSide.Provider, (string)result[0], result[1]).FillDataSet();
+                            DataSet ds = new SqlCmd(theSide.Provider, (string)result[0]).ParseParameters(result[1]).FillDataSet();
                             if (ds != null)
                             {
                                 foreach (DataTable dt in ds.Tables)

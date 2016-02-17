@@ -26,6 +26,7 @@ namespace Sys.Data
             command = (RiaDbCommand)this.SelectCommand;
             connection = (RiaDbConnection)command.Connection;
             provider = connection.Provider;
+            var parameters = this.GetFillParameters();
 
             RemoteInvoke agent = new RemoteInvoke(new Uri(provider.DataSource));
             string sql = command.CommandText;
