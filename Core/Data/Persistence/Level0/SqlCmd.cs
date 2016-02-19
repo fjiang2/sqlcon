@@ -32,12 +32,21 @@ namespace Sys.Data
         {
         }
 
-
+        /// <summary>
+        /// use default connection provider, use ConnectionProviderManager.RegisterDefaultProvider() to register
+        /// </summary>
+        /// <param name="script"></param>
         public SqlCmd(string script)
             : this(ConnectionProviderManager.DefaultProvider, script)
         {
         }
 
+        /// <summary>
+        /// use default connection provider, use ConnectionProviderManager.RegisterDefaultProvider() to register
+        /// parameters can be VAL, Dictionary, Json, DbParameter, and anonymous class
+        /// </summary>
+        /// <param name="script"></param>
+        /// <param name="parameters"></param>
         public SqlCmd(string script, object parameters)
          : this(ConnectionProviderManager.DefaultProvider, script)
         {
@@ -49,6 +58,11 @@ namespace Sys.Data
         {
         }
 
+        /// <summary>
+        /// parameters can be VAL, Dictionary, Json, DbParameter, and anonymous class
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         public SqlCmd ParseParameters(object parameters)
         {
             if (parameters == null)
@@ -118,33 +132,6 @@ namespace Sys.Data
 
             return this;
         }
-
-
-        public void ChangeConnection(string userName, string password)
-        {
-            string serverName = "";
-            string initialCatalog = "";
-            string[] L1 = connection.ConnectionString.Split(new char[] { ';' });
-            foreach (string s1 in L1)
-            {
-                string[] L2 = s1.Split(new char[] { '=' });
-                if (L2[0] == "data source")
-                    serverName = L2[1];
-                else if (L2[0] == "initial catalog")
-                    initialCatalog = L2[1];
-
-            }
-
-            string connectionString = string.Format("data source={0};initial catalog={1};user id={2};password={3};persist security info=True;packet size=4096",
-                serverName,
-                initialCatalog,
-                userName,
-                password);
-
-            ChangeConnection(new SqlDbConnectionProvider(serverName, connectionString) { Handle = base.provider.Handle });
-        }
-
-
 
 
 
