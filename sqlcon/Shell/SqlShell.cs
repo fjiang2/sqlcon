@@ -297,15 +297,15 @@ namespace sqlcon
                     }
 
                 case "copy":
-                    commandee.xcopy(cmd, CompareSideType.copy);
+                    commandee.copy(cmd, CompareSideType.copy);
                     return true;
 
                 case "sync":
-                    commandee.xcopy(cmd, CompareSideType.sync);
+                    commandee.copy(cmd, CompareSideType.sync);
                     return true;
 
                 case "comp":
-                    commandee.xcopy(cmd, CompareSideType.compare);
+                    commandee.copy(cmd, CompareSideType.compare);
                     return true;
 
                 //example: run func(id=20)

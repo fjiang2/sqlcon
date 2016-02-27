@@ -475,7 +475,7 @@ namespace sqlcon
 
 
 
-        public void xcopy(Command cmd, CompareSideType sideType)
+        public void copy(Command cmd, CompareSideType sideType)
         {
             if (cmd.HasHelp)
             {
