@@ -226,6 +226,9 @@ namespace sqlcon
                             stdio.WriteLine("copied to clipboard");
                         }
                     }
+                    else
+                        commandee.xcopy(cmd);
+
                     return true;
 
                 case "execute":

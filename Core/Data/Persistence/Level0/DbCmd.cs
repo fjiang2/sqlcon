@@ -152,9 +152,15 @@ namespace Sys.Data
             {
                 connection.Open();
                 DbDataReader reader = command.ExecuteReader();
-                action(reader);
-                
-                reader.Close();
+
+                try
+                {
+                    action(reader);
+                }
+                finally
+                {
+                    reader.Close();
+                }
             }
         }
 

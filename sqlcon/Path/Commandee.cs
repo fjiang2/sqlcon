@@ -910,7 +910,7 @@ namespace sqlcon
                 if (node != null)
                     mgr.RootNode.Nodes.Remove(node);
             }
-            
+
 
             cfg.Providers.Add(provider);
             mgr.RootNode.Nodes.Add(snode);
@@ -1004,8 +1004,72 @@ namespace sqlcon
                     return;
             }
 
-            
+
         }
 
+
+        public void xcopy(Command cmd)
+        {
+            if (cmd.HasHelp)
+            {
+                stdio.WriteLine("xcopy records from one server to another, support table/database name wildcards");
+                stdio.WriteLine("   table must have same structure");
+                stdio.WriteLine("xcopy database1 [database2]");
+                stdio.WriteLine("xcopy table1 [table2]");
+                return;
+            }
+
+            CancelableWork.CanCancel(cancelled =>
+            {
+                PathBothSide both = new PathBothSide(mgr, cmd);
+                var dname2 = mgr.GetPathFrom<DatabaseName>(both.ps2.Node);
+                if (both.ps1.MatchedTables == null)
+                    return CancelableState.Completed;
+
+                foreach (var tname1 in both.ps1.MatchedTables)
+                {
+                    if (cancelled())
+                        return CancelableState.Cancelled;
+
+                    TableName tname2 = mgr.GetPathFrom<TableName>(both.ps2.Node);
+                    if (tname2 == null)
+                    {
+                        tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
+                    }
+
+                    int count = new SqlCmd(tname1.Provider, $"SELECT COUNT(*) FROM {tname1.FullName}").FillObject<int>();
+
+                    Action<DbDataReader> export = reader =>
+                    {
+                        Console.Write("copying records from {0} to {1} ... ", tname1, tname2);
+
+                        int step = 0;
+                        using (var progress = new ProgressBar())
+                        {
+                            while (reader.Read())
+                            {
+                                step++;
+                                progress.Report((double)step / count);
+
+                                List<object> row = new List<object>();
+                                for (int i = 0; i < reader.FieldCount; i++)
+                                {
+                                    row.Add(reader.GetValue(i));
+                                }
+                            }
+
+                        }
+
+                        Console.WriteLine("Done.");
+                    };
+
+
+                    new SqlCmd(tname1.Provider, $"SELECT * FROM {tname1.FullName}").Execute(export);
+
+                }
+
+                return CancelableState.Completed;
+            });
+        }
     }
 }
