@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
+using System.Data.Common;
 using Sys.Data;
 
 namespace Sys.Data
@@ -29,18 +30,19 @@ namespace Sys.Data
     /// </summary>
     public class TableReader
     {
-        private DataTable table;
         private string sql;
-
+        private SqlCmd cmd;
+        private TableName tableName;
+        private DataTable table;
 
         internal TableReader(TableName tableName, string sql)
         {
             this.sql = sql;
-            SqlCmd cmd = new SqlCmd(tableName.Provider, sql);
-            this.table = cmd.FillDataTable();
+            this.tableName = tableName;
+            this.cmd = new SqlCmd(tableName.Provider, sql);
         }
 
-       
+
         /// <summary>
         /// read all records in the table defined
         /// </summary>
@@ -50,16 +52,6 @@ namespace Sys.Data
         {
         }
 
-        /// <summary>
-        /// read records by filiter
-        /// </summary>
-        /// <param name="tableName"></param>
-        /// <param name="where"></param>
-        /// <param name="args"></param>
-        public TableReader(TableName tableName, string where, params object[] args)
-            :this(tableName, string.Format("SELECT * FROM {0} WHERE {1}", tableName, string.Format(where, args)))
-        {
-        }
 
         /// <summary>
         /// read records by filter
@@ -68,10 +60,21 @@ namespace Sys.Data
         /// <param name="where"></param>
         public TableReader(TableName tableName, SqlExpr where)
             : this(tableName, new SqlBuilder().SELECT.COLUMNS().FROM(tableName).WHERE(where).Clause)
-        { 
-        
+        {
         }
-    
+
+
+        public int Count
+        {
+            get
+            {
+                var items = this.sql.ToUpper().Split(new string[] { "SELECT", "FROM" }, StringSplitOptions.RemoveEmptyEntries);
+                string query = sql.Replace(items[0], " COUNT(*) ");
+                object obj = new SqlCmd(tableName.Provider, query).ExecuteScalar();
+                return (int)obj;
+            }
+        }
+
         /// <summary>
         /// return data table retrieved from data base server
         /// </summary>
@@ -79,6 +82,11 @@ namespace Sys.Data
         {
             get
             {
+                if (table == null)
+                {
+                    this.table = cmd.FillDataTable();
+                }
+
                 return this.table;
             }
         }
@@ -88,10 +96,11 @@ namespace Sys.Data
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public List<T> ToList<T>() where T: class, IDPObject, new()
+        public List<T> ToList<T>() where T : class, IDPObject, new()
         {
             return new DPList<T>(this).ToList();
         }
+
 
         /// <summary>
         /// returns SQL clause
@@ -102,8 +111,87 @@ namespace Sys.Data
             return this.sql;
         }
 
+
+
+        public DataTable Read()
+        {
+            var receiver = new TableRowReceiver();
+            receiver.NewRow = (table) => table.NewRow();
+            receiver.AddRow = (table,row) => table.Rows.Add(row);
+
+            Read(receiver);
+            return receiver.Table;
+        }
+
+
+        public void Read(TableRowReceiver receiver)
+        {
+            Action<DbDataReader> export = reader =>
+            {
+                DataTable table = BuildTable(reader);
+                receiver.Table = table;
+
+                int step = 0;
+                while (reader.Read())
+                {
+                    DataRow row;
+                    while (reader.Read())
+                    {
+                        step++;
+                        if (receiver.Progress != null)
+                            receiver.Progress(step);
+
+                        if (receiver.NewRow != null)
+                        {
+                            row = receiver.NewRow(table);
+
+                            for (int i = 0; i < reader.FieldCount; i++)
+                            {
+                                row[i] = reader.GetValue(i);
+                            }
+
+                            if (receiver.AddRow != null)
+                                receiver.AddRow(table, row);
+                        }
+
+                    }
+
+                    table.AcceptChanges();
+                }
+            };
+
+            cmd.Execute(export);
+        }
+
+        private static DataTable BuildTable(DbDataReader reader)
+        {
+            DataTable table = new DataTable();
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                DataColumn column = new DataColumn(reader.GetName(i), reader.GetFieldType(i));
+                table.Columns.Add(column);
+            }
+
+            table.AcceptChanges();
+
+            return table;
+        }
     }
 
 
-    
+    public class TableRowReceiver
+    {
+        public DataTable Table { get; set; }
+        public Func<DataTable, DataRow> NewRow { get; set; }
+        public Action<DataTable, DataRow> AddRow { get; set; }
+
+        public Action<int> Progress { get; set; }
+
+        public TableRowReceiver()
+        {
+        }
+
+        
+    }
+
 }

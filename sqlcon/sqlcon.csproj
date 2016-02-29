@@ -138,7 +138,9 @@
   <ItemGroup>
     <Compile Include="Output\ConsoleGrid.cs" />
     <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\app.manifest" />
     <None Include="sqlcon_TemporaryKey.pfx" />
     <Content Include="user.cfg">

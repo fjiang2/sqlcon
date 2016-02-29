@@ -1037,38 +1037,29 @@ namespace sqlcon
                         tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
                     }
 
-                    int count = new SqlCmd(tname1.Provider, $"SELECT COUNT(*) FROM {tname1.FullName}").FillObject<int>();
+                    TableReader tableReader = new TableReader(tname1);
+                    int count = tableReader.Count;
 
-                    Action<DbDataReader> export = reader =>
+                    stdio.Write("copying #{0} records", count);
+                    using (var progress = new ProgressBar())
                     {
-                        Console.Write("copying records from {0} to {1} ... ", tname1, tname2);
-
-                        int step = 0;
-                        using (var progress = new ProgressBar())
-                        {
-                            while (reader.Read())
+                        DataRow newRow = null;
+                        tableReader.Read(
+                            new TableRowReceiver
                             {
-                                step++;
-                                progress.Report((double)step / count);
+                                Progress = step => progress.Report((double)step / count),
+                                NewRow = (table) => { if (newRow == null) newRow = table.NewRow(); return newRow; } ,
+                                AddRow = (table, row) => { Task.Delay(1); return; }
+                            });
 
-                                List<object> row = new List<object>();
-                                for (int i = 0; i < reader.FieldCount; i++)
-                                {
-                                    row.Add(reader.GetValue(i));
-                                }
-                            }
+                        progress.Report(1.0);
+                    }
 
-                        }
-
-                        Console.WriteLine("Done.");
-                    };
-
-
-                    new SqlCmd(tname1.Provider, $"SELECT * FROM {tname1.FullName}").Execute(export);
-
+                    stdio.WriteLine(", Done.");
                 }
 
                 return CancelableState.Completed;
+
             });
         }
     }

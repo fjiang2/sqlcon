@@ -57,17 +57,17 @@ namespace Sys.Data
             }
         }
 
-      
+
         public virtual void ChangeConnection(ConnectionProvider provider)
         {
             if (this.connection.State != ConnectionState.Closed)
                 this.connection.Close();
 
             this.dbProvider = provider.CreateDbProvider(this.script);
-            this.command.Connection = provider.NewDbConnection; 
+            this.command.Connection = provider.NewDbConnection;
         }
 
-           
+
 
         public void ChangeDatabase(string database)
         {
@@ -85,7 +85,7 @@ namespace Sys.Data
                 throw e.Exception;
         }
 
-       
+
         public object ExecuteScalar()
         {
 
@@ -146,23 +146,6 @@ namespace Sys.Data
 
 
 
-        public void Execute(Action<DbDataReader> action)
-        {
-            using (connection)
-            {
-                connection.Open();
-                DbDataReader reader = command.ExecuteReader();
-
-                try
-                {
-                    action(reader);
-                }
-                finally
-                {
-                    reader.Close();
-                }
-            }
-        }
 
         public abstract DataSet FillDataSet(DataSet dataSet);
         public abstract DataTable FillDataTable(DataSet dataSet, string tableName);
@@ -270,22 +253,43 @@ namespace Sys.Data
                 return default(T);
         }
 
-        public DataTable ReadDataTable()
+        public void Execute(Action<DbDataReader> action)
         {
-            try
+            Execute<object>(reader => { action(reader); return null; });
+        }
+
+
+        public T Execute<T>(Func<DbDataReader, T> func)
+        {
+            using (connection)
             {
                 connection.Open();
-                DbDataReader reader = this.command.ExecuteReader();
-
-                DataTable table = new DataTable();
-                for (int i = 0; i < reader.FieldCount; i++)
-                {
-                    DataColumn column = new DataColumn(reader.GetName(i), reader.GetFieldType(i));
-                    table.Columns.Add(column);
-                }
+                DbDataReader reader = command.ExecuteReader();
 
                 try
                 {
+                    return func(reader);
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+        }
+
+        internal DataTable ReadDataTable()
+        {
+            Func<DbDataReader, DataTable> func = reader =>
+            {
+                DataTable table = new DataTable();
+                try
+                {
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        DataColumn column = new DataColumn(reader.GetName(i), reader.GetFieldType(i));
+                        table.Columns.Add(column);
+                    }
+
                     DataRow row;
                     while (reader.Read())
                     {
@@ -297,25 +301,18 @@ namespace Sys.Data
 
                         table.Rows.Add(row);
                     }
+
+                    table.AcceptChanges();
+                    return table;
                 }
-                finally
+                catch (Exception ex)
                 {
-                    reader.Close();
+                    OnError(new SqlExceptionEventArgs(command, ex));
                 }
+                return null;
+            };
 
-                table.AcceptChanges();
-                return table;
-            }
-            catch (Exception ex)
-            {
-                OnError(new SqlExceptionEventArgs(command, ex));
-            }
-            finally
-            {
-                connection.Close();
-            }
-
-            return null;
+            return Execute(func);
         }
 
         public override string ToString()

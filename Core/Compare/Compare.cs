@@ -124,7 +124,7 @@ namespace Sys.Data.Comparison
         private static string GenerateRows(TableSchema schema, TableReader reader)
         {
 
-            var table = reader.Table; ;
+            var table = reader.Table; 
 
             TableScript script = new TableScript(schema);
 
