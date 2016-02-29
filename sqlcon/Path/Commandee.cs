@@ -1040,6 +1040,8 @@ namespace sqlcon
                     TableReader tableReader = new TableReader(tname1);
                     int count = tableReader.Count;
 
+                    TableWriter tableWriter = new TableWriter(tname2);
+
                     stdio.Write("copying #{0} records", count);
                     using (var progress = new ProgressBar())
                     {
@@ -1049,7 +1051,7 @@ namespace sqlcon
                             {
                                 Progress = step => progress.Report((double)step / count),
                                 NewRow = (table) => { if (newRow == null) newRow = table.NewRow(); return newRow; } ,
-                                AddRow = (table, row) => { Task.Delay(1); return; }
+                                AddRow = (table, row) => { tableWriter.Insert(row); return; }
                             });
 
                         progress.Report(1.0);

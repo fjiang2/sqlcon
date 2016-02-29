@@ -28,25 +28,21 @@ namespace Sys.Data
     /// </summary>
     public class TableWriter
     {
-        private DataTable dataTable;
-        private TableName tableName;
         private Locator locator;
+        private TableSchema schema;
 
         /// <summary>
         /// use default locator to save records into database, primary keys must be defined
         /// </summary>
         /// <param name="tableName"></param>
-        /// <param name="dataTable"></param>
-        public TableWriter(TableName tableName, DataTable dataTable)
+        public TableWriter(TableName tableName)
         {
-            this.tableName = tableName;
-            this.dataTable = dataTable;
+            this.schema = tableName.GetTableSchema();
 
-            IPrimaryKeys primary = this.tableName.GetTableSchema().PrimaryKeys;
+            IPrimaryKeys primary = schema.PrimaryKeys;
             if (primary.Length != 0)
                 this.locator = new Locator(primary);
-            else
-                throw new MessageException("There is no locator defined.");
+
         }
 
         /// <summary>
@@ -54,33 +50,35 @@ namespace Sys.Data
         /// </summary>
         /// <param name="tableName"></param>
         /// <param name="locator"></param>
-        /// <param name="dataTable"></param>
-        public TableWriter(TableName tableName, Locator locator, DataTable dataTable)
+        public TableWriter(TableName tableName, Locator locator)
         {
-            this.tableName = tableName;
-            this.dataTable = dataTable;
+            this.schema = tableName.GetTableSchema();
             this.locator = locator;
-
         }
 
-        /// <summary>
-        /// return data table
-        /// </summary>
-        public DataTable Table
+        public TableName TableName
         {
-            get
-            {
-                return this.dataTable;
-            }
+            get { return this.schema.TableName; }
         }
 
+
+        TableScript tableScript = null;
+        public void Insert(DataRow row)
+        {
+            if (tableScript == null)
+                tableScript = new TableScript(schema);
+
+            string sql = tableScript.INSERT(row);
+
+            new SqlCmd(TableName.Provider, sql).ExecuteNonQuery();
+        }
 
         /// <summary>
         /// save records into database
         /// </summary>
-        public void Save()
+        public void Save(DataTable table)
         {
-            TableAdapter.WriteDataTable(dataTable, this.tableName, this.locator, null, null, null);
+            TableAdapter.WriteDataTable(table, TableName, this.locator, null, null, null);
         }
 
         /// <summary>
@@ -89,7 +87,8 @@ namespace Sys.Data
         /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("TableWriter<{0}> Count={1}", this.tableName.FullName, this.dataTable.Rows.Count);
+            return string.Format("TableWriter<{0}>", TableName.FullName);
         }
     }
 }
+
