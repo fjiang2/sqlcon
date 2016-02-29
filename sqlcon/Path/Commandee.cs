@@ -7,7 +7,7 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Data.OleDb;
 using System.Data;
-using System.Text.RegularExpressions;
+using System.Threading;
 using Sys;
 using Sys.Data;
 using Sys.Data.Comparison;
@@ -499,17 +499,17 @@ namespace sqlcon
                 return;
             }
 
-            CancelableWork.CanCancel(cancelled =>
+            CancelableWork.CanCancel(cts =>
             {
                 PathBothSide both = new PathBothSide(mgr, cmd);
                 var dname2 = mgr.GetPathFrom<DatabaseName>(both.ps2.Node);
                 if (both.ps1.MatchedTables == null)
-                    return CancelableState.Completed;
+                    return;
 
                 foreach (var tname1 in both.ps1.MatchedTables)
                 {
-                    if (cancelled())
-                        return CancelableState.Cancelled;
+                    if (cts.IsCancellationRequested)
+                        return;
 
                     TableName tname2 = mgr.GetPathFrom<TableName>(both.ps2.Node);
                     if (tname2 == null)
@@ -555,12 +555,12 @@ namespace sqlcon
                         catch (Exception ex)
                         {
                             stdio.ErrorFormat(ex.Message);
-                            return CancelableState.Completed;
+                            return;
                         }
                     }
                 } // loop for
 
-                return CancelableState.Completed;
+                return;
             });
         }
 
@@ -716,12 +716,12 @@ namespace sqlcon
                 var m = new MatchedDatabase(dname, cmd.wildcard, cfg.compareExcludedTables);
                 var T = m.MatchedTableNames;
 
-                CancelableWork.CanCancel(cancelled =>
+                CancelableWork.CanCancel(cts =>
                 {
                     foreach (var tn in T)
                     {
-                        if (cancelled())
-                            return CancelableState.Cancelled;
+                        if (cts.IsCancellationRequested)
+                            return;
 
                         if (cmd.Has("d"))
                         {
@@ -743,7 +743,7 @@ namespace sqlcon
 
                     }
 
-                    return CancelableState.Completed;
+
                 });
 
                 return;
@@ -1019,48 +1019,46 @@ namespace sqlcon
                 return;
             }
 
-            CancelableWork.CanCancel(cancelled =>
+            CancelableWork.CanCancel(cts =>
             {
                 PathBothSide both = new PathBothSide(mgr, cmd);
                 var dname2 = mgr.GetPathFrom<DatabaseName>(both.ps2.Node);
                 if (both.ps1.MatchedTables == null)
-                    return CancelableState.Completed;
+                    return;
 
                 foreach (var tname1 in both.ps1.MatchedTables)
                 {
-                    if (cancelled())
-                        return CancelableState.Cancelled;
+                    if (cts.IsCancellationRequested)
+                        return;
 
                     TableName tname2 = mgr.GetPathFrom<TableName>(both.ps2.Node);
                     if (tname2 == null)
-                    {
                         tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
+
+                    string result = Compare.TableSchemaDifference(CompareSideType.compare, tname1, tname2);
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        stdio.ErrorFormat("destination table is not compatible");
+                        continue;
                     }
 
                     TableReader tableReader = new TableReader(tname1);
                     int count = tableReader.Count;
 
-                    TableWriter tableWriter = new TableWriter(tname2);
-
-                    stdio.Write("copying #{0} records", count);
-                    using (var progress = new ProgressBar())
+                    stdio.Write("copying ");
+                    using (var progress = new ProgressBar { Count = count })
                     {
-                        DataRow newRow = null;
-                        tableReader.Read(
-                            new TableRowReceiver
-                            {
-                                Progress = step => progress.Report((double)step / count),
-                                NewRow = (table) => { if (newRow == null) newRow = table.NewRow(); return newRow; } ,
-                                AddRow = (table, row) => { tableWriter.Insert(row); return; }
-                            });
+                        TableBulkCopy bulkCopy = new TableBulkCopy(tableReader);
+                        bulkCopy.CopyTo(tname2, cts, progress);
 
-                        progress.Report(1.0);
+                        if (cts.IsCancellationRequested)
+                            progress.Report(count);
                     }
 
-                    stdio.WriteLine(", Done.");
+                    if (!cts.IsCancellationRequested)
+                        stdio.WriteLine(", Done.");
                 }
 
-                return CancelableState.Completed;
 
             });
         }

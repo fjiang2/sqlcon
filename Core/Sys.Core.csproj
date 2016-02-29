@@ -274,6 +274,7 @@
     <Compile Include="Networking\RemoteInvoke.cs" />
     <Compile Include="Networking\RemoteOutputBlock.cs" />
     <Compile Include="Networking\RemoteProxy.cs" />
+    <Compile Include="Data\Persistence\TableBulkCopy.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

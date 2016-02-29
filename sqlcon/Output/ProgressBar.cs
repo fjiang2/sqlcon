@@ -10,7 +10,7 @@ namespace sqlcon
     /// <summary>
     /// An ASCII progress bar
     /// </summary>
-    public class ProgressBar : IDisposable, IProgress<double>
+    public class ProgressBar : IDisposable, IProgress<double>, IProgress<int>
     {
         private const int blockCount = 10;
         private readonly TimeSpan animationInterval = TimeSpan.FromSeconds(1.0 / 8);
@@ -43,6 +43,20 @@ namespace sqlcon
             Interlocked.Exchange(ref currentProgress, value);
         }
 
+
+        public int Step { get; set; }
+        public int Count { get; set; } = -1;
+
+        public void Report(int step)
+        {
+            this.Step = step;
+            double value = (double)step / Count;
+
+            // Make sure value is in [0..1] range
+            value = Math.Max(0, Math.Min(1, value));
+            Interlocked.Exchange(ref currentProgress, value);
+        }
+
         private void TimerHandler(object state)
         {
             lock (timer)
@@ -55,6 +69,10 @@ namespace sqlcon
                     new string('#', progressBlockCount), new string('-', blockCount - progressBlockCount),
                     percent,
                     animation[animationIndex++ % animation.Length]);
+
+                if (Count != -1)
+                    text = $"{Step}/{Count} {text} ";
+
                 UpdateText(text);
 
                 ResetTimer();
@@ -102,6 +120,8 @@ namespace sqlcon
                 disposed = true;
                 UpdateText(string.Empty);
             }
+            if (timer != null)
+                timer.Dispose();
         }
 
     }

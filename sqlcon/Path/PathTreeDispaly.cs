@@ -37,12 +37,12 @@ namespace sqlcon
             int i = 0;
             int count = 0;
             int h = 0;
-            CancelableWork.CanCancel(cancelled =>
+            CancelableWork.CanCancel(cts =>
             {
                 foreach (var node in pt.Nodes)
                 {
-                    if (cancelled())
-                        return CancelableState.Cancelled;
+                    if (cts.IsCancellationRequested)
+                        return;
 
                     ServerName sname = (ServerName)node.Item;
                     ++i;
@@ -61,7 +61,7 @@ namespace sqlcon
                 }
 
                 stdio.WriteLine("\t{0} Server(s)", count);
-                return  CancelableState.Completed;
+
             });
 
             return true;

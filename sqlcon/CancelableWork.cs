@@ -2,49 +2,38 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace sqlcon
 {
-    enum CancelableState
-    {
-        NotStarted,
-        Cancelled,
-        Completed,
-        OnError
-    }
-
+   
     class CancelableWork
     {
-        /// <summary>
-        /// use ctrl-c to break long running work, return true if cancelled
-        /// </summary>
-        /// <param name="work"></param>
-        /// <param name="message">interrupted message</param>
-        /// <returns>return true: cancelled, return false: not cancelled</returns>
-        public static CancelableState CanCancel(Func<Func<bool>, CancelableState> work, string message = null)
+        public static void CanCancel(Action<CancellationTokenSource> work, string message = null)
         {
-            CancelableState cancelled = CancelableState.NotStarted;
+            CancellationTokenSource cts = new CancellationTokenSource();
+
             ConsoleCancelEventHandler cancelKeyPress = (sender, e) =>
                 {
                     e.Cancel = true;
-                    cancelled = CancelableState.Cancelled;
+                    cts.Cancel();
                     Console.WriteLine("command interrupting...");
                 };
 
             Console.CancelKeyPress += cancelKeyPress;
 
-            CancelableState result;
+            
             try
             {
-                result = work(() => cancelled == CancelableState.Cancelled);
+                work(cts);
             }
             finally
             {
                 Console.CancelKeyPress -= cancelKeyPress;
             }
 
-            if (result == CancelableState.Cancelled)
+            if (cts.Token.IsCancellationRequested)
             {
                 if (message == null)
                     message = "command interrupted";
@@ -52,7 +41,8 @@ namespace sqlcon
                 Console.WriteLine(message);
             }
 
-            return result;
+            cts.Dispose();
+
         }
     }
 }

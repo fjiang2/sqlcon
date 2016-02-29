@@ -64,12 +64,12 @@ namespace sqlcon
             builder.AppendFormat("-- compare server={0} db={1}", Side1.Provider.DataSource, dname1.Name).AppendLine();
             builder.AppendFormat("--         server={0} db={1} @ {2}", Side2.Provider.DataSource, dname2.Name, DateTime.Now).AppendLine();
 
-            CancelableWork.CanCancel(cancelled =>
+            CancelableWork.CanCancel(cts =>
             {
                 foreach (var tname1 in N1)
                 {
-                    if (cancelled())
-                        return CancelableState.Cancelled;
+                    if (cts.IsCancellationRequested)
+                        return;
 
                     TableName tname2 = N2.Where(t => t.ShortName == tname1.ShortName).FirstOrDefault();
                     if (tname2 == null)
@@ -99,7 +99,7 @@ namespace sqlcon
                         }
                     }
                 }
-                return CancelableState.Completed;
+                
             });
 
             return builder.ToString();

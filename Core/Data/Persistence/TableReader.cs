@@ -21,6 +21,7 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.Common;
+using System.Threading;
 using Sys.Data;
 
 namespace Sys.Data
@@ -30,8 +31,9 @@ namespace Sys.Data
     /// </summary>
     public class TableReader
     {
+        internal SqlCmd cmd;
+
         private string sql;
-        private SqlCmd cmd;
         private TableName tableName;
         private DataTable table;
 
@@ -113,18 +115,18 @@ namespace Sys.Data
 
 
 
-        public DataTable Read()
+        public DataTable Read(CancellationTokenSource cts)
         {
             var receiver = new TableRowReceiver();
             receiver.NewRow = (table) => table.NewRow();
             receiver.AddRow = (table,row) => table.Rows.Add(row);
 
-            Read(receiver);
+            Read(receiver, cts);
             return receiver.Table;
         }
 
 
-        public void Read(TableRowReceiver receiver)
+        public void Read(TableRowReceiver receiver, CancellationTokenSource cts)
         {
             Action<DbDataReader> export = reader =>
             {
@@ -138,6 +140,7 @@ namespace Sys.Data
                     while (reader.Read())
                     {
                         step++;
+
                         if (receiver.Progress != null)
                             receiver.Progress(step);
 
@@ -154,6 +157,8 @@ namespace Sys.Data
                                 receiver.AddRow(table, row);
                         }
 
+                        if (cts.IsCancellationRequested)
+                            break;
                     }
 
                     table.AcceptChanges();

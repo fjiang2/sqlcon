@@ -141,12 +141,12 @@ namespace sqlcon
                 {
                     var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportExcludedTables);
                     TableName[] tnames = md.MatchedTableNames;
-                    CancelableWork.CanCancel(cancelled =>
+                    CancelableWork.CanCancel(cts =>
                     {
                         foreach (var tn in tnames)
                         {
-                            if (cancelled())
-                                return CancelableState.Cancelled;
+                            if (cts.IsCancellationRequested)
+                                return;
 
                             if (!cfg.exportExcludedTables.IsMatch(tn.ShortName))
                             {
@@ -167,7 +167,7 @@ namespace sqlcon
                                 stdio.WriteLine("{0,10} skipped", tn.ShortName);
                         }
                         stdio.WriteLine("completed");
-                        return CancelableState.Completed;
+                        
                     });
                 }
             }
@@ -210,19 +210,20 @@ namespace sqlcon
             {
                 stdio.WriteLine("start to generate {0}", dname);
                 var mt = new MatchedDatabase(dname, cmd.wildcard, cfg.exportExcludedTables);
-                CancelableWork.CanCancel(cancelled =>
+                CancelableWork.CanCancel(cts =>
                 {
                     foreach (var tname in mt.MatchedTableNames)
                     {
-                        if (cancelled())
-                            return CancelableState.Cancelled;
+                        if (cts.IsCancellationRequested)
+                            return;
+
 
                         stdio.WriteLine("start to generate {0}", tname);
                         var dt = new SqlBuilder().SELECT.TOP(cmd.top).COLUMNS().FROM(tname).SqlCmd.FillDataTable();
                         var file = xml.Write(tname, dt);
                         stdio.WriteLine("completed {0} => {1}", tname.ShortName, file);
                     }
-                    return CancelableState.Completed;
+                    return;
                 }
                );
 
@@ -263,14 +264,16 @@ namespace sqlcon
             else if (dname != null)
             {
                 stdio.WriteLine("start to generate database {0} class to directory: {1}", dname, option.OutputPath);
-                CancelableWork.CanCancel(cancelled =>
+                CancelableWork.CanCancel(cts =>
                 {
                     var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportExcludedTables);
                     TableName[] tnames = md.MatchedTableNames;
                     foreach (var tn in tnames)
                     {
-                        if (cancelled())
-                            return CancelableState.Cancelled;
+                        if (cts.IsCancellationRequested)
+                            return;
+
+
                         try
                         {
                             var clss = new DpoGenerator(tn) { Option = option };
@@ -284,7 +287,7 @@ namespace sqlcon
                     }
 
                     stdio.WriteLine("completed");
-                    return CancelableState.Completed;
+                    return;
                 });
             }
             else
@@ -315,14 +318,15 @@ namespace sqlcon
             else if (dname != null)
             {
                 stdio.WriteLine("start to generate {0} csv to directory: {1}", dname, path);
-                CancelableWork.CanCancel(cancelled =>
+                CancelableWork.CanCancel(cts =>
                 {
                     var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportExcludedTables);
                     TableName[] tnames = md.MatchedTableNames;
                     foreach (var tn in tnames)
                     {
-                        if (cancelled())
-                            return CancelableState.Cancelled;
+                        if (cts.IsCancellationRequested)
+                            return;
+
                         try
                         {
                             file = fullName(tn);
@@ -340,7 +344,7 @@ namespace sqlcon
                     }
 
                     stdio.WriteLine("completed");
-                    return CancelableState.Completed;
+                    return;
                 });
             }
             else
