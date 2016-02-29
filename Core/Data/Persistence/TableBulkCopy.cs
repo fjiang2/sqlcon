@@ -24,12 +24,10 @@ namespace Sys.Data
 
         public void CopyTo(TableName tname2, CancellationTokenSource cts, IProgress<int> progress)
         {
-            int count = tableReader.Count;
-
             DataTable table = new DataTable();
             Action<DbDataReader> export = reader =>
             {
-                table = BuildTable(reader);
+                table = TableReader.BuildTable(reader);
                 table.TableName = tname2.Name;
 
                 int step = 0;
@@ -78,19 +76,6 @@ namespace Sys.Data
                 bulkCopy.DestinationTableName = table.TableName;
                 bulkCopy.WriteToServer(table);
             }
-        }
-        private static DataTable BuildTable(DbDataReader reader)
-        {
-            DataTable table = new DataTable();
-            for (int i = 0; i < reader.FieldCount; i++)
-            {
-                DataColumn column = new DataColumn(reader.GetName(i), reader.GetFieldType(i));
-                table.Columns.Add(column);
-            }
-
-            table.AcceptChanges();
-
-            return table;
         }
     }
 }

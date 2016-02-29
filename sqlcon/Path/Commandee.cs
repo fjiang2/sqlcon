@@ -1012,7 +1012,7 @@ namespace sqlcon
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("xcopy records from one server to another, support table/database name wildcards");
+                stdio.WriteLine("xcopy large size records, support table/database name wildcards");
                 stdio.WriteLine("   table must have same structure");
                 stdio.WriteLine("xcopy database1 [database2]");
                 stdio.WriteLine("xcopy table1 [table2]");
@@ -1058,8 +1058,6 @@ namespace sqlcon
                     if (!cts.IsCancellationRequested)
                         stdio.WriteLine(", Done.");
                 }
-
-
             });
         }
     }

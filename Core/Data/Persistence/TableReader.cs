@@ -113,25 +113,12 @@ namespace Sys.Data
             return this.sql;
         }
 
-
-
-        public DataTable Read(CancellationTokenSource cts)
+        public DataTable Read(CancellationTokenSource cts, IProgress<int> progress)
         {
-            var receiver = new TableRowReceiver();
-            receiver.NewRow = (table) => table.NewRow();
-            receiver.AddRow = (table,row) => table.Rows.Add(row);
-
-            Read(receiver, cts);
-            return receiver.Table;
-        }
-
-
-        public void Read(TableRowReceiver receiver, CancellationTokenSource cts)
-        {
+            DataTable table = new DataTable();
             Action<DbDataReader> export = reader =>
             {
-                DataTable table = BuildTable(reader);
-                receiver.Table = table;
+                table = BuildTable(reader);
 
                 int step = 0;
                 while (reader.Read())
@@ -141,21 +128,16 @@ namespace Sys.Data
                     {
                         step++;
 
-                        if (receiver.Progress != null)
-                            receiver.Progress(step);
+                        progress?.Report(step);
 
-                        if (receiver.NewRow != null)
+                        row = table.NewRow();
+
+                        for (int i = 0; i < reader.FieldCount; i++)
                         {
-                            row = receiver.NewRow(table);
-
-                            for (int i = 0; i < reader.FieldCount; i++)
-                            {
-                                row[i] = reader.GetValue(i);
-                            }
-
-                            if (receiver.AddRow != null)
-                                receiver.AddRow(table, row);
+                            row[i] = reader.GetValue(i);
                         }
+
+                        table.Rows.Add(row);
 
                         if (cts.IsCancellationRequested)
                             break;
@@ -166,9 +148,11 @@ namespace Sys.Data
             };
 
             cmd.Execute(export);
+
+            return table;
         }
 
-        private static DataTable BuildTable(DbDataReader reader)
+        internal static DataTable BuildTable(DbDataReader reader)
         {
             DataTable table = new DataTable();
             for (int i = 0; i < reader.FieldCount; i++)
@@ -183,20 +167,5 @@ namespace Sys.Data
         }
     }
 
-
-    public class TableRowReceiver
-    {
-        public DataTable Table { get; set; }
-        public Func<DataTable, DataRow> NewRow { get; set; }
-        public Action<DataTable, DataRow> AddRow { get; set; }
-
-        public Action<int> Progress { get; set; }
-
-        public TableRowReceiver()
-        {
-        }
-
-        
-    }
 
 }
