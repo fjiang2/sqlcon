@@ -153,6 +153,11 @@ namespace Sys.Data
                 }
             }
         }
+
+        public string GenerateClause()
+        {
+            return new DatabaseClause(this).GenerateClause();
+        }
         public override string ToString()
         {
             return string.Format("{0}\\{1}", this.ServerName, this.name);

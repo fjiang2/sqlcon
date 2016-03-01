@@ -23,7 +23,7 @@ using Sys.Data.Comparison;
 
 namespace Sys.Data
 {
-    public class DatabaseClause
+    class DatabaseClause
     {
         DatabaseName databaseName;
 
@@ -58,7 +58,7 @@ namespace Sys.Data
                 Console.WriteLine("generate CREATE TABLE {0}", tableName.FormalName);
                 try
                 {
-                    builder.AppendLine(tableName.GenerateScript());
+                    builder.AppendLine(tableName.GenerateCluase());
                 }
                 catch (Exception ex)
                 {
@@ -69,7 +69,7 @@ namespace Sys.Data
             return builder.ToString();
         }
 
-        public string GenerateDropTableClause()
+        private string GenerateDropTableClause()
         {
             TableName[] history = databaseName.GetDependencyTableNames();
             StringBuilder builder = new StringBuilder();

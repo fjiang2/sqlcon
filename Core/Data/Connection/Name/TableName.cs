@@ -198,7 +198,7 @@ namespace Sys.Data
         }
 
 
-        public string GenerateScript(bool if_drop = false)
+        public string GenerateCluase(bool if_drop = false)
         {
             TableSchema schema = new TableSchema(this);
             var script = new TableClause(schema);

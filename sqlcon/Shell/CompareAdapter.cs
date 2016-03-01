@@ -89,7 +89,7 @@ namespace sqlcon
                     {
                         if (compareType == ActionType.CompareSchema)
                         {
-                            string sql = tname1.GenerateScript();
+                            string sql = tname1.GenerateCluase();
                             stdio.WriteLine(sql);
                             builder.Append(sql);
                         }
