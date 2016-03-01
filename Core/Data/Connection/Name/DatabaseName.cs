@@ -17,7 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Data;
 
 namespace Sys.Data
 {
@@ -81,7 +81,78 @@ namespace Sys.Data
             return this.name.ToLower().Equals(dname.name.ToLower()) && this.ServerName.Equals(dname.ServerName);
         }
 
+        public bool Exists()
+        {
+            return Provider.Schema.Exists(this);
+        }
 
+        public DataTable DatabaseSchema()
+        {
+            return Provider.Schema.GetDatabaseSchema(this);
+        }
+
+
+        public TableName[] GetTableNames()
+        {
+            return Provider.Schema.GetTableNames(this);
+        }
+
+
+        public TableName[] GetViewNames()
+        {
+            return Provider.Schema.GetViewNames(this);
+        }
+
+
+        public TableName[] GetDependencyTableNames()
+        {
+            var dt = Provider
+                .Schema.GetDependencySchema(this)
+                .AsEnumerable();
+
+            var dict = dt.GroupBy(
+                    row => new TableName(this, (string)row["FK_SCHEMA"], (string)row["FK_Table"]),
+                    (Key, rows) => new
+                    {
+                        FkTable = Key,
+                        PkTables = rows.Select(row => new TableName(this, (string)row["PK_SCHEMA"], (string)row["PK_Table"])).ToArray()
+                    })
+                .ToDictionary(row => row.FkTable, row => row.PkTables);
+
+
+            TableName[] names = this.GetTableNames();
+
+            List<TableName> history = new List<TableName>();
+
+            foreach (var tname in names)
+            {
+                if (history.IndexOf(tname) < 0)
+                    Iterate(tname, dict, history);
+            }
+
+            return history.ToArray();
+        }
+
+        private static void Iterate(TableName tableName, Dictionary<TableName, TableName[]> dict, List<TableName> history)
+        {
+            if (!dict.ContainsKey(tableName))
+            {
+                if (history.IndexOf(tableName) < 0)
+                {
+                    history.Add(tableName);
+                }
+            }
+            else
+            {
+                foreach (var name in dict[tableName])
+                    Iterate(name, dict, history);
+
+                if (history.IndexOf(tableName) < 0)
+                {
+                    history.Add(tableName);
+                }
+            }
+        }
         public override string ToString()
         {
             return string.Format("{0}\\{1}", this.ServerName, this.name);

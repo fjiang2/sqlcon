@@ -62,7 +62,7 @@ namespace Sys.Data.Comparison
                 .ToArray();
 
             StringBuilder builder = new StringBuilder();
-            TableScript script = new TableScript(schema1);
+            TableClause script = new TableClause(schema1);
 
             List<DataRow> R2 = new List<DataRow>();
             foreach (DataRow row1 in table1.Rows)
@@ -98,7 +98,7 @@ namespace Sys.Data.Comparison
             }
 
             if (builder.ToString() != string.Empty && SideType == CompareSideType.compare)
-                builder.AppendLine(TableScript.GO);
+                builder.AppendLine(TableClause.GO);
 
             return builder.ToString();
         }

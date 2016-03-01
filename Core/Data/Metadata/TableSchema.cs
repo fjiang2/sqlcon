@@ -162,40 +162,7 @@ namespace Sys.Data
         {
             return new Locator(this.PrimaryKeys);
         }
-
-
-
-    
-
-        internal static string GenerateCREATE_TABLE(ITable table)
-        {
-            string fields = string.Join(",\r\n", table.Columns.Select(column => "\t" + Sys.Data.ColumnSchema.GetSQLField(column)));
-            return CREATE_TABLE(fields, table.PrimaryKeys);
-
-        }
-
-
-
-        public static string CREATE_TABLE(string fields, IPrimaryKeys primary)
-        {
-
-            string primaryKey = "";
-            if (primary.Length > 0)
-                primaryKey = string.Format("\tPRIMARY KEY({0})", string.Join(",", primary.Keys.Select(key => string.Format("[{0}]", key))));
-
-
-            string SQL = @"
-CREATE TABLE {0}
-(
-{1}
-{2}
-) 
-";
-            return string.Format(SQL, "{0}", fields, primaryKey);
-        }
-
-
-     
+        
     }
 
 

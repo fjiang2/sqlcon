@@ -76,10 +76,8 @@ namespace sqlcon
             {
                 stdio.WriteLine("start to generate {0} CREATE TABLE script to file: {1}", tname, fileName);
                 using (var writer = fileName.NewStreamWriter())
-                {
-                    writer.WriteLine(tname.IF_EXISTS_DROP_TABLE());
-                    writer.WriteLine("GO");
-                    writer.WriteLine(tname.GenerateScript());
+                { 
+                    writer.WriteLine(tname.GenerateScript(true));
                 }
                 stdio.WriteLine("completed");
             }
@@ -88,7 +86,7 @@ namespace sqlcon
                 stdio.WriteLine("start to generate {0} script to file: {1}", dname, fileName);
                 using (var writer = fileName.NewStreamWriter())
                 {
-                    writer.WriteLine(dname.GenerateScript());
+                    writer.WriteLine(new DatabaseClause(dname).GenerateClause());
                 }
                 stdio.WriteLine("completed");
             }

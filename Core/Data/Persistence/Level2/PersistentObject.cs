@@ -364,7 +364,7 @@ namespace Sys.Data
                     }
                 }
 
-                return TableSchema.CREATE_TABLE(f, this.Primary); 
+                return TableClause.CREATE_TABLE(f, this.Primary); 
             }
         }
 

@@ -17,7 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Data;
 
 namespace Sys.Data
 {
@@ -74,6 +74,18 @@ namespace Sys.Data
         {
             ServerName dname = (ServerName)obj;
             return this.provider.Equals(dname.provider);
+        }
+
+
+        public DataSet ServerSchema()
+        {
+            return Provider.Schema.GetServerSchema(this);
+        }
+
+
+        public DatabaseName[] GetDatabaseNames()
+        {
+            return Provider.Schema.GetDatabaseNames();
         }
 
         public override string ToString()

@@ -126,14 +126,14 @@ namespace Sys.Data.Comparison
 
             var table = reader.Table; 
 
-            TableScript script = new TableScript(schema);
+            TableClause script = new TableClause(schema);
 
             StringBuilder builder = new StringBuilder();
             foreach (DataRow row in table.Rows)
                 builder.Append(script.INSERT(row)).AppendLine();
 
             if (table.Rows.Count > 0)
-                builder.AppendLine(TableScript.GO);
+                builder.AppendLine(TableClause.GO);
 
             return builder.ToString();
         }
@@ -146,7 +146,7 @@ namespace Sys.Data.Comparison
                 sql = string.Format("SELECT * FROM {0} WHERE {1}", tableName, where);
 
             SqlCmd cmd = new SqlCmd(tableName.Provider, sql);
-            TableScript script = new TableScript(schema);
+            TableClause script = new TableClause(schema);
 
             int count = 0;
             cmd.Execute(
@@ -169,7 +169,7 @@ namespace Sys.Data.Comparison
 
                             count++;
                             if (count % 5000 == 0)
-                                writer.WriteLine(TableScript.GO);
+                                writer.WriteLine(TableClause.GO);
 
                         }
                         reader.NextResult();
@@ -177,7 +177,7 @@ namespace Sys.Data.Comparison
                 });
 
             if (count != 0)
-                writer.WriteLine(TableScript.GO);
+                writer.WriteLine(TableClause.GO);
 
             return count;
         }
@@ -185,7 +185,7 @@ namespace Sys.Data.Comparison
         public static string GenerateTemplate(TableSchema schema, SqlScriptType type)
         {
             TableName tableName = schema.TableName;
-            TableScript script = new TableScript(schema);
+            TableClause script = new TableClause(schema);
             switch (type)
             {
                 case SqlScriptType.INSERT:

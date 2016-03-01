@@ -16,8 +16,8 @@
 //--------------------------------------------------------------------------------------------------//
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using System.Data;
 
 namespace Sys.Data
 {
@@ -184,6 +184,31 @@ namespace Sys.Data
         public ConnectionProvider Provider
         {
             get { return this.baseName.Provider; }
+        }
+
+        public bool Exists()
+        {
+            return Provider.Schema.Exists(this);
+        }
+
+
+        public DataTable TableSchema()
+        {
+            return Provider.Schema.GetTableSchema(this);
+        }
+
+
+        public string GenerateScript(bool if_drop = false)
+        {
+            TableSchema schema = new TableSchema(this);
+            var script = new TableClause(schema);
+
+            StringBuilder builder = new StringBuilder();
+            if (if_drop)
+                builder.Append(script.IF_EXISTS_DROP_TABLE())
+                    .AppendLine(TableClause.GO);
+
+            return script.GenerateScript();
         }
     }
 }

@@ -169,9 +169,9 @@
     <Compile Include="Data\Metadata\InformationSchema.cs" />
     <Compile Include="Data\Metadata\ITable.cs" />
     <Compile Include="Data\Metadata\PrimaryKeys.cs" />
-    <Compile Include="Data\Metadata\Schema.cs" />
+    <Compile Include="Data\Metadata\DatabaseClause.cs" />
     <Compile Include="Data\Metadata\TableSchema.cs" />
-    <Compile Include="Data\Metadata\TableScript.cs" />
+    <Compile Include="Data\Metadata\TableClause.cs" />
     <Compile Include="Data\Persistence\DataExtension.cs" />
     <Compile Include="Data\Persistence\Level0\DbCmd.cs" />
     <Compile Include="Data\DbProvider\DbProvider.cs" />

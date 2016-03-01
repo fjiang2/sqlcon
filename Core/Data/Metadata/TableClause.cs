@@ -8,14 +8,14 @@ using Sys.Data.Comparison;
 
 namespace Sys.Data
 {
-    class TableScript
+    class TableClause
     {
         public static readonly string GO = "GO";
 
         private TableSchema schema;
         private TableName tableName;
 
-        public TableScript(TableSchema schema)
+        public TableClause(TableSchema schema)
         {
             this.schema = schema;
             this.tableName = schema.TableName;
@@ -144,7 +144,7 @@ namespace Sys.Data
         public string CREATE_TABLE()
         {
             TableSchema schema1 = new TableSchema(tableName);
-            string format = TableSchema.GenerateCREATE_TABLE(schema1);
+            string format = TableClause.GenerateCREATE_TABLE(schema1);
             string script = string.Format(format, tableName.FormalName);
             return script;
         }
@@ -250,8 +250,69 @@ IF NOT EXISTS(SELECT * FROM @@0 WHERE @@1)
         {
             get { return string.Format("DELETE FROM {0} WHERE {1}", tableName.FormalName, "{0}"); }
         }
-        
+
         #endregion
+
+
+        public string GenerateScript()
+        {
+            string sql;
+            sql = CREATE_TABLE();
+
+            StringBuilder builder = new StringBuilder(sql);
+
+            var fk1 = schema.ForeignKeys;
+            if (fk1.Keys.Length > 0)
+            {
+                foreach (var fk in fk1.Keys)
+                {
+                    builder.AppendLine(ADD_FOREIGN_KEY(fk));
+                }
+
+            }
+
+            sql = builder.ToString();
+            return sql;
+        }
+
+
+        public string IF_EXISTS_DROP_TABLE()
+        {
+            string drop =
+@"IF OBJECT_ID('{0}') IS NOT NULL
+  DROP TABLE {1}
+";
+            StringBuilder builder = new StringBuilder();
+            builder.AppendFormat(drop, tableName.Name, tableName.FormalName);
+            return builder.ToString();
+        }
+
+
+
+        internal static string GenerateCREATE_TABLE(ITable table)
+        {
+            string fields = string.Join(",\r\n", table.Columns.Select(column => "\t" + Sys.Data.ColumnSchema.GetSQLField(column)));
+            return CREATE_TABLE(fields, table.PrimaryKeys);
+
+        }
+
+        public static string CREATE_TABLE(string fields, IPrimaryKeys primary)
+        {
+
+            string primaryKey = "";
+            if (primary.Length > 0)
+                primaryKey = string.Format("\tPRIMARY KEY({0})", string.Join(",", primary.Keys.Select(key => string.Format("[{0}]", key))));
+
+
+            string SQL = @"
+CREATE TABLE {0}
+(
+{1}
+{2}
+) 
+";
+            return string.Format(SQL, "{0}", fields, primaryKey);
+        }
 
     }
 }

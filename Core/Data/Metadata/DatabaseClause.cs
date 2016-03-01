@@ -14,81 +14,73 @@
 //                                                                                                  //
 //                                                                                                  //
 //--------------------------------------------------------------------------------------------------//
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
+using Sys.Data.Comparison;
 
 namespace Sys.Data
 {
-    /// <summary>
-    /// write records of data table into database
-    /// </summary>
-    public class TableWriter
+    public class DatabaseClause
     {
-        private Locator locator;
-        private TableSchema schema;
+        DatabaseName databaseName;
 
-        /// <summary>
-        /// use default locator to save records into database, primary keys must be defined
-        /// </summary>
-        /// <param name="tableName"></param>
-        public TableWriter(TableName tableName)
+        public DatabaseClause(DatabaseName databaseName)
         {
-            this.schema = tableName.GetTableSchema();
-
-            IPrimaryKeys primary = schema.PrimaryKeys;
-            if (primary.Length != 0)
-                this.locator = new Locator(primary);
-
+            this.databaseName = databaseName;
         }
 
-        /// <summary>
-        /// use user defined locator to save records into database
-        /// </summary>
-        /// <param name="tableName"></param>
-        /// <param name="locator"></param>
-        public TableWriter(TableName tableName, Locator locator)
+        public void CreateDatabase()
         {
-            this.schema = tableName.GetTableSchema();
-            this.locator = locator;
-        }
-
-        public TableName TableName
-        {
-            get { return this.schema.TableName; }
+            new SqlCmd(databaseName.Provider, $"CREATE DATABASE {databaseName.Name}").ExecuteNonQuery();
         }
 
 
-        TableClause tableScript = null;
-        public void Insert(DataRow row)
+        public string GenerateClause()
         {
-            if (tableScript == null)
-                tableScript = new TableClause(schema);
-
-            string sql = tableScript.INSERT(row);
-
-            new SqlCmd(TableName.Provider, sql).ExecuteNonQuery();
+            StringBuilder builder = new StringBuilder();
+            builder.Append(GenerateDropTableClause());
+            builder.Append(GenerateScript_());
+            return builder.ToString();
         }
 
-        /// <summary>
-        /// save records into database
-        /// </summary>
-        public void Save(DataTable table)
+
+
+        private string GenerateScript_()
         {
-            TableAdapter.WriteDataTable(table, TableName, this.locator, null, null, null);
+            StringBuilder builder = new StringBuilder();
+            TableName[] history = databaseName.GetDependencyTableNames();
+
+            foreach (var tableName in history)
+            {
+                Console.WriteLine("generate CREATE TABLE {0}", tableName.FormalName);
+                try
+                {
+                    builder.AppendLine(tableName.GenerateScript());
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("failed to generate CREATE TABLE {0},{1}", tableName.FormalName, ex.Message);
+                }
+            }
+
+            return builder.ToString();
         }
 
-        /// <summary>
-        /// return TableWriter description
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
+        public string GenerateDropTableClause()
         {
-            return string.Format("TableWriter<{0}>", TableName.FullName);
+            TableName[] history = databaseName.GetDependencyTableNames();
+            StringBuilder builder = new StringBuilder();
+            foreach (var tableName in history.Reverse())
+            {
+                builder.AppendLine(new TableClause(new TableSchema(tableName)).IF_EXISTS_DROP_TABLE())
+                    .AppendLine(TableClause.GO);
+            }
+
+            return builder.ToString();
         }
+
     }
 }
-

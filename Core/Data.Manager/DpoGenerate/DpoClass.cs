@@ -316,7 +316,7 @@ namespace Sys.Data.Manager
             cons.args.Add<DataRow>("row");
             cons.baseArgs = new string[] { "row" };
 
-            SQL_CREATE_TABLE_STRING = Sys.Data.TableSchema.GenerateCREATE_TABLE(metaTable);
+            SQL_CREATE_TABLE_STRING = TableClause.GenerateCREATE_TABLE(metaTable);
 
             if (option.HasTableAttribute)
             {

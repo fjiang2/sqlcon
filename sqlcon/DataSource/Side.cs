@@ -50,7 +50,7 @@ namespace sqlcon
 
         public string GenerateScript()
         {
-            return DatabaseName.GenerateScript();
+            return new DatabaseClause(DatabaseName).GenerateClause();
         }
 
         public bool ExecuteScript(string scriptFile)

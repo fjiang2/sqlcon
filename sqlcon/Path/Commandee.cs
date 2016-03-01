@@ -1038,14 +1038,14 @@ namespace sqlcon
                     string result = Compare.TableSchemaDifference(CompareSideType.compare, tname1, tname2);
                     if (!string.IsNullOrEmpty(result))
                     {
-                        stdio.ErrorFormat("destination table is not compatible");
+                        stdio.ErrorFormat("destination table is not compatible or doesn't exist");
                         continue;
                     }
 
                     TableReader tableReader = new TableReader(tname1);
                     int count = tableReader.Count;
 
-                    stdio.Write("copying ");
+                    stdio.Write("copying {0}", tname1.Name);
                     using (var progress = new ProgressBar { Count = count })
                     {
                         TableBulkCopy bulkCopy = new TableBulkCopy(tableReader);
