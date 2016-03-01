@@ -211,7 +211,7 @@ namespace sqlcon
                         stdio.ErrorFormat("find object undefined");
                     return true;
 
-                case "xcopy":
+                case "save":
                     if (cmd.arg1 == "output")
                     {
                         if (!File.Exists(this.cfg.OutputFile))
@@ -226,10 +226,8 @@ namespace sqlcon
                             stdio.WriteLine("copied to clipboard");
                         }
                     }
-                    else
-                        commandee.xcopy(cmd);
-
                     return true;
+
 
                 case "execute":
                     {
@@ -309,6 +307,10 @@ namespace sqlcon
 
                 case "comp":
                     commandee.copy(cmd, CompareSideType.compare);
+                    return true;
+
+                case "xcopy":
+                    commandee.xcopy(cmd);
                     return true;
 
                 //example: run func(id=20)
@@ -577,6 +579,7 @@ namespace sqlcon
             stdio.WriteLine("ren,rename /?           : see more info");
             stdio.WriteLine("copy /?                 : see more info");
             stdio.WriteLine("comp /?                 : see more info");
+            stdio.WriteLine("xcopy /?                : see more info");
             stdio.WriteLine("echo                    : display message");
             stdio.WriteLine("rem                     : records comments/remarks");
             stdio.WriteLine("ver                     : display version");
@@ -602,7 +605,7 @@ namespace sqlcon
             stdio.WriteLine("<show var>              : show variable list");
             stdio.WriteLine("<run> query(..)         : run predefined query. e.g. run query(var1=val1,...);");
             stdio.WriteLine("<sync table1 table2>    : synchronize, make table2 is the same as table1");
-            stdio.WriteLine("<xcopy output>          : copy sql script ouput to clipboard");
+            stdio.WriteLine("<save output>           : copy sql script ouput to clipboard");
             stdio.WriteLine("<execute inputfile>     : execute sql script file");
             stdio.WriteLine("<execute variable /s>   : execute script file list defined on the configuration file");
             stdio.WriteLine();

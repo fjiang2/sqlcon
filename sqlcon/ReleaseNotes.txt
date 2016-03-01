@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+2/29/2016 v1.4.0.0
+	New Features:
+	1. xcopy large size data table using BulkCopy and display progress bar
+
 2/7/2016 v1.3.3.0
 	New Features:
 	1. Add CopyTo, Clone, CompareTo extension methods to Data contract class
