@@ -22,15 +22,15 @@ namespace Sys.Data
         }
 
 
-        public void CopyTo(TableName tname2, CancellationTokenSource cts, IProgress<int> progress)
+        public int CopyTo(TableName tname2, CancellationTokenSource cts, IProgress<int> progress)
         {
             DataTable table = new DataTable();
+            int step = 0;
+
             Action<DbDataReader> export = reader =>
             {
                 table = TableReader.BuildTable(reader);
-                table.TableName = tname2.Name;
-
-                int step = 0;
+               
                 DataRow row;
 
                 while (reader.Read())
@@ -60,11 +60,14 @@ namespace Sys.Data
 
             tableReader.cmd.Execute(export);
 
+            return step;
         }
 
         private static void BulkCopy(DataTable table, TableName tname2)
         {
             table.AcceptChanges();
+            table.TableName = tname2.Name;
+
             BulkCopy(table, tname2.Provider.ConnectionString);
             table.Clear();
         }
@@ -75,6 +78,24 @@ namespace Sys.Data
             {
                 bulkCopy.DestinationTableName = table.TableName;
                 bulkCopy.WriteToServer(table);
+            }
+        }
+
+
+        /// <summary>
+        /// return number of records copied
+        /// </summary>
+        /// <param name="tname1"></param>
+        /// <param name="tname2"></param>
+        /// <returns></returns>
+        public static int Copy(TableName tname1, TableName tname2)
+        {
+            var reader = new TableReader(tname1);
+            var bulkcopy = new TableBulkCopy(reader);
+
+            using (var cts = new CancellationTokenSource())
+            {
+               return bulkcopy.CopyTo(tname2, cts, null);
             }
         }
     }
