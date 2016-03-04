@@ -244,8 +244,8 @@ namespace sqlcon
                 stdio.WriteLine("del tablename               : drop table");
                 stdio.WriteLine("del [sql where clause]      : delete current table filtered rows");
                 stdio.WriteLine("example:");
-                stdio.WriteLine(@"local> del Northwind\Products       : drop table Products");
-                stdio.WriteLine(@"local\Northwind\Products> del       : delete all rows of table Products");
+                stdio.WriteLine(@"local> del Northwind\Products       : drop table [Products]");
+                stdio.WriteLine(@"local\Northwind\Products> del       : delete all rows of table [Products]");
                 stdio.WriteLine(@"local\Northwind\Products> del col1=1 and col2='match' : del rows matched on columns:c1 or c2");
                 return;
             }
@@ -568,14 +568,69 @@ namespace sqlcon
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("rename column name, table name and database name");
-                stdio.WriteLine("ren table1 table2");
+                stdio.WriteLine("rename column name, table name, modify column");
+                stdio.WriteLine();
+                stdio.WriteLine("ren [database] newdatasbase   : rename database or current database to newdatabase");
+                stdio.WriteLine("ren [table] newtable          : rename table or current table to newtable");
+                stdio.WriteLine("ren column newcolumn          : rename column on current table to newcolumn");
+                stdio.WriteLine();
                 return;
             }
 
             if (cmd.arg1 == null)
             {
                 stdio.ErrorFormat("invalid argument");
+                return;
+            }
+        }
+
+        public void attrib(Command cmd)
+        {
+            if (cmd.HasHelp)
+            {
+                stdio.WriteLine("update column property");
+                stdio.WriteLine("add primary key, foreign key or identity key");
+                stdio.WriteLine("attrib [table] /col:col1=varchar(20)[/null]        : add column or alter column");
+                stdio.WriteLine("attrib [table] /primary  /col:col1,col2            : add primary key");
+                stdio.WriteLine("attrib [table] /identity /col:col1                 : add identity");
+                stdio.WriteLine("attrib [table] /foreign  /col:col1->table2.col2    : add foreign key");
+                return;
+            }
+
+            if (!Navigate(cmd.Path1))
+                return;
+
+
+            if (pt.Item is TableName)
+            {
+                TableName fkName = (TableName)pt.Item;
+                if (cmd.Has("foreign"))
+                {
+                    string expr = cmd.GetValue("col");
+                    string[] items = expr.Split(new string[] { "->" }, StringSplitOptions.RemoveEmptyEntries);
+                    if (items.Length != 2)
+                    {
+                        stdio.ErrorFormat("invalid foreign key expression:{0}, correct is col1->pktable.col2", expr);
+                        return;
+                    }
+
+                    string fkColumn = items[0];
+                    items = items[1].Split('.');
+
+                    if (items.Length != 2)
+                    {
+                        stdio.ErrorFormat("invalid foreign key expression:{0}, correct is col1->pktable.col2", expr);
+                        return;
+                    }
+
+                    string pkName = items[0];
+                    string pkColumn = items[1];
+
+                    //check fkColumn, pkColumn is valid
+
+                    string SQL = $"TABLE {fkName.Name} CONSTRAINT FK_{fkName.Name}_{pkName} FOREIGN KEY({fkColumn}) REFERENCES {pkName}({pkColumn})";
+                    new SqlCmd(fkName.Provider, SQL).ExecuteNonQuery();
+                }
                 return;
             }
         }

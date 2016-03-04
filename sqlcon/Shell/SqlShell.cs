@@ -186,6 +186,10 @@ namespace sqlcon
                     commandee.rename(cmd);
                     return true;
 
+                case "attrib":
+                    commandee.attrib(cmd);
+                    return true;
+
                 case "echo":
                     stdio.WriteLine(text);
                     return true;
@@ -577,6 +581,7 @@ namespace sqlcon
             stdio.WriteLine("set /?                  : see more info");
             stdio.WriteLine("del,erase /?            : see more info");
             stdio.WriteLine("ren,rename /?           : see more info");
+            stdio.WriteLine("attrib /?               : see more info");
             stdio.WriteLine("copy /?                 : see more info");
             stdio.WriteLine("comp /?                 : see more info");
             stdio.WriteLine("xcopy /?                : see more info");
