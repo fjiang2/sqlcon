@@ -38,8 +38,10 @@ namespace sqlcon
         public readonly bool ToCSharp;
 
         public readonly int top;
+       // public readonly Options optionPlus = new Options();
+       // public readonly Options optionMinus = new Options();
 
-        private List<string> options = new List<string>();
+        public readonly Options options = new Options();
         private readonly string columns;
 
         public Command(string line, Configuration cfg)
@@ -108,7 +110,7 @@ namespace sqlcon
                             break;
 
                         case "/pk":
-                             HasPrimaryKey = true;
+                            HasPrimaryKey = true;
                             break;
 
                         case "/fk":
@@ -145,10 +147,14 @@ namespace sqlcon
                             else if (a.StartsWith("/col:"))
                                 columns = a.Substring(5);
                             else
-                                options.Add(a.Substring(1));
+                                options.Add(a);
 
                             break;
                     }
+                }
+                else if (a.StartsWith("+") || a.StartsWith("-"))
+                {
+                    options.Add(a);
                 }
                 else
                 {
@@ -163,18 +169,12 @@ namespace sqlcon
 
         public bool Has(string name)
         {
-            return options.IndexOf(name) >= 0;
+            return options.Has('/', name);
         }
 
         public string GetValue(string name)
         {
-            var result = options.FirstOrDefault(row => row.StartsWith(name + ":"));
-            if (result == null)
-                return null;
-
-            var items = result.Split(':');
-
-            return items[1];
+            return options.GetValue('/', name);
         }
 
         public PathName Path1

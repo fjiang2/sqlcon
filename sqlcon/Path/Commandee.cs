@@ -588,12 +588,21 @@ namespace sqlcon
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("update column property");
+                stdio.WriteLine("command attrib: update column property");
                 stdio.WriteLine("add primary key, foreign key or identity key");
-                stdio.WriteLine("attrib [table] /col:col1=varchar(20)[/null]        : add column or alter column");
-                stdio.WriteLine("attrib [table] /primary  /col:col1,col2            : add primary key");
-                stdio.WriteLine("attrib [table] /identity /col:col1                 : add identity");
-                stdio.WriteLine("attrib [table] /foreign  /col:col1->table2.col2    : add foreign key");
+                stdio.WriteLine("columns:");
+                stdio.WriteLine("  attrib [table] +c:col1=varchar(2)/null : add column or alter column");
+                stdio.WriteLine("  attrib [table] +c:col1=varchar(10)     : add column or alter column");
+                stdio.WriteLine("  attrib [table] -c:col1                 : remove column");
+                stdio.WriteLine("primary keys:");
+                stdio.WriteLine("  attrib [table] +p:col1,col2            : add primary key");
+                stdio.WriteLine("  attrib [table] +p:col1,col2            : remove primary key");
+                stdio.WriteLine("foreign keys:");
+                stdio.WriteLine("  attrib [table] +f:col1->table2.col2    : add foreign key");
+                stdio.WriteLine("  attrib [table] -f:col1                 : remove foreign key");
+                stdio.WriteLine("identiy key:");
+                stdio.WriteLine("  attrib [table] +i:col1                 : add identity");
+                stdio.WriteLine("  attrib [table] -i:col1                 : remove identity");
                 return;
             }
 
@@ -603,10 +612,10 @@ namespace sqlcon
 
             if (pt.Item is TableName)
             {
-                TableName fkName = (TableName)pt.Item;
-                if (cmd.Has("foreign"))
+                if (cmd.options.Has("+f"))
                 {
-                    string expr = cmd.GetValue("col");
+                    TableName fkName = (TableName)pt.Item;
+                    string expr = cmd.options.GetValue("+f");
                     string[] items = expr.Split(new string[] { "->" }, StringSplitOptions.RemoveEmptyEntries);
                     if (items.Length != 2)
                     {
@@ -628,8 +637,15 @@ namespace sqlcon
 
                     //check fkColumn, pkColumn is valid
 
-                    string SQL = $"TABLE {fkName.Name} CONSTRAINT FK_{fkName.Name}_{pkName} FOREIGN KEY({fkColumn}) REFERENCES {pkName}({pkColumn})";
+                    string SQL = $"ALTER TABLE [{fkName.Name}] ADD CONSTRAINT [FK_{fkName.Name}_{pkName}] FOREIGN KEY([{fkColumn}]) REFERENCES [{pkName}]([{pkColumn}])";
                     new SqlCmd(fkName.Provider, SQL).ExecuteNonQuery();
+                }
+                else if (cmd.options.Has("+p"))
+                {
+                    TableName tname = (TableName)pt.Item;
+                    string expr = cmd.options.GetValue("+p");
+                    string SQL = $"ALTER TABLE [{tname.Name}] ADD PRIMARY KEY(expr)";
+                    new SqlCmd(tname.Provider, SQL).ExecuteNonQuery();
                 }
                 return;
             }

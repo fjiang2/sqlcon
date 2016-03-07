@@ -101,6 +101,7 @@
     <Compile Include="Data\CsvFile.cs" />
     <Compile Include="Data\DuplicatedTable.cs" />
     <Compile Include="Input\KeyValueTable.cs" />
+    <Compile Include="Input\Options.cs" />
     <Compile Include="Input\PathName.cs" />
     <Compile Include="Output\ProgressBar.cs" />
     <Compile Include="Path\PathBothSide.cs" />
