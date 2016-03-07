@@ -591,14 +591,14 @@ namespace sqlcon
                 stdio.WriteLine("command attrib: update column property");
                 stdio.WriteLine("add primary key, foreign key or identity key");
                 stdio.WriteLine("columns:");
-                stdio.WriteLine("  attrib [table] +c:col1=varchar(2)/null : add column or alter column");
+                stdio.WriteLine("  attrib [table] +c:col1=varchar(2)+null : add column or alter column");
                 stdio.WriteLine("  attrib [table] +c:col1=varchar(10)     : add column or alter column");
                 stdio.WriteLine("  attrib [table] -c:col1                 : remove column");
                 stdio.WriteLine("primary keys:");
                 stdio.WriteLine("  attrib [table] +p:col1,col2            : add primary key");
                 stdio.WriteLine("  attrib [table] +p:col1,col2            : remove primary key");
                 stdio.WriteLine("foreign keys:");
-                stdio.WriteLine("  attrib [table] +f:col1->table2.col2    : add foreign key");
+                stdio.WriteLine("  attrib [table] +f:col1=table2.col2     : add foreign key");
                 stdio.WriteLine("  attrib [table] -f:col1                 : remove foreign key");
                 stdio.WriteLine("identiy key:");
                 stdio.WriteLine("  attrib [table] +i:col1                 : add identity");
@@ -610,45 +610,95 @@ namespace sqlcon
                 return;
 
 
-            if (pt.Item is TableName)
+            if (!(pt.Item is TableName))
             {
-                if (cmd.options.Has("+f"))
-                {
-                    TableName fkName = (TableName)pt.Item;
-                    string expr = cmd.options.GetValue("+f");
-                    string[] items = expr.Split(new string[] { "->" }, StringSplitOptions.RemoveEmptyEntries);
-                    if (items.Length != 2)
-                    {
-                        stdio.ErrorFormat("invalid foreign key expression:{0}, correct is col1->pktable.col2", expr);
-                        return;
-                    }
-
-                    string fkColumn = items[0];
-                    items = items[1].Split('.');
-
-                    if (items.Length != 2)
-                    {
-                        stdio.ErrorFormat("invalid foreign key expression:{0}, correct is col1->pktable.col2", expr);
-                        return;
-                    }
-
-                    string pkName = items[0];
-                    string pkColumn = items[1];
-
-                    //check fkColumn, pkColumn is valid
-
-                    string SQL = $"ALTER TABLE [{fkName.Name}] ADD CONSTRAINT [FK_{fkName.Name}_{pkName}] FOREIGN KEY([{fkColumn}]) REFERENCES [{pkName}]([{pkColumn}])";
-                    new SqlCmd(fkName.Provider, SQL).ExecuteNonQuery();
-                }
-                else if (cmd.options.Has("+p"))
-                {
-                    TableName tname = (TableName)pt.Item;
-                    string expr = cmd.options.GetValue("+p");
-                    string SQL = $"ALTER TABLE [{tname.Name}] ADD PRIMARY KEY(expr)";
-                    new SqlCmd(tname.Provider, SQL).ExecuteNonQuery();
-                }
+                stdio.ErrorFormat("table is not selected");
                 return;
             }
+
+
+            if (cmd.options.Has("+c"))
+            {
+                TableName tname = (TableName)pt.Item;
+                string expr = cmd.options.GetValue("+c");
+                string[] items = expr.Split(new string[] { "=", "+" }, StringSplitOptions.RemoveEmptyEntries);
+                if (items.Length != 2 && items.Length != 3)
+                {
+                    stdio.ErrorFormat("invalid expression:{0}, correct is col1=type or col1=type+null", expr);
+                    return;
+                }
+                string column = items[0];
+                string type = items[1];
+                string nullable = "NOT NULL";
+                if (items.Length == 3 && items[2] == "null")
+                    nullable = "NULL";
+
+                string SQL;
+                var schema = new TableSchema(tname);
+
+                if (schema.Columns.Where(c => c.ColumnName.ToLower() == column.ToLower()).Count() != 0)
+                    SQL = $"ALTER TABLE [{tname.Name}] ALTER COLUMN {column} {type} {nullable}";
+                else
+                    SQL = $"ALTER TABLE [{tname.Name}] ADD {column} {type} {nullable}";
+
+                new SqlCmd(tname.Provider, SQL).ExecuteNonQuery();
+                return;
+            }
+
+            if (cmd.options.Has("-c"))
+            {
+                TableName tname = (TableName)pt.Item;
+                string column = cmd.options.GetValue("-c");
+                string SQL = $"ALTER TABLE [{tname.Name}] DROP COLUMN {column}";
+                new SqlCmd(tname.Provider, SQL).ExecuteNonQuery();
+                return;
+            }
+
+            if (cmd.options.Has("+f"))
+            {
+                TableName fkName = (TableName)pt.Item;
+                string expr = cmd.options.GetValue("+f");
+                string[] items = expr.Split(new string[] { "=", "." }, StringSplitOptions.RemoveEmptyEntries);
+                if (items.Length != 3)
+                {
+                    stdio.ErrorFormat("invalid foreign key expression:{0}, correct is col1->pktable.col2", expr);
+                    return;
+                }
+
+                string fkColumn = items[0];
+                string pkName = items[1];
+                string pkColumn = items[2];
+
+                //check fkColumn, pkColumn is valid
+
+                string SQL = $"ALTER TABLE [{fkName.Name}] ADD CONSTRAINT [FK_{fkName.Name}_{pkName}] FOREIGN KEY([{fkColumn}]) REFERENCES [{pkName}]([{pkColumn}])";
+                new SqlCmd(fkName.Provider, SQL).ExecuteNonQuery();
+                return;
+            }
+
+            if (cmd.options.Has("+p"))
+            {
+                TableName tname = (TableName)pt.Item;
+                string expr = cmd.options.GetValue("+p");
+                string SQL = $"ALTER TABLE [{tname.Name}] ADD PRIMARY KEY(expr)";
+                new SqlCmd(tname.Provider, SQL).ExecuteNonQuery();
+                return;
+            }
+
+            if (cmd.options.Has("+i"))
+            {
+                TableName tname = (TableName)pt.Item;
+                string column = cmd.options.GetValue("+i");
+                string SQL = @"
+ALTER TABLE {0} ADD {1} INT IDENTITY(1, 1)
+ALTER TABLE {0} DROP COLUMN {2}
+sp_rename '{1}', '{2}', 'COLUMN'";
+                string.Format(SQL, tname.Name, $"_{column}_", column);
+                new SqlCmd(tname.Provider, SQL).ExecuteNonQuery();
+                return;
+            }
+
+
         }
 
         public void let(Command cmd)
