@@ -96,7 +96,7 @@ namespace sqlcon
                     sent.AppendLine(line);
                 }
 
-                sent.End(");");
+                sent.End(").ToList();");
             }
 
             {
