@@ -58,7 +58,10 @@ namespace sqlcon
         {
             return list.Where(item => item.Prefix == prefix && item.Name == name).Count() > 0;
         }
-
+        public bool HasOnly(char prefix, string name)
+        {
+            return list.Where(item => item.Prefix == prefix && item.Name == name && item.Value == null).Count() > 0;
+        }
 
         public string GetValue(string arg)
         {
@@ -70,7 +73,7 @@ namespace sqlcon
 
         public string GetValue(char prefix, string name)
         {
-            return list.Where(item => item.Prefix == prefix && item.Name == name ).Select(item=>item.Value).FirstOrDefault();
+            return list.Where(item => item.Prefix == prefix && item.Name == name).Select(item => item.Value).FirstOrDefault();
         }
     }
 }

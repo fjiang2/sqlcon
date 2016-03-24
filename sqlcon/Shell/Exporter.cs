@@ -21,7 +21,6 @@ namespace sqlcon
         private TableName tname;
         private DatabaseName dname;
         private ServerName sname;
-        private string MyDocuments;
 
         XmlDbFile xml;
         public Exporter(PathManager mgr, TreeNode<IDataPath> pt, Configuration cfg)
@@ -49,7 +48,6 @@ namespace sqlcon
                 this.sname = (ServerName)pt.Item;
             }
 
-            MyDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\sqlcon";
         }
 
         public void ExportScud(SqlScriptType type)
@@ -241,7 +239,7 @@ namespace sqlcon
             DpoOption option = new DpoOption();
 
             option.NameSpace = cfg.GetValue<string>("dpo.ns", "Sys.DataModel.Dpo");
-            option.OutputPath = cfg.GetValue<string>("dpo.path", $"{MyDocuments}\\dpo");
+            option.OutputPath = cfg.GetValue<string>("dpo.path", $"{Configuration.MyDocuments}\\dpo");
             option.Level = cfg.GetValue<Level>("dpo.level", Level.Application);
             option.HasProvider = cfg.GetValue<bool>("dpo.hasProvider", false);
             option.HasTableAttribute = cfg.GetValue<bool>("dpo.hasTableAttr", true);
@@ -297,7 +295,7 @@ namespace sqlcon
 
         public void ExportCsvFile(Command cmd)
         {
-            string path = cfg.GetValue<string>("csv.path", $"{MyDocuments}\\csv");
+            string path = cfg.GetValue<string>("csv.path", $"{Configuration.MyDocuments}\\csv");
 
             string file;
             Func<TableName, string> fullName = tname => $"{path}\\{sname.Path}\\{dname.Name}\\{tname.ShortName}.csv";
@@ -368,7 +366,7 @@ namespace sqlcon
 
 
 
-            string path = cfg.GetValue<string>("dc.path", $"{MyDocuments}\\dpo");
+            string path = cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
             string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("dc.ns", "Sys.DataContracts");
             string clss = cmd.GetValue("class") ?? cfg.GetValue<string>("dc.class", "DataContract");
             string mtd = cmd.GetValue("method");
@@ -401,7 +399,7 @@ namespace sqlcon
                 return;
             }
 
-            string path = cfg.GetValue<string>("enum.path", $"{MyDocuments}\\enum");
+            string path = cfg.GetValue<string>("enum.path", $"{Configuration.MyDocuments}\\enum");
             string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("enum.ns", "Sys.DataEnum");
 
             CSharpBuilder builder = new CSharpBuilder()

@@ -55,7 +55,15 @@ namespace sqlcon
             Script.FunctionChain.Add(functions);
             HostType.Register(typeof(DateTime), true);
             HostType.Register(typeof(Environment), true);
-            Cfg.AddObject("MyDocuments", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+            Cfg.AddObject("MyDocuments", MyDocuments);
+        }
+
+        public static string MyDocuments
+        {
+            get
+            {
+                return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\sqlcon";
+            }
         }
 
         private static VAL functions(string func, VAL parameters, Memory DS)

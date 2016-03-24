@@ -1094,6 +1094,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("   log              : open log file");
                 stdio.WriteLine("   output           : open output file");
                 stdio.WriteLine("   config [/s]      : open user configure file, /s open system configurate");
+                stdio.WriteLine("   dc               : open data contract class output directory");
                 stdio.WriteLine("   release          : open release notes");
 
                 return;
@@ -1118,6 +1119,19 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
                 case "release":
                     stdio.OpenEditor("ReleaseNotes.txt");
+                    break;
+
+                case "dc":
+                    string path = cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
+                    if (System.IO.Directory.Exists(path))
+                    {
+                        var process = new System.Diagnostics.Process();
+                        process.StartInfo.FileName = "Explorer";
+                        process.StartInfo.Arguments = path;
+                        process.Start();
+                    }
+                    else
+                        stdio.ErrorFormat("data contract class path not exist: {0}", path);
                     break;
 
                 default:

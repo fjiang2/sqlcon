@@ -169,7 +169,7 @@ namespace sqlcon
 
         public bool Has(string name)
         {
-            return options.Has('/', name);
+            return options.HasOnly('/', name);
         }
 
         public string GetValue(string name)

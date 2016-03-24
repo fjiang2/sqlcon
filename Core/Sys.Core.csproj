@@ -135,6 +135,8 @@
     <Compile Include="Data\Connection\Name\DatabaseName.cs" />
     <Compile Include="Data\Connection\Name\ServerName.cs" />
     <Compile Include="Data\Connection\Name\TableName.cs" />
+    <Compile Include="Data\DataContract\DataContractTable.cs" />
+    <Compile Include="Data\DataContract\IDataContractRow.cs" />
     <Compile Include="Data\DbProvider\OleDb\OleDbServer.cs" />
     <Compile Include="Data\DbProvider\DbSchemaProvider.cs" />
     <Compile Include="Data\DbProvider\RiaDb\RiaDbConnectionProvider.cs" />

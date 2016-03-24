@@ -28,13 +28,13 @@ namespace Sys
         LFU     //Least Frequently Used (LFU), Those that are used least often are discarded first.
     }
 
-    class DataItem<T> where T : class
+    class PoolItem<T> where T : class
     {
         T t;
         public DateTime age;
         public long hit;
 
-        public DataItem(T t)
+        public PoolItem(T t)
         {
             this.t = t;
             this.age = DateTime.Now;
@@ -51,10 +51,15 @@ namespace Sys
                 return t;
             }
         }
+
+        public override string ToString()
+        {
+            return $"hit:{hit}, age={age}, data={t}";
+        }
     }
 
 
-    
+
     /// <summary>
     /// Pooling support LRU and LFU policy
     /// 
@@ -62,14 +67,14 @@ namespace Sys
     /// </summary>
     /// <typeparam name="K">typeof(Key)</typeparam>
     /// <typeparam name="T">typeof(Value)</typeparam>
-    public class DataPool<K, T> 
-        where K : class 
+    public class DataPool<K, T>
         where T : class
     {
-        private Dictionary<K, DataItem<T>> pool = new Dictionary<K, DataItem<T>>();
+        private Dictionary<K, PoolItem<T>> pool = new Dictionary<K, PoolItem<T>>();
         private int count;
 
         private Policy policy;
+        public Func<K, T> CreateInstance { get; set; }
 
         public DataPool(int maxCount)
             : this(maxCount, Policy.LRU)
@@ -80,8 +85,15 @@ namespace Sys
         {
             this.count = maxCount;
             this.policy = policy;
+            CreateInstance = this.createInstance;
         }
-        
+
+        private T createInstance(K key)
+        {
+            T t = (T)Activator.CreateInstance(typeof(T), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new object[] { key }, null);
+            return t;
+        }
+
         public T GetItem(K key)
         {
             if (pool.ContainsKey(key))
@@ -89,22 +101,24 @@ namespace Sys
                 return pool[key].Item;
             }
 
-            T t = (T)Activator.CreateInstance(typeof(T), BindingFlags.Instance| BindingFlags.Public| BindingFlags.NonPublic, null, new object[] { key }, null);
+            T t = CreateInstance(key);
 
-            DataItem<T> m = new DataItem<T>(t);
+            PoolItem<T> m = new PoolItem<T>(t);
             pool.Add(key, m);
 
             if (pool.Count > count)
             {
-                K k = null;
-                
-                if(policy == Policy.LRU)
-                    k = LRU_Policy();
+                K k = default(K); 
+
+
+                bool found;
+                if (policy == Policy.LRU)
+                    found = LRU_Policy(out k);
                 else
-                    k = LFU_Policy();
+                    found = LFU_Policy(out k);
 
                 //remove the eldest item
-                if (k != null)
+                if (found)
                     pool.Remove(k);
             }
 
@@ -112,43 +126,46 @@ namespace Sys
         }
 
 
-        private K LRU_Policy()
-        { 
-            K key = null;
+        private bool LRU_Policy(out K key)
+        {
+            bool found = false;
+            key = default(K);
 
             DateTime age = DateTime.Now;
-            foreach (KeyValuePair<K, DataItem<T>> p in pool)
+            foreach (KeyValuePair<K, PoolItem<T>> p in pool)
             {
                 if (p.Value.age < age)
                 {
                     age = p.Value.age;
                     key = p.Key;
+                    found = true;
                 }
             }
 
-            return key;
+            return found;
         }
 
 
-        private K LFU_Policy()
+        private bool LFU_Policy(out K key)
         {
-            K key = null;
+            bool found = false;
+
+            key = default(K);
 
             long hit = Int64.MaxValue;
-            foreach (KeyValuePair<K, DataItem<T>> p in pool)
+            foreach (KeyValuePair<K, PoolItem<T>> p in pool)
             {
                 if (p.Value.hit < hit)
                 {
                     hit = p.Value.hit;
                     key = p.Key;
+                    found = true;
                 }
             }
 
-            return key;
+            return found;
         }
+
     }
-
-  
-
 
 }
