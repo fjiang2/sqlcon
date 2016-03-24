@@ -28,6 +28,9 @@ namespace Sys.CodeBuilder
         public Statement gets { get; } = new Statement();
         public Statement sets { get; } = new Statement();
 
+        public Modifier getModifier { get; set; } = Modifier.Public;
+        public Modifier setModifier { get; set; } = Modifier.Public;
+
         public Property(TypeInfo returnType, string propertyName)
             : this(returnType, propertyName, null)
         {
@@ -55,6 +58,31 @@ namespace Sys.CodeBuilder
             }
         }
 
+        private string get
+        {
+            get
+            {
+                if (getModifier == Modifier.Private)
+                    return "private get";
+                else if (getModifier == Modifier.Protected)
+                    return "protected get";
+                else
+                    return "get";
+            }
+        }
+
+        private string set
+        {
+            get
+            {
+                if (setModifier == Modifier.Private)
+                    return "private set";
+                else if (setModifier == Modifier.Protected)
+                    return "protected set";
+                else
+                    return "set";
+            }
+        }
 
         protected override CodeBlock BuildBlock()
         {
@@ -62,7 +90,7 @@ namespace Sys.CodeBuilder
 
             if (gets.Count == 0 && sets.Count == 0)
             {
-                block.AppendFormat("{0}{1}", $"{Signature} {{ get; set; }}", comment);
+                block.AppendFormat("{0}{1}", $"{Signature} {{ {get}; {set}; }}", comment);
             }
             else
             {
@@ -70,13 +98,13 @@ namespace Sys.CodeBuilder
                 block.Begin();
                 if (gets.Count != 0)
                 {
-                    block.AppendLine("get");
+                    block.AppendLine(get);
                     block.AddWithBeginEnd(gets);
                 }
 
                 if (sets.Count != 0)
                 {
-                    block.AppendLine("set");
+                    block.AppendLine(set);
                     block.AddWithBeginEnd(sets);
                 }
 

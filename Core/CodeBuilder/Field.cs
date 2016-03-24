@@ -26,13 +26,13 @@ namespace Sys.CodeBuilder
         private object value;
 
         public Field(TypeInfo type, string fieldName)
-            :this(type, fieldName, null)
+            : this(type, fieldName, null)
         {
         }
 
 
         public Field(TypeInfo type, string fieldName, object value)
-            :base(fieldName)
+            : base(fieldName)
         {
             this.type = type;
             this.value = value;
@@ -46,11 +46,14 @@ namespace Sys.CodeBuilder
 
             if (value != null)
             {
+                if(value is string)
+                    value =$"\"{value}\"";
+
                 block.AppendFormat("{0} = {1};", Signature, value);
             }
             else
             {
-                block.AppendLine(Signature);
+                block.AppendLine(Signature + ";");
             }
 
             return block;
