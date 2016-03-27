@@ -888,7 +888,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("   /delete  : generate DELETE FROM WHERE template, delete rows with foreign keys constraints");
                 stdio.WriteLine("   /schema  : generate database schema xml file");
                 stdio.WriteLine("   /data    : generate database/table data xml file");
-                stdio.WriteLine("   /class   : generate C# table class");
+                stdio.WriteLine("   /dpo     : generate C# table class");
                 stdio.WriteLine("   /enum    : generate C# enum class");
                 stdio.WriteLine("   /dc      : generate C# data contract class from last result");
                 stdio.WriteLine("      [/ns:name] default name space is defined on the .cfg");
@@ -919,7 +919,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     exporter.ExportSchema();
                 else if (cmd.Has("data"))
                     exporter.ExportData(cmd);
-                else if (cmd.Has("class"))
+                else if (cmd.Has("dpo"))
                     exporter.ExportClass(cmd);
                 else if (cmd.Has("enum"))
                     exporter.ExportEnum(cmd);
@@ -1094,11 +1094,14 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("   log              : open log file");
                 stdio.WriteLine("   output           : open output file");
                 stdio.WriteLine("   config [/s]      : open user configure file, /s open system configurate");
+                stdio.WriteLine("   dpo              : open table class output directory");
                 stdio.WriteLine("   dc               : open data contract class output directory");
                 stdio.WriteLine("   release          : open release notes");
 
                 return;
             }
+
+            string path;
 
             switch (cmd.arg1)
             {
@@ -1121,17 +1124,14 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     stdio.OpenEditor("ReleaseNotes.txt");
                     break;
 
+                case "dpo":
+                    path = cfg.GetValue<string>("dpo.path", $"{Configuration.MyDocuments}\\dpo");
+                    OpenDirectory(path, "table class");
+                    break;
+
                 case "dc":
-                    string path = cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
-                    if (System.IO.Directory.Exists(path))
-                    {
-                        var process = new System.Diagnostics.Process();
-                        process.StartInfo.FileName = "Explorer";
-                        process.StartInfo.Arguments = path;
-                        process.Start();
-                    }
-                    else
-                        stdio.ErrorFormat("data contract class path not exist: {0}", path);
+                    path = cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
+                    OpenDirectory(path, "data contract class");
                     break;
 
                 default:
@@ -1142,6 +1142,18 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
         }
 
+        private static void OpenDirectory(string path, string message)
+        {
+            if (System.IO.Directory.Exists(path))
+            {
+                var process = new System.Diagnostics.Process();
+                process.StartInfo.FileName = "Explorer";
+                process.StartInfo.Arguments = path;
+                process.Start();
+            }
+            else
+                stdio.ErrorFormat("{0} path not exist: {1}", message, path);
+        }
 
         public void xcopy(Command cmd)
         {

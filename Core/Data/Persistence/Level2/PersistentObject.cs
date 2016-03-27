@@ -27,7 +27,7 @@ namespace Sys.Data
     /// <summary>
     /// represents a record in the table
     /// </summary>
-    public abstract class PersistentObject : PersistentValue, IDPObject, IValizable
+    public abstract class PersistentObject : PersistentValue, IDPObject, IValizable, IDataContractRow
     {
         public event DataRowChangeEventHandler AfterLoaded;
         public event RowChangedHandler BeforeSaving;

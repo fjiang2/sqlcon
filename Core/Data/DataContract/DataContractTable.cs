@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Sys.Data
 {
-    public class DataContractTable<T> where T : IDataContractRow<T>, new()
+    public class DataContractTable<T> where T : IDataContractRow, new()
     {
         private DataTable dt;
 
@@ -31,7 +31,7 @@ namespace Sys.Data
             foreach (var item in items)
             {
                 var row = dt.NewRow();
-                item.UpdateRow(row);
+                item.Collect(row);
                 dt.Rows.Add(row);
             }
 
@@ -41,7 +41,7 @@ namespace Sys.Data
         public T NewObject(DataRow row)
         {
             var item = new T();
-            item.UpdateObject(row);
+            item.Fill(row);
             return item;
         }
 
@@ -52,7 +52,7 @@ namespace Sys.Data
             {
                 var item = NewObject(row);
                 action(item);
-                item.UpdateRow(row);
+                item.Collect(row);
             }
         }
 
@@ -66,6 +66,47 @@ namespace Sys.Data
                 list.Add(t);
             }
             return list;
+        }
+
+
+        public DataRow Find(T item)
+        {
+
+            foreach (DataRow row in dt.Rows)
+            {
+                var _row = NewObject(row);
+                if (_row.Equals(item))
+                {
+                    return row;
+                }
+            }
+
+            return null;
+        }
+
+        public void Update(DataRowState state, T item)
+        {
+            DataRow row;
+            switch (state)
+            {
+                case DataRowState.Added:
+                    row = dt.NewRow();
+                    item.Collect(row);
+                    dt.Rows.Add(row);
+                    break;
+
+                case DataRowState.Modified:
+                    row = Find(item);
+                    if (row != null)
+                        item.Collect(row);
+                    break;
+
+                case DataRowState.Deleted:
+                    row = Find(item);
+                    if (row != null)
+                        row.Delete();
+                    break;
+            }
         }
 
     }

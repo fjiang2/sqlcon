@@ -209,38 +209,38 @@ namespace sqlcon
             sent = method.statements;
 
 
-            method = new Method("ForEach")
-            {
-                modifier = Modifier.Public | Modifier.Static,
-                args = new Arguments().Add(typeof(DataTable), "dt").Add($"Action<{cname}>", "action"),
-                IsExtensionMethod = true
-            };
-            clss.Add(method);
-            sent = method.statements;
-            sent.AppendLine("foreach (DataRow row in dt.Rows)");
-            sent.Begin();
-            sent.AppendLine("var item = NewObject(row);");
-            sent.AppendLine("action(item);");
-            sent.AppendLine("UpdateRow(item, row);");
-            sent.End();
+            //method = new Method("ForEach")
+            //{
+            //    modifier = Modifier.Public | Modifier.Static,
+            //    args = new Arguments().Add(typeof(DataTable), "dt").Add($"Action<{cname}>", "action"),
+            //    IsExtensionMethod = true
+            //};
+            //clss.Add(method);
+            //sent = method.statements;
+            //sent.AppendLine("foreach (DataRow row in dt.Rows)");
+            //sent.Begin();
+            //sent.AppendLine("var item = NewObject(row);");
+            //sent.AppendLine("action(item);");
+            //sent.AppendLine("UpdateRow(item, row);");
+            //sent.End();
 
-            method = new Method("ForEach<T>")
-            {
-                modifier = Modifier.Public | Modifier.Static,
-                type = new TypeInfo { userType = "IEnumerable<T>" },
-                args = new Arguments().Add(typeof(DataTable), "dt").Add($"Func<{cname},T>", "func"),
-                IsExtensionMethod = true
-            };
-            clss.Add(method);
-            sent = method.statements;
-            sent.AppendLine("List<T> list = new List<T>();");
-            sent.AppendLine("foreach (DataRow row in dt.Rows)");
-            sent.Begin();
-            sent.AppendLine("var item = NewObject(row);");
-            sent.AppendLine(" T t = func(item);");
-            sent.AppendLine("list.Add(t);");
-            sent.End();
-            sent.AppendLine("return list;");
+            //method = new Method("ForEach<T>")
+            //{
+            //    modifier = Modifier.Public | Modifier.Static,
+            //    type = new TypeInfo { userType = "IEnumerable<T>" },
+            //    args = new Arguments().Add(typeof(DataTable), "dt").Add($"Func<{cname},T>", "func"),
+            //    IsExtensionMethod = true
+            //};
+            //clss.Add(method);
+            //sent = method.statements;
+            //sent.AppendLine("List<T> list = new List<T>();");
+            //sent.AppendLine("foreach (DataRow row in dt.Rows)");
+            //sent.Begin();
+            //sent.AppendLine("var item = NewObject(row);");
+            //sent.AppendLine(" T t = func(item);");
+            //sent.AppendLine("list.Add(t);");
+            //sent.End();
+            //sent.AppendLine("return list;");
 
 
             clss.AddCopyCloneCompareExtension(cname, dict.Keys.Select(column => column.ColumnName));

@@ -5,9 +5,18 @@ using System.Linq;
 
 namespace Sys.Data
 {
-    public interface IDataContractRow<T>
+    public interface IDataContractRow
     {
-        void UpdateObject(DataRow row);
-        void UpdateRow(DataRow row);
+        /// <summary>
+        /// update object properties by data row; copy row->obj
+        /// </summary>
+        /// <param name="row"></param>
+        void Fill(DataRow row);
+
+        /// <summary>
+        /// collect object property values and update row; copy obj->row
+        /// </summary>
+        /// <param name="row"></param>
+        void Collect(DataRow row);
     }
 }
