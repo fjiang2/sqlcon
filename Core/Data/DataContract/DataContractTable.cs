@@ -31,7 +31,7 @@ namespace Sys.Data
             foreach (var item in items)
             {
                 var row = dt.NewRow();
-                item.Collect(row);
+                item.UpdateRow(row);
                 dt.Rows.Add(row);
             }
 
@@ -41,7 +41,7 @@ namespace Sys.Data
         public T NewObject(DataRow row)
         {
             var item = new T();
-            item.Fill(row);
+            item.FillObject(row);
             return item;
         }
 
@@ -52,7 +52,7 @@ namespace Sys.Data
             {
                 var item = NewObject(row);
                 action(item);
-                item.Collect(row);
+                item.UpdateRow(row);
             }
         }
 
@@ -91,14 +91,14 @@ namespace Sys.Data
             {
                 case DataRowState.Added:
                     row = dt.NewRow();
-                    item.Collect(row);
+                    item.UpdateRow(row);
                     dt.Rows.Add(row);
                     break;
 
                 case DataRowState.Modified:
                     row = Find(item);
                     if (row != null)
-                        item.Collect(row);
+                        item.UpdateRow(row);
                     break;
 
                 case DataRowState.Deleted:

@@ -27,15 +27,15 @@ namespace Sys.CodeBuilder
     {
         List<Buildable> list = new List<Buildable>();
 
-        private Type[] inherits;
+        private TypeInfo[] inherits;
         public bool Sorted { get; set; } = false;
 
         public Class(string className)
-            : this(className, new Type[] { })
+            : this(className, new TypeInfo[] { })
         {
         }
 
-        public Class(string className, Type[] inherits)
+        public Class(string className, params TypeInfo[] inherits)
             : base(className)
         {
             this.inherits = inherits;
@@ -135,7 +135,7 @@ namespace Sys.CodeBuilder
 
             clss.AppendFormat("{0} class {1}", new ModifierString(modifier), base.name);
             if (inherits.Length > 0)
-                clss.AppendFormat("\t: {0}", string.Join(", ", inherits.Select(inherit => new TypeInfo { type = inherit }.ToString())));
+                clss.AppendFormat("\t: {0}", string.Join(", ", inherits.Select(inherit => inherit.ToString())));
 
             var body = new CodeBlock();
 
@@ -214,7 +214,7 @@ namespace Sys.CodeBuilder
 
         public void AddCopyCloneCompareExtension(string className, IEnumerable<string> propertyNames)
         {
-          
+
             var x = new UtilsMethod(className, propertyNames);
 
             Add(x.CopyTo())

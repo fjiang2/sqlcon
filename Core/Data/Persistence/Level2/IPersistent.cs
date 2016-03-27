@@ -43,8 +43,8 @@ namespace Sys.Data
         void UpdateDataRow(DataRow dataRow);
         void UpdateObject(DataRow dataRow);
 
-        void Fill(DataRow dataRow);
-        void Collect(DataRow dataRow);
+        void FillObject(DataRow dataRow);
+        void UpdateRow(DataRow dataRow);
         void FillIdentity(DataRow dataRow);
 
         RowAdapter NewRowAdapter(Selector columnNames);

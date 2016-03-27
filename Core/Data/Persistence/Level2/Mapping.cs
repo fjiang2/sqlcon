@@ -140,13 +140,13 @@ namespace Sys.Data
                 if (propertyInfo2.GetValue(this, null) == null)
                 {
                     PersistentObject dpo = (PersistentObject)Activator.CreateInstance(propertyInfo2.PropertyType, null);
-                    dpo.Fill(dataTable.Rows[0]);
+                    dpo.FillObject(dataTable.Rows[0]);
                     propertyInfo2.SetValue(this, dpo, null);
                 }
                 else
                 {
                     IDPObject dpo = (IDPObject)propertyInfo2.GetValue(this, null);
-                    dpo.Fill(dataTable.Rows[0]);
+                    dpo.FillObject(dataTable.Rows[0]);
                 }
             }
             else

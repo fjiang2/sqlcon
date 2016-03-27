@@ -85,7 +85,7 @@ namespace Sys.Data
             t.SetCollection(this);
 
             DataRow newRow = dataTable.NewRow();
-            t.Collect(newRow);
+            t.UpdateRow(newRow);
             dataTable.Rows.Add(newRow);
             mapping.Add(t, newRow);
 
@@ -100,7 +100,7 @@ namespace Sys.Data
             t.SetCollection(this);
 
             DataRow newRow = dataTable.NewRow();
-            t.Collect(newRow);
+            t.UpdateRow(newRow);
             dataTable.Rows.InsertAt(newRow, pos);
             mapping.Add(t, newRow);
 
@@ -160,8 +160,8 @@ namespace Sys.Data
             DataRow dataRow1 = mapping[t1];
             DataRow dataRow2 = mapping[t2];
          
-            t1.Collect(dataRow2);
-            t2.Collect(dataRow1);
+            t1.UpdateRow(dataRow2);
+            t2.UpdateRow(dataRow1);
 
             mapping[t1] = dataRow2;
             mapping[t2] = dataRow1;
@@ -178,7 +178,7 @@ namespace Sys.Data
             objectPermission = ObjectPermission.DenyUpdateObject;
 
             DataRow dataRow = mapping[t];
-            t.Collect(dataRow);
+            t.UpdateRow(dataRow);
 
             OnEvent(sender, t, dataRow);
             objectPermission = ObjectPermission.AllowUpdateObject;
@@ -298,21 +298,21 @@ namespace Sys.Data
                 {
                     T t = new T();
                     t.SetCollection(this);
-                    t.Fill(dataRow);
+                    t.FillObject(dataRow);
                     mapping.Add(t, dataRow);
                     return t;
                 }
                 else
                 {
                     T t = (T)x;
-                    t.Fill(dataRow);    //??? trick: update object by dataRow
+                    t.FillObject(dataRow);    //??? trick: update object by dataRow
                     return t;
                 }
             }
             set
             {
                 T t = value;
-                t.Collect(dataRow);
+                t.UpdateRow(dataRow);
 
                 if (mapping.ContainsKey(t))
                     mapping.Remove(t);

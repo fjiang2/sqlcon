@@ -115,7 +115,10 @@ namespace Sys.CodeBuilder
 
         public CodeBlock Append(string str)
         {
-            var line = lines.Last();
+            CodeLine line = null;
+            if (lines.Count != 0)
+                line = lines.Last();
+
             if (line != null)
                 line.line += str;
             else

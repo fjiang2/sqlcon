@@ -890,7 +890,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("   /data    : generate database/table data xml file");
                 stdio.WriteLine("   /dpo     : generate C# table class");
                 stdio.WriteLine("   /enum    : generate C# enum class");
-                stdio.WriteLine("   /dc      : generate C# data contract class from last result");
+                stdio.WriteLine("   /dc1     : generate C# data contract class and extension class from last result");
+                stdio.WriteLine("   /dc2     : generate C# data contract class from last result");
                 stdio.WriteLine("      [/ns:name] default name space is defined on the .cfg");
                 stdio.WriteLine("      [/class:name] default class name is defined on the .cfg");
                 stdio.WriteLine("      [/method:foo] default convert method is defined on the .cfg");
@@ -925,8 +926,10 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     exporter.ExportEnum(cmd);
                 else if (cmd.Has("csv"))
                     exporter.ExportCsvFile(cmd);
-                else if (cmd.Has("dc"))
-                    exporter.ExportDataContract(cmd);
+                else if (cmd.Has("dc1"))
+                    exporter.ExportDataContract(cmd, 1);
+                else if (cmd.Has("dc2"))
+                    exporter.ExportDataContract(cmd, 2);
                 else
                     stdio.ErrorFormat("invalid command options");
             }

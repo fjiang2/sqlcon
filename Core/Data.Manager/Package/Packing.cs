@@ -51,7 +51,7 @@ namespace Sys.Data.Manager
             {
                 nameSpace = dpoType.Assembly.GetName().Name + "." + Setting.DPO_PACKAGE_SUB_NAMESPACE,
             };
-            
+
             this.classBuilder.AddUsing("System")
             .AddUsing("System.Data")
             .AddUsing("System.Text")
@@ -62,7 +62,7 @@ namespace Sys.Data.Manager
             .AddUsing(dpoType.Namespace);
 
 
-            var clss = new Class(ClassName, new Type[] { baseType })
+            var clss = new Class(ClassName, new CodeBuilder.TypeInfo { type = baseType })
             {
                 modifier = Modifier.Public
             };
@@ -89,9 +89,9 @@ namespace Sys.Data.Manager
 
         public TableName TableName
         {
-            get 
-            { 
-                return instance.TableName; 
+            get
+            {
+                return instance.TableName;
             }
         }
 
@@ -167,9 +167,9 @@ namespace Sys.Data.Manager
             foreach (DataRow dataRow in dt.Rows)
             {
                 PackRecord(dataRow);
-                if(i < dt.Rows.Count -1)
+                if (i < dt.Rows.Count - 1)
                     pack.statements.AppendFormat("dpo = new {0}()", dpoType.Name);
-                
+
                 i++;
             }
 

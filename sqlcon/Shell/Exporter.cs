@@ -349,7 +349,7 @@ namespace sqlcon
             }
         }
 
-        public void ExportDataContract(Command cmd)
+        public void ExportDataContract(Command cmd, int version)
         {
 
             DataTable dt = null;
@@ -371,16 +371,30 @@ namespace sqlcon
             string clss = cmd.GetValue("class") ?? cfg.GetValue<string>("dc.class", "DataContract");
             string mtd = cmd.GetValue("method");
 
-            DataContractClassBuilder builder = new DataContractClassBuilder(dt)
+            if (version == 1)
             {
-                ns = ns,
-                cname = clss,
-                mtd = mtd
-            };
+                var builder = new DataContractClassBuilder(dt)
+                {
+                    ns = ns,
+                    cname = clss,
+                    mtd = mtd
+                };
 
-            string file = builder.WriteFile(path);
-            stdio.WriteLine("code generated on {0}", file);
+                string file = builder.WriteFile(path);
+                stdio.WriteLine("code generated on {0}", file);
+            }
+            else
+            {
+                var builder = new DataContract2ClassBuilder(dt)
+                {
+                    ns = ns,
+                    cname = clss,
+                    mtd = mtd
+                };
 
+                string file = builder.WriteFile(path);
+                stdio.WriteLine("code generated on {0}", file);
+            }
         }
 
 

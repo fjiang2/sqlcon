@@ -64,7 +64,7 @@ namespace Sys.Data.Manager
             code.AddUsing("Sys.Data");
             code.AddUsing("Sys.Data.Manager");
 
-            clss = new Class(cname.Class, new Type[] { typeof(DPObject) })
+            clss = new Class(cname.Class, new CodeBuilder.TypeInfo { type = typeof(DPObject) })
             {
                 modifier = Modifier.Public | Modifier.Partial,
                 Sorted = option.CodeSorted
@@ -220,13 +220,13 @@ namespace Sys.Data.Manager
         private string FillAndCollect()
         {
 
-            Method fill = new Method("Fill")
+            Method fill = new Method("FillObject")
             {
                 modifier = Modifier.Public | Modifier.Override,
                 args = new Arguments().Add<DataRow>("row")
             };
 
-            Method collect = new Method("Collect")
+            Method collect = new Method("UpdateRow")
             {
                 modifier = Modifier.Public | Modifier.Override,
                 args = new Arguments().Add<DataRow>("row")
@@ -429,7 +429,7 @@ namespace Sys.Data.Manager
             {
                 if (!tableName.Provider.Equals(ConnectionProviderManager.DefaultProvider))
                 {
-                    
+
                     args.Add(string.Format("Provider = {0}", (int)tableName.Provider));
                 }
             }

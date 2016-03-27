@@ -11,12 +11,12 @@ namespace Sys.Data
         /// update object properties by data row; copy row->obj
         /// </summary>
         /// <param name="row"></param>
-        void Fill(DataRow row);
+        void FillObject(DataRow row);
 
         /// <summary>
         /// collect object property values and update row; copy obj->row
         /// </summary>
         /// <param name="row"></param>
-        void Collect(DataRow row);
+        void UpdateRow(DataRow row);
     }
 }

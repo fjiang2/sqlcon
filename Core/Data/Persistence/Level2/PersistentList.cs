@@ -55,7 +55,7 @@ namespace Sys.Data
             foreach (DataRow dataRow in dataTable.Rows)
             {
                 T t = new T();
-                t.Fill(dataRow);
+                t.FillObject(dataRow);
                 this.Add(t);
             }
         }

@@ -45,6 +45,7 @@ namespace sqlcon
 
             CSharpBuilder builder = new CSharpBuilder { nameSpace = ns, };
             var clss = new Class(cname) { modifier = Modifier.Public | Modifier.Partial };
+            
             builder.AddClass(clss);
 
             builder.AddUsing("System");
@@ -124,7 +125,7 @@ namespace sqlcon
                 }
                 sent.End(";");
 
-                Method method1 = new Method("UpdateObject")
+                Method method1 = new Method("FillObject")
                 {
                     modifier = Modifier.Public | Modifier.Static,
                     args = new Arguments().Add(typeof(DataRow), "row").Add(cname, "item"),

@@ -125,7 +125,7 @@ namespace Sys.Data
         /// <param name="dataRow"></param>
         public void UpdateDataRow(DataRow dataRow)
         {
-            Collect(dataRow);
+            UpdateRow(dataRow);
         }
 
 
@@ -135,7 +135,7 @@ namespace Sys.Data
         /// <param name="dataRow"></param>
         public void UpdateObject(DataRow dataRow)
         {
-            Fill(dataRow);
+            FillObject(dataRow);
 
             //RowLoaded(dataRow);
             if (AfterLoaded != null)
@@ -152,7 +152,7 @@ namespace Sys.Data
             get
             {
                 DataRow dataRow = this.NewRow;
-                Collect(dataRow);
+                UpdateRow(dataRow);
                 return dataRow;
             }
             set
@@ -404,7 +404,7 @@ namespace Sys.Data
         /// Fill object properties
         /// </summary>
         /// <param name="dataRow"></param>
-        public virtual void Fill(DataRow dataRow)
+        public virtual void FillObject(DataRow dataRow)
         {
 
             foreach (PropertyInfo propertyInfo in this.columnProperties)
@@ -422,7 +422,7 @@ namespace Sys.Data
         /// Collect property values and save to DataRow
         /// </summary>
         /// <param name="dataRow"></param>
-        public virtual void Collect(DataRow dataRow)
+        public virtual void UpdateRow(DataRow dataRow)
         {
             foreach (PropertyInfo propertyInfo in Reflex.GetColumnProperties(this))
             {
@@ -622,7 +622,7 @@ namespace Sys.Data
             d.Apply();
 
             exists = d.Load();      
-            Fill(d.Row);
+            FillObject(d.Row);
             
             //RowLoaded(d.Row);
 
