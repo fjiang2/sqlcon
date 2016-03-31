@@ -128,7 +128,7 @@ namespace sqlcon
                 Method method1 = new Method("FillObject")
                 {
                     modifier = Modifier.Public | Modifier.Static,
-                    args = new Arguments().Add(typeof(DataRow), "row").Add(cname, "item"),
+                    args = new Arguments().Add(cname, "item").Add(typeof(DataRow), "row"),
                     IsExtensionMethod = true
                 };
                 clss.Add(method1);
