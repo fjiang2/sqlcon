@@ -50,25 +50,63 @@ namespace sqlcon
 
 
             dataGrid.AutoGeneratingColumn += DataGrid_AutoGeneratingColumn;
+            dataGrid.CellEditEnding += DataGrid_CellEditEnding;
             udt.Table.RowChanged += Table_RowChanged;
             udt.Table.ColumnChanged += Table_ColumnChanged;
         }
 
+        private void DataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            var col = e.Column;
+            var row = e.Row;
+
+        }
+
         private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
+            var style = new Style(typeof(System.Windows.Controls.Primitives.DataGridColumnHeader));
             if (e.Column.Header.ToString() == UniqueTable.ROWID)
             {
                 // e.Cancel = true;   // For not to include 
                 e.Column.IsReadOnly = true;
+
+                style.Setters.Add(new Setter(ToolTipService.ToolTipProperty, "column rowid is read only"));
             }
+
+            style.Setters.Add(new Setter
+            {
+                Property = ForegroundProperty,
+                Value = Brushes.Black
+            });
+
+            e.Column.HeaderStyle = style;
         }
 
+        private void RunWithoutTrigger(Action action)
+        {
+            udt.Table.RowChanged -= Table_RowChanged;
+            udt.Table.ColumnChanged -= Table_ColumnChanged;
+
+            action();
+
+            udt.Table.RowChanged += Table_RowChanged;
+            udt.Table.ColumnChanged += Table_ColumnChanged;
+        }
 
         private void Table_ColumnChanged(object sender, DataColumnChangeEventArgs e)
         {
             DataColumn column = e.Column;
             DataRow row = e.Row;
-            udt.UpdateChanges(row, column, e.ProposedValue);
+
+            try
+            {
+                if (row.RowState != DataRowState.Detached)
+                    udt.UpdateCell(row, column, e.ProposedValue);
+            }
+            catch (Exception ex)
+            {
+                stdio.ErrorFormat(ex.Message);
+            }
         }
 
         private void Table_RowChanged(object sender, DataRowChangeEventArgs e)
@@ -77,17 +115,26 @@ namespace sqlcon
             if (tname == null)
                 return;
 
-            switch (e.Row.RowState)
+            try
             {
-                case DataRowState.Added:
-                    break;
+                switch (e.Row.RowState)
+                {
+                    case DataRowState.Added:
+                        RunWithoutTrigger(() => udt.InsertRow(e.Row));
+                        break;
 
-                case DataRowState.Deleted:
-                    break;
+                    case DataRowState.Deleted:
+                        break;
 
-                case DataRowState.Modified:
-                    break;
+                    case DataRowState.Modified:
+                        break;
+                }
             }
+            catch (Exception ex)
+            {
+                stdio.ErrorFormat(ex.Message);
+            }
+
         }
     }
 }

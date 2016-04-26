@@ -120,12 +120,48 @@ namespace Sys.Data
             return new SqlBuilder().UPDATE(TableName).SET(column.Assign(value)).WHERE(PhysLoc(rowId));
         }
 
-        public void UpdateChanges(DataRow row, DataColumn column, object value)
+        public void UpdateCell(DataRow row, DataColumn column, object value)
         {
+            if (column == colRowID)
+                return;
+
             string col = column.ColumnName;
             int rowId = RowId(row);
             var builder = UpdateClause(col, rowId, value);
             new SqlCmd(builder).ExecuteNonQuery();
+            row.AcceptChanges();
+        }
+
+        public void InsertRow(DataRow row)
+        {
+            List<string> columns = new List<string>();
+            List<object> values = new List<object>();
+            List<SqlExpr> where = new List<SqlExpr>();
+
+
+            foreach (DataColumn column in table.Columns)
+            {
+                object value = row[column];
+                string name = column.ColumnName;
+
+                if (column != colRowID && value != DBNull.Value)
+                {
+                    columns.Add(name);
+                    values.Add(value);
+
+                    where.Add(name.Assign(value));
+                }
+            }
+
+            var builder = new SqlBuilder().INSERT(TableName, columns.ToArray()).VALUES(values.ToArray());
+            new SqlCmd(builder).ExecuteNonQuery();
+
+            builder = new SqlBuilder().SELECT.COLUMNS(SqlExpr.PHYSLOC).FROM(TableName).WHERE(where.AND());
+            var loc = new SqlCmd(builder).FillObject<byte[]>();
+            LOC.Add(loc);
+
+            row[colRowID] = table.Rows.Count - 1; //this will trigger events ColumnChanged or RowChanged
+
             row.AcceptChanges();
         }
 
