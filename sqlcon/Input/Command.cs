@@ -25,7 +25,7 @@ namespace sqlcon
         public readonly bool HasHelp;
         public readonly bool HasIfExists;
         public readonly bool HasPage;
-        public readonly bool HasRowId;
+        private bool hasRowId;
 
         public readonly bool HasDefinition;
         public readonly bool HasPrimaryKey;
@@ -98,7 +98,7 @@ namespace sqlcon
                             break;
 
                         case "/r":
-                            HasRowId = true;
+                            hasRowId = true;
                             break;
 
                         case "/refresh":
@@ -166,6 +166,7 @@ namespace sqlcon
             }
         }
 
+        public bool HasRowId => hasRowId || Has("edit");
 
         public bool Has(string name)
         {

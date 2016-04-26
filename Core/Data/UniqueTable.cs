@@ -10,6 +10,8 @@ namespace Sys.Data
     public class UniqueTable
     {
         public readonly TableName TableName;
+        public static string ROWID = "RowId";
+
         private DataTable table;
         private List<byte[]> LOC = new List<byte[]>();
         private bool hasPhysloc = false;
@@ -55,7 +57,7 @@ namespace Sys.Data
                 row[I2] = i++;
             }
 
-            colRowID.ColumnName = "RowId";
+            colRowID.ColumnName = ROWID;
 
             table.Columns.Remove(colLoc);
             table.AcceptChanges();
@@ -76,9 +78,25 @@ namespace Sys.Data
             return LOC[rowId];
         }
 
+        private int RowId(DataRow row)
+        {
+            return (int)row[colRowID];
+        }
+
+        public object this[DataColumn column, DataRow row]
+        {
+            get
+            {
+                return this[column.ColumnName, RowId(row)];
+            }
+            set
+            {
+                this[column.ColumnName, RowId(row)] = value;
+            }
+        }
 
         public object this[string column, int rowId]
-        { 
+        {
             get
             {
                 return table.Rows[rowId][column];
@@ -90,13 +108,26 @@ namespace Sys.Data
                 table.AcceptChanges();
             }
         }
-     
+
         public SqlBuilder WriteValue(string column, int rowId, object value)
         {
             table.Rows[rowId][column] = value;
+            return UpdateClause(column, rowId, value);
+        }
+
+        private SqlBuilder UpdateClause(string column, int rowId, object value)
+        {
             return new SqlBuilder().UPDATE(TableName).SET(column.Assign(value)).WHERE(PhysLoc(rowId));
         }
 
+        public void UpdateChanges(DataRow row, DataColumn column, object value)
+        {
+            string col = column.ColumnName;
+            int rowId = RowId(row);
+            var builder = UpdateClause(col, rowId, value);
+            new SqlCmd(builder).ExecuteNonQuery();
+            row.AcceptChanges();
+        }
 
         private DataColumnCollection columns = null;
         public DataColumnCollection Columns
@@ -162,7 +193,7 @@ namespace Sys.Data
 
         public object this[int rowId]
         {
-            get 
+            get
             {
                 return table.Rows[rowId][column];
             }
@@ -172,14 +203,14 @@ namespace Sys.Data
             }
         }
 
-        public object[] ItemArray 
+        public object[] ItemArray
         {
             get
             {
                 object[] objs = new object[table.Rows.Count];
                 for (int i = 0; i < objs.Length; i++)
                     objs[i] = table.Rows[i][column];
-             
+
                 return objs;
             }
             set

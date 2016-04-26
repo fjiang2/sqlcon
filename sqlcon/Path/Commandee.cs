@@ -1096,6 +1096,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("open files");
                 stdio.WriteLine("options:");
                 stdio.WriteLine("   log              : open log file");
+                stdio.WriteLine("   viewer           : open GUI grid viewer");
                 stdio.WriteLine("   output           : open output file");
                 stdio.WriteLine("   config [/s]      : open user configure file, /s open system configurate");
                 stdio.WriteLine("   dpo              : open table class output directory");
@@ -1138,7 +1139,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     OpenDirectory(path, "data contract class");
                     break;
 
-                case "editor":
+                case "viewer":
                     OpenEditor();
                     break;
 
@@ -1164,7 +1165,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            var editor = new Editor(dt);
+            var editor = new Editor(new UniqueTable(null, dt));
+
             editor.ShowDialog();
         }
 

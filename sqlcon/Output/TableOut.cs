@@ -70,9 +70,9 @@ namespace sqlcon
             return where;
         }
 
-        private static void _DisplayTable(UniqueTable rTable, bool more, Command cmd)
+        private static void _DisplayTable(UniqueTable udt, bool more, Command cmd)
         {
-            DataTable table = rTable.Table;
+            DataTable table = udt.Table;
 
             if (table == null)
                 return;
@@ -91,7 +91,7 @@ namespace sqlcon
 
             if(cmd.Has("edit"))
             {
-                var editor = new Editor(table);
+                var editor = new Editor(udt);
                 editor.ShowDialog();
                 return;
             }
