@@ -70,8 +70,10 @@ namespace sqlcon
             return where;
         }
 
-        private static void _DisplayTable(DataTable table, bool more, Command cmd)
+        private static void _DisplayTable(UniqueTable rTable, bool more, Command cmd)
         {
+            DataTable table = rTable.Table;
+
             if (table == null)
                 return;
 
@@ -84,6 +86,13 @@ namespace sqlcon
             if (cmd.ToCSharp)
             {
                 stdio.WriteLine(ToCSharp(table));
+                return;
+            }
+
+            if(cmd.Has("edit"))
+            {
+                var editor = new Editor(table);
+                editor.ShowDialog();
                 return;
             }
 
@@ -166,7 +175,7 @@ namespace sqlcon
             try
             {
                 rTable = new UniqueTable(tname, table);
-                _DisplayTable(rTable.Table, top > 0 && table.Rows.Count == top, cmd);
+                _DisplayTable(rTable, top > 0 && table.Rows.Count == top, cmd);
             }
             catch (Exception ex)
             {

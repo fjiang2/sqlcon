@@ -459,6 +459,7 @@ namespace sqlcon
                 stdio.WriteLine("   /c#                 : generate C# data");
                 stdio.WriteLine("   /dup                : list duplicated rows, e.g. type /dup /col:c1,c2");
                 stdio.WriteLine("   /col:c1,c2,..       : display columns, or search on columns");
+                stdio.WriteLine("   /edit               : edit mode");
                 stdio.WriteLine("example:");
                 stdio.WriteLine("type match*s /col:c1,c2 : display rows matched on columns:c1 or c2");
                 stdio.WriteLine("type id=20             : display rows where id=20");
@@ -1137,12 +1138,34 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     OpenDirectory(path, "data contract class");
                     break;
 
+                case "editor":
+                    OpenEditor();
+                    break;
+
                 default:
                     stdio.ErrorFormat("invalid arguments");
                     return;
             }
 
 
+        }
+
+        public void OpenEditor()
+        {
+            DataTable dt = null;
+            if (SqlShell.LastResult is DataTable)
+            {
+                dt = SqlShell.LastResult as DataTable;
+            }
+
+            if (dt == null)
+            {
+                stdio.ErrorFormat("select table first");
+                return;
+            }
+
+            var editor = new Editor(dt);
+            editor.ShowDialog();
         }
 
         private static void OpenDirectory(string path, string message)
