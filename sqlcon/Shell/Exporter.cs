@@ -29,7 +29,13 @@ namespace sqlcon
             this.cfg = cfg;
             this.xml = new XmlDbFile { XmlDbFolder = cfg.XmlDbFolder };
             this.fileName = cfg.OutputFile;
-            if (pt.Item is TableName)
+            if (pt.Item is Locator)
+            {
+                this.tname = mgr.GetPathFrom<TableName>(pt);
+                this.dname = tname.DatabaseName;
+                this.sname = dname.ServerName;
+            }
+            else if (pt.Item is TableName)
             {
                 this.tname = (TableName)pt.Item;
                 this.dname = tname.DatabaseName;
@@ -74,7 +80,7 @@ namespace sqlcon
             {
                 stdio.WriteLine("start to generate {0} CREATE TABLE script to file: {1}", tname, fileName);
                 using (var writer = fileName.NewStreamWriter())
-                { 
+                {
                     writer.WriteLine(tname.GenerateCluase(true));
                 }
                 stdio.WriteLine("completed");
@@ -163,7 +169,7 @@ namespace sqlcon
                                 stdio.WriteLine("{0,10} skipped", tn.ShortName);
                         }
                         stdio.WriteLine("completed");
-                        
+
                     });
                 }
             }

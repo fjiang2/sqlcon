@@ -903,7 +903,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             if (!Navigate(cmd.Path1))
                 return;
 
-            if (pt.Item is TableName || pt.Item is DatabaseName || pt.Item is ServerName)
+            if (pt.Item is TableName || pt.Item is Locator || pt.Item is DatabaseName || pt.Item is ServerName)
             {
                 var exporter = new Exporter(mgr, pt, cfg);
 
