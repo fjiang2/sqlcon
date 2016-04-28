@@ -1,5 +1,10 @@
 ﻿sqlcon release notes
 
+4/27/2016 v1.5.0.0
+	New Features:
+	1. add GUI tabe editor, command "type /edit" to open editor
+	2. add GUI tabe viewer, command "open viewer" to view last data table
+
 2/29/2016 v1.4.0.0
 	New Features:
 	1. xcopy large size data table using BulkCopy and display progress bar
