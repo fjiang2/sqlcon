@@ -22,7 +22,6 @@ using System.Text;
 using System.Data;
 using System.Data.Common;
 using System.Threading;
-using Sys.Data;
 
 namespace Sys.Data
 {
@@ -113,58 +112,6 @@ namespace Sys.Data
             return this.sql;
         }
 
-        public DataTable Read(CancellationTokenSource cts, IProgress<int> progress)
-        {
-            DataTable table = new DataTable();
-            Action<DbDataReader> export = reader =>
-            {
-                table = BuildTable(reader);
-
-                int step = 0;
-                while (reader.Read())
-                {
-                    DataRow row;
-                    while (reader.Read())
-                    {
-                        step++;
-
-                        progress?.Report(step);
-
-                        row = table.NewRow();
-
-                        for (int i = 0; i < reader.FieldCount; i++)
-                        {
-                            row[i] = reader.GetValue(i);
-                        }
-
-                        table.Rows.Add(row);
-
-                        if (cts.IsCancellationRequested)
-                            break;
-                    }
-
-                    table.AcceptChanges();
-                }
-            };
-
-            cmd.Execute(export);
-
-            return table;
-        }
-
-        internal static DataTable BuildTable(DbDataReader reader)
-        {
-            DataTable table = new DataTable();
-            for (int i = 0; i < reader.FieldCount; i++)
-            {
-                DataColumn column = new DataColumn(reader.GetName(i), reader.GetFieldType(i));
-                table.Columns.Add(column);
-            }
-
-            table.AcceptChanges();
-
-            return table;
-        }
     }
 
 

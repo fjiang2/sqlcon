@@ -245,7 +245,7 @@ namespace Sys.Data
                 column.AddParameter(sqlCmd);
             }
 
-            DataTable dt = sqlCmd.ReadDataTable();
+            DataTable dt = sqlCmd.ReadToTable();
 
             if (dt.Rows.Count == 0)
             {

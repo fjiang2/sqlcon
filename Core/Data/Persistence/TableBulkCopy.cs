@@ -29,8 +29,8 @@ namespace Sys.Data
 
             Action<DbDataReader> export = reader =>
             {
-                table = TableReader.BuildTable(reader);
-               
+                table = new DbReader(reader).Table;
+
                 DataRow row;
 
                 while (reader.Read())
@@ -90,13 +90,16 @@ namespace Sys.Data
         /// <returns></returns>
         public static int Copy(TableName tname1, TableName tname2)
         {
-            var reader = new TableReader(tname1);
-            var bulkcopy = new TableBulkCopy(reader);
-
             using (var cts = new CancellationTokenSource())
             {
-               return bulkcopy.CopyTo(tname2, cts, null);
+                return Copy(tname1, tname2, cts, null);
             }
+        }
+        public static int Copy(TableName tname1, TableName tname2, CancellationTokenSource cts, IProgress<int> progress)
+        {
+            var reader = new TableReader(tname1);
+            var bulkcopy = new TableBulkCopy(reader);
+            return bulkcopy.CopyTo(tname2, cts, progress);
         }
     }
 }

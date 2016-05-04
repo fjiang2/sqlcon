@@ -20,6 +20,7 @@ using System.Text;
 using System.Data.Common;
 using System.Data;
 using System.Diagnostics.Contracts;
+using System.Threading;
 
 using DataProviderHandle = System.Int32;
 
@@ -253,13 +254,8 @@ namespace Sys.Data
                 return default(T);
         }
 
+
         public void Execute(Action<DbDataReader> action)
-        {
-            Execute<object>(reader => { action(reader); return null; });
-        }
-
-
-        public T Execute<T>(Func<DbDataReader, T> func)
         {
             using (connection)
             {
@@ -268,7 +264,7 @@ namespace Sys.Data
 
                 try
                 {
-                    return func(reader);
+                    action(reader);
                 }
                 finally
                 {
@@ -277,42 +273,43 @@ namespace Sys.Data
             }
         }
 
-        internal DataTable ReadDataTable()
+        public void Execute(IDbReadLine lines)
         {
-            Func<DbDataReader, DataTable> func = reader =>
+            Action<DbDataReader> action = reader =>
             {
-                DataTable table = new DataTable();
                 try
                 {
-                    for (int i = 0; i < reader.FieldCount; i++)
-                    {
-                        DataColumn column = new DataColumn(reader.GetName(i), reader.GetFieldType(i));
-                        table.Columns.Add(column);
-                    }
-
-                    DataRow row;
-                    while (reader.Read())
-                    {
-                        row = table.NewRow();
-                        for (int i = 0; i < reader.FieldCount; i++)
-                        {
-                            row[i] = reader.GetValue(i);
-                        }
-
-                        table.Rows.Add(row);
-                    }
-
-                    table.AcceptChanges();
-                    return table;
+                    lines.Read(reader);
                 }
                 catch (Exception ex)
                 {
                     OnError(new SqlExceptionEventArgs(command, ex));
                 }
-                return null;
             };
 
-            return Execute(func);
+            Execute(action);
+
+        }
+
+
+        internal DataTable ReadToTable()
+        {
+            DataTable table = new DataTable();
+            Action<DbDataReader> action = reader =>
+            {
+                try
+                {
+                    table = new DbReader(reader).ReadToEnd();
+                }
+                catch (Exception ex)
+                {
+                    OnError(new SqlExceptionEventArgs(command, ex));
+                }
+            };
+
+            Execute(action);
+
+            return table;
         }
 
         public override string ToString()
