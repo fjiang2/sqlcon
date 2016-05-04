@@ -22,7 +22,7 @@ namespace Sys.Data
         }
 
 
-        public int CopyTo(TableName tname2, CancellationTokenSource cts, IProgress<int> progress)
+        public int CopyTo(TableName tname2, SqlBulkCopyColumnMapping[] mappings, CancellationTokenSource cts, IProgress<int> progress)
         {
             DataTable table = new DataTable();
             int step = 0;
@@ -48,14 +48,14 @@ namespace Sys.Data
                     table.Rows.Add(row);
 
                     if (step % MaxRowCount == 0)
-                        BulkCopy(table, tname2);
+                        BulkCopy(table, tname2, mappings);
 
                     if (cts.IsCancellationRequested)
                         break;
                 }
 
                 if (step % MaxRowCount != 0)
-                    BulkCopy(table, tname2);
+                    BulkCopy(table, tname2, mappings);
             };
 
             tableReader.cmd.Execute(export);
@@ -63,19 +63,22 @@ namespace Sys.Data
             return step;
         }
 
-        private static void BulkCopy(DataTable table, TableName tname2)
+        private static void BulkCopy(DataTable table, TableName tname2, SqlBulkCopyColumnMapping[] mappings)
         {
             table.AcceptChanges();
             table.TableName = tname2.Name;
 
-            BulkCopy(table, tname2.Provider.ConnectionString);
+            BulkCopy(table, mappings, tname2.Provider.ConnectionString);
             table.Clear();
         }
 
-        private static void BulkCopy(DataTable table, string connectionString)
+        private static void BulkCopy(DataTable table, SqlBulkCopyColumnMapping[] mappings, string connectionString)
         {
             using (SqlBulkCopy bulkCopy = new SqlBulkCopy(connectionString))
             {
+                foreach (var mapping in mappings)
+                    bulkCopy.ColumnMappings.Add(mapping);
+
                 bulkCopy.DestinationTableName = table.TableName;
                 bulkCopy.WriteToServer(table);
             }
@@ -99,7 +102,7 @@ namespace Sys.Data
         {
             var reader = new TableReader(tname1);
             var bulkcopy = new TableBulkCopy(reader);
-            return bulkcopy.CopyTo(tname2, cts, progress);
+            return bulkcopy.CopyTo(tname2, new SqlBulkCopyColumnMapping[] { }, cts, progress);
         }
     }
 }

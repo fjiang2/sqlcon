@@ -1191,6 +1191,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("   table must have same structure");
                 stdio.WriteLine("xcopy database1 [database2]");
                 stdio.WriteLine("xcopy table1 [table2]");
+                stdio.WriteLine("       /col:c1[=d1],c2[=d2],...         copy selected columns");
+                stdio.WriteLine("       /s                               compare table schema");
                 return;
             }
 
@@ -1210,12 +1212,32 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     if (tname2 == null)
                         tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
 
-                    string result = Compare.TableSchemaDifference(CompareSideType.compare, tname1, tname2);
-                    if (!string.IsNullOrEmpty(result))
+                    if (cmd.IsSchema)
                     {
-                        stdio.ErrorFormat("destination table is not compatible or doesn't exist");
-                        continue;
+                        string result = Compare.TableSchemaDifference(CompareSideType.compare, tname1, tname2);
+                        if (!string.IsNullOrEmpty(result))
+                        {
+                            stdio.ErrorFormat("destination table is not compatible or doesn't exist");
+                            continue;
+                        }
                     }
+
+                    List<SqlBulkCopyColumnMapping> maps = new List<SqlBulkCopyColumnMapping>();
+                    if (cmd.Columns.Length > 0)
+                    {
+                        SqlBulkCopyColumnMapping mapping;
+                        foreach (var column in cmd.Columns)
+                        {
+                            string[] items = column.Split('=');
+                            if (items.Length == 2)
+                                mapping = new SqlBulkCopyColumnMapping(items[0], items[1]);
+                            else
+                                mapping = new SqlBulkCopyColumnMapping(column, column);
+
+                            maps.Add(mapping);
+                        }
+                    }
+
 
                     TableReader tableReader = new TableReader(tname1);
                     int count = tableReader.Count;
@@ -1224,7 +1246,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     using (var progress = new ProgressBar { Count = count })
                     {
                         TableBulkCopy bulkCopy = new TableBulkCopy(tableReader);
-                        bulkCopy.CopyTo(tname2, cts, progress);
+                        bulkCopy.CopyTo(tname2, maps.ToArray(), cts, progress);
 
                         if (cts.IsCancellationRequested)
                             progress.Report(count);

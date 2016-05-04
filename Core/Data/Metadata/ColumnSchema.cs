@@ -202,6 +202,9 @@ namespace Sys.Data
                 case "datetime":
                     return CType.DateTime;
 
+                case "datetime2":
+                    return CType.DateTime;
+
                 case "smalldatetime":
                     return CType.SmallDateTime;
 
