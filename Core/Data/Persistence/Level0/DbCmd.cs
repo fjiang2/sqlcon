@@ -280,7 +280,7 @@ namespace Sys.Data
                 try
                 {
                     var x = new DbReader(reader);
-                    x.ReadToEnd(cancellationToken, progress);
+                    x.ReadTable(cancellationToken, progress);
                 }
                 catch (Exception ex)
                 {
@@ -307,7 +307,7 @@ namespace Sys.Data
             {
                 try
                 {
-                    table = new DbReader(reader).ReadToEnd(cancellationToken, progress);
+                    table = new DbReader(reader).ReadTable(cancellationToken, progress);
                 }
                 catch (Exception ex)
                 {

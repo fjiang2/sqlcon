@@ -27,8 +27,9 @@ namespace Sys.Data
             DataTable table = new DataTable();
             int step = 0;
 
-            Action<DbDataReader> export = reader =>
+            Action<DbDataReader> copy = reader =>
             {
+                var dbReader = new DbReader(reader);
                 table = DbReader.CreateTable(reader);
 
                 DataRow row;
@@ -40,11 +41,7 @@ namespace Sys.Data
                     if (step % 19 == 0)
                         progress?.Report(step);
 
-                    row = table.NewRow();
-
-                    for (int i = 0; i < reader.FieldCount; i++)
-                        row[i] = reader.GetValue(i);
-
+                    row = dbReader.ReadRow(table);
                     table.Rows.Add(row);
 
                     if (step % MaxRowCount == 0)
@@ -58,7 +55,7 @@ namespace Sys.Data
                     BulkCopy(table, tname2, mappings);
             };
 
-            tableReader.cmd.Read(export);
+            tableReader.cmd.Read(copy);
 
             return step;
         }
