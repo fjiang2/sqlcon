@@ -296,6 +296,7 @@ namespace Sys.Data
         /// <summary>
         /// Fill data table by DbDataReader
         /// </summary>
+        /// <param name="cancellationToken"></param>
         /// <param name="progress"></param>
         /// <returns></returns>
         public DataTable FillDataTable(CancellationToken cancellationToken, IProgress<int> progress)
