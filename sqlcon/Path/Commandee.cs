@@ -1191,7 +1191,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("   table must have same structure");
                 stdio.WriteLine("xcopy database1 [database2]");
                 stdio.WriteLine("xcopy table1 [table2]");
-                stdio.WriteLine("       /col:c1[=d1],c2[=d2],...         copy selected columns");
+                stdio.WriteLine("       /col:c1[=d1],c2[=d2],...         copy selected columns (mapping)");
                 stdio.WriteLine("       /s                               compare table schema");
                 return;
             }

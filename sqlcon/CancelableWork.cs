@@ -10,7 +10,7 @@ namespace sqlcon
    
     class CancelableWork
     {
-        public static void CanCancel(Action<CancellationTokenSource> work, string message = null)
+        public static void CanCancel(Action<CancellationToken> work, string message = null)
         {
             CancellationTokenSource cts = new CancellationTokenSource();
 
@@ -26,7 +26,7 @@ namespace sqlcon
             
             try
             {
-                work(cts);
+                work(cts.Token);
             }
             finally
             {

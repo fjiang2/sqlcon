@@ -273,13 +273,14 @@ namespace Sys.Data
             }
         }
 
-        public void Execute(IDbReadLine lines)
+        public void Execute(CancellationToken cancellationToken, IProgress<DataRow> progress)
         {
             Action<DbDataReader> action = reader =>
             {
                 try
                 {
-                    lines.Read(reader);
+                    var x = new DbReader(reader);
+                    x.ReadToEnd(cancellationToken, progress);
                 }
                 catch (Exception ex)
                 {
@@ -292,14 +293,20 @@ namespace Sys.Data
         }
 
 
-        internal DataTable ReadToTable()
+        /// <summary>
+        /// Fill data table by DbDataReader
+        /// </summary>
+        /// <param name="progress"></param>
+        /// <returns></returns>
+        public DataTable FillDataTable(CancellationToken cancellationToken, IProgress<int> progress)
         {
-            DataTable table = new DataTable();
+            DataTable table = null;
+
             Action<DbDataReader> action = reader =>
             {
                 try
                 {
-                    table = new DbReader(reader).ReadToEnd();
+                    table = new DbReader(reader).ReadToEnd(cancellationToken, progress);
                 }
                 catch (Exception ex)
                 {

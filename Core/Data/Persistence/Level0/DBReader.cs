@@ -9,30 +9,20 @@ using System.Threading;
 
 namespace Sys.Data
 {
-
-    public interface IDbReadLine
-    {
-        void Read(DbDataReader reader);
-    }
-
-    public class DbReader
+    class DbReader
     {
         private DbDataReader reader;
-
-        public CancellationTokenSource cts { get; set; }
-        public IProgress<int> progress { get; set; }
 
         private DataTable table;
 
         public DbReader(DbDataReader reader)
         {
             this.reader = reader;
-            table = CreateTable();
+            table = CreateTable(reader);
         }
 
-        public DataTable Table => table;
 
-        public DataRow ReadLine()
+        private DataRow ReadLine()
         {
             DataRow row = table.NewRow();
             for (int i = 0; i < reader.FieldCount; i++)
@@ -43,28 +33,21 @@ namespace Sys.Data
             return row;
         }
 
-        public void ReadToEnd(Action<DataRow> line)
+        public void ReadToEnd(CancellationToken cancellationToken, IProgress<DataRow> progress)
         {
-            int count = reader.FieldCount;
-            object[] values = new object[count];
-
-            int step = 0;
-
             while (reader.Read())
             {
-                step++;
-                progress?.Report(step);
                 var row = ReadLine();
-                line(row);
+                progress.Report(row);
 
-                if (cts != null && cts.IsCancellationRequested)
+                if (cancellationToken != null && cancellationToken.IsCancellationRequested)
                     break;
             }
 
         }
 
 
-        public DataTable ReadToEnd()
+        public DataTable ReadToEnd(CancellationToken cancellationToken, IProgress<int> progress)
         {
             int step = 0;
 
@@ -76,7 +59,7 @@ namespace Sys.Data
                 var row = ReadLine();
                 table.Rows.Add(row);
 
-                if (cts != null && cts.IsCancellationRequested)
+                if (cancellationToken != null && cancellationToken.IsCancellationRequested)
                     break;
             }
 
@@ -85,7 +68,7 @@ namespace Sys.Data
             return table;
         }
 
-        private DataTable CreateTable()
+        public static DataTable CreateTable(DbDataReader reader)
         {
             DataTable table = new DataTable();
             for (int i = 0; i < reader.FieldCount; i++)

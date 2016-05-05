@@ -22,7 +22,7 @@ using System.Data;
 
 namespace Sys.Data
 {
-    public abstract class BaseRowAdapter: System.Collections.IEnumerable
+    public abstract class BaseRowAdapter : System.Collections.IEnumerable
     {
         protected ColumnAdapterCollection columns;
         protected DataFieldCollection fields;
@@ -36,15 +36,15 @@ namespace Sys.Data
         public BaseRowAdapter(TableName tname, Locator locator)
         {
             this.columns = new ColumnAdapterCollection();
-            this.fields = new DataFieldCollection(); 
+            this.fields = new DataFieldCollection();
 
             this.tableName = tname;
-            this.locator = locator;          
+            this.locator = locator;
         }
 
-        public TableName TableName 
-        { 
-            get { return this.tableName; } 
+        public TableName TableName
+        {
+            get { return this.tableName; }
         }
 
         protected void UpdateWhere(Locator where)
@@ -221,7 +221,7 @@ namespace Sys.Data
 
         #endregion
 
-    
+
         protected DataRow LoadRecord()
         {
             if (RefreshRow())
@@ -235,7 +235,7 @@ namespace Sys.Data
 
 
 
-     
+
 
         protected bool RefreshRow()
         {
@@ -245,7 +245,7 @@ namespace Sys.Data
                 column.AddParameter(sqlCmd);
             }
 
-            DataTable dt = sqlCmd.ReadToTable();
+            DataTable dt = sqlCmd.FillDataTable();
 
             if (dt.Rows.Count == 0)
             {
@@ -260,7 +260,7 @@ namespace Sys.Data
             this.loadedRow = dt.Rows[0];
             this.exists = true;
             return true;
-        
+
         }
 
         public bool Exists
@@ -295,7 +295,7 @@ namespace Sys.Data
         }
 
 
-   
+
 
     }
 }

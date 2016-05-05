@@ -22,14 +22,14 @@ namespace Sys.Data
         }
 
 
-        public int CopyTo(TableName tname2, SqlBulkCopyColumnMapping[] mappings, CancellationTokenSource cts, IProgress<int> progress)
+        public int CopyTo(TableName tname2, SqlBulkCopyColumnMapping[] mappings, CancellationToken cancellationToken, IProgress<int> progress)
         {
             DataTable table = new DataTable();
             int step = 0;
 
             Action<DbDataReader> export = reader =>
             {
-                table = new DbReader(reader).Table;
+                table = DbReader.CreateTable(reader);
 
                 DataRow row;
 
@@ -50,7 +50,7 @@ namespace Sys.Data
                     if (step % MaxRowCount == 0)
                         BulkCopy(table, tname2, mappings);
 
-                    if (cts.IsCancellationRequested)
+                    if (cancellationToken.IsCancellationRequested)
                         break;
                 }
 
@@ -63,25 +63,22 @@ namespace Sys.Data
             return step;
         }
 
-        private static void BulkCopy(DataTable table, TableName tname2, SqlBulkCopyColumnMapping[] mappings)
+        private static void BulkCopy(DataTable table1, TableName tname2, SqlBulkCopyColumnMapping[] mappings)
         {
-            table.AcceptChanges();
-            table.TableName = tname2.Name;
+            table1.AcceptChanges();
+            table1.TableName = tname2.Name;
 
-            BulkCopy(table, mappings, tname2.Provider.ConnectionString);
-            table.Clear();
-        }
-
-        private static void BulkCopy(DataTable table, SqlBulkCopyColumnMapping[] mappings, string connectionString)
-        {
+            string connectionString = tname2.Provider.ConnectionString;
             using (SqlBulkCopy bulkCopy = new SqlBulkCopy(connectionString))
             {
                 foreach (var mapping in mappings)
                     bulkCopy.ColumnMappings.Add(mapping);
 
-                bulkCopy.DestinationTableName = table.TableName;
-                bulkCopy.WriteToServer(table);
+                bulkCopy.DestinationTableName = table1.TableName;
+                bulkCopy.WriteToServer(table1);
             }
+
+            table1.Clear();
         }
 
 
@@ -95,14 +92,14 @@ namespace Sys.Data
         {
             using (var cts = new CancellationTokenSource())
             {
-                return Copy(tname1, tname2, cts, null);
+                return Copy(tname1, tname2, cts.Token, null);
             }
         }
-        public static int Copy(TableName tname1, TableName tname2, CancellationTokenSource cts, IProgress<int> progress)
+        public static int Copy(TableName tname1, TableName tname2, CancellationToken cancellationToken, IProgress<int> progress)
         {
             var reader = new TableReader(tname1);
             var bulkcopy = new TableBulkCopy(reader);
-            return bulkcopy.CopyTo(tname2, new SqlBulkCopyColumnMapping[] { }, cts, progress);
+            return bulkcopy.CopyTo(tname2, new SqlBulkCopyColumnMapping[] { }, cancellationToken, progress);
         }
     }
 }
