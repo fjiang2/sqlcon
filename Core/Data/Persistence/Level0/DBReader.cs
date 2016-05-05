@@ -13,16 +13,13 @@ namespace Sys.Data
     {
         private DbDataReader reader;
 
-        private DataTable table;
-
         public DbReader(DbDataReader reader)
         {
             this.reader = reader;
-            table = CreateTable(reader);
         }
 
 
-        private DataRow ReadLine()
+        public DataRow ReadRow(DataTable table)
         {
             DataRow row = table.NewRow();
             for (int i = 0; i < reader.FieldCount; i++)
@@ -33,11 +30,13 @@ namespace Sys.Data
             return row;
         }
 
-        public void ReadToEnd(CancellationToken cancellationToken, IProgress<DataRow> progress)
+        public void ReadTable(CancellationToken cancellationToken, IProgress<DataRow> progress)
         {
+            var table = CreateTable(reader);
+
             while (reader.Read())
             {
-                var row = ReadLine();
+                var row = ReadRow(table);
                 progress.Report(row);
 
                 if (cancellationToken != null && cancellationToken.IsCancellationRequested)
@@ -47,8 +46,10 @@ namespace Sys.Data
         }
 
 
-        public DataTable ReadToEnd(CancellationToken cancellationToken, IProgress<int> progress)
+        public DataTable ReadTable(CancellationToken cancellationToken, IProgress<int> progress)
         {
+            var table = CreateTable(reader);
+
             int step = 0;
 
             while (reader.Read())
@@ -56,7 +57,7 @@ namespace Sys.Data
                 step++;
                 progress?.Report(step);
 
-                var row = ReadLine();
+                var row = ReadRow(table);
                 table.Rows.Add(row);
 
                 if (cancellationToken != null && cancellationToken.IsCancellationRequested)
@@ -80,6 +81,31 @@ namespace Sys.Data
             table.AcceptChanges();
 
             return table;
+        }
+
+        public void ReadDataSet(CancellationToken cancellationToken, IProgress<int> tableChanged, IProgress<DataRow> progress)
+        {
+            int step = 0;
+            while (reader.HasRows)
+            {
+                ReadTable(cancellationToken, progress);
+                tableChanged.Report(step++);
+                reader.NextResult();
+            }
+        }
+
+        public DataSet ReadDataSet(CancellationToken cancellationToken, IProgress<DataTable> tableChanged, IProgress<int> progress)
+        {
+            DataSet ds = new DataSet();
+            while (reader.HasRows)
+            {
+                var dt = ReadTable(cancellationToken, progress);
+                tableChanged.Report(dt);
+                ds.Tables.Add(dt);
+                reader.NextResult();
+            }
+
+            return ds;
         }
     }
 }
