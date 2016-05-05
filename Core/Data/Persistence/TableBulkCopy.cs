@@ -58,7 +58,7 @@ namespace Sys.Data
                     BulkCopy(table, tname2, mappings);
             };
 
-            tableReader.cmd.Execute(export);
+            tableReader.cmd.Read(export);
 
             return step;
         }

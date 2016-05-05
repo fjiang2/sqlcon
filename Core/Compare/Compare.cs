@@ -149,7 +149,7 @@ namespace Sys.Data.Comparison
             TableClause script = new TableClause(schema);
 
             int count = 0;
-            cmd.Execute(
+            cmd.Read(
                 reader =>
                 {
                     DataTable schema1 = reader.GetSchemaTable();

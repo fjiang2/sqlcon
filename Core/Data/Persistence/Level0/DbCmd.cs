@@ -255,7 +255,7 @@ namespace Sys.Data
         }
 
 
-        public void Execute(Action<DbDataReader> action)
+        public void Read(Action<DbDataReader> action)
         {
             using (connection)
             {
@@ -273,7 +273,7 @@ namespace Sys.Data
             }
         }
 
-        public void Execute(CancellationToken cancellationToken, IProgress<DataRow> progress)
+        public void Read(CancellationToken cancellationToken, IProgress<DataRow> progress)
         {
             Action<DbDataReader> action = reader =>
             {
@@ -288,7 +288,7 @@ namespace Sys.Data
                 }
             };
 
-            Execute(action);
+            Read(action);
 
         }
 
@@ -299,7 +299,7 @@ namespace Sys.Data
         /// <param name="cancellationToken"></param>
         /// <param name="progress"></param>
         /// <returns></returns>
-        public DataTable FillDataTable(CancellationToken cancellationToken, IProgress<int> progress)
+        public DataTable ReadDataTable(CancellationToken cancellationToken, IProgress<int> progress)
         {
             DataTable table = null;
 
@@ -315,7 +315,7 @@ namespace Sys.Data
                 }
             };
 
-            Execute(action);
+            Read(action);
 
             return table;
         }

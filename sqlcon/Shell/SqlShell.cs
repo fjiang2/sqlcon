@@ -430,7 +430,7 @@ namespace sqlcon
                         }
                     }
                     else
-                        new SqlCmd(theSide.Provider, text).Execute(reader => reader.ToConsole(Context.GetValue<int>(Context.MAXROWS, 100)));
+                        new SqlCmd(theSide.Provider, text).Read(reader => reader.ToConsole(Context.GetValue<int>(Context.MAXROWS, 100)));
                     break;
 
                 case "update":
