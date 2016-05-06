@@ -1193,6 +1193,9 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("xcopy table1 [table2]");
                 stdio.WriteLine("       /col:c1[=d1],c2[=d2],...         copy selected columns (mapping)");
                 stdio.WriteLine("       /s                               compare table schema");
+                stdio.WriteLine("note that: to xcopy selected records of table, mkdir locator first, example:");
+                stdio.WriteLine(@"  \local\NorthWind\Products> md ProductId<2000");
+                stdio.WriteLine(@"  \local\NorthWind\Products> xcopy 1 \local\db");
                 return;
             }
 
@@ -1238,8 +1241,16 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                         }
                     }
 
+                    TableReader tableReader;
+                    if (both.ps1.Node.Item is Locator)
+                    {
+                        Locator locator = mgr.GetCombinedLocator(both.ps1.Node);
+                        string where = locator.Path;
+                        tableReader = new TableReader(tname1, where.Inject());
+                    }
+                    else
+                        tableReader = new TableReader(tname1);
 
-                    TableReader tableReader = new TableReader(tname1);
                     int count = tableReader.Count;
 
                     stdio.Write("copying {0}", tname1.Name);
