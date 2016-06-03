@@ -19,26 +19,7 @@ namespace Sys.Data.Comparison
 
         public string ToScript()
         {
-            if (Value == null || Value == DBNull.Value)
-                return "NULL";
-            else if (Value is DateTime)
-            {
-                DateTime time = (DateTime)Value;
-                var d = DELIMETER + string.Format("{0} {1}", time.ToString("d"), time.ToString("HH:mm:ss.fff")) + DELIMETER;
-                return d;
-            }
-            else if (Value is string)
-                return "N" + DELIMETER + (Value as string).Replace("'", "''") + DELIMETER;
-            else if (Value is Guid)
-                return "N" + DELIMETER + Value.ToString() + DELIMETER;
-            else if (Value is bool)
-                return (bool)Value ? "1" : "0";
-            else if (Value is byte[])
-            {
-                return "0x" + ByteArrayToHexString((byte[])Value);
-            }
-            else
-                return Value.ToString();
+            return new SqlValue(Value).ToString("N");
         }
 
         public static string ToScript(IColumn column)

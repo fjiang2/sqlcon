@@ -229,6 +229,8 @@ namespace Sys.Data
             }
         }
 
+        public bool IsReadOnly => DpType == DbProviderType.XmlDb;
+
         public abstract bool CheckConnection();
 
       

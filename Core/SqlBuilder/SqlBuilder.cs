@@ -390,7 +390,7 @@ namespace Sys.Data
 
         public SqlBuilder WHERE(byte[] loc)
         {
-            script.Append("WHERE ").Append(SqlExpr.PHYSLOC).Append(" = ").Append(new SqlValue(loc).Text);
+            script.Append("WHERE ").Append(SqlExpr.PHYSLOC).Append(" = ").Append(new SqlValue(loc));
             return this.CRLF;
         }
 
@@ -598,7 +598,7 @@ namespace Sys.Data
                 if (i != 0)
                     sb.Append(",");
 
-                sb.Append(new SqlValue(S[i]).Text);
+                sb.Append(new SqlValue(S[i]));
 
             }
 

@@ -33,11 +33,11 @@ namespace Sys.Data
         {
         }
 
-      
+
 
         private SqlExpr NextValue(object value)
         {
-            script.Append(new SqlValue(value).Text);
+            script.Append(new SqlValue(value));
             return this;
         }
 
@@ -52,6 +52,14 @@ namespace Sys.Data
             return ColumnName(name, null).Next(" = ").NextValue(value);
         }
 
+        internal static SqlExpr Equal(string name, object value)
+        {
+            if (value == null || value == DBNull.Value)
+                return ColumnName(name, null).Next(" IS NULL");
+            else
+                return ColumnName(name, null).Next(" = ").NextValue(value);
+        }
+
         internal static SqlExpr ColumnName(string name, string alias)
         {
             SqlExpr exp = new SqlExpr();
@@ -60,7 +68,7 @@ namespace Sys.Data
                     .Next(".");
 
             exp.Next("[" + name + "]");
-            
+
             return exp;
         }
 
@@ -90,7 +98,7 @@ namespace Sys.Data
                 .Next(parameterName.SqlParameterName());
 
             exp.AddParam(parameterName, columnName);
-            
+
             return exp;
         }
 
@@ -278,8 +286,8 @@ namespace Sys.Data
             this.Next(" AS ").Next(alias);
             return this;
         }
-        
-        
+
+
         public SqlExpr this[SqlExpr exp]
         {
             get
@@ -342,7 +350,7 @@ namespace Sys.Data
             return this;
         }
 
-      
+
         public SqlExpr BETWEEN(SqlExpr exp1, SqlExpr exp2)
         {
             this.Next(" BETWEEN ")
@@ -374,7 +382,7 @@ namespace Sys.Data
                 .Next(string.Format("{0} {1} {2}", ExpToString(exp1), opr, ExpToString(exp2)));
 
             exp.Merge(exp1).Merge(exp2);
-            
+
             exp.compound = true;
             return exp;
         }
@@ -385,8 +393,8 @@ namespace Sys.Data
             SqlExpr exp = new SqlExpr();
             exp.Next("(")
                .Next(string.Format("{0}", ExpToString(exp1)));
-            
-            foreach(SqlExpr exp2 in exps)
+
+            foreach (SqlExpr exp2 in exps)
             {
                 exp.Next(string.Format(" {0} {1}", opr, ExpToString(exp2)));
             }
@@ -416,22 +424,22 @@ namespace Sys.Data
 
         public static SqlExpr operator +(SqlExpr exp1, SqlExpr exp2)
         {
-             return OPR(exp1, "+", exp2);
+            return OPR(exp1, "+", exp2);
         }
 
         public static SqlExpr operator -(SqlExpr exp1, SqlExpr exp2)
         {
-             return OPR(exp1, "-", exp2);
+            return OPR(exp1, "-", exp2);
         }
 
         public static SqlExpr operator *(SqlExpr exp1, SqlExpr exp2)
         {
-             return OPR(exp1, "*", exp2);
+            return OPR(exp1, "*", exp2);
         }
 
         public static SqlExpr operator /(SqlExpr exp1, SqlExpr exp2)
         {
-             return OPR(exp1, "/", exp2);
+            return OPR(exp1, "/", exp2);
         }
 
         public static SqlExpr operator %(SqlExpr exp1, SqlExpr exp2)
@@ -500,7 +508,7 @@ namespace Sys.Data
         {
             return OPR("~", exp);
         }
-        
+
         #endregion
 
 

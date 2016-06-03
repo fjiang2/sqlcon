@@ -31,6 +31,10 @@ namespace Sys.Data
         {
           return SqlExpr.Assign(name, value);
         }
+        public static SqlExpr Equal(this string name, object value)
+        {
+            return SqlExpr.Equal(name, value);
+        }
 
         /// <summary>
         /// "name" -> "[name]"

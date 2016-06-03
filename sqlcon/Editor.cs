@@ -98,6 +98,10 @@ namespace sqlcon
             DataColumn column = e.Column;
             DataRow row = e.Row;
 
+            TableName tname = udt.TableName;
+            if (tname.Provider.IsReadOnly)
+                return;
+
             try
             {
                 if (row.RowState != DataRowState.Detached)
@@ -113,6 +117,9 @@ namespace sqlcon
         {
             TableName tname = udt.TableName;
             if (tname == null)
+                return;
+
+            if (tname.Provider.IsReadOnly)
                 return;
 
             try

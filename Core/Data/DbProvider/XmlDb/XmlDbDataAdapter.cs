@@ -32,9 +32,15 @@ namespace Sys.Data
 
         private TableName getTableName(string sql)
         {
-            string[] items = sql.Trim().Split(new string[] {"SELECT", "FROM" , "WHERE"}, StringSplitOptions.RemoveEmptyEntries);
-            string name = items.Last().Trim();
-             return new TableName(connection.Provider, name);
+            string[] items = sql.Trim().Split(new string[] { "SELECT", "FROM", "WHERE" }, StringSplitOptions.RemoveEmptyEntries);
+
+            string name = null;
+            if (items.Length > 1)
+                name = items[1].Trim();
+            else
+                throw new InvalidDataException($"cannot extract table name from SQL:{sql}");
+
+            return new TableName(connection.Provider, name);
         }
 
         private int FillDataTable(TableName tname, DataSet ds)

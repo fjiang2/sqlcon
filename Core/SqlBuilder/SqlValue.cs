@@ -24,8 +24,11 @@ namespace Sys.Data
     /// <summary>
     /// a value can be used on SQL statement
     /// </summary>
-    internal class SqlValue
+    class SqlValue
     {
+        private const string DELIMETER = "'";
+        private const string NULL = "'";
+
         private object value;
 
         public SqlValue(object value)
@@ -36,7 +39,7 @@ namespace Sys.Data
         public static bool gb2312text(string text)
         {
             Encoding encoding = System.Text.Encoding.GetEncoding("gb2312");
-            
+
             for (int i = 0; i < text.Length; i++)
             {
                 byte[] s2 = encoding.GetBytes(text.Substring(i, 1));
@@ -47,50 +50,57 @@ namespace Sys.Data
             return false;
         }
 
-        public string Text
+        public string ToString(string format)
         {
-            get
+            if (value == null || value == DBNull.Value)
+                return NULL;
+
+            StringBuilder sb = new StringBuilder();
+
+            if (value is string)
             {
-                if (value == null || value == DBNull.Value)
-                    return "NULL";
+                //N: used for SQL Type nvarchar
+                if (format != null || gb2312text(value as string))
+                    sb.Append("N");
 
-                StringBuilder sb = new StringBuilder();
-
-                if (value is string)
-                {
-                    //N: used for SQL Type nvarchar
-                    if (gb2312text(value as string))
-                        sb.Append("N");
-
-                    sb.Append("'")
-                      .Append((value as string).Replace("'", "''"))
-                      .Append("'");
-                }
-                else if (value is bool || value is bool?)
-                {
-                    sb.Append((bool)value ? "1" : "0");
-                }
-                else if (value is DateTime || value is DateTime? || value is char)
-                {
-                    sb.Append("'").Append(value).Append("'");
-                }
-                else if (value is byte[])
-                {
-                    sb.Append("0x" + BitConverter.ToString((byte[])value).Replace("-", ""));
-                }
-                else
-                {
-                    sb.Append(value);
-                }
-
-                return sb.ToString();
+                sb.Append(DELIMETER)
+                  .Append((value as string).Replace("'", "''"))
+                  .Append(DELIMETER);
             }
+            else if (value is bool || value is bool?)
+            {
+                sb.Append((bool)value ? "1" : "0");
+            }
+            else if (value is DateTime || value is DateTime?)
+            {
+                DateTime time = (DateTime)value;
+                sb.Append(DELIMETER)
+                  .AppendFormat("{0} {1}", time.ToString("d"), time.ToString("HH:mm:ss.fff"))
+                  .Append(DELIMETER);
+            }
+            else if (value is char)
+            {
+                sb.Append(DELIMETER).Append(value).Append(DELIMETER);
+            }
+            else if (value is byte[])
+            {
+                sb.Append("0x" + BitConverter.ToString((byte[])value).Replace("-", ""));
+                //sb.Append("0x" + Comparison.ColumnValue.ByteArrayToHexString((byte[])value));
+            }
+            else if (value is Guid)
+                sb.Append("N" + DELIMETER).Append(value).Append(DELIMETER);
+            else
+            {
+                sb.Append(value);
+            }
+
+            return sb.ToString();
         }
 
         public override string ToString()
         {
-            return this.Text;
+            return this.ToString(null);
         }
-      
+
     }
 }

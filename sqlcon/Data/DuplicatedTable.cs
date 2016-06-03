@@ -47,7 +47,7 @@ namespace sqlcon
         {
             foreach (var row in group.AsEnumerable())
             {
-                var where = _columns.Select(column => column.Assign(row[column])).AND();
+                var where = _columns.Select(column => column.Equal(row[column])).AND();
                 if (AllColumnsSelected)
                     stdio.WriteLine("idential rows");
                 else
@@ -79,7 +79,7 @@ namespace sqlcon
             {
                 int count = row.Field<int>(COUNT_COLUMN_NAME);
 
-                var where = _columns.Select(column => column.Assign(row[column])).AND();
+                var where = _columns.Select(column => column.Equal(row[column])).AND();
                 var builder = new SqlBuilder()
                     .SET("ROWCOUNT", count-1)
                     .DELETE(tname)

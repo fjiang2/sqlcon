@@ -149,7 +149,7 @@ namespace Sys.Data
                     columns.Add(name);
                     values.Add(value);
 
-                    where.Add(name.Assign(value));
+                    where.Add(name.Equal(value));
                 }
             }
 
