@@ -85,11 +85,13 @@ namespace sqlcon
 
             if (cmd.ToCSharp)
             {
-                stdio.WriteLine(ToCSharp(table));
+                string clss = cmd.GetValue("class");
+
+                stdio.WriteLine(ToCSharp(table, clss));
                 return;
             }
 
-            if(cmd.Has("edit"))
+            if (cmd.Has("edit"))
             {
                 var editor = new Editor(udt);
                 editor.ShowDialog();
@@ -129,8 +131,9 @@ namespace sqlcon
             return L.ToJson();
         }
 
-        private static string ToCSharp(DataTable dt)
+        private static string ToCSharp(DataTable dt, string clss)
         {
+            clss = clss ?? string.Empty;
             //array
             if (dt.Columns.Count == 1)
             {
@@ -148,10 +151,10 @@ namespace sqlcon
                     V.Add(string.Format("{0}={1}", columns[i], VAL.Boxing(row[i]).ToString()));
                 }
 
-                L.Add("new {" + string.Join(", ", V) + "}");
+                L.Add($"new {clss}" + "{" + string.Join(", ", V) + "}");
             }
 
-            return "new[] {\n" + string.Join(",\n", L) + "\n}";
+            return $"new {clss}[]" + "{\n" + string.Join(",\n", L) + "\n}";
         }
 
         private bool Display(Command cmd, SqlBuilder builder, int top)
@@ -228,7 +231,7 @@ namespace sqlcon
             return Display(cmd, builder, top);
         }
 
-      
+
         public bool Display(Command cmd, string columns, Locator locator)
         {
             SqlBuilder builder;
