@@ -379,12 +379,22 @@ namespace sqlcon
             {
                 var dname = mgr.GetCurrentPath<DatabaseName>();
                 if (dname != null)
-                    theSide.UpdateDatabase(dname.Provider);
+                {
+                    if (theSide == null)
+                        theSide = new Side(dname.Provider);
+                    else
+                        theSide.UpdateDatabase(dname.Provider);
+                }
                 else
                 {
                     var sname = mgr.GetCurrentPath<ServerName>();
                     if (sname != null)
-                        theSide.UpdateDatabase(sname.Provider);
+                    {
+                        if (theSide == null)
+                            theSide = new Side(dname.Provider);
+                        else
+                            theSide.UpdateDatabase(sname.Provider);
+                    }
                 }
             }
         }

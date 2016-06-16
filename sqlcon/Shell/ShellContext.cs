@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sys.Data;
 
 namespace sqlcon
 {
@@ -18,13 +19,11 @@ namespace sqlcon
             this.commandee = new Commandee(mgr);
 
             string server = cfg.GetValue<string>(Configuration._SERVER0);
-            if (server == null)
-            {
-                stdio.ErrorFormat("default server is undefined on user.cfg file, check setting: home=...");
-                return;
-            }
 
-            var pvd = cfg.GetProvider(server);
+            ConnectionProvider pvd = null;
+            if (!string.IsNullOrEmpty(server))
+                pvd = cfg.GetProvider(server);
+
             if (pvd != null)
             {
                 theSide = new Side(pvd);
@@ -37,7 +36,7 @@ namespace sqlcon
             }
             else
             {
-                throw new Exception("SQL Server not defined");
+                stdio.ErrorFormat("database server not defined");
             }
         }
 
