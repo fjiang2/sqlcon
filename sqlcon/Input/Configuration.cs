@@ -95,6 +95,9 @@ namespace sqlcon
             using (var reader = new StreamReader(cfgFile))
             {
                 string code = reader.ReadToEnd();
+                if (string.IsNullOrEmpty(code))
+                    return false;
+
                 try
                 {
                     Script.Execute(code, Cfg);

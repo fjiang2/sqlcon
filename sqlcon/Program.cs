@@ -92,16 +92,30 @@ namespace sqlcon
 
             //create empty text file if file is missing
             if (!File.Exists(cfgFile))
+            {
                 File.Create(cfgFile).Dispose();
+            }
 
             string file = Path.Combine(folder, cfgFile);
-            if (!File.Exists(file))
+            try
             {
-                File.Copy(cfgFile, file);
+                if (!File.Exists(file))
+                {
+                    File.Copy(cfgFile, file);
+                }
+                else 
+                {
+                    FileInfo f = new FileInfo(file);
+                    if (f.Length == 0)
+                        overwrite = true;
+
+                    if (overwrite)
+                        File.Copy(cfgFile, file, true);
+                }
             }
-            else if (overwrite)
+            catch(Exception ex)
             {
-                File.Copy(cfgFile, file, true);
+                stdio.ErrorFormat("failed to initialize {0}, {1}", file, ex.Message);
             }
 
             return file;

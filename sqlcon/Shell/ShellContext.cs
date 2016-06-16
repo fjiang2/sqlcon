@@ -18,6 +18,12 @@ namespace sqlcon
             this.commandee = new Commandee(mgr);
 
             string server = cfg.GetValue<string>(Configuration._SERVER0);
+            if (server == null)
+            {
+                stdio.ErrorFormat("default server is undefined on user.cfg file, check setting: home=...");
+                return;
+            }
+
             var pvd = cfg.GetProvider(server);
             if (pvd != null)
             {
