@@ -1,5 +1,12 @@
 ﻿sqlcon release notes
 
+6/15/2016 v1.6.0.0
+	Bugs Fixes:
+	1. crashes when no database server defined on the user.cfg
+	2. crashes when command>type /edit<CR> read-only tables
+	Improvements/Enhancements:
+	1. command>type /c# /class:name<CR> outputs named C# data array
+
 5/4/2016 v1.5.1.0
 	New Features:
 	1. command xcopy supports column mappings
