@@ -90,24 +90,34 @@ namespace sqlcon
             if (!Directory.Exists(folder))
                 Directory.CreateDirectory(folder);
 
-            //create empty text file if file is missing
-            if (!File.Exists(cfgFile))
-            {
-                File.Create(cfgFile).Dispose();
-            }
-
+            bool exists = File.Exists(cfgFile);
             string file = Path.Combine(folder, cfgFile);
             try
             {
                 if (!File.Exists(file))
                 {
-                    File.Copy(cfgFile, file);
+                    if (!exists)
+                    {
+                        //create empty text file if file is missing
+                        File.Create(file).Dispose();
+                    }
+                    else
+                        File.Copy(cfgFile, file);
+
+                    return file;
                 }
-                else 
+
+                if (exists)
                 {
                     FileInfo f = new FileInfo(file);
                     if (f.Length == 0)
                         overwrite = true;
+
+                    if (!overwrite)
+                    {
+                        FileInfo c = new FileInfo(cfgFile);
+                        overwrite = c.LastWriteTime > f.LastWriteTime;
+                    }
 
                     if (overwrite)
                         File.Copy(cfgFile, file, true);
