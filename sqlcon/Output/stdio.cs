@@ -34,7 +34,7 @@ namespace sqlcon
 
         public static void OpenEditor(string fileName)
         {
-            string editor = Context.GetValue<string>("editor");
+            string editor = Context.GetValue<string>("editor", "notepad.exe");
             
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             process.StartInfo.ErrorDialog = true;
@@ -42,10 +42,20 @@ namespace sqlcon
             //process.StartInfo.WorkingDirectory = startin;
             process.StartInfo.FileName = editor;
             process.StartInfo.Arguments = fileName;
-            if (File.Exists(fileName))
-                process.Start();
-            else
+            if (!File.Exists(fileName))
+            {
                 stdio.ErrorFormat("file not found: {0}", fileName);
+                return;
+            }
+
+            try
+            {
+                process.Start();
+            }
+            catch (Exception ex)
+            {
+                stdio.ErrorFormat("failed to lauch application: {0} {1}, {2}", editor, fileName, ex.Message);
+            }
         }
 
         public static void Write(string format, params object[] args)

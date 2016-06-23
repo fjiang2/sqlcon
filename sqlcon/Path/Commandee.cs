@@ -953,6 +953,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("example:");
                 stdio.WriteLine("  mount ip100=192.168.0.100\\sqlexpress /u:sa /pwd:p@ss");
                 stdio.WriteLine("  mount web=http://192.168.0.100/db/northwind.xml /u:sa /pwd:p@ss");
+                stdio.WriteLine("  mount xml=file://c:\\db\\northwind.xml");
                 return;
             }
 
