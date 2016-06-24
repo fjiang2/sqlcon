@@ -157,8 +157,10 @@ namespace Sys.Data
                     return typeof(Int64);
 
                 case CType.Float:
-                case CType.Real:
                     return typeof(Double);
+
+                case CType.Real:
+                    return typeof(Single);
 
                 case CType.Decimal:
                 case CType.SmallMoney:
@@ -175,8 +177,13 @@ namespace Sys.Data
 
                 case CType.SmallDateTime:
                 case CType.DateTime:
+                case CType.Date:
+                case CType.DateTime2:
                     return typeof(DateTime);
 
+                case CType.DateTimeOffset:
+                    return typeof(DateTimeOffset);
+                    
                 case CType.Timestamp:
                 case CType.VarBinary:
                 case CType.Binary:
@@ -189,10 +196,7 @@ namespace Sys.Data
                 case CType.Variant:
                 case CType.Xml:
                 case CType.Udt:
-                case CType.Date:
                 case CType.Time:
-                case CType.DateTime2:
-                case CType.DateTimeOffset:
                     break;
 
                 //case CType.Geography:

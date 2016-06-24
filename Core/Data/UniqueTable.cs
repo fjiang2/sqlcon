@@ -138,14 +138,28 @@ namespace Sys.Data
             List<object> values = new List<object>();
             List<SqlExpr> where = new List<SqlExpr>();
 
+            var _columns = TableName.GetTableSchema().Columns;
 
             foreach (DataColumn column in table.Columns)
             {
                 object value = row[column];
                 string name = column.ColumnName;
+                IColumn _column = _columns[column.ColumnName];
 
-                if (column != colRowID && value != DBNull.Value)
+                if (column == colRowID)
+                    continue;
+
+                if (value != DBNull.Value)
                 {
+                    columns.Add(name);
+                    values.Add(value);
+
+                    where.Add(name.Equal(value));
+                }
+                else if (!_column.Nullable)  //add default value to COLUMN NOT NULL
+                {
+                    Type type = _column.CType.ToType();
+                    value = GetDefault(type);
                     columns.Add(name);
                     values.Add(value);
 
@@ -164,6 +178,28 @@ namespace Sys.Data
 
             row.AcceptChanges();
         }
+
+        private static object GetDefault(Type type)
+        {
+            if (type == typeof(string))
+                return string.Empty;
+            else if (type == typeof(DateTime))
+                return new DateTime();
+            else if (type == typeof(bool))
+                return false;
+            else if (type == typeof(int))
+                return 0;
+            else if (type == typeof(double))
+                return 0.0;
+
+            if (type.IsValueType)
+            {
+                return Activator.CreateInstance(type);
+            }
+
+            return null;
+        }
+
 
         private DataColumnCollection columns = null;
         public DataColumnCollection Columns

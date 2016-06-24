@@ -34,9 +34,9 @@ namespace sqlcon
 
             while (true)
             {
-            L1:
+                L1:
                 stdio.Write("{0}> ", mgr);
-            L2:
+                L2:
                 line = stdio.ReadLine();
 
                 //ctrl-c captured
@@ -468,11 +468,27 @@ namespace sqlcon
 
                 default:
                     if (text.EndsWith(";"))
-                        Tie.Script.Execute(text, Context.DS);
+                    {
+                        try
+                        {
+                            Script.Execute(text, Context.DS);
+                        }
+                        catch (Exception ex)
+                        {
+                            stdio.ErrorFormat("execute error: {0}", ex.Message);
+                        }
+                    }
                     else
                     {
-                        var val = Tie.Script.Evaluate(text, Context.DS);
-                        stdio.WriteLine(string.Format("{0} results {1}", text, val));
+                        try
+                        {
+                            var val = Script.Evaluate(text, Context.DS);
+                            stdio.WriteLine(string.Format("  results {0}", val));
+                        }
+                        catch (Exception ex)
+                        {
+                            stdio.ErrorFormat("evaluate error: {0}", ex.Message);
+                        }
                     }
 
                     break;
@@ -636,6 +652,9 @@ namespace sqlcon
             stdio.WriteLine("<Variables>");
             stdio.WriteLine("  maxrows               : max number of row shown on select query");
             stdio.WriteLine("  DataReader            : true: use SqlDataReader; false: use Fill DataSet");
+            stdio.WriteLine();
+            stdio.WriteLine("evalute expression or execuate statement if none of above ");
+            stdio.WriteLine("10+3; results 13");
             stdio.WriteLine();
         }
     }
