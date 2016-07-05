@@ -33,6 +33,9 @@ namespace Sys.Data
                         conn.Open();
                         SqlCommand cmd = new SqlCommand("SELECT @@version", conn);
                         string text = (string)cmd.ExecuteScalar();
+                        if (text.StartsWith("Microsoft SQL Azure"))
+                            return version = 2016;
+
                         string[] items = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                         version = int.Parse(items[3]);
                     }
