@@ -70,7 +70,7 @@ namespace sqlcon
                 }
                 catch(Exception ex)
                 {
-                    stdio.ErrorFormat(ex.Message);
+                    stdio.ErrorFormat("failed to retrieve table names from {0}, {1}", dname, ex.Message);
                     return false;
                 }
             }

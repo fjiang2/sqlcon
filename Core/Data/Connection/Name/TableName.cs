@@ -141,9 +141,9 @@ namespace Sys.Data
             {
                 if (this.baseName.Name != "")
                 {
-                    if (baseName.Provider.DataSource.ToLower() == @"(localdb)\mssqllocaldb")
+                    if (baseName.Provider.DataSource.ToLower().StartsWith("(localdb)"))
                     {
-                        return string.Format("{0}.[{1}]", this.schema, this.tableName);
+                        return string.Format("[{0}].{1}.[{2}]", this.baseName.Name, this.schema, this.tableName);
                     }
                     else if (baseName.Provider.DpType != DbProviderType.SqlCe) //Visual Studio 2010 Windows Form Design Mode, does not support format [database]..[table]
                         return string.Format("{0}.{1}.[{2}]", this.baseName.Name, this.schema, this.tableName);

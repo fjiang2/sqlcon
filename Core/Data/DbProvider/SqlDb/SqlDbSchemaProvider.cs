@@ -74,7 +74,7 @@ namespace Sys.Data
                     List<string> L = new List<string>();
                     foreach (var dname in dnames)
                     {
-                        if (!__sys_tables.Contains(dname) && !dname.StartsWith("AzureStorageEmulator"))
+                        if (!__sys_tables.Contains(dname))  // && !dname.StartsWith("AzureStorageEmulator"))
                             L.Add(dname);
                     }
 
