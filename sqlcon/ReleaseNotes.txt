@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+7/5/2016 v1.7.0.0
+	New Features:
+	1. support Microsoft SQL Azure connection string
+
 6/15/2016 v1.6.0.0
 	Bugs Fixes:
 	1. crashes when no database server defined on the user.cfg

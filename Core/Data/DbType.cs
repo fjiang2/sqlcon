@@ -183,7 +183,10 @@ namespace Sys.Data
 
                 case CType.DateTimeOffset:
                     return typeof(DateTimeOffset);
-                    
+
+                case CType.Time:
+                    return typeof(TimeSpan);
+
                 case CType.Timestamp:
                 case CType.VarBinary:
                 case CType.Binary:
@@ -193,10 +196,10 @@ namespace Sys.Data
                 case CType.UniqueIdentifier:
                     return typeof(Guid);
 
+
                 case CType.Variant:
                 case CType.Xml:
                 case CType.Udt:
-                case CType.Time:
                     break;
 
                 //case CType.Geography:
