@@ -55,7 +55,7 @@ namespace Sys.Data
             this.baseName = new DatabaseName(provider, databaseName);
         }
 
-      
+
 
         public TableName(DatabaseName databaseName, string schemaName, string tableName)
         {
@@ -86,9 +86,9 @@ namespace Sys.Data
 
         public override int GetHashCode()
         {
-            return FullName.GetHashCode()*100 + this.baseName.GetHashCode();
+            return FullName.GetHashCode() * 100 + this.baseName.GetHashCode();
         }
-    
+
         public string Name
         {
             get { return this.tableName; }
@@ -113,10 +113,10 @@ namespace Sys.Data
 
         public string FormalName
         {
-            get 
+            get
             {
                 if (this.schema != dbo)
-                    return string.Format("[{0}].[{1}]", this.schema, this.tableName); 
+                    return string.Format("[{0}].[{1}]", this.schema, this.tableName);
                 else
                     return string.Format("[{0}]", this.tableName);
             }
@@ -124,7 +124,7 @@ namespace Sys.Data
 
         public string ShortName
         {
-            get 
+            get
             {
                 if (this.schema != dbo)
                 {
@@ -141,8 +141,11 @@ namespace Sys.Data
             {
                 if (this.baseName.Name != "")
                 {
-                    //Visual Studio 2010 Windows Form Design Mode, does not support format [database]..[table]
-                    if (baseName.Provider.DpType != DbProviderType.SqlCe)
+                    if (baseName.Provider.DataSource.ToLower() == @"(localdb)\mssqllocaldb")
+                    {
+                        return string.Format("{0}.[{1}]", this.schema, this.tableName);
+                    }
+                    else if (baseName.Provider.DpType != DbProviderType.SqlCe) //Visual Studio 2010 Windows Form Design Mode, does not support format [database]..[table]
                         return string.Format("{0}.{1}.[{2}]", this.baseName.Name, this.schema, this.tableName);
                     else
                         return string.Format("[{0}]", this.tableName);
@@ -152,14 +155,14 @@ namespace Sys.Data
             }
         }
 
-            
+
         public override string ToString()
         {
             return FullName;
         }
 
 
-        
+
         public int Id
         {
             get

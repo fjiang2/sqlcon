@@ -55,16 +55,24 @@ namespace sqlcon
                 if (refresh)
                     pt.Nodes.Clear();
 
-                TableName[] tnames = dname.GetTableNames();
-                if (tnames == null)
+                try
+                {
+                    TableName[] tnames = dname.GetTableNames();
+                    if (tnames == null)
+                        return false;
+
+                    foreach (var tname in tnames)
+                        pt.Nodes.Add(new TreeNode<IDataPath>(tname));
+
+                    TableName[] vnames = dname.GetViewNames();
+                    foreach (var vname in vnames)
+                        pt.Nodes.Add(new TreeNode<IDataPath>(vname));
+                }
+                catch(Exception ex)
+                {
+                    stdio.ErrorFormat(ex.Message);
                     return false;
-
-                foreach (var tname in tnames)
-                    pt.Nodes.Add(new TreeNode<IDataPath>(tname));
-
-                TableName[] vnames = dname.GetViewNames();
-                foreach (var vname in vnames)
-                    pt.Nodes.Add(new TreeNode<IDataPath>(vname));
+                }
             }
 
             return true;
