@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+7/6/2016 v1.7.1.0
+	New Features:
+	1. support Microsoft SQL Server Express LocalDB
+
 7/5/2016 v1.7.0.0
 	New Features:
 	1. support Microsoft SQL Azure connection string
