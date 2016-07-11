@@ -8,6 +8,9 @@ namespace sqlcon
 {
     class Program
     {
+        const string _USER_CFG = "user.cfg";
+        const string _USER_CFG_TEMPLATE = "user.ini";
+
         [STAThread]
         static void Main(string[] args)
         {
@@ -17,7 +20,7 @@ namespace sqlcon
             Console.WriteLine();
 
             Tie.Constant.MAX_CPU_REG_NUM = 600;
-            string cfgFile = "user.cfg";
+            string cfgFile = _USER_CFG;
             cfgFile = PrepareCfgFile(cfgFile, false);
 
             int i = 0;
@@ -45,7 +48,7 @@ namespace sqlcon
 
             }
 
-        L1:
+            L1:
 
 
             var cfg = new Configuration();
@@ -98,8 +101,16 @@ namespace sqlcon
                 {
                     if (!exists)
                     {
-                        //create empty text file if file is missing
-                        File.Create(file).Dispose();
+                        if (File.Exists(_USER_CFG_TEMPLATE))
+                        {
+                            //copy user.cfg template
+                            File.Copy(_USER_CFG_TEMPLATE, file);
+                        }
+                        else
+                        {
+                            //create empty text file if file is missing
+                            File.Create(file).Dispose();
+                        }
                     }
                     else
                         File.Copy(cfgFile, file);
@@ -123,7 +134,7 @@ namespace sqlcon
                         File.Copy(cfgFile, file, true);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 stdio.ErrorFormat("failed to initialize {0}, {1}", file, ex.Message);
             }
@@ -139,7 +150,7 @@ namespace sqlcon
             stdio.WriteLine("     [/f sql script file(.sql)]");
             stdio.WriteLine();
             stdio.WriteLine("/h,/?      : this help");
-            stdio.WriteLine("/cfg       : congfiguration file default file:user.cfg]");
+            stdio.WriteLine($"/cfg       : congfiguration file default file:{_USER_CFG}]");
             stdio.WriteLine("/i         : input sql script file");
             stdio.WriteLine("/o         : result of comparsion(diff=server1-server2),sql script file");
         }

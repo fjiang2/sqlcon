@@ -149,9 +149,9 @@
     </None>
     <None Include="Properties\app.manifest" />
     <None Include="sqlcon_TemporaryKey.pfx" />
-    <Content Include="user.cfg">
+    <None Include="user.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
     <Content Include="sqlcon.cfg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
