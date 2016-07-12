@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+7/11/2016 v1.7.1.1
+	Bugs Fixes:
+	1. user configuration file %LOCALAPPDATA/datconn/sqlcon/user.cfg is overwritten by system default user.cfg 
+
 7/6/2016 v1.7.1.0
 	New Features:
 	1. support Microsoft SQL Server Express LocalDB
