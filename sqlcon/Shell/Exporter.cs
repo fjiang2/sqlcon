@@ -376,6 +376,7 @@ namespace sqlcon
             string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("dc.ns", "Sys.DataContracts");
             string clss = cmd.GetValue("class") ?? cfg.GetValue<string>("dc.class", "DataContract");
             string mtd = cmd.GetValue("method");
+            string[] keys = cmd.Columns;
 
             if (version == 1)
             {
@@ -383,7 +384,8 @@ namespace sqlcon
                 {
                     ns = ns,
                     cname = clss,
-                    mtd = mtd
+                    mtd = mtd,
+                    keys = keys
                 };
 
                 string file = builder.WriteFile(path);

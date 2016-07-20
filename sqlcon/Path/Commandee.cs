@@ -897,6 +897,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("      [/ns:name] default name space is defined on the .cfg");
                 stdio.WriteLine("      [/class:name] default class name is defined on the .cfg");
                 stdio.WriteLine("      [/method:foo] default convert method is defined on the .cfg");
+                stdio.WriteLine("      [/col:pk1,pk2] default primary key is the first column");
                 stdio.WriteLine("   /csv     : generate table csv file");
                 return;
             }

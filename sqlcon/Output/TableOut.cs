@@ -157,11 +157,12 @@ namespace sqlcon
             return $"new {clss}[]" + "{\n" + string.Join(",\n", L) + "\n}";
         }
 
-        private bool Display(Command cmd, SqlBuilder builder, int top)
+        private bool Display(Command cmd, SqlBuilder builder, TableName tname, int top)
         {
             try
             {
                 DataTable table = builder.SqlCmd.FillDataTable();
+                table.TableName = tname.ShortName;
                 SqlShell.LastResult = table;
 
                 return Display(cmd, table, top);
@@ -228,7 +229,7 @@ namespace sqlcon
             else
                 builder = new SqlBuilder().SELECT.TOP(top).ROWID(cmd.HasRowId).COLUMNS(columns).FROM(tname);
 
-            return Display(cmd, builder, top);
+            return Display(cmd, builder, tname, top);
         }
 
 
@@ -250,7 +251,7 @@ namespace sqlcon
                 builder = new SqlBuilder().SELECT.COLUMNS(columns).FROM(tname).WHERE(where);
             }
 
-            return Display(cmd, builder, cmd.top);
+            return Display(cmd, builder, tname, cmd.top);
         }
 
 

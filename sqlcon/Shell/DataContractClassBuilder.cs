@@ -11,11 +11,16 @@ namespace sqlcon
 {
     class DataContractClassBuilder
     {
+        const string LP = "{";
+        const string RP = "}";
+
         private DataTable dt;
 
         public string ns { get; set; } = "Sys.DataContracts";
         public string cname { get; set; } = "DataContract";
         public string mtd { get; set; }
+        public string[] keys { get; set; }
+
         private const string mtd2 = "ToDataTable";
 
 
@@ -45,7 +50,7 @@ namespace sqlcon
 
             CSharpBuilder builder = new CSharpBuilder { nameSpace = ns, };
             var clss = new Class(cname) { modifier = Modifier.Public | Modifier.Partial };
-            
+
             builder.AddClass(clss);
 
             builder.AddUsing("System");
@@ -72,17 +77,44 @@ namespace sqlcon
 
             Func<DataColumn, string> COLUMN = column => "_" + column.ColumnName.ToUpper();
 
+
             //Const Field
+            Field field;
             foreach (DataColumn column in dt.Columns)
             {
-                Field field = new Field(new TypeInfo { type = typeof(string) }, COLUMN(column), column.ColumnName)
+                field = new Field(new TypeInfo { type = typeof(string) }, COLUMN(column), column.ColumnName)
                 {
                     modifier = Modifier.Public | Modifier.Const
                 };
                 clss.Add(field);
             }
 
-          
+            if (dt.TableName != null)
+            {
+                field = new Field(new TypeInfo { type = typeof(string) }, "TableName", dt.TableName)
+                {
+                    modifier = Modifier.Public | Modifier.Const
+                };
+                clss.Add(field);
+            }
+
+            //primary keys
+            var pk = dt.Columns
+                .Cast<DataColumn>()
+                .Where(column => keys.Select(key => key.ToUpper()).Contains(column.ColumnName.ToUpper()))
+                .ToArray();
+
+            if (pk.Length == 0)
+                pk = new DataColumn[] { dt.Columns[0] };
+
+            string pks = string.Join(", ", pk.Select(key => COLUMN(key)));
+            field = new Field(new TypeInfo { type = typeof(string[]) }, "Keys")
+            {
+                modifier = Modifier.Public | Modifier.Static | Modifier.Readonly,
+                userValue = $"new string[] {LP}{pks}{RP}"
+            };
+            clss.Add(field);
+
             Method method = new Method($"To{cname}Collection")
             {
                 modifier = Modifier.Public | Modifier.Static,
@@ -209,6 +241,57 @@ namespace sqlcon
             sent.AppendLine("return dt;");
             sent = method.statements;
 
+
+            method = new Method("ToDictionary")
+            {
+                modifier = Modifier.Public | Modifier.Static,
+                type = new TypeInfo { type = typeof(IDictionary<string, object>) },
+                args = new Arguments().Add(cname, "item"),
+                IsExtensionMethod = true
+            };
+            clss.Add(method);
+            sent = method.statements;
+            sent.AppendLine("return new Dictionary<string,object>() ");
+            sent.Begin();
+            count = dt.Columns.Count;
+            i = 0;
+            foreach (DataColumn column in dt.Columns)
+            {
+                Type ty = dict[column].type;
+                var name = COLUMN(column);
+                var line = $"[{name}] = item.{column.ColumnName}";
+                if (++i < count)
+                    line += ",";
+
+                sent.AppendLine(line);
+            }
+            sent.End(";");
+
+
+            method = new Method("FromDictionary")
+            {
+                modifier = Modifier.Public | Modifier.Static,
+                type = new TypeInfo { userType = cname },
+                args = new Arguments().Add(typeof(IDictionary<string, object>), "dict"),
+                IsExtensionMethod = true
+            };
+            clss.Add(method);
+            sent = method.statements;
+            sent.AppendLine($"return new {cname}");
+            sent.Begin();
+            count = dt.Columns.Count;
+            i = 0;
+            foreach (DataColumn column in dt.Columns)
+            {
+                var type = dict[column];
+                var name = COLUMN(column);
+                var line = $"{column.ColumnName} = ({type})dict[{name}]";
+                if (++i < count)
+                    line += ",";
+
+                sent.AppendLine(line);
+            }
+            sent.End(";");
 
             //method = new Method("ForEach")
             //{

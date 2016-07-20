@@ -24,6 +24,7 @@ namespace Sys.CodeBuilder
     public class Field : Declare, ICodeBlock
     {
         private object value;
+        public string userValue { get; set; }
 
         public Field(TypeInfo type, string fieldName)
             : this(type, fieldName, null)
@@ -44,10 +45,14 @@ namespace Sys.CodeBuilder
         {
             CodeBlock block = base.BuildBlock();
 
-            if (value != null)
+            if (userValue != null)
             {
-                if(value is string)
-                    value =$"\"{value}\"";
+                block.AppendFormat("{0} = {1};", Signature, userValue);
+            }
+            else if (value != null)
+            {
+                if (value is string)
+                    value = $"\"{value}\"";
 
                 block.AppendFormat("{0} = {1};", Signature, value);
             }

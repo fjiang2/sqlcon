@@ -54,6 +54,12 @@ namespace Sys.CodeBuilder
                 return "void";
             }
 
+            if (type.IsArray)
+            {
+                Nullable = false;
+                return new TypeInfo(type.GetElementType()).typeText() + "[]";
+            }
+
             if (type == typeof(string))
             {
                 Nullable = false;
@@ -72,11 +78,8 @@ namespace Sys.CodeBuilder
             if (type == typeof(byte))
                 return "byte";
 
-            if (type == typeof(byte[]))
-            {
-                Nullable = false;
-                return "byte[]";
-            }
+            if (type == typeof(decimal))
+                return "decimal";
 
             if (type.IsClass || type.IsArray)
                 Nullable = false;
