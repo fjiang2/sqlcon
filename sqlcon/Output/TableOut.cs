@@ -105,7 +105,7 @@ namespace sqlcon
         }
 
 
-        private static string ToJson(DataTable dt)
+        public static string ToJson(DataTable dt)
         {
             //array
             if (dt.Columns.Count == 1)

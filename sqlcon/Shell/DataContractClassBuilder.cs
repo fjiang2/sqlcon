@@ -111,7 +111,7 @@ namespace sqlcon
             field = new Field(new TypeInfo { type = typeof(string[]) }, "Keys")
             {
                 modifier = Modifier.Public | Modifier.Static | Modifier.Readonly,
-                userValue = $"new string[] {LP}{pks}{RP}"
+                userValue = $"new string[] {LP} {pks} {RP}"
             };
             clss.Add(field);
 

@@ -899,6 +899,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("      [/method:foo] default convert method is defined on the .cfg");
                 stdio.WriteLine("      [/col:pk1,pk2] default primary key is the first column");
                 stdio.WriteLine("   /csv     : generate table csv file");
+                stdio.WriteLine("   /json    : generate json");
                 return;
             }
 
@@ -933,6 +934,18 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     exporter.ExportDataContract(cmd, 1);
                 else if (cmd.Has("dc2"))
                     exporter.ExportDataContract(cmd, 2);
+                else if (cmd.ToJson)
+                {
+                    if (SqlShell.LastResult is DataTable)
+                    {
+                        var dt = SqlShell.LastResult as DataTable;
+                        stdio.WriteLine(TableOut.ToJson(dt));
+                    }
+                    else
+                    {
+                        stdio.ErrorFormat("display data tabe first by sql clause or command type");
+                    }
+                }
                 else
                     stdio.ErrorFormat("invalid command options");
             }
