@@ -899,7 +899,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("      [/method:foo] default convert method is defined on the .cfg");
                 stdio.WriteLine("      [/col:pk1,pk2] default primary key is the first column");
                 stdio.WriteLine("   /csv     : generate table csv file");
-                stdio.WriteLine("   /json    : generate json");
+                stdio.WriteLine("   /json    : generate json from last result");
                 return;
             }
 
@@ -943,7 +943,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     }
                     else
                     {
-                        stdio.ErrorFormat("display data tabe first by sql clause or command type");
+                        stdio.ErrorFormat("display data table first by sql clause or command [type]");
                     }
                 }
                 else

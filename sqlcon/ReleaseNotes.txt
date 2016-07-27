@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+7/26/2016 v1.7.2.0
+	New Features:
+	1. command>export /json supports last data table to Json string
+
 7/11/2016 v1.7.1.1
 	Bugs Fixes:
 	1. user configuration file %LOCALAPPDATA/datconn/sqlcon/user.cfg is overwritten by system default user.cfg 
