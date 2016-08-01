@@ -6,27 +6,18 @@ using System.Threading.Tasks;
 
 namespace Sys.Data
 {
-    class SqlRowBuilder
+    class SqlMaker
     {
-        private List<ColumnValuePair> Columns { get; } = new List<ColumnValuePair>();
         public TableName TableName { get; set; }
+        public List<ColumnValuePair> Columns { get; } = new List<ColumnValuePair>();
+        public IPrimaryKeys PK { get; set; }
 
-        /// <summary>
-        /// primary keys
-        /// </summary>
-        public string[] PrimaryKeys { get; set; } = new string[] { };
-
-        /// <summary>
-        /// don't update these columns
-        /// </summary>
-        public string[] NotUpdateColumns = new string[] { };
-
-        public SqlRowBuilder()
+        public SqlMaker()
         {
             Columns = new List<ColumnValuePair>();
         }
 
-        public SqlRowBuilder(IDictionary<string, object> map)
+        public SqlMaker(IDictionary<string, object> map)
         {
             foreach (var kvp in map)
             {
@@ -34,7 +25,7 @@ namespace Sys.Data
             }
         }
 
-        public SqlRowBuilder(DataRow row)
+        public SqlMaker(DataRow row)
         {
             foreach (DataColumn column in row.Table.Columns)
             {
@@ -42,11 +33,16 @@ namespace Sys.Data
             }
         }
 
+        private string[] primaryKeys => PK.Keys;
+
+        private string[] notUpdateColumns => Columns.Where(p => !p.Field.Saved).Select(p => p.Field.Name).ToArray();
+
+
         public string Select()
         {
-            if (PrimaryKeys.Length > 0)
+            if (primaryKeys.Length > 0)
             {
-                var C1 = Columns.Where(c => PrimaryKeys.Contains(c.ColumnName));
+                var C1 = Columns.Where(c => primaryKeys.Contains(c.ColumnName));
                 var L1 = string.Join(" AND ", C1.Select(c => c.ToString()));
                 return $"SELECT * FROM {TableName} WHERE {L1}";
             }
@@ -56,10 +52,10 @@ namespace Sys.Data
 
         public string InsertOrUpdate()
         {
-            var C1 = Columns.Where(c => PrimaryKeys.Contains(c.ColumnName));
+            var C1 = Columns.Where(c => primaryKeys.Contains(c.ColumnName));
             var L1 = string.Join(" AND ", C1.Select(c => c.ToString()));
 
-            if (PrimaryKeys.Length + NotUpdateColumns.Length == Columns.Count)
+            if (primaryKeys.Length + notUpdateColumns.Length == Columns.Count)
             {
                 return string.Format(updateOrInsertCommandTemplate1, L1, Insert());
             }
@@ -79,8 +75,8 @@ namespace Sys.Data
 
         public string Update()
         {
-            var C1 = Columns.Where(c => PrimaryKeys.Contains(c.ColumnName));
-            var C2 = Columns.Where(c => !PrimaryKeys.Contains(c.ColumnName) && !NotUpdateColumns.Contains(c.ColumnName));
+            var C1 = Columns.Where(c => primaryKeys.Contains(c.ColumnName));
+            var C2 = Columns.Where(c => !primaryKeys.Contains(c.ColumnName) && !notUpdateColumns.Contains(c.ColumnName));
 
             var L1 = string.Join(" AND ", C1.Select(c => c.ToString()));
             var L2 = string.Join(",", C2.Select(c => c.ToString()));
@@ -90,7 +86,7 @@ namespace Sys.Data
 
         public string Delete()
         {
-            var C1 = Columns.Where(c => PrimaryKeys.Contains(c.ColumnName));
+            var C1 = Columns.Where(c => primaryKeys.Contains(c.ColumnName));
             var L1 = string.Join(" AND ", C1.Select(c => c.ToString()));
             return string.Format(deleteCommandTemplate, L1);
         }
@@ -109,23 +105,18 @@ namespace Sys.Data
         private string deleteCommandTemplate => $"DELETE FROM {TableName} WHERE {{0}}";
 
 
-        class ColumnValuePair
+        public class ColumnValuePair
         {
-            public string ColumnName { get; set; }
+            public DataField Field { get; set; }
             public SqlValue Value;
-
-
-            private const string DELIMETER = "'";
-
-            public ColumnValuePair()
-            {
-            }
 
             public ColumnValuePair(string columnName, object value)
             {
-                this.ColumnName = columnName;
+                this.Field = new DataField(columnName, value?.GetType());
                 this.Value = new SqlValue(value);
             }
+
+            public string ColumnName => Field.Name;
 
             public string ColumnFormalName => $"[{ColumnName}]";
 

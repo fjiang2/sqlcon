@@ -320,6 +320,18 @@ namespace Sys.Data
             return table;
         }
 
+        public string ToSql()
+        {
+            string text = this.command.CommandText;
+
+            foreach (DbParameter parameter in command.Parameters)
+            {
+                text = text.Replace(parameter.ParameterName, new SqlValue(parameter.Value).ToString("N"));
+            }
+
+            return text;
+        }
+
         public override string ToString()
         {
             return this.script;

@@ -27,7 +27,7 @@ namespace Sys.Data
     class SqlValue
     {
         private const string DELIMETER = "'";
-        private const string NULL = "'";
+        private const string NULL = "NULL";
 
         private object value;
 

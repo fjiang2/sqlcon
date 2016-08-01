@@ -229,7 +229,8 @@ namespace Sys.Data
             if (!OnRowChanged(ObjectState.Modified, false))
                 return false;
 
-            string SQL = updateQuery();
+            string SQL;
+            tryUpdateQuery(out SQL);
 #if DEBUG
             Validate();
 #endif

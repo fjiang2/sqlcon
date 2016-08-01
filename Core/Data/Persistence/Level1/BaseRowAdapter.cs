@@ -115,25 +115,16 @@ namespace Sys.Data
 
 
         #region private SQL Query String Template
-        private string selectCommandTemplate
-        {
-            get { return string.Format("SELECT {0} FROM {1} WHERE {2}", "{0}", tableName, locator); }
-        }
+        private string selectCommandTemplate => $"SELECT {{0}} FROM {tableName} WHERE {locator}";
 
-        private string updateCommandTemplate
-        {
-            get { return string.Format("UPDATE {0} SET {1} WHERE {2}", tableName, "{0}", locator); }
-        }
+        private string updateCommandTemplate => $"UPDATE {tableName} SET {{0}} WHERE {locator}";
+        private string updateOrInsertCommandTemplate1 => $"IF NOT EXISTS(SELECT * FROM {tableName} WHERE {locator}) {{0}}";
+        private string updateOrInsertCommandTemplate2 => $"IF EXISTS(SELECT * FROM {tableName} WHERE {locator}) {{0}} ELSE {{1}}";
 
-        private string insertCommandTemplate
-        {
-            get { return string.Format("INSERT {0}({1}) VALUES({2}) {3}", tableName, "{0}", "{1}", "{2}"); }
-        }
 
-        private string deleteCommandTemplate
-        {
-            get { return string.Format("DELETE FROM {0} WHERE {1}", tableName, locator); }
-        }
+        private string insertCommandTemplate => $"INSERT {tableName}({{0}}) VALUES({{1}}){{2}}";
+
+        private string deleteCommandTemplate => $"DELETE FROM {tableName} WHERE {locator}";
 
 
         #endregion
@@ -141,14 +132,16 @@ namespace Sys.Data
 
         #region private Select/Update/Insert/Delete/Where Query String
 
-        protected string updateQuery()
+        protected bool tryUpdateQuery(out string SQL)
         {
-            string SQL = "";
+            bool good = false;
+            SQL = "";
 
             foreach (DataField field in fields)
             {
                 if (field.Saved)
                 {
+                    good = true;
                     if (SQL != "")
                         SQL += ",";
 
@@ -158,7 +151,7 @@ namespace Sys.Data
 
             SQL = string.Format(updateCommandTemplate, SQL);
 
-            return SQL;
+            return good;
         }
 
         protected string insertQuery()
@@ -206,6 +199,17 @@ namespace Sys.Data
             }
 
             return string.Format(insertCommandTemplate, SQL0, SQL1, SQL2);
+        }
+
+        protected string insertOrUpdateQuery()
+        {
+            string update;
+            bool result = tryUpdateQuery(out update);
+
+            if (!result)
+                return string.Format(updateOrInsertCommandTemplate1, insertQuery());
+            else
+                return string.Format(updateOrInsertCommandTemplate2, update, insertQuery());
         }
 
         protected string selectQuery()

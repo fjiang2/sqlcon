@@ -267,7 +267,7 @@
     <Compile Include="SqlBuilder\SqlBuilderInfo.cs" />
     <Compile Include="SqlBuilder\SqlExpr.cs" />
     <Compile Include="SqlBuilder\SqlExprExtension.cs" />
-    <Compile Include="SqlBuilder\SqlRowBuilder.cs" />
+    <Compile Include="SqlBuilder\SqlMaker.cs" />
     <Compile Include="SqlBuilder\SqlValue.cs" />
     <Compile Include="Sys\BackgroundTask.cs" />
     <Compile Include="Networking\FtpClient.cs" />
