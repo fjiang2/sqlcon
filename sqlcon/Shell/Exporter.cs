@@ -74,31 +74,57 @@ namespace sqlcon
         }
 
 
-        public void ExportCreate()
+        public void ExportCreate(Command cmd)
         {
             if (tname != null)
             {
-                stdio.WriteLine("start to generate {0} CREATE TABLE script to file: {1}", tname, fileName);
+                stdio.WriteLine("start to generate CREATE TABLE script: {0}", dname);
                 using (var writer = fileName.NewStreamWriter())
                 {
                     writer.WriteLine(tname.GenerateCluase(true));
                 }
-                stdio.WriteLine("completed");
-            }
-            else if (dname != null)
-            {
-                stdio.WriteLine("start to generate {0} script to file: {1}", dname, fileName);
-                using (var writer = fileName.NewStreamWriter())
-                {
-                    writer.WriteLine(dname.GenerateClause());
-                }
-                stdio.WriteLine("completed");
-            }
-            else
-            {
-                stdio.ErrorFormat("warning: table or database is not seleted");
+                stdio.WriteLine("completed to generate script on file: {0}", fileName);
+                return;
             }
 
+
+            if (dname != null)
+            {
+                if (cmd.wildcard != null)
+                {
+                    var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportExcludedTables);
+                    TableName[] tnames = md.MatchedTableNames;
+                    if (tnames.Length > 0)
+                    {
+                        using (var writer = fileName.NewStreamWriter())
+                        {
+                            foreach (var tname in tnames)
+                            {
+                                stdio.WriteLine("start to generate CREATE TABLE script: {0} ", tname);
+                                writer.WriteLine(tname.GenerateCluase(true));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        stdio.ErrorFormat("warning: no table is matched");
+                        return;
+                    }
+                }
+                else
+                {
+                    stdio.WriteLine("start to generate CREATE TABLE script: {0}", dname);
+                    using (var writer = fileName.NewStreamWriter())
+                    {
+                        writer.WriteLine(dname.GenerateClause());
+                    }
+                }
+
+                stdio.WriteLine("completed to generate script on file: {0}", fileName);
+                return;
+            }
+
+            stdio.ErrorFormat("warning: table or database is not seleted");
         }
 
         public void ExportInsert(Command cmd)

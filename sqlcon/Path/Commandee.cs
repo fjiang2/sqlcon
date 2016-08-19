@@ -913,7 +913,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 if (cmd.Has("insert"))
                     exporter.ExportInsert(cmd);
                 else if (cmd.Has("create"))
-                    exporter.ExportCreate();
+                    exporter.ExportCreate(cmd);
                 else if (cmd.Has("select"))
                     exporter.ExportScud(SqlScriptType.SELECT);
                 else if (cmd.Has("delete"))
