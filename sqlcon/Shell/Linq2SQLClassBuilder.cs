@@ -78,6 +78,10 @@ namespace sqlcon
 
             var fks = schema.ForeignKeys;
             List<Property> list = new List<Property>();
+
+            if (fks.Length > 0)
+                clss.AppendLine();
+
             foreach (var key in fks.Keys)
             {
                 string cname = new TableName(tname.DatabaseName, key.PK_Schema, key.PK_Table).ToClassName(null);

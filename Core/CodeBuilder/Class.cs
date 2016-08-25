@@ -79,6 +79,13 @@ namespace Sys.CodeBuilder
             return property;
         }
 
+        public Buildable AppendLine()
+        {
+            var builder = new Buildable();
+            this.list.Add(builder);
+
+            return builder;
+        }
 
         public Member AddMember(string text)
         {
