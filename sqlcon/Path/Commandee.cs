@@ -892,6 +892,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("   /data    : generate database/table data xml file");
                 stdio.WriteLine("   /dpo     : generate C# table class");
                 stdio.WriteLine("   /enum    : generate C# enum class");
+                stdio.WriteLine("   /l2s     : generate C# Linq to SQL class");
                 stdio.WriteLine("   /dc1     : generate C# data contract class and extension class from last result");
                 stdio.WriteLine("   /dc2     : generate C# data contract class from last result");
                 stdio.WriteLine("      [/ns:name] default name space is defined on the .cfg");
@@ -934,6 +935,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     exporter.ExportDataContract(cmd, 1);
                 else if (cmd.Has("dc2"))
                     exporter.ExportDataContract(cmd, 2);
+                else if (cmd.Has("l2s"))
+                    exporter.ExportLinq2SQLClass(cmd);
                 else if (cmd.ToJson)
                 {
                     if (SqlShell.LastResult is DataTable)

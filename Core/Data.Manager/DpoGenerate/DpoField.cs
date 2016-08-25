@@ -45,7 +45,7 @@ namespace Sys.Data.Manager
         public void GenerateField()
         {
             
-            string fieldName = column.ColumnName.FieldName();
+            string fieldName = column.ToFieldName();
             string ty = ColumnSchema.GetFieldType(column.DataType, column.Nullable);
 
             Property prop = new Property(new CodeBuilder.TypeInfo { userType = ty }, fieldName);
@@ -123,7 +123,7 @@ namespace Sys.Data.Manager
 
         public void GenerateImageField()
         {
-            string fieldName = column.ColumnName.FieldName();
+            string fieldName = column.ToFieldName();
             
             Property prop = new Property(new CodeBuilder.TypeInfo { userType = "Image" }, $"{fieldName}Image");
             prop.gets.IF($"{fieldName} != null", new Statement()
@@ -148,7 +148,7 @@ namespace Sys.Data.Manager
         private static void Attribute(AttributeInfo attr, IColumn column)
         {
             List<string> args = new List<string>();
-            string _columnName = column.ColumnName.FieldName();
+            string _columnName = column.ToFieldName();
             args.Add($"_{_columnName}");
             args.Add($"CType.{column.CType}");
 

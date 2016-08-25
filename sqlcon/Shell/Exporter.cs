@@ -432,6 +432,50 @@ namespace sqlcon
         }
 
 
+        public void ExportLinq2SQLClass(Command cmd)
+        {
+            string path = cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
+            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("l2s.ns", "Sys.Data.L2s");
+
+            if (tname != null)
+            {
+                var builder = new Linq2SQLClassBuilder(tname) { ns = ns };
+                string file = builder.WriteFile(path);
+                stdio.WriteLine("code generated on {0}", file);
+            }
+            else if (dname != null)
+            {
+                TableName[] tnames;
+                if (cmd.wildcard != null)
+                {
+                    var md = new MatchedDatabase(dname, cmd.wildcard, new string[] { });
+                    tnames = md.MatchedTableNames;
+                    if (tnames.Length == 0)
+                    {
+                        stdio.ErrorFormat("warning: no table is matched");
+                        return;
+                    }
+                }
+                else
+                {
+                    tnames = dname.GetTableNames();
+                }
+
+                foreach (var tname in tnames)
+                {
+                    var builder = new Linq2SQLClassBuilder(tname) { ns = ns };
+                    string file = builder.WriteFile(path);
+                    stdio.WriteLine("code generated on {0}", file);
+                }
+
+                return;
+            }
+            else
+            {
+                stdio.ErrorFormat("warning: table or database is not seleted");
+            }
+        }
+
         public void ExportEnum(Command cmd)
         {
 

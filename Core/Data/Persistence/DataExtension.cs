@@ -220,25 +220,6 @@ namespace Sys.Data
             throw new MessageException("Table Level is not defined");
         }
 
-        internal static string FieldName(this string columnName)
-        {
-            string fieldName = columnName;
-            if (columnName.IndexOf("#") != -1
-                || columnName.IndexOf(" ") != -1
-                || columnName.IndexOf("/") != -1
-                || !Char.IsLetter(columnName[0]))
-            {
-                fieldName = columnName.Replace("#", "_").Replace(" ", "_").Replace("/", "_");
-
-                if (!Char.IsLetter(columnName[0]))
-                    fieldName = "_" + fieldName;
-            }
-
-            return fieldName;
-
-        }
-
-
 
 
         internal static bool Oversize(this IColumn column, object value)

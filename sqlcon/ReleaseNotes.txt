@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+8/24/2016 v1.7.3.0
+	New Features:
+	1. command>export /l2s to generate Linq to SQL C# class
+
 8/19/2016 v1.7.2.1
 	New Features:
 	1. command>export /create supports wildcard to match table names

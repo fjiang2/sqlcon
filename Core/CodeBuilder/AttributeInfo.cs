@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tie;
 
 namespace Sys.CodeBuilder
 {
@@ -18,7 +19,26 @@ namespace Sys.CodeBuilder
             this.name = name;
         }
 
-    
+        public AttributeInfo(string name, params object[] args)
+        {
+            this.name = name;
+
+            if (args != null)
+            {
+                List<string> list = new List<string>();
+                foreach (var arg in args)
+                {
+                    foreach (var propertyInfo in arg.GetType().GetProperties())
+                    {
+                        var val = VAL.Boxing(propertyInfo.GetValue(arg));
+                        list.Add($"{propertyInfo.Name} = {val}");
+                    }
+                }
+
+                this.args = list.ToArray();
+            }
+        }
+
         public override string ToString()
         {
             string text;
@@ -32,7 +52,7 @@ namespace Sys.CodeBuilder
             if (pad < 0)
                 pad = 0;
 
-            string sp = new string(' ',  pad);
+            string sp = new string(' ', pad);
 
             if (comment != null)
                 return $"{text}{sp}{comment}";
