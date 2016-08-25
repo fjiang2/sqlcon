@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>sqlcon</RootNamespace>
     <AssemblyName>sqlcon</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <TargetFrameworkProfile />
@@ -110,6 +110,7 @@
     <Compile Include="Output\ProgressBar.cs" />
     <Compile Include="Path\PathBothSide.cs" />
     <Compile Include="Path\PathSide.cs" />
+    <Compile Include="Shell\Linq2SQLClassBuilder.cs" />
     <Compile Include="Shell\DataContract2ClassBuilder.cs" />
     <Compile Include="Shell\DataContractClassBuilder.cs" />
     <Compile Include="Shell\Exporter.cs" />
