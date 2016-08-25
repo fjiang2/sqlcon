@@ -16,8 +16,8 @@ namespace sqlcon
 
         private DataTable dt;
 
-        public string ns { get; set; } = "Sys.DataContracts";
-        public string cname { get; set; } = "DataContract";
+        public string ns { get; set; }
+        public string cname { get; set; }
         public string mtd { get; set; }
         public string[] keys { get; set; }
 

@@ -15,7 +15,7 @@ namespace sqlcon
     {
         private TableName tname;
 
-        public string ns { get; set; } = "Sys.Database";
+        public string ns { get; set; }
 
         private string cname;
 

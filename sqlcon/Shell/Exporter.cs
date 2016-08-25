@@ -271,7 +271,7 @@ namespace sqlcon
             DpoOption option = new DpoOption();
 
             option.NameSpace = cfg.GetValue<string>("dpo.ns", "Sys.DataModel.Dpo");
-            option.OutputPath = cfg.GetValue<string>("dpo.path", $"{Configuration.MyDocuments}\\dpo");
+            option.OutputPath = cfg.GetValue<string>("dpo.path", $"{Configuration.MyDocuments}\\DataModel\\Dpo");
             option.Level = cfg.GetValue<Level>("dpo.level", Level.Application);
             option.HasProvider = cfg.GetValue<bool>("dpo.hasProvider", false);
             option.HasTableAttribute = cfg.GetValue<bool>("dpo.hasTableAttr", true);
@@ -399,7 +399,7 @@ namespace sqlcon
 
 
             string path = cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
-            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("dc.ns", "Sys.DataContracts");
+            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("dc.ns", "Sys.DataModel.DataContracts");
             string clss = cmd.GetValue("class") ?? cfg.GetValue<string>("dc.class", "DataContract");
             string mtd = cmd.GetValue("method");
             string[] keys = cmd.Columns;
@@ -434,8 +434,8 @@ namespace sqlcon
 
         public void ExportLinq2SQLClass(Command cmd)
         {
-            string path = cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
-            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("l2s.ns", "Sys.Data.L2s");
+            string path = cfg.GetValue<string>("l2s.path", $"{Configuration.MyDocuments}\\dc");
+            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("l2s.ns", "Sys.DataModel.L2s");
 
             if (tname != null)
             {
@@ -491,8 +491,8 @@ namespace sqlcon
                 return;
             }
 
-            string path = cfg.GetValue<string>("enum.path", $"{Configuration.MyDocuments}\\enum");
-            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("enum.ns", "Sys.DataEnum");
+            string path = cfg.GetValue<string>("de.path", $"{Configuration.MyDocuments}\\DataModel\\DataEnum");
+            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("de.ns", "Sys.DataModel.DataEnum");
 
             CSharpBuilder builder = new CSharpBuilder()
             {

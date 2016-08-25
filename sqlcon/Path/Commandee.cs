@@ -1120,6 +1120,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("   config [/s]      : open user configure file, /s open system configurate");
                 stdio.WriteLine("   dpo              : open table class output directory");
                 stdio.WriteLine("   dc               : open data contract class output directory");
+                stdio.WriteLine("   l2s              : open Linq to SQL class output directory");
                 stdio.WriteLine("   release          : open release notes");
 
                 return;
@@ -1149,13 +1150,18 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     break;
 
                 case "dpo":
-                    path = cfg.GetValue<string>("dpo.path", $"{Configuration.MyDocuments}\\dpo");
+                    path = cfg.GetValue<string>("dpo.path", $"{Configuration.MyDocuments}\\DataModel\\Dpo");
                     OpenDirectory(path, "table class");
                     break;
 
                 case "dc":
-                    path = cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
+                    path = cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\DataModel\\DataContracts");
                     OpenDirectory(path, "data contract class");
+                    break;
+
+                case "l2s":
+                    path = cfg.GetValue<string>("l2s.path", $"{Configuration.MyDocuments}\\DataModel\\L2s");
+                    OpenDirectory(path, "data Linq to SQL class");
                     break;
 
                 case "viewer":
