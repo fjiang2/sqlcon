@@ -43,7 +43,7 @@ namespace sqlcon
             builder.AddUsing("System");
             //builder.AddUsing("System.Collections.Generic");
             //builder.AddUsing("System.Data");
-            //builder.AddUsing("System.Data.Linq");
+            builder.AddUsing("System.Data.Linq");
             builder.AddUsing("System.Data.Linq.Mapping");
 
             TableSchema schema = new TableSchema(tname);
@@ -77,6 +77,7 @@ namespace sqlcon
             }
 
             var fks = schema.ForeignKeys;
+            List<Property> list = new List<Property>();
             foreach (var key in fks.Keys)
             {
                 string cname = new TableName(tname.DatabaseName, key.PK_Schema, key.PK_Table).ToClassName(null);
@@ -84,10 +85,19 @@ namespace sqlcon
                 if (cname == this.cname) //self-fk
                     pname += "1";
 
+                var field = new Field(new TypeInfo { userType = $"EntityRef<{cname}>" }, $"_{pname}") { modifier = Modifier.Private };
+                clss.Add(field);
+
                 prop = new Property(new TypeInfo { userType = cname }, pname) { modifier = Modifier.Public };
-                prop.AddAttribute(new AttributeInfo("Association", new { Name = $"{cname}_{this.cname}", ThisKey = key.FK_Column, OtherKey = key.PK_Column, IsForeignKey = true }));
-                clss.Add(prop);
+                prop.gets.AppendFormat("return this._{0}.Entity;", pname);
+                prop.sets.AppendFormat("this._{0}.Entity = value;", pname);
+                prop.AddAttribute(new AttributeInfo("Association", new { Name = $"{cname}_{this.cname}", Storage = $"_{pname}", ThisKey = key.FK_Column, OtherKey = key.PK_Column, IsForeignKey = true }));
+                list.Add(prop);
             }
+
+            foreach (var p in list)
+                clss.Add(p);
+
             return builder;
         }
 
