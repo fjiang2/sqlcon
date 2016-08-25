@@ -47,14 +47,18 @@ namespace sqlcon
             builder.AddUsing("System.Data.Linq.Mapping");
 
             TableSchema schema = new TableSchema(tname);
+
+            Property prop;
             foreach (IColumn column in schema.Columns)
             {
                 TypeInfo ty = new TypeInfo { userType = ColumnSchema.GetFieldType(column.DataType, column.Nullable) };
 
-                var prop = new Property(ty, column.ToFieldName()) { modifier = Modifier.Public };
+                prop = new Property(ty, column.ToFieldName()) { modifier = Modifier.Public };
 
                 List<object> args = new List<object>();
                 args.Add(new { Name = column.ColumnName });
+
+                //args.Add(new { DbType = ColumnSchema.GetSQLType(column) + (column.Nullable ? " NULL" : " NOT NULL") });
 
                 if (column.IsPrimary)
                     args.Add(new { IsPrimaryKey = true });
@@ -66,9 +70,24 @@ namespace sqlcon
                     args.Add(new { CanBeNull = false });
 
                 prop.AddAttribute(new AttributeInfo("Column", args.ToArray()));
-                clss.Add(prop);
+
+                if (!column.IsComputed)
+                    clss.Add(prop);
+
             }
 
+            var fks = schema.ForeignKeys;
+            foreach (var key in fks.Keys)
+            {
+                string cname = new TableName(tname.DatabaseName, key.PK_Schema, key.PK_Table).ToClassName(null);
+                string pname = cname;
+                if (cname == this.cname) //self-fk
+                    pname += "1";
+
+                prop = new Property(new TypeInfo { userType = cname }, pname) { modifier = Modifier.Public };
+                prop.AddAttribute(new AttributeInfo("Association", new { Name = $"{cname}_{this.cname}", ThisKey = key.FK_Column, OtherKey = key.PK_Column, IsForeignKey = true }));
+                clss.Add(prop);
+            }
             return builder;
         }
 
