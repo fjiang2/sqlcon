@@ -38,8 +38,8 @@ namespace sqlcon
         public readonly bool ToCSharp;
 
         public readonly int top;
-       // public readonly Options optionPlus = new Options();
-       // public readonly Options optionMinus = new Options();
+        // public readonly Options optionPlus = new Options();
+        // public readonly Options optionMinus = new Options();
 
         public readonly Options options = new Options();
         private readonly string columns;
@@ -204,11 +204,18 @@ namespace sqlcon
         {
             get
             {
+                foreach (var path in paths)
+                {
+                    var pathName = new PathName(path);
+
+                    if (pathName.wildcard != null)
+                        return pathName.wildcard;
+                }
+
                 if (Path1 == null)
                     return null;
                 else
                     return Path1.wildcard;
-
             }
         }
 
@@ -216,11 +223,18 @@ namespace sqlcon
         {
             get
             {
+                foreach (var path in paths)
+                {
+                    var pathName = new PathName(path);
+
+                    if (pathName.where != null)
+                        return pathName.where;
+                }
+
                 if (Path1 == null)
                     return null;
                 else
                     return Path1.where;
-
             }
         }
 
@@ -312,6 +326,6 @@ namespace sqlcon
             return true;
         }
 
-     
+
     }
 }
