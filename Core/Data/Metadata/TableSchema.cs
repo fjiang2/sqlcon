@@ -26,12 +26,12 @@ using Tie;
 
 namespace Sys.Data
 {
-   
+
 
     public class TableSchema : ITable
     {
         protected TableName tableName;
-        
+
         public TableSchema(TableName tname)
         {
             this.tableName = tname;
@@ -55,7 +55,7 @@ namespace Sys.Data
             }
 
         }
-        
+
         protected ColumnCollection _columns = null;
         public ColumnCollection Columns
         {
@@ -81,6 +81,13 @@ namespace Sys.Data
             get { return new ForeignKeys(tableName, this.Columns); }
         }
 
+        public IForeignKeys ForeignKeysOf
+        {
+            get
+            {
+                return new Dependency(tableName.DatabaseName).ForeignKeysOf(tableName);
+            }
+        }
 
         public IIdentityKeys Identity
         {
@@ -101,7 +108,7 @@ namespace Sys.Data
         }
 
         #endregion
-        
+
         internal int _tableID = -1;
         public int TableID
         {
@@ -120,7 +127,7 @@ namespace Sys.Data
             else
                 return L[0];
         }
-  
+
 
         public DataRow NewRow()
         {
@@ -141,7 +148,7 @@ namespace Sys.Data
                 return _thisDataTable;
             }
         }
-  
+
         public bool Exists
         {
             get
@@ -151,18 +158,18 @@ namespace Sys.Data
         }
 
 
-        public TableName TableName 
-        { 
-            get { return this.tableName; } 
+        public TableName TableName
+        {
+            get { return this.tableName; }
         }
 
-        
+
         //------------------------------------------------------------------------------------
         public Locator DefaultLocator()
         {
             return new Locator(this.PrimaryKeys);
         }
-        
+
     }
 
 

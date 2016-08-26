@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Globalization;
 using System.IO;
 using System.Data;
 using Sys;
@@ -76,8 +77,43 @@ namespace sqlcon
 
             }
 
-            var fks = schema.ForeignKeys;
+            var fksOf = schema.ForeignKeysOf;
+
+            Constructor constructor = null;
+            if (fksOf.Length > 0)
+            {
+                clss.AppendLine();
+
+                constructor = new Constructor(this.cname);
+            }
+
+            var plural = System.Data.Entity.Design.PluralizationServices.PluralizationService.CreateService(CultureInfo.GetCultureInfo("en-us"));
+            
+
             List<Property> list = new List<Property>();
+            foreach (var key in fksOf.Keys)
+            {
+                string cname = new TableName(tname.DatabaseName, key.FK_Schema, key.FK_Table).ToClassName(null);
+                string pname = plural.Pluralize(cname);
+                if (cname == this.cname) //self-fk
+                    pname += "1";
+
+                TypeInfo ty = new TypeInfo { userType = $"EntitySet<{cname}>" };
+                var field = new Field(ty, $"_{pname}") { modifier = Modifier.Private };
+                clss.Add(field);
+
+                constructor.statements.AppendLine($"this._{pname} = new EntitySet<{cname}>();");
+
+                prop = new Property(ty, pname) { modifier = Modifier.Public };
+                prop.gets.AppendFormat("return this._{0};", pname);
+                prop.sets.AppendFormat("this._{0}.Assign(value);", pname);
+                prop.AddAttribute(new AttributeInfo("Association", new { Name = $"{this.cname}_{cname}", Storage = $"_{pname}", ThisKey = key.PK_Column, OtherKey = key.FK_Column }));
+                list.Add(prop);
+            }
+
+
+            var fks = schema.ForeignKeys;
+            //list = new List<Property>();
 
             if (fks.Length > 0)
                 clss.AppendLine();
@@ -98,6 +134,9 @@ namespace sqlcon
                 prop.AddAttribute(new AttributeInfo("Association", new { Name = $"{cname}_{this.cname}", Storage = $"_{pname}", ThisKey = key.FK_Column, OtherKey = key.PK_Column, IsForeignKey = true }));
                 list.Add(prop);
             }
+
+            if (constructor != null)
+                clss.Add(constructor);
 
             foreach (var p in list)
                 clss.Add(p);

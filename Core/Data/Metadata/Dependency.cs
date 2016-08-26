@@ -40,6 +40,25 @@ namespace Sys.Data
                    .ToArray();
         }
 
+        public ForeignKeys ForeignKeysOf(TableName tname)
+        {
+            var L = rows.Where(row => row.pkTable.Equals(tname)).ToArray();
+            List<ForeignKey> keys = new List<ForeignKey>();
+            foreach (var l in L)
+            {
+                keys.Add(new ForeignKey
+                {
+                    TableName = l.fkTable,
+                    FK_Column = l.fkColumn,
+                    PK_Schema = tname.SchemaName,
+                    PK_Table = tname.Name,
+                    PK_Column = l.pkColumn
+                });
+            }
+
+            return new ForeignKeys(keys.ToArray());
+        }
+
         private RowDef[] GetFkRows(TableName pk)
             => rows.Where(row => row.pkTable.Equals(pk)).ToArray();
 
@@ -95,7 +114,7 @@ namespace Sys.Data
         public string DELETE(TableName tname)
         {
             StringBuilder builder = new StringBuilder();
-			var fkrows = GetFkRows(tname);
+            var fkrows = GetFkRows(tname);
             foreach (var row in fkrows)
             {
                 //string locator = string.Format("SELECT [{0}] FROM {1} WHERE {2}=@{2}", "{0}", row.pkTable.FormalName, row.pkColumn);
@@ -111,9 +130,9 @@ namespace Sys.Data
 
         private string deleteTemplate(RowDef row, string locator)
         {
-            return string.Format("DELETE FROM {0} WHERE [{1}] IN (SELECT [{2}] FROM {3} WHERE {4})", 
-                row.fkTable.FormalName, 
-                row.fkColumn, 
+            return string.Format("DELETE FROM {0} WHERE [{1}] IN (SELECT [{2}] FROM {3} WHERE {4})",
+                row.fkTable.FormalName,
+                row.fkColumn,
                 row.pkColumn,
                 row.pkTable.FormalName,
                 locator);
@@ -132,7 +151,7 @@ namespace Sys.Data
 
             foreach (var row in fkrows)
             {
-                string sql = string.Format("[{0}] IN (SELECT [{1}] FROM {2} WHERE {3})", row.fkColumn,  pkrow.pkColumn, pkrow.fkTable.FormalName, locator);
+                string sql = string.Format("[{0}] IN (SELECT [{1}] FROM {2} WHERE {3})", row.fkColumn, pkrow.pkColumn, pkrow.fkTable.FormalName, locator);
                 RowDef[] getFkRows = GetFkRows(row.fkTable);
                 DELETE(row, getFkRows, sql, builder);
 
