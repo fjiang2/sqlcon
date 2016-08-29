@@ -45,32 +45,39 @@ namespace Sys.Data.Manager
             string className = ident.Identifier(tableName);
 
             //remove plural
-            if (className.EndsWith("ees"))
-                className = className.Substring(0, className.Length - 1);
-            else if (className.EndsWith("ies"))
-                className = className.Substring(0, className.Length - 3) + "y";
-            else if (className.EndsWith("es"))
-            {
-                char ch1 = className[className.Length - 3];
-                char ch2 = className[className.Length - 4];
-
-                if (!IsVowel(ch1) && IsVowel(ch2))
-                    className = className.Substring(0, className.Length - 1);
-                else
-                    className = className.Substring(0, className.Length - 2);
-            }
-            else if (className.EndsWith("s"))
-            {
-                char vowel = className[className.Length - 2];
-                if (vowel != 'u')
-                    className = className.Substring(0, className.Length - 1);
-            }
+            className = Singularize(className);
 
             if (rule != null)
                 className = rule(className);
 
             return className;
 
+        }
+
+        private static string Singularize(string word)
+        {
+            if (word.EndsWith("ees"))
+                word = word.Substring(0, word.Length - 1);
+            else if (word.EndsWith("ies"))
+                word = word.Substring(0, word.Length - 3) + "y";
+            else if (word.EndsWith("es"))
+            {
+                char ch1 = word[word.Length - 3];
+                char ch2 = word[word.Length - 4];
+
+                if (!IsVowel(ch1) && IsVowel(ch2))
+                    word = word.Substring(0, word.Length - 1);
+                else
+                    word = word.Substring(0, word.Length - 2);
+            }
+            else if (word.EndsWith("s"))
+            {
+                char vowel = word[word.Length - 2];
+                if (vowel != 'u')
+                    word = word.Substring(0, word.Length - 1);
+            }
+
+            return word;
         }
 
         private static bool IsVowel(char ch)
