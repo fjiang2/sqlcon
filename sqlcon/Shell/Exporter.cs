@@ -439,7 +439,7 @@ namespace sqlcon
 
             if (tname != null)
             {
-                var builder = new Linq2SQLClassBuilder(tname, new TableName[] { tname }) { ns = ns };
+                var builder = new Linq2SQLClassBuilder(tname) { ns = ns };
                 string file = builder.WriteFile(path);
                 stdio.WriteLine("code generated on {0}", file);
             }
@@ -463,7 +463,7 @@ namespace sqlcon
 
                 foreach (var tname in tnames)
                 {
-                    var builder = new Linq2SQLClassBuilder(tname, tnames) { ns = ns };
+                    var builder = new Linq2SQLClassBuilder(tname) { ns = ns };
                     string file = builder.WriteFile(path);
                     stdio.WriteLine("code generated on {0}", file);
                 }

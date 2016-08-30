@@ -20,17 +20,21 @@ namespace sqlcon
         public string ns { get; set; }
 
         private string cname;
-        private Dictionary<TableName, TableSchema> schemas = new Dictionary<TableName, TableSchema>();
 
-        public Linq2SQLClassBuilder(TableName tname, TableName[] others)
+        public Linq2SQLClassBuilder(TableName tname)
         {
             this.tname = tname;
             this.cname = tname.ToClassName(null);
+        }
 
-            foreach (var tn in others)
-            {
-                schemas.Add(tn, new TableSchema(tn));
-            }
+        private Dictionary<TableName, TableSchema> schemas = new Dictionary<TableName, TableSchema>();
+
+        private TableSchema GetSchema(TableName tname)
+        {
+            if (!schemas.ContainsKey(tname))
+                schemas.Add(tname, new TableSchema(tname));
+
+            return schemas[tname];
         }
 
         private Dictionary<DataColumn, TypeInfo> dict = new Dictionary<DataColumn, TypeInfo>();
@@ -56,7 +60,7 @@ namespace sqlcon
             builder.AddUsing("System.Data.Linq");
             builder.AddUsing("System.Data.Linq.Mapping");
 
-            TableSchema schema = schemas[tname];
+            TableSchema schema = GetSchema(tname);
 
             Property prop;
             foreach (IColumn column in schema.Columns)
@@ -96,7 +100,7 @@ namespace sqlcon
                 constructor = new Constructor(this.cname);
             }
 
-                        
+
 
             List<Property> list = new List<Property>();
             foreach (var key in fksOf.Keys)
@@ -126,66 +130,93 @@ namespace sqlcon
             return builder;
         }
 
+
+        /// <summary>
+        /// add children tables
+        /// </summary>
+        /// <param name="clss"></param>
+        /// <param name="constructor"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         private Property AddEntitySet(Class clss, Constructor constructor, IForeignKey key)
         {
             TableName fk_tname = new TableName(tname.DatabaseName, key.FK_Schema, key.FK_Table);
-            string cname = fk_tname.ToClassName(null);
+            string fk_cname = fk_tname.ToClassName(null);
             string pname;
 
             Property prop;
             TypeInfo ty;
             Field field;
 
-            if (schemas.ContainsKey(fk_tname))
+            var fk_schema = GetSchema(fk_tname);
+            
+            if (fk_schema.PrimaryKeys.Keys.Contains(key.FK_Column))
             {
-                pname = cname;
-                if (cname == this.cname) //self-fk
-                    pname += "1";
+                // 1:1 mapping
+                pname = Pluralization.Singularize(fk_cname);
+                ty = new TypeInfo { userType = $"EntityRef<{fk_cname}>" };
+                field = new Field(ty, $"_{pname}") { modifier = Modifier.Private };
 
-                var fk_schema = schemas[fk_tname];
-                if (fk_schema.PrimaryKeys.Keys.Contains(key.FK_Column))
-                {
-                    ty = new TypeInfo { userType = $"EntityRef<{cname}>" };
-                    field = new Field(ty, $"_{pname}") { modifier = Modifier.Private };
-                    clss.Add(field);
+                prop = new Property(new TypeInfo { userType = fk_cname }, pname) { modifier = Modifier.Public };
+                prop.gets.Append($"return this._{pname}.Entity;");
+                prop.sets.Append($"this._{pname}.Entity = value;");
+            }
+            else 
+            {
+                //1:n mapping
+                pname = Pluralization.Pluralize(fk_cname);
+                constructor.statements.AppendLine($"this._{pname} = new EntitySet<{fk_cname}>();");
 
-                    prop = new Property(new TypeInfo { userType = cname }, pname) { modifier = Modifier.Public };
-                    prop.gets.AppendFormat("return this._{0}.Entity;", pname);
-                    prop.sets.AppendFormat("this._{0}.Entity = value;", pname);
-                    prop.AddAttribute(new AttributeInfo("Association", new { Name = $"{cname}_{this.cname}", Storage = $"_{pname}", ThisKey = key.FK_Column, OtherKey = key.PK_Column, IsForeignKey = true }));
+                ty = new TypeInfo { userType = $"EntitySet<{fk_cname}>" };
+                field = new Field(ty, $"_{pname}") { modifier = Modifier.Private };
 
-                    return prop;
-                }
+                prop = new Property(ty, pname) { modifier = Modifier.Public };
+                prop.gets.Append($"return this._{pname};");
+                prop.sets.Append($"this._{pname}.Assign(value);");
             }
 
-            pname = Pluralization.Pluralize(cname);
-            constructor.statements.AppendLine($"this._{pname} = new EntitySet<{cname}>();");
-
-            ty = new TypeInfo { userType = $"EntitySet<{cname}>" };
-            field = new Field(ty, $"_{pname}") { modifier = Modifier.Private };
             clss.Add(field);
 
-            prop = new Property(ty, pname) { modifier = Modifier.Public };
-            prop.gets.AppendFormat("return this._{0};", pname);
-            prop.sets.AppendFormat("this._{0}.Assign(value);", pname);
-            prop.AddAttribute(new AttributeInfo("Association", new { Name = $"{this.cname}_{cname}", Storage = $"_{pname}", ThisKey = key.PK_Column, OtherKey = key.FK_Column }));
+            prop.AddAttribute(new AttributeInfo("Association",
+                new
+                {
+                    Name = $"{this.cname}_{fk_cname}",
+                    Storage = $"_{pname}",
+                    ThisKey = key.PK_Column,
+                    OtherKey = key.FK_Column
+                }));
             return prop;
         }
 
+
+        /// <summary>
+        /// add foreighn keys
+        /// </summary>
+        /// <param name="clss"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         private Property AddEntityRef(Class clss, IForeignKey key)
         {
-            string cname = new TableName(tname.DatabaseName, key.PK_Schema, key.PK_Table).ToClassName(null);
-            string pname = cname;
-            if (cname == this.cname) //self-fk
+            string pk_cname = new TableName(tname.DatabaseName, key.PK_Schema, key.PK_Table).ToClassName(null);
+            string pname = pk_cname;
+            if (pk_cname == this.cname) //self-fk
                 pname += "1";
 
-            var field = new Field(new TypeInfo { userType = $"EntityRef<{cname}>" }, $"_{pname}") { modifier = Modifier.Private };
+            var field = new Field(new TypeInfo { userType = $"EntityRef<{pk_cname}>" }, $"_{pname}") { modifier = Modifier.Private };
             clss.Add(field);
 
-            var prop = new Property(new TypeInfo { userType = cname }, pname) { modifier = Modifier.Public };
-            prop.gets.AppendFormat("return this._{0}.Entity;", pname);
-            prop.sets.AppendFormat("this._{0}.Entity = value;", pname);
-            prop.AddAttribute(new AttributeInfo("Association", new { Name = $"{cname}_{this.cname}", Storage = $"_{pname}", ThisKey = key.FK_Column, OtherKey = key.PK_Column, IsForeignKey = true }));
+            var prop = new Property(new TypeInfo { userType = pk_cname }, pname) { modifier = Modifier.Public };
+            prop.gets.Append($"return this._{pname}.Entity;");
+            prop.sets.Append($"this._{pname}.Entity = value;");
+            prop.AddAttribute(new AttributeInfo("Association",
+                new
+                {
+                    Name = $"{pk_cname}_{this.cname}",
+                    Storage = $"_{pname}",
+                    ThisKey = key.FK_Column,
+                    OtherKey = key.PK_Column,
+                    IsForeignKey = true
+                }));
             return prop;
         }
 
