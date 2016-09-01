@@ -20,14 +20,15 @@ namespace sqlcon
         public string ns { get; set; }
 
         private string cname;
+        private Dictionary<TableName, TableSchema> schemas;
 
-        public Linq2SQLClassBuilder(TableName tname)
+        public Linq2SQLClassBuilder(TableName tname, Dictionary<TableName, TableSchema> schemas)
         {
             this.tname = tname;
             this.cname = tname.ToClassName(null);
+            this.schemas = schemas;
         }
 
-        private Dictionary<TableName, TableSchema> schemas = new Dictionary<TableName, TableSchema>();
 
         private TableSchema GetSchema(TableName tname)
         {
@@ -90,10 +91,10 @@ namespace sqlcon
 
             }
 
-            var fksOf = schema.ForeignKeysOf;
+            var fkBy = schema.ByForeignKeys.Keys.OrderBy(k => k.FK_Table);
 
             Constructor constructor = null;
-            if (fksOf.Length > 0)
+            if (fkBy.Count() > 0)
             {
                 clss.AppendLine();
 
@@ -103,7 +104,7 @@ namespace sqlcon
 
 
             List<Property> list = new List<Property>();
-            foreach (var key in fksOf.Keys)
+            foreach (var key in fkBy)
             {
                 prop = AddEntitySet(clss, constructor, key);
                 list.Add(prop);
@@ -131,6 +132,7 @@ namespace sqlcon
         }
 
 
+
         /// <summary>
         /// add children tables
         /// </summary>
@@ -149,22 +151,34 @@ namespace sqlcon
             Field field;
 
             var fk_schema = GetSchema(fk_tname);
-            
-            if (fk_schema.PrimaryKeys.Keys.Contains(key.FK_Column))
+            var _keys = fk_schema.PrimaryKeys.Keys;
+
+            if (_keys.Length == 1 && _keys.Contains(key.FK_Column))
             {
                 // 1:1 mapping
-                pname = Pluralization.Singularize(fk_cname);
+                pname = clss.MakeUniqueName(Pluralization.Singularize(fk_cname));
                 ty = new TypeInfo { userType = $"EntityRef<{fk_cname}>" };
                 field = new Field(ty, $"_{pname}") { modifier = Modifier.Private };
 
                 prop = new Property(new TypeInfo { userType = fk_cname }, pname) { modifier = Modifier.Public };
                 prop.gets.Append($"return this._{pname}.Entity;");
                 prop.sets.Append($"this._{pname}.Entity = value;");
+
+                prop.AddAttribute(new AttributeInfo("Association",
+                 new
+                 {
+                     Name = $"{this.cname}_{fk_cname}",
+                     Storage = $"_{pname}",
+                     ThisKey = key.PK_Column,
+                     OtherKey = key.FK_Column,
+                     IsUnique = true,
+                     IsForeignKey = false
+                 }));
             }
-            else 
+            else
             {
                 //1:n mapping
-                pname = Pluralization.Pluralize(fk_cname);
+                pname = clss.MakeUniqueName(Pluralization.Pluralize(fk_cname));
                 constructor.statements.AppendLine($"this._{pname} = new EntitySet<{fk_cname}>();");
 
                 ty = new TypeInfo { userType = $"EntitySet<{fk_cname}>" };
@@ -173,18 +187,21 @@ namespace sqlcon
                 prop = new Property(ty, pname) { modifier = Modifier.Public };
                 prop.gets.Append($"return this._{pname};");
                 prop.sets.Append($"this._{pname}.Assign(value);");
+
+                prop.AddAttribute(new AttributeInfo("Association",
+                 new
+                 {
+                     Name = $"{this.cname}_{fk_cname}",
+                     Storage = $"_{pname}",
+                     ThisKey = key.PK_Column,
+                     OtherKey = key.FK_Column,
+                     IsForeignKey = false
+                 }));
             }
 
             clss.Add(field);
 
-            prop.AddAttribute(new AttributeInfo("Association",
-                new
-                {
-                    Name = $"{this.cname}_{fk_cname}",
-                    Storage = $"_{pname}",
-                    ThisKey = key.PK_Column,
-                    OtherKey = key.FK_Column
-                }));
+
             return prop;
         }
 
@@ -198,9 +215,7 @@ namespace sqlcon
         private Property AddEntityRef(Class clss, IForeignKey key)
         {
             string pk_cname = new TableName(tname.DatabaseName, key.PK_Schema, key.PK_Table).ToClassName(null);
-            string pname = pk_cname;
-            if (pk_cname == this.cname) //self-fk
-                pname += "1";
+            string pname = clss.MakeUniqueName(pk_cname);
 
             var field = new Field(new TypeInfo { userType = $"EntityRef<{pk_cname}>" }, $"_{pname}") { modifier = Modifier.Private };
             clss.Add(field);

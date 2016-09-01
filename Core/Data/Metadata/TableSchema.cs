@@ -81,11 +81,12 @@ namespace Sys.Data
             get { return new ForeignKeys(tableName, this.Columns); }
         }
 
-        public IForeignKeys ForeignKeysOf
+
+        public IForeignKeys ByForeignKeys
         {
             get
             {
-                return new Dependency(tableName.DatabaseName).ForeignKeysOf(tableName);
+                return new Dependency(tableName.DatabaseName).ByForeignKeys(tableName);
             }
         }
 

@@ -436,10 +436,11 @@ namespace sqlcon
         {
             string path = cfg.GetValue<string>("l2s.path", $"{Configuration.MyDocuments}\\dc");
             string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("l2s.ns", "Sys.DataModel.L2s");
+            Dictionary<TableName, TableSchema> schemas = new Dictionary<TableName, TableSchema>();
 
             if (tname != null)
             {
-                var builder = new Linq2SQLClassBuilder(tname) { ns = ns };
+                var builder = new Linq2SQLClassBuilder(tname, schemas) { ns = ns };
                 string file = builder.WriteFile(path);
                 stdio.WriteLine("code generated on {0}", file);
             }
@@ -463,7 +464,7 @@ namespace sqlcon
 
                 foreach (var tname in tnames)
                 {
-                    var builder = new Linq2SQLClassBuilder(tname) { ns = ns };
+                    var builder = new Linq2SQLClassBuilder(tname, schemas) { ns = ns };
                     string file = builder.WriteFile(path);
                     stdio.WriteLine("code generated on {0}", file);
                 }

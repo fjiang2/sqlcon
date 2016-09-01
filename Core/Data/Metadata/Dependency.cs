@@ -40,7 +40,7 @@ namespace Sys.Data
                    .ToArray();
         }
 
-        public ForeignKeys ForeignKeysOf(TableName tname)
+        public ForeignKeys ByForeignKeys(TableName tname)
         {
             var L = rows.Where(row => row.pkTable.Equals(tname)).ToArray();
             List<ForeignKey> keys = new List<ForeignKey>();

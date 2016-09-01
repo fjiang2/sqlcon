@@ -229,5 +229,28 @@ namespace Sys.CodeBuilder
             .Add(x.ComparTo())
             .Add(x.ToSimpleString());
         }
+
+
+        private Dictionary<string, int> _names = new Dictionary<string, int>();
+
+
+        /// <summary>
+        /// make unique name in the class
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public string MakeUniqueName(string name)
+        {
+            if (_names.ContainsKey(name))
+                _names[name] += 1;
+            else
+                _names.Add(name, 0);
+
+            int index = _names[name];
+            if (index == 0)
+                return name;
+            else
+                return $"{name}{index}";
+        }
     }
 }
