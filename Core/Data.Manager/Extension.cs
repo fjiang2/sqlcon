@@ -10,13 +10,6 @@ namespace Sys.Data.Manager
     public static class Extension
     {
 
-        public static TableSchema GetSchema(this TableName tname)
-        {
-            var schema = new TableSchema(tname);
-            return schema;
-        }
-
-
         public static string ToFieldName(this IColumn column)
         {
             string columnName = column.ColumnName;

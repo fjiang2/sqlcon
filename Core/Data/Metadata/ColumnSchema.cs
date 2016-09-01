@@ -22,7 +22,7 @@ using System.Data;
 
 namespace Sys.Data
 {
-    
+
 
 
     public class ColumnSchema : PersistentObject, IColumn
@@ -75,7 +75,7 @@ namespace Sys.Data
 
         [Column("ColumnID", CType.Int)]
         public int ColumnID { get; set; }    //column_id is from column dictionary
-        
+
         [Column("label", CType.NVarChar)]
         public string label { get; set; }    //label used as caption to support internationalization
 
@@ -106,6 +106,43 @@ namespace Sys.Data
             this.label = attr.Caption;
         }
 
+        public override void FillObject(DataRow dataRow)
+        {
+            ColumnName = (string)dataRow["ColumnName"];
+            DataType = (string)dataRow["DataType"];
+            Length = (short)dataRow["Length"];
+
+            Nullable = (bool)dataRow["Nullable"];
+            Precision = (byte)dataRow["precision"];
+            Scale = (byte)dataRow["scale"];
+
+            IsPrimary = (bool)dataRow["IsPrimary"];
+            IsIdentity = (bool)dataRow["IsIdentity"];
+            IsComputed = (bool)dataRow["IsComputed"];
+            Definition = getField<string>(dataRow, "definition");
+
+            PkContraintName = getField<string>(dataRow, "PKContraintName");
+            PK_Schema = getField<string>(dataRow, "PK_Schema");
+            PK_Table = getField<string>(dataRow, "PK_Table");
+            PK_Column = getField<string>(dataRow, "PK_Column");
+            FkContraintName = getField<string>(dataRow, "FKContraintName");
+
+            ColumnID = getField<int>(dataRow, "ColumnID");
+            label = getField<string>(dataRow, "label");
+        }
+
+        private T getField<T>(DataRow row, string columnName)
+        {
+            if (!row.Table.Columns.Contains(columnName))
+                return default(T);
+
+            var obj = row[columnName];
+            if (obj == DBNull.Value)
+                return default(T);
+            else
+                return (T)obj;
+        }
+
         public string Caption
         {
             get
@@ -127,9 +164,9 @@ namespace Sys.Data
             }
         }
 
-       
 
-      
+
+
 
         public IForeignKey ForeignKey
         {
@@ -145,7 +182,7 @@ namespace Sys.Data
         public override bool Equals(object obj)
         {
             ColumnSchema it = obj as ColumnSchema;
-            
+
             if (it == null)
                 return false;
 
@@ -164,9 +201,9 @@ namespace Sys.Data
             return string.Format("Column={0}(Type={1}, Null={2}, Length={3})", ColumnName, DataType, Nullable, Length);
         }
 
-     
 
-       
+
+
 
 
         #region SqlDataType -> System.SqlDbType / C# field type / SQL_Create_Table Type
@@ -180,7 +217,7 @@ namespace Sys.Data
 
                 case "char":
                     return CType.Char;
-         
+
                 case "nvarchar":
                     return CType.NVarChar;
 
@@ -381,8 +418,8 @@ namespace Sys.Data
         }
 
 
-       
-        
+
+
 
         public static string GetSQLField(IColumn column)
         {
@@ -401,7 +438,7 @@ namespace Sys.Data
                 line = string.Format("[{0}] AS {1}", column.ColumnName, column.Definition);
                 //throw new JException("not support computed column: {0}", column.ColumnName);
             }
-                
+
             return line;
         }
 
@@ -443,7 +480,7 @@ namespace Sys.Data
             }
             return ty;
         }
-    
+
         #endregion
 
 
@@ -462,32 +499,32 @@ namespace Sys.Data
                         throw new MessageException("Column Name={0}, length of value \"{1}\" {2} > {3}", ColumnName, val, val.Length, this.AdjuestedLength());
                     else
                         return val;
-           
+
                 case CType.VarBinary:
                 case CType.Binary:
                     throw new NotImplementedException(string.Format("cannot convert {0} into type of {1}", val, CType.Binary));
-                    
+
 
                 case CType.Date:
                 case CType.DateTime:
-                    if(val.IndexOf("-") > 0)    //2011-10-30
+                    if (val.IndexOf("-") > 0)    //2011-10-30
                     {
                         string[] date = val.Split('-');
                         return new DateTime(Convert.ToInt32(date[0]), Convert.ToInt32(date[1]), Convert.ToInt32(date[2]));
                     }
-                    else if(val.Length == 8)    //20111030
+                    else if (val.Length == 8)    //20111030
                     {
                         int month = Convert.ToInt32(val.Substring(4, 2));
                         int day = Convert.ToInt32(val.Substring(6, 2));
-                        if(month==0)
-                           month =1;
-                        
-                        if(day ==0)
+                        if (month == 0)
+                            month = 1;
+
+                        if (day == 0)
                             day = 1;
 
                         return new DateTime(Convert.ToInt32(val.Substring(0, 4)), month, day);
                     }
-                    else 
+                    else
                     {
                         return Convert.ToDateTime(val);
                     }
@@ -510,7 +547,7 @@ namespace Sys.Data
                         return false;
                     else if (val == "1")
                         return true;
-                    else 
+                    else
                         return Convert.ToBoolean(val);
 
                 case CType.Decimal:
@@ -524,11 +561,11 @@ namespace Sys.Data
 
                 case CType.Int:
                     return Convert.ToInt32(val);
-                
+
                 case CType.BigInt:
                     return Convert.ToInt64(val);
 
-//                case CType.Xml:
+                //                case CType.Xml:
 
                 default:
                     throw new NotImplementedException(string.Format("cannot convert {0} into type of {1}", val, ctype));

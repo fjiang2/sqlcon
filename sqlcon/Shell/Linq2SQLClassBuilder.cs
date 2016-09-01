@@ -81,7 +81,7 @@ namespace sqlcon
                 if (column.IsIdentity)
                     args.Add(new { IsDbGenerated = true });
 
-                if (!column.Nullable)
+                if (!column.IsPrimary && !column.Nullable)
                     args.Add(new { CanBeNull = false });
 
                 prop.AddAttribute(new AttributeInfo("Column", args.ToArray()));
