@@ -33,6 +33,8 @@ namespace Sys.CodeBuilder
         public Class(string className)
             : this(className, new TypeInfo[] { })
         {
+            //class name can be same as property/field name
+            _names.Add(className, 0);
         }
 
         public Class(string className, params TypeInfo[] inherits)
