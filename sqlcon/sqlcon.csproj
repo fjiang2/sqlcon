@@ -104,7 +104,8 @@
     <Compile Include="CancelableWork.cs" />
     <Compile Include="Data\CsvFile.cs" />
     <Compile Include="Data\DuplicatedTable.cs" />
-    <Compile Include="Editor.cs" />
+    <Compile Include="Windows\SqlEditor.cs" />
+    <Compile Include="Windows\TableEditor.cs" />
     <Compile Include="Input\KeyValueTable.cs" />
     <Compile Include="Input\Options.cs" />
     <Compile Include="Input\PathName.cs" />

@@ -11,6 +11,7 @@ using System.Threading;
 using Sys;
 using Sys.Data;
 using Sys.Data.Comparison;
+using Sys.IO;
 using Tie;
 
 namespace sqlcon
@@ -1190,7 +1191,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            var editor = new Editor(mgr.Configuration, new UniqueTable(null, dt));
+            var editor = new TableEditor(mgr.Configuration, new UniqueTable(null, dt));
 
             editor.ShowDialog();
         }
@@ -1344,5 +1345,32 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 theSide.ExecuteScript(inputfile);
         }
 
+        public void edit(Command cmd, Side theSide)
+        {
+            if (cmd.HasHelp)
+            {
+                stdio.WriteLine("edit and execute sql script");
+                stdio.WriteLine("examples:");
+                stdio.WriteLine("  execute c:\\db\\northwind.sql");
+                stdio.WriteLine("  execute http://www.datcon.com/example.sql");
+                stdio.WriteLine("  execute ftp://www.datcon.com/example.sql /usr:user /pwd:password");
+                return;
+            }
+
+            FileLink fileLink = null;
+            if (cmd.arg1 != null)
+            {
+                string inputfile = cmd.arg1;
+                fileLink = FileLink.Factory(inputfile, cmd.GetValue("usr"), cmd.GetValue("pwd"));
+                if (!fileLink.Exists)
+                {
+                    stdio.ErrorFormat("file {0} doesn't exist", fileLink);
+                    return;
+                }
+            }
+
+            var editor = new SqlEditor(cmd.Configuration, theSide.Provider, fileLink);
+            editor.ShowDialog();
+        }
     }
 }

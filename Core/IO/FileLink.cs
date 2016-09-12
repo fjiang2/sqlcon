@@ -32,6 +32,8 @@ namespace Sys.IO
 
         public abstract DataSet ReadXml(DataSet ds);
 
+        public abstract string ReadAllText();
+
         public override string ToString()
         {
             return this.url;

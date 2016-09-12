@@ -11,13 +11,13 @@ using Sys.Data;
 
 namespace sqlcon
 {
-    class Editor : Window
+    class TableEditor : Window
     {
         private Grid grid = new Grid();
         private DataGrid dataGrid;
         private UniqueTable udt;
 
-        public Editor(Configuration cfg, UniqueTable udt)
+        public TableEditor(Configuration cfg, UniqueTable udt)
         {
             this.udt = udt;
             if (udt.TableName != null)
@@ -84,27 +84,6 @@ namespace sqlcon
 
             return defaultColor;
         }
-
-
-        private SolidColorBrush ToBrush(string name, Color defaultColor)
-        {
-            Color color = ToColor(name, defaultColor);
-            return new SolidColorBrush(color);
-        }
-
-        private static Color ToColor(string name, Color defaultColor)
-        {
-            ColorConverter converter = new ColorConverter();
-
-            if (converter.CanConvertFrom(typeof(string)))
-            {
-                Color color = (Color)converter.ConvertFrom(null, null, name);
-                return color;
-            }
-            else
-                return defaultColor;
-        }
-
 
         private void DataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {

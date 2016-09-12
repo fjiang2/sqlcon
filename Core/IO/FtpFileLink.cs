@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Data;
+using System.IO;
 using Sys.Networking;
 
 namespace Sys.IO
@@ -12,7 +13,7 @@ namespace Sys.IO
         private FtpClient client;
 
         public FtpFileLink(string url, string userName, string password)
-            :base(url)
+            : base(url)
         {
             this.uri = new Uri(url);
             this.client = new FtpClient(uri.Host, uri.Port)
@@ -20,7 +21,7 @@ namespace Sys.IO
                 UserName = userName,
                 Password = password,
                 RemotePath = remotePath
-           };
+            };
         }
 
         private string fileName
@@ -56,8 +57,16 @@ namespace Sys.IO
 
         public override DataSet ReadXml(DataSet ds)
         {
-            client.Download(fileName, reader => ds.ReadXml(reader, XmlReadMode.ReadSchema) );
+            client.Download(fileName, reader => ds.ReadXml(reader, XmlReadMode.ReadSchema));
             return ds;
+        }
+
+        public override string ReadAllText()
+        {
+            string temp = Path.GetTempFileName();
+            client.Download(fileName, temp);
+
+            return File.ReadAllText(temp);
         }
     }
 }

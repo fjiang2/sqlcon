@@ -33,5 +33,9 @@ namespace Sys.IO
             return ds;
         }
 
+        public override string ReadAllText()
+        {
+            return HttpRequest.ReadText(new Uri(url));
+        }
     }
 }

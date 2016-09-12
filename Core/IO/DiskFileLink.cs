@@ -8,9 +8,9 @@ namespace Sys.IO
 {
     public class DiskFileLink : FileLink
     {
-     
+
         public DiskFileLink(string url)
-            :base(url)
+            : base(url)
         {
             this.url = url;
         }
@@ -49,6 +49,10 @@ namespace Sys.IO
             }
             return ds;
         }
-        
+
+        public override string ReadAllText()
+        {
+            return File.ReadAllText(fileName);
+        }
     }
 }

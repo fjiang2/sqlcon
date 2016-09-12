@@ -328,6 +328,10 @@ namespace sqlcon
                     commandee.umount(cmd, cfg);
                     return true;
 
+                case "edit":
+                    commandee.edit(cmd, theSide);
+                    return true;
+
                 default:
                     break;
             }
