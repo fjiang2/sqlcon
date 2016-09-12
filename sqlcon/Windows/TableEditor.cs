@@ -32,9 +32,9 @@ namespace sqlcon
 
             this.Content = grid;
 
-            var evenRowColor = GetColor(cfg, "gui.table.editor.AlternatingRowBackground", Colors.DimGray);
-            var fkColor = GetColor(cfg, "gui.table.editor.Foreground", Colors.LightGray);
-            var bkColor = GetColor(cfg, "gui.table.editor.RowBackground", Colors.Black);
+            var evenRowColor = cfg.GetColor("gui.table.editor.AlternatingRowBackground", Colors.DimGray);
+            var fkColor = cfg.GetColor("gui.table.editor.Foreground", Colors.LightGray);
+            var bkColor = cfg.GetColor("gui.table.editor.RowBackground", Colors.Black);
 
             dataGrid = new DataGrid
             {
@@ -58,31 +58,6 @@ namespace sqlcon
             dataGrid.CellEditEnding += DataGrid_CellEditEnding;
             udt.Table.RowChanged += Table_RowChanged;
             udt.Table.ColumnChanged += Table_ColumnChanged;
-        }
-
-        private Color GetColor(Configuration cfg, string key, Color defaultColor)
-        {
-            string colorString = cfg.GetValue<string>(key);
-
-            if (colorString != null)
-            {
-                ColorConverter converter = new ColorConverter();
-
-                if (converter.CanConvertFrom(typeof(string)))
-                {
-                    try
-                    {
-                        Color color = (Color)converter.ConvertFrom(null, null, colorString);
-                        return color;
-                    }
-                    catch (Exception)
-                    {
-                        stdio.ErrorFormat("color setting {0} = {1} not supported", key, colorString);
-                    }
-                }
-            }
-
-            return defaultColor;
         }
 
         private void DataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)

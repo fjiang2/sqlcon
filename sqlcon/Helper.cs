@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
 using System.Data.Common;
+using System.Windows.Media;
 using System.IO;
 using Sys.Data;
 
@@ -78,6 +79,30 @@ namespace sqlcon
             return true;
         }
 
+        public static Color GetColor(this Configuration cfg, string key, Color defaultColor)
+        {
+            string colorString = cfg.GetValue<string>(key);
+
+            if (colorString != null)
+            {
+                ColorConverter converter = new ColorConverter();
+
+                if (converter.CanConvertFrom(typeof(string)))
+                {
+                    try
+                    {
+                        Color color = (Color)converter.ConvertFrom(null, null, colorString);
+                        return color;
+                    }
+                    catch (Exception)
+                    {
+                        stdio.ErrorFormat("color setting {0} = {1} not supported", key, colorString);
+                    }
+                }
+            }
+
+            return defaultColor;
+        }
 
     }
 }

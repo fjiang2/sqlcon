@@ -22,12 +22,14 @@ namespace sqlcon
         private Button btnOpen;
         private Button btnSave;
 
+        private Configuration cfg;
         private FileLink link;
         private ConnectionProvider provider;
         public SqlEditor(Configuration cfg, ConnectionProvider provider, FileLink link)
         {
             InitializeComponent(cfg);
 
+            this.cfg = cfg;
             this.provider = provider;
             this.link = link;
             string text = string.Empty;
@@ -67,14 +69,14 @@ namespace sqlcon
             TabControl tabControl = new TabControl { Height = 100 };
             dockPanel.Children.Add(tabControl);
             tabControl.SetValue(DockPanel.DockProperty, Dock.Bottom);
-            tabControl.Items.Add(new TabItem { Header = "Output" });
-            tabControl.Items.Add(new TabItem { Header = "Table" });
+            tabControl.Items.Add(new TabItem { Header = "Results" });
+            tabControl.Items.Add(new TabItem { Header = "Messages" });
 
 
             Grid grid = new Grid();
             dockPanel.Children.Add(grid);
-            var fkColor = GetColor(cfg, "gui.sql.editor.Foreground", Colors.LightGray);
-            var bkColor = GetColor(cfg, "gui.sql.editor.Background", Colors.Black);
+            var fkColor = cfg.GetColor("gui.sql.editor.Foreground", Colors.LightGray);
+            var bkColor = cfg.GetColor("gui.sql.editor.Background", Colors.Black);
 
             textBox = new RichTextBox
             {
@@ -85,30 +87,7 @@ namespace sqlcon
             grid.Children.Add(textBox);
         }
 
-        private Color GetColor(Configuration cfg, string key, Color defaultColor)
-        {
-            string colorString = cfg.GetValue<string>(key);
-
-            if (colorString != null)
-            {
-                ColorConverter converter = new ColorConverter();
-
-                if (converter.CanConvertFrom(typeof(string)))
-                {
-                    try
-                    {
-                        Color color = (Color)converter.ConvertFrom(null, null, colorString);
-                        return color;
-                    }
-                    catch (Exception)
-                    {
-                        stdio.ErrorFormat("color setting {0} = {1} not supported", key, colorString);
-                    }
-                }
-            }
-
-            return defaultColor;
-        }
+        
 
 
         private string GetAllText()
@@ -119,7 +98,31 @@ namespace sqlcon
 
         private void Execute()
         {
-            new SqlCmd(provider, GetAllText()).ExecuteNonQuery();
+            var cmd = new SqlCmd(provider, GetAllText());
+
+            cmd.ExecuteNonQuery();
+            var ds = cmd.FillDataSet();
+
+        }
+
+        private DataGrid Display(DataTable table)
+        {
+            var evenRowColor = cfg.GetColor("gui.table.editor.AlternatingRowBackground", Colors.DimGray);
+            var fkColor = cfg.GetColor("gui.table.editor.Foreground", Colors.LightGray);
+            var bkColor = cfg.GetColor("gui.table.editor.RowBackground", Colors.Black);
+
+            var dataGrid = new DataGrid
+            {
+                AlternationCount = 2,
+                AlternatingRowBackground = new SolidColorBrush(evenRowColor),
+                Foreground = new SolidColorBrush(fkColor),
+                RowBackground = new SolidColorBrush(bkColor)
+            };
+
+            dataGrid.IsReadOnly = true;
+            dataGrid.ItemsSource = table.DefaultView;
+
+            return dataGrid;
         }
     }
 }
