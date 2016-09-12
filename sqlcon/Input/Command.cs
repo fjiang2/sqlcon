@@ -43,9 +43,12 @@ namespace sqlcon
 
         public readonly Options options = new Options();
         private readonly string columns;
+        private Configuration cfg;
 
         public Command(string line, Configuration cfg)
         {
+            this.cfg = cfg;
+
             this.HasDefinition = false;
             this.IsVertical = false;
             this.top = cfg.Limit_Top;
@@ -165,6 +168,8 @@ namespace sqlcon
                 }
             }
         }
+
+        public Configuration Configuration => this.cfg;
 
         public bool HasRowId => hasRowId || Has("edit");
 

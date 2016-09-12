@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+9/12/2016 v1.7.4.0
+	New Features:
+	1. color schema of GUI table editor is configurable on sqlcon.cfg
+
 8/24/2016 v1.7.3.0
 	New Features:
 	1. command>export /l2s to generate Linq to SQL C# class

@@ -11,13 +11,13 @@ using Sys.Data;
 
 namespace sqlcon
 {
-    public class Editor : Window
+    class Editor : Window
     {
         private Grid grid = new Grid();
         private DataGrid dataGrid;
         private UniqueTable udt;
 
-        public Editor(UniqueTable udt)
+        public Editor(Configuration cfg, UniqueTable udt)
         {
             this.udt = udt;
             if (udt.TableName != null)
@@ -26,17 +26,22 @@ namespace sqlcon
             }
             else
                 this.Title = "Table Viewer";
+
             this.Width = 800;
             this.Height = 600;
 
             this.Content = grid;
 
+            var evenRowColor = GetColor(cfg, "gui.table.editor.AlternatingRowBackground", Colors.DimGray);
+            var fkColor = GetColor(cfg, "gui.table.editor.Foreground", Colors.LightGray);
+            var bkColor = GetColor(cfg, "gui.table.editor.RowBackground", Colors.Black);
+
             dataGrid = new DataGrid
             {
                 AlternationCount = 2,
-                AlternatingRowBackground = new SolidColorBrush(Colors.DimGray),
-                Foreground = new SolidColorBrush(Colors.LightGray),
-                RowBackground = new SolidColorBrush(Colors.Black)
+                AlternatingRowBackground = new SolidColorBrush(evenRowColor),
+                Foreground = new SolidColorBrush(fkColor),
+                RowBackground = new SolidColorBrush(bkColor)
             };
 
             if (udt.TableName != null)
@@ -54,6 +59,52 @@ namespace sqlcon
             udt.Table.RowChanged += Table_RowChanged;
             udt.Table.ColumnChanged += Table_ColumnChanged;
         }
+
+        private Color GetColor(Configuration cfg, string key, Color defaultColor)
+        {
+            string colorString = cfg.GetValue<string>(key);
+
+            if (colorString != null)
+            {
+                ColorConverter converter = new ColorConverter();
+
+                if (converter.CanConvertFrom(typeof(string)))
+                {
+                    try
+                    {
+                        Color color = (Color)converter.ConvertFrom(null, null, colorString);
+                        return color;
+                    }
+                    catch (Exception)
+                    {
+                        stdio.ErrorFormat("color setting {0} = {1} not supported", key, colorString);
+                    }
+                }
+            }
+
+            return defaultColor;
+        }
+
+
+        private SolidColorBrush ToBrush(string name, Color defaultColor)
+        {
+            Color color = ToColor(name, defaultColor);
+            return new SolidColorBrush(color);
+        }
+
+        private static Color ToColor(string name, Color defaultColor)
+        {
+            ColorConverter converter = new ColorConverter();
+
+            if (converter.CanConvertFrom(typeof(string)))
+            {
+                Color color = (Color)converter.ConvertFrom(null, null, name);
+                return color;
+            }
+            else
+                return defaultColor;
+        }
+
 
         private void DataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {

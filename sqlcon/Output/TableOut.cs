@@ -93,7 +93,7 @@ namespace sqlcon
 
             if (cmd.Has("edit"))
             {
-                var editor = new Editor(udt);
+                var editor = new Editor(cmd.Configuration, udt);
                 editor.ShowDialog();
                 return;
             }
