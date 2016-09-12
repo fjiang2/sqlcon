@@ -234,42 +234,7 @@ namespace sqlcon
 
 
                 case "execute":
-                    {
-                        string inputfile;
-                        if (cmd.arg1 != null)
-                            inputfile = cmd.arg1;
-                        else
-                        {
-                            stdio.ErrorFormat("input undefined");
-                            return true;
-                        }
-
-                        if (cmd.IsSchema)
-                        {
-                            string tag = inputfile;
-                            string[] files = cfg.GetValue<string[]>(tag);
-                            if (files == null)
-                            {
-                                stdio.ErrorFormat("no varible string[] {0} found on config file: {0}", tag);
-                                return true;
-                            }
-
-                            foreach (var file in files)
-                            {
-                                if (!theSide.ExecuteScript(file))
-                                {
-                                    if (!stdio.YesOrNo("are you sure to continue to run next file(y/n)?"))
-                                    {
-                                        stdio.ErrorFormat("interupted on {0}", file);
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
-                        else
-                            theSide.ExecuteScript(inputfile);
-                    }
-
+                    commandee.execute(cmd, theSide);
                     return true;
 
                 case "open":
@@ -593,7 +558,7 @@ namespace sqlcon
         private static void Help()
         {
             stdio.WriteLine("Path points to server, database,tables, data rows");
-            stdio.WriteLine("      \\server\\database\\table\\filter\\filter\\....");
+            stdio.WriteLine(@"      \server\database\table\filter\filter\....");
             stdio.WriteLine("Notes: table names support wildcard matching, e.g. Prod*,Pro?ucts");
             stdio.WriteLine("exit                    : quit application");
             stdio.WriteLine("help                    : this help");
@@ -622,6 +587,7 @@ namespace sqlcon
             stdio.WriteLine("mount /?                : see more info");
             stdio.WriteLine("umount /?               : see more info");
             stdio.WriteLine("open /?                 : see more info");
+            stdio.WriteLine("execute /?              : see more info");
             stdio.WriteLine();
             stdio.WriteLine("<Commands>");
             stdio.WriteLine("<find> pattern          : find table name or column name");
@@ -637,8 +603,6 @@ namespace sqlcon
             stdio.WriteLine("<run> query(..)         : run predefined query. e.g. run query(var1=val1,...);");
             stdio.WriteLine("<sync table1 table2>    : synchronize, make table2 is the same as table1");
             stdio.WriteLine("<save output>           : copy sql script ouput to clipboard");
-            stdio.WriteLine("<execute inputfile>     : execute sql script file");
-            stdio.WriteLine("<execute variable /s>   : execute script file list defined on the configuration file");
             stdio.WriteLine();
             stdio.WriteLine("type [;] to execute following SQL script or functions");
             stdio.WriteLine("<SQL>");

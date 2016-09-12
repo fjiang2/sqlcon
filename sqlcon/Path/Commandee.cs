@@ -1293,5 +1293,56 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 }
             });
         }
+
+        public void execute(Command cmd, Side theSide)
+        {
+            if (cmd.HasHelp)
+            {
+                stdio.WriteLine("execute sql script files");
+                stdio.WriteLine("execute variable_name /s");
+                stdio.WriteLine("execute file");
+                stdio.WriteLine("       /s                     : execute multiple sql script files defined on the user.cfg");
+                stdio.WriteLine("examples:");
+                stdio.WriteLine("  execute northwind.sql       : execute single sql script file");
+                stdio.WriteLine("  execute db_install /s       : variable db_install = {file1, file2, ...};");
+                stdio.WriteLine("                                defined on the user.cfg");
+                return;
+            }
+
+            string inputfile;
+            if (cmd.arg1 != null)
+                inputfile = cmd.arg1;
+            else
+            {
+                stdio.ErrorFormat("input undefined");
+                return;
+            }
+
+            if (cmd.IsSchema)
+            {
+                string tag = inputfile;
+                string[] files =mgr.Configuration.GetValue<string[]>(tag);
+                if (files == null)
+                {
+                    stdio.ErrorFormat("no varible string[] {0} found on config file: {0}", tag);
+                    return;
+                }
+
+                foreach (var file in files)
+                {
+                    if (!theSide.ExecuteScript(file))
+                    {
+                        if (!stdio.YesOrNo("are you sure to continue to run next file(y/n)?"))
+                        {
+                            stdio.ErrorFormat("interupted on {0}", file);
+                            return;
+                        }
+                    }
+                }
+            }
+            else
+                theSide.ExecuteScript(inputfile);
+        }
+
     }
 }
