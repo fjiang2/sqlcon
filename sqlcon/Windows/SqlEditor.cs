@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Documents;
+using System.IO;
 using System.Data;
 using Sys.Data;
 using Sys.IO;
@@ -25,26 +26,28 @@ namespace sqlcon
         private Configuration cfg;
         private FileLink link;
         private ConnectionProvider provider;
+
         public SqlEditor(Configuration cfg, ConnectionProvider provider, FileLink link)
         {
             InitializeComponent(cfg);
 
             this.cfg = cfg;
             this.provider = provider;
-            this.link = link;
             string text = string.Empty;
 
             if (link != null)
             {
-                this.Title = $"Sql Script Editor: {link}";
+                this.link = link;
                 text = link.ReadAllText();
+                textBox.Document.Blocks.Add(new Paragraph(new Run(text)));
             }
             else
             {
-                this.Title = "Sql Script Editor";
+                this.link = FileLink.CreateLink("untitled.sql", null, null);
             }
 
-            textBox.Document.Blocks.Add(new Paragraph(new Run(text)));
+            this.Title = $"{this.link} - sqlcon";
+
         }
 
         private void InitializeComponent(Configuration cfg)
@@ -75,8 +78,8 @@ namespace sqlcon
 
             Grid grid = new Grid();
             dockPanel.Children.Add(grid);
-            var fkColor = cfg.GetColor("gui.sql.editor.Foreground", Colors.LightGray);
-            var bkColor = cfg.GetColor("gui.sql.editor.Background", Colors.Black);
+            var fkColor = cfg.GetColor("gui.sql.editor.Foreground", Colors.Black);
+            var bkColor = cfg.GetColor("gui.sql.editor.Background", Colors.White);
 
             textBox = new RichTextBox
             {
@@ -85,24 +88,30 @@ namespace sqlcon
             };
 
             grid.Children.Add(textBox);
+
+            textBox.Focus();
+            btnExecute.Click += (sender, e) => Execute();
+            btnSave.Click += (sender, e) => Save();
         }
-
-        
-
 
         private string GetAllText()
         {
-            TextRange textRange = new TextRange(textBox.Document.ContentStart, textBox.Document.ContentEnd);
-            return textRange.Text;
+            if (string.IsNullOrEmpty(textBox.Selection.Text))
+            {
+                TextRange textRange = new TextRange(textBox.Document.ContentStart, textBox.Document.ContentEnd);
+                return textRange.Text;
+            }
+            else
+                return textBox.Selection.Text;
         }
 
         private void Execute()
         {
-            var cmd = new SqlCmd(provider, GetAllText());
+            string text = GetAllText();
 
+            var cmd = new SqlCmd(provider, text);
             cmd.ExecuteNonQuery();
             var ds = cmd.FillDataSet();
-
         }
 
         private DataGrid Display(DataTable table)
@@ -123,6 +132,29 @@ namespace sqlcon
             dataGrid.ItemsSource = table.DefaultView;
 
             return dataGrid;
+        }
+
+        public void Save()
+        {
+            var saveFile = new Microsoft.Win32.SaveFileDialog();
+            saveFile.Filter = "Sql Script Files (*.sql)|*.sql|Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+            if (saveFile.ShowDialog(this) == true)
+            {
+                TextRange documentTextRange = new TextRange(textBox.Document.ContentStart, textBox.Document.ContentEnd);
+
+                // If this file exists, it's overwritten.
+                using (FileStream fs = File.Create(saveFile.FileName))
+                {
+                    if (Path.GetExtension(saveFile.FileName).ToLower() == ".rtf")
+                    {
+                        documentTextRange.Save(fs, DataFormats.Rtf);
+                    }
+                    else
+                    {
+                        documentTextRange.Save(fs, DataFormats.Text);
+                    }
+                }
+            }
         }
     }
 }

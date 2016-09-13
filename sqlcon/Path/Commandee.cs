@@ -1116,7 +1116,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("open files");
                 stdio.WriteLine("options:");
                 stdio.WriteLine("   log              : open log file");
-                stdio.WriteLine("   viewer           : open GUI grid viewer");
+                stdio.WriteLine("   viewer           : open GUI viewer to see the last data table retrieved");
                 stdio.WriteLine("   output           : open output file");
                 stdio.WriteLine("   config [/s]      : open user configure file, /s open system configurate");
                 stdio.WriteLine("   dpo              : open table class output directory");
@@ -1349,11 +1349,16 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("edit and execute sql script");
+                stdio.WriteLine("edit, view and execute sql script");
+                stdio.WriteLine("edit                          : create new file and edit");
+                stdio.WriteLine("edit [file]                   : edit file, it is read-only if file is hyperlink");
+                stdio.WriteLine("options:");
+                stdio.WriteLine("   /usr                       : FTP user name");
+                stdio.WriteLine("   /pwd                       : FTP password");
                 stdio.WriteLine("examples:");
-                stdio.WriteLine("  execute c:\\db\\northwind.sql");
-                stdio.WriteLine("  execute http://www.datcon.com/example.sql");
-                stdio.WriteLine("  execute ftp://www.datcon.com/example.sql /usr:user /pwd:password");
+                stdio.WriteLine("  edit c:\\db\\northwind.sql");
+                stdio.WriteLine("  edit http://www.datcon.com/example.sql");
+                stdio.WriteLine("  edit ftp://www.datcon.com/example.sql /usr:user /pwd:password");
                 return;
             }
 
@@ -1361,7 +1366,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             if (cmd.arg1 != null)
             {
                 string inputfile = cmd.arg1;
-                fileLink = FileLink.Factory(inputfile, cmd.GetValue("usr"), cmd.GetValue("pwd"));
+                fileLink = FileLink.CreateLink(inputfile, cmd.GetValue("usr"), cmd.GetValue("pwd"));
                 if (!fileLink.Exists)
                 {
                     stdio.ErrorFormat("file {0} doesn't exist", fileLink);

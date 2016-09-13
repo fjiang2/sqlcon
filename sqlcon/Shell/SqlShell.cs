@@ -592,6 +592,7 @@ namespace sqlcon
             stdio.WriteLine("umount /?               : see more info");
             stdio.WriteLine("open /?                 : see more info");
             stdio.WriteLine("execute /?              : see more info");
+            stdio.WriteLine("edit /?                 : see more info");
             stdio.WriteLine();
             stdio.WriteLine("<Commands>");
             stdio.WriteLine("<find> pattern          : find table name or column name");

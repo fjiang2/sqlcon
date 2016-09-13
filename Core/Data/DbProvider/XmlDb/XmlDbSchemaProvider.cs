@@ -23,22 +23,27 @@ namespace Sys.Data
         public XmlDbSchemaProvider(ConnectionProvider provider)
                     : base(provider)
         {
-            var link = FileLink.Factory(provider.DataSource, provider.UserId, provider.Password);
-            dbSchema = link.ReadXml();
-            if (dbSchema != null)
+            var link = FileLink.CreateLink(provider.DataSource, provider.UserId, provider.Password);
+            dbSchema = new DataSet();
+
+            try
             {
+                link.ReadXml(dbSchema);
+
                 if (dbSchema.Tables.Count == 0)
                     throw new Exception(string.Format("error in xml schema file: {0}", provider));
             }
-            else
+            catch (Exception)
+            {
                 throw new Exception($"bad data source defined {provider.DataSource}");
+            }
         }
 
-      
+
         public override DatabaseName[] GetDatabaseNames()
         {
             List<DatabaseName> dnames = new List<DatabaseName>();
-            foreach(DataTable table in dbSchema.Tables)
+            foreach (DataTable table in dbSchema.Tables)
             {
                 DatabaseName dname = new DatabaseName(provider, table.TableName);
                 dnames.Add(dname);

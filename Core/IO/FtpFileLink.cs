@@ -7,7 +7,7 @@ using Sys.Networking;
 
 namespace Sys.IO
 {
-    public class FtpFileLink : FileLink
+    class FtpFileLink : FileLink
     {
         private Uri uri;
         private FtpClient client;
@@ -55,10 +55,9 @@ namespace Sys.IO
         }
 
 
-        public override DataSet ReadXml(DataSet ds)
+        public override void ReadXml(DataSet ds)
         {
             client.Download(fileName, reader => ds.ReadXml(reader, XmlReadMode.ReadSchema));
-            return ds;
         }
 
         public override string ReadAllText()

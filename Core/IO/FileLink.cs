@@ -5,6 +5,10 @@ using System.Data;
 
 namespace Sys.IO
 {
+    /// <summary>
+    /// File Link is file pointing to disk, web or ftp site
+    /// it supports http, https, ftp,  networking drive and local file
+    /// </summary>
     public abstract class FileLink
     {
       
@@ -24,13 +28,7 @@ namespace Sys.IO
 
         public abstract string PathCombine(string path1, string path2);
 
-        public DataSet ReadXml()
-        {
-            DataSet ds = new DataSet();
-            return ReadXml(ds);
-        }
-
-        public abstract DataSet ReadXml(DataSet ds);
+        public abstract void ReadXml(DataSet ds);
 
         public abstract string ReadAllText();
 
@@ -40,7 +38,7 @@ namespace Sys.IO
         }
 
 
-        public static FileLink Factory(string url, string userName, string password)
+        public static FileLink CreateLink(string url, string userName, string password)
         {
             FileLink link = null;
 

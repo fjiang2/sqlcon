@@ -6,7 +6,7 @@ using System.Data;
 
 namespace Sys.IO
 {
-    public class DiskFileLink : FileLink
+    class DiskFileLink : FileLink
     {
 
         public DiskFileLink(string url)
@@ -41,13 +41,12 @@ namespace Sys.IO
 
 
 
-        public override DataSet ReadXml(DataSet ds)
+        public override void ReadXml(DataSet ds)
         {
             using (var reader = new StreamReader(fileName))
             {
                 ds.ReadXml(reader);
             }
-            return ds;
         }
 
         public override string ReadAllText()

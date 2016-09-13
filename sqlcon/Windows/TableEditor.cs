@@ -22,10 +22,10 @@ namespace sqlcon
             this.udt = udt;
             if (udt.TableName != null)
             {
-                this.Title = $"Table Editor: {udt.TableName}";
+                this.Title = $"{udt.TableName} - sqlcon";
             }
             else
-                this.Title = "Table Viewer";
+                this.Title = "View only - sqlcon";
 
             this.Width = 800;
             this.Height = 600;

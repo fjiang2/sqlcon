@@ -6,7 +6,7 @@ using Sys.Networking;
 
 namespace Sys.IO
 {
-    public class HttpFileLink : FileLink
+    class HttpFileLink : FileLink
     {
         public HttpFileLink(string url)
             : base(url)
@@ -27,10 +27,9 @@ namespace Sys.IO
         }
 
 
-        public override DataSet ReadXml(DataSet ds)
+        public override void ReadXml(DataSet ds)
         {
             HttpRequest.ReadXml(new Uri(url), ds);
-            return ds;
         }
 
         public override string ReadAllText()

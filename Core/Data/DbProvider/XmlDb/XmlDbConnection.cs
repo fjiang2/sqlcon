@@ -29,7 +29,7 @@ namespace Sys.Data
             this.DataSource = Provider.DataSource;
             this.database = Provider.InitialCatalog;
 
-            this.FileLink = FileLink.Factory(provider.DataSource, provider.UserId, provider.Password);
+            this.FileLink = FileLink.CreateLink(provider.DataSource, provider.UserId, provider.Password);
         }
 
         public DatabaseName DatabaseName

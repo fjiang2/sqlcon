@@ -19,7 +19,7 @@ namespace Sys.Data
         }
         public override bool CheckConnection()
         {
-            return FileLink.Factory(DataSource, this.UserId, this.Password).Exists;
+            return FileLink.CreateLink(DataSource, this.UserId, this.Password).Exists;
         }
 
 
