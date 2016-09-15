@@ -644,7 +644,7 @@ namespace sqlcon
                 else
                     SQL = $"ALTER TABLE [{tname.Name}] ADD {column} {type} {nullable}";
 
-                new SqlCmd(tname.Provider, SQL).ExecuteNonQuery();
+                ExecuteNonQuery(tname.Provider, SQL);
                 return;
             }
 
@@ -653,7 +653,7 @@ namespace sqlcon
                 TableName tname = (TableName)pt.Item;
                 string column = cmd.options.GetValue("-c");
                 string SQL = $"ALTER TABLE [{tname.Name}] DROP COLUMN {column}";
-                new SqlCmd(tname.Provider, SQL).ExecuteNonQuery();
+                ExecuteNonQuery(tname.Provider, SQL);
                 return;
             }
 
@@ -675,7 +675,7 @@ namespace sqlcon
                 //check fkColumn, pkColumn is valid
 
                 string SQL = $"ALTER TABLE [{fkName.Name}] ADD CONSTRAINT [FK_{fkName.Name}_{pkName}] FOREIGN KEY([{fkColumn}]) REFERENCES [{pkName}]([{pkColumn}])";
-                new SqlCmd(fkName.Provider, SQL).ExecuteNonQuery();
+                ExecuteNonQuery(fkName.Provider, SQL);
                 return;
             }
 
@@ -684,7 +684,7 @@ namespace sqlcon
                 TableName tname = (TableName)pt.Item;
                 string expr = cmd.options.GetValue("+p");
                 string SQL = $"ALTER TABLE [{tname.Name}] ADD PRIMARY KEY(expr)";
-                new SqlCmd(tname.Provider, SQL).ExecuteNonQuery();
+                ExecuteNonQuery(tname.Provider, SQL);
                 return;
             }
 
@@ -697,12 +697,26 @@ ALTER TABLE {0} ADD {1} INT IDENTITY(1, 1)
 ALTER TABLE {0} DROP COLUMN {2}
 sp_rename '{1}', '{2}', 'COLUMN'";
                 string.Format(SQL, tname.Name, $"_{column}_", column);
-                new SqlCmd(tname.Provider, SQL).ExecuteNonQuery();
+                ExecuteNonQuery(tname.Provider, SQL);
                 return;
             }
 
-
         }
+
+        private static int ExecuteNonQuery(ConnectionProvider provider, string sql)
+        {
+            try
+            {
+                return new SqlCmd(provider, sql).ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                stdio.ErrorFormat("{0}", ex.Message);
+            }
+
+            return -1;
+        }
+
 
         public void let(Command cmd)
         {
@@ -1322,7 +1336,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             if (cmd.IsSchema)
             {
                 string tag = inputfile;
-                string[] files =mgr.Configuration.GetValue<string[]>(tag);
+                string[] files = mgr.Configuration.GetValue<string[]>(tag);
                 if (files == null)
                 {
                     stdio.ErrorFormat("no varible string[] {0} found on config file: {0}", tag);
