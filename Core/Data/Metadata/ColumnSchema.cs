@@ -245,6 +245,9 @@ namespace Sys.Data
                 case "smalldatetime":
                     return CType.SmallDateTime;
 
+                case "datetimeoffset":
+                    return CType.DateTimeOffset;
+
                 case "timestamp":
                     return CType.Timestamp;
 
@@ -280,7 +283,6 @@ namespace Sys.Data
 
                 case "binary":
                     return CType.Binary;
-
 
                 case "image":
                     return CType.Image;

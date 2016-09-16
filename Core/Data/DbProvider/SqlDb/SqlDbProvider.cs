@@ -64,6 +64,8 @@ namespace Sys.Data
                 dbType = SqlDbType.SmallInt;
             else if (value is long)
                 dbType = SqlDbType.BigInt;
+            else if (value is byte)
+                dbType = SqlDbType.TinyInt;
             else if (value is DateTime)
                 dbType = SqlDbType.DateTime;
             else if (value is Double)

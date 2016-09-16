@@ -60,6 +60,9 @@ namespace Sys.Data
             else if (type == typeof(Int16))
                 return CType.SmallInt;
 
+            else if (type == typeof(Byte))
+                return CType.TinyInt;
+
             else if (type == typeof(Int32))
                 return CType.Int;
 
@@ -102,6 +105,9 @@ namespace Sys.Data
         {
             if (type == typeof(Boolean))
                 return OleDbType.Boolean;
+
+            else if (type == typeof(Byte))
+                return OleDbType.TinyInt;
 
             else if (type == typeof(Int16))
                 return OleDbType.SmallInt;
