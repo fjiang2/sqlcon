@@ -300,14 +300,22 @@ namespace sqlcon
                                 return true;
                             }
 
-                            DataSet ds = new SqlCmd(theSide.Provider, (string)result[0]).ParseParameters(result[1]).FillDataSet();
-                            if (ds != null)
+                            try
                             {
-                                foreach (DataTable dt in ds.Tables)
-                                    dt.ToConsole();
+                                DataSet ds = new SqlCmd(theSide.Provider, (string)result[0]).ParseParameters(result[1]).FillDataSet();
+                                if (ds != null)
+                                {
+                                    foreach (DataTable dt in ds.Tables)
+                                        dt.ToConsole();
+                                }
+                                else
+                                    stdio.ErrorFormat("cannot retrieve data from server");
                             }
-                            else
-                                stdio.ErrorFormat("cannot retrieve data from server");
+                            catch (Exception ex)
+                            {
+                                stdio.ErrorFormat("{0}", ex.Message);
+                                return true;
+                            }
                         }
                     }
                     return true;
