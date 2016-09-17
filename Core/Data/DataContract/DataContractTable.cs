@@ -26,7 +26,7 @@ namespace Sys.Data
             .ToList();
         }
 
-        public void ToTable(IEnumerable<T> items, DataTable dt)
+        public static void ToTable(IEnumerable<T> items, DataTable dt)
         {
             foreach (var item in items)
             {
