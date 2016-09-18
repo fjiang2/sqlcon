@@ -19,13 +19,6 @@ namespace sqlcon.Windows
 {
     class SqlEditor : Window
     {
-        private RichTextBox textBox;
-        TabControl tabControl;
-        private TextBlock lblCursorPosition;
-        private Button btnExecute;
-        private Button btnOpen;
-        private Button btnSave;
-
         private Configuration cfg;
         private FileLink link;
         private ConnectionProvider provider;
@@ -36,12 +29,18 @@ namespace sqlcon.Windows
 
             this.cfg = cfg;
             this.provider = provider;
-            string text = string.Empty;
+
+            textBox.SelectionChanged += TextBox_SelectionChanged;
+            textBox.Focus();
+
+            btnExecute.Click += (sender, e) => Execute();
+            btnSave.Click += (sender, e) => Save();
+
 
             if (link != null)
             {
                 this.link = link;
-                text = link.ReadAllText();
+                string text = link.ReadAllText();
                 textBox.Document.Blocks.Add(new Paragraph(new Run(text)));
             }
             else
@@ -53,10 +52,19 @@ namespace sqlcon.Windows
 
         }
 
+
+        private RichTextBox textBox = new RichTextBox { FontFamily = new FontFamily("Consolas"), FontSize = 12 };
+        private TabControl tabControl = new TabControl();
+        private TextBlock lblCursorPosition = new TextBlock { Width = 200 };
+
+        private Button btnOpen = new Button { Command = ApplicationCommands.Open, Content = "Open", Width = 40, Margin = new Thickness(5) };
+        private Button btnSave = new Button { Command = ApplicationCommands.Save, Content = "Save", Width = 40, Margin = new Thickness(5) };
+        private Button btnExecute = new Button { Content = "Execute", Width = 50, Margin = new Thickness(5) };
+
         private void InitializeComponent(Configuration cfg)
         {
-            this.Width = 800;
-            this.Height = 600;
+            this.Width = 1024;
+            this.Height = 768;
 
             DockPanel dockPanel = new DockPanel();
             this.Content = dockPanel;
@@ -68,11 +76,18 @@ namespace sqlcon.Windows
 
             ToolBar toolBar;
             tray.ToolBars.Add(toolBar = new ToolBar());
-            toolBar.Items.Add(btnOpen = new Button { Command = ApplicationCommands.Open, Content = "Open", Width = 40, Margin = new Thickness(5) });
-            toolBar.Items.Add(btnSave = new Button { Command = ApplicationCommands.Save, Content = "Save", Width = 40, Margin = new Thickness(5) });
-            toolBar.Items.Add(btnExecute = new Button { Content = "Execute", Width = 50, Margin = new Thickness(5) });
+            toolBar.Items.Add(btnOpen);
+            toolBar.Items.Add(btnSave);
+            toolBar.Items.Add(btnExecute);
 
-            //editor and results
+            //status bar
+            StatusBar statusBar = new StatusBar { Height = 20 };
+            statusBar.Items.Add(new StatusBarItem { Content = lblCursorPosition });
+            statusBar.SetValue(DockPanel.DockProperty, Dock.Bottom);
+            dockPanel.Children.Add(statusBar);
+
+
+            #region editor and results
             Grid grid = new Grid();
             grid.RowDefinitions.Add(new RowDefinition());
             grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(5) });
@@ -81,17 +96,15 @@ namespace sqlcon.Windows
             dockPanel.Children.Add(grid);
             var fkColor = cfg.GetColor("gui.sql.editor.Foreground", Colors.Black);
             var bkColor = cfg.GetColor("gui.sql.editor.Background", Colors.White);
+            textBox.Foreground = new SolidColorBrush(fkColor);
+            textBox.Background = new SolidColorBrush(bkColor);
 
-            textBox = new RichTextBox
-            {
-                Foreground = new SolidColorBrush(fkColor),
-                Background = new SolidColorBrush(bkColor)
-            };
+            //Paragraph space
+            Style style = new Style { TargetType = typeof(Paragraph) };
+            style.Setters.Add(new Setter { Property = FrameworkElement.MarginProperty, Value = new Thickness(0) });
+            textBox.Resources.Add("line-space", style);
 
             GridSplitter splitter = new GridSplitter { Height = 5, HorizontalAlignment = HorizontalAlignment.Stretch };
-
-            tabControl = new TabControl();
-            tabControl.Items.Add(new TabItem { Header = "Messages" });
 
             textBox.SetValue(Grid.RowProperty, 0);
             splitter.SetValue(Grid.RowProperty, 1);
@@ -100,46 +113,84 @@ namespace sqlcon.Windows
             grid.Children.Add(splitter);
             grid.Children.Add(tabControl);
 
-            //status bar
-            StatusBar statusBar = new StatusBar();
-            statusBar.Items.Add(new StatusBarItem { Content = lblCursorPosition = new TextBlock { Height = 16, Width = 200 } });
-            statusBar.SetValue(DockPanel.DockProperty, Dock.Bottom);
-            dockPanel.Children.Add(statusBar);
-
-
-            textBox.SelectionChanged += TextBox_SelectionChanged;
-            textBox.Focus();
-            btnExecute.Click += (sender, e) => Execute();
-            btnSave.Click += (sender, e) => Save();
+            #endregion
         }
 
 
-       
+
         private void TextBox_SelectionChanged(object sender, RoutedEventArgs e)
         {
             int row = textBox.LineNumber();
             int col = textBox.ColumnNumber();
-            lblCursorPosition.Text = $"Line {row + 1}, Char {col + 1}";
+            lblCursorPosition.Text = $"Ln {row}, Col {col}";
         }
-        
+
 
         private void Execute()
         {
+            tabControl.Items.Clear();
+
             string text = textBox.GetAllText();
 
             var cmd = new SqlCmd(provider, text);
-            cmd.ExecuteNonQuery();
-            var ds = cmd.FillDataSet();
-
-            tabControl.Items.Clear();
-            foreach (DataTable dt in ds.Tables)
+            if (text.IndexOf("select", StringComparison.CurrentCultureIgnoreCase) >= 0
+                && text.IndexOf("insert", StringComparison.CurrentCultureIgnoreCase) < 0
+                && text.IndexOf("update", StringComparison.CurrentCultureIgnoreCase) < 0
+                && text.IndexOf("delete", StringComparison.CurrentCultureIgnoreCase) < 0
+                )
             {
-                var tab = new TabItem { Header = "Result", Content = Display(dt) };
-                tabControl.Items.Add(tab);
+                try
+                {
+                    var ds = cmd.FillDataSet();
+                    int i = 1;
+                    foreach (DataTable dt in ds.Tables)
+                    {
+                        var tab = new TabItem { Header = $"Table {i++}", Content = DisplayTable(dt) };
+                        tabControl.Items.Add(tab);
+                        tab.Focus();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    DisplayMessage(ex.Message);
+                }
+
+            }
+            else
+            {
+                try
+                {
+                    int count = cmd.ExecuteNonQuery();
+
+                    string message = $"({count} row(s) affected)";
+                    DisplayMessage(message);
+                }
+                catch (Exception ex)
+                {
+                    DisplayMessage(ex.Message);
+                }
             }
         }
 
-        private DataGrid Display(DataTable table)
+        private void DisplayMessage(string message)
+        {
+            var tab = new TabItem
+            {
+                Header = "Messages",
+                Content = new TextBox
+                {
+                    Text = message,
+                    IsReadOnly = true,
+                    TextWrapping = TextWrapping.Wrap,
+                    AcceptsReturn = true
+                }
+            };
+
+            tabControl.Items.Add(tab);
+            tab.Focus();
+        }
+
+        private DataGrid DisplayTable(DataTable table)
         {
             var evenRowColor = cfg.GetColor("gui.table.editor.AlternatingRowBackground", Colors.DimGray);
             var fkColor = cfg.GetColor("gui.table.editor.Foreground", Colors.LightGray);
@@ -148,9 +199,9 @@ namespace sqlcon.Windows
             var dataGrid = new DataGrid
             {
                 AlternationCount = 2,
-                AlternatingRowBackground = new SolidColorBrush(evenRowColor),
-                Foreground = new SolidColorBrush(fkColor),
-                RowBackground = new SolidColorBrush(bkColor)
+                AlternatingRowBackground = new SolidColorBrush(evenRowColor)
+                // Foreground = new SolidColorBrush(fkColor),
+                // RowBackground = new SolidColorBrush(bkColor)
             };
 
             dataGrid.IsReadOnly = true;

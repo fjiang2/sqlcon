@@ -32,6 +32,7 @@ namespace sqlcon.Windows
                 }
                 currentLineNumber++;
             }
+
             return currentLineNumber;
         }
 
@@ -41,7 +42,7 @@ namespace sqlcon.Windows
             TextPointer p = textBox.CaretPosition.GetLineStartPosition(0);
             int currentColumnNumber = Math.Max(p.GetOffsetToPosition(caretPos) - 1, 0);
 
-            return currentColumnNumber;
+            return currentColumnNumber + 1;
         }
 
         public static string GetAllText(this RichTextBox textBox)
