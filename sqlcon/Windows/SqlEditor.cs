@@ -41,6 +41,7 @@ namespace sqlcon.Windows
             {
                 this.link = link;
                 string text = link.ReadAllText();
+                textBox.Document.Blocks.Clear();
                 textBox.Document.Blocks.Add(new Paragraph(new Run(text)));
             }
             else
