@@ -1205,7 +1205,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            var editor = new TableEditor(mgr.Configuration, new UniqueTable(null, dt));
+            var editor = new Windows.TableEditor(mgr.Configuration, new UniqueTable(null, dt));
 
             editor.ShowDialog();
         }
@@ -1388,7 +1388,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 }
             }
 
-            var editor = new SqlEditor(cmd.Configuration, theSide.Provider, fileLink);
+            var editor = new Windows.SqlEditor(cmd.Configuration, theSide.Provider, fileLink);
             editor.ShowDialog();
         }
     }

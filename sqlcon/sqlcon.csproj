@@ -143,6 +143,7 @@
     <Compile Include="Shell\ShellContext.cs" />
     <Compile Include="Shell\SqlShell.cs" />
     <Compile Include="Data\Tools.cs" />
+    <Compile Include="Windows\WpfExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Output\ConsoleGrid.cs" />

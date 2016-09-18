@@ -9,7 +9,7 @@ using System.Windows.Media;
 using System.Data;
 using Sys.Data;
 
-namespace sqlcon
+namespace sqlcon.Windows
 {
     class TableEditor : Window
     {
