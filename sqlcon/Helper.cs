@@ -79,6 +79,11 @@ namespace sqlcon
             return true;
         }
 
+        public static Brush GetSolidBrush(this Configuration cfg, string key, Color defaultColor)
+        {
+            return new SolidColorBrush(GetColor(cfg, key, defaultColor));
+        }
+
         public static Color GetColor(this Configuration cfg, string key, Color defaultColor)
         {
             string colorString = cfg.GetValue<string>(key);

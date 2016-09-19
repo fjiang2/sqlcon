@@ -95,10 +95,8 @@ namespace sqlcon.Windows
             grid.RowDefinitions.Add(new RowDefinition());
 
             dockPanel.Children.Add(grid);
-            var fkColor = cfg.GetColor("gui.sql.editor.Foreground", Colors.Black);
-            var bkColor = cfg.GetColor("gui.sql.editor.Background", Colors.White);
-            textBox.Foreground = new SolidColorBrush(fkColor);
-            textBox.Background = new SolidColorBrush(bkColor);
+            textBox.Foreground = cfg.GetSolidBrush("gui.sql.editor.Foreground", Colors.Black);
+            textBox.Background = cfg.GetSolidBrush("gui.sql.editor.Background", Colors.White);
 
             //Paragraph space
             Style style = new Style { TargetType = typeof(Paragraph) };
@@ -193,17 +191,24 @@ namespace sqlcon.Windows
 
         private DataGrid DisplayTable(DataTable table)
         {
-            var evenRowColor = cfg.GetColor("gui.table.editor.AlternatingRowBackground", Colors.DimGray);
-            var fkColor = cfg.GetColor("gui.table.editor.Foreground", Colors.LightGray);
-            var bkColor = cfg.GetColor("gui.table.editor.RowBackground", Colors.Black);
+            var fkColor = cfg.GetSolidBrush("gui.sql.result.table.Foreground", Colors.White);
+            var bkColor = cfg.GetSolidBrush("gui.sql.result.table.Background", Colors.Black);
+            var evenRowColor = cfg.GetSolidBrush("gui.sql.result.table.AlternatingRowBackground", Colors.DimGray);
+            var oddRowColor = cfg.GetSolidBrush("gui.sql.result.table.RowBackground", Colors.Black);
 
             var dataGrid = new DataGrid
             {
+                Foreground = fkColor,
                 AlternationCount = 2,
-                AlternatingRowBackground = new SolidColorBrush(evenRowColor)
-                // Foreground = new SolidColorBrush(fkColor),
-                // RowBackground = new SolidColorBrush(bkColor)
+                AlternatingRowBackground = evenRowColor,
+                RowBackground = oddRowColor
             };
+
+            var style = new Style(typeof(DataGridColumnHeader));
+            style.Setters.Add(new Setter { Property = ForegroundProperty, Value = fkColor });
+            style.Setters.Add(new Setter { Property = BackgroundProperty, Value = bkColor });
+
+            dataGrid.Resources.Add("header-color", style);
 
             dataGrid.IsReadOnly = true;
             dataGrid.ItemsSource = table.DefaultView;
