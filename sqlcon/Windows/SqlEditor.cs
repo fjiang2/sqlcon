@@ -49,11 +49,12 @@ namespace sqlcon.Windows
                 this.link = FileLink.CreateLink(untitled);
             }
 
-            this.Title = $"{this.link} - sqlcon";
+            UpdateTitle();
 
             CommandBinding binding;
             RoutedUICommand[] commands = new RoutedUICommand[]
                {
+                  ApplicationCommands.New,
                   ApplicationCommands.Open,
                   ApplicationCommands.Save,
                   ExecuteCommand
@@ -73,7 +74,7 @@ namespace sqlcon.Windows
         {
             if (e.Command == ExecuteCommand)
             {
-                e.CanExecute = textBox.GetAllText() != string.Empty;
+                e.CanExecute = textBox.GetSelectionOrAllText() != string.Empty;
             }
             else
                 e.CanExecute = true;
@@ -83,10 +84,17 @@ namespace sqlcon.Windows
         {
             if (e.Command == ExecuteCommand)
                 Execute();
+            else if (e.Command == ApplicationCommands.New)
+                New();
             else if (e.Command == ApplicationCommands.Save)
                 Save();
             else if (e.Command == ApplicationCommands.Open)
                 Open();
+        }
+
+        private void UpdateTitle()
+        {
+            this.Title = $"{this.link} - sqlcon";
         }
 
 
@@ -102,6 +110,7 @@ namespace sqlcon.Windows
             this.Width = 1024;
             this.Height = 768;
 
+            Button btnNew = new Button { Command = ApplicationCommands.New, Content = "New", Width = 40, Margin = new Thickness(5), ToolTip = "New(Ctrl-N)" };
             Button btnOpen = new Button { Command = ApplicationCommands.Open, Content = "Open", Width = 40, Margin = new Thickness(5), ToolTip = "Open(Ctrl-O)" };
             Button btnSave = new Button { Command = ApplicationCommands.Save, Content = "Save", Width = 40, Margin = new Thickness(5), ToolTip = "Save(Ctrl-S)" };
             Button btnExecute = new Button { Command = ExecuteCommand, Content = "Execute", Width = 50, Margin = new Thickness(5), ToolTip = "Execute(F5)" };
@@ -116,8 +125,10 @@ namespace sqlcon.Windows
 
             ToolBar toolBar;
             tray.ToolBars.Add(toolBar = new ToolBar());
+            toolBar.Items.Add(btnNew);
             toolBar.Items.Add(btnOpen);
             toolBar.Items.Add(btnSave);
+            tray.ToolBars.Add(toolBar = new ToolBar());
             toolBar.Items.Add(btnExecute);
 
             //status bar
@@ -169,7 +180,7 @@ namespace sqlcon.Windows
         {
             tabControl.Items.Clear();
 
-            string text = textBox.GetAllText();
+            string text = textBox.GetSelectionOrAllText();
 
             var cmd = new SqlCmd(provider, text);
             if (text.IndexOf("select", StringComparison.CurrentCultureIgnoreCase) >= 0
@@ -264,13 +275,20 @@ namespace sqlcon.Windows
 
             return dataGrid;
         }
-
+        public void New()
+        {
+            link = FileLink.CreateLink(untitled);
+            textBox.Document.Blocks.Clear();
+            UpdateTitle();
+        }
 
         public void Open()
         {
-            var openFile = new Microsoft.Win32.OpenFileDialog();
-            openFile.Filter = "Sql Script Files (*.sql)|*.sql|Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
-            openFile.FileName = link.Url;
+            var openFile = new Microsoft.Win32.OpenFileDialog
+            {
+                Filter = "Sql Script Files (*.sql)|*.sql|Text Files (*.txt)|*.txt|All Files (*.*)|*.*",
+                FileName = link.Url
+            };
 
             if (openFile.ShowDialog(this) == true)
             {
@@ -278,7 +296,7 @@ namespace sqlcon.Windows
                 string text = link.ReadAllText();
                 textBox.Document.Blocks.Clear();
                 textBox.Document.Blocks.Add(new Paragraph(new Run(text)));
-                this.Title = $"{this.link} - sqlcon";
+                UpdateTitle();
             }
         }
 
@@ -299,9 +317,11 @@ namespace sqlcon.Windows
                 return;
             }
 
-            var saveFile = new Microsoft.Win32.SaveFileDialog();
-            saveFile.Filter = "Sql Script Files (*.sql)|*.sql|Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
-            saveFile.FileName = link.Url;
+            var saveFile = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "Sql Script Files (*.sql)|*.sql|Text Files (*.txt)|*.txt|All Files (*.*)|*.*",
+                FileName = link.Url
+            };
 
             if (saveFile.ShowDialog(this) == true)
             {
@@ -320,7 +340,7 @@ namespace sqlcon.Windows
                     }
 
                     link = FileLink.CreateLink(saveFile.FileName);
-                    this.Title = $"{this.link} - sqlcon";
+                    UpdateTitle();
                 }
             }
 

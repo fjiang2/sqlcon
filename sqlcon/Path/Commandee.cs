@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using System.Data.OleDb;
 using System.Data;
 using System.Threading;
+using System.IO;
 using Sys;
 using Sys.Data;
 using Sys.Data.Comparison;
@@ -1371,6 +1372,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("   /pwd                       : FTP password");
                 stdio.WriteLine("examples:");
                 stdio.WriteLine("  edit c:\\db\\northwind.sql");
+                stdio.WriteLine("  edit file://datconn/example.sql");
                 stdio.WriteLine("  edit http://www.datconn.com/example.sql");
                 stdio.WriteLine("  edit ftp://www.datconn.com/example.sql /usr:user /pwd:password");
                 return;
@@ -1380,13 +1382,51 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             if (cmd.arg1 != null)
             {
                 string inputfile = cmd.arg1;
+                Func<bool> isLocalFile = () => fileLink.Url.IndexOf("://") < 0;
+
                 fileLink = FileLink.CreateLink(inputfile, cmd.GetValue("usr"), cmd.GetValue("pwd"));
+                
                 if (!fileLink.Exists)
                 {
-                    stdio.ErrorFormat("file {0} doesn't exist", fileLink);
-                    return;
+                    if (!isLocalFile())
+                    {
+                        stdio.ErrorFormat("file {0} doesn't exist", fileLink);
+                        return;
+                    }
+                    else
+                    {
+                        try
+                        {
+                            if (Path.GetDirectoryName(inputfile) == string.Empty)
+                            {
+                                string path = Directory.GetCurrentDirectory();
+                                inputfile = $"{path}\\{inputfile}";
+                            }
+
+                            File.WriteAllText(inputfile, string.Empty);
+                            fileLink = FileLink.CreateLink(inputfile);
+                        }
+                        catch (Exception ex)
+                        {
+                            stdio.Error(ex.Message);
+                        }
+                    }
+                }
+                else
+                {
+                    if (isLocalFile())
+                    {
+                        if (Path.GetDirectoryName(inputfile) == string.Empty)
+                        {
+                            string path = Directory.GetCurrentDirectory();
+                            inputfile = $"{path}\\{inputfile}";
+                        }
+                    }
+
+                    fileLink = FileLink.CreateLink(inputfile);
                 }
             }
+
 
             var editor = new Windows.SqlEditor(cmd.Configuration, theSide.Provider, fileLink);
             editor.ShowDialog();

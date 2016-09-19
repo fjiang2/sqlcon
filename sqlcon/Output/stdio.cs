@@ -108,15 +108,25 @@ namespace sqlcon
 
         public static void ErrorFormat(string format, params object[] args)
         {
-            string value = string.Format(format, args);
+            if (args.Length == 0)
+                Error(format);
+            else
+            {
+                string text = string.Format(format, args);
+                Error(text);
+            }
+        }
+
+        public static void Error(string text)
+        {
             var keep = Console.ForegroundColor;
             //Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine(value);
+            Console.WriteLine(text);
             Console.ForegroundColor = keep;
 
             if (writer != null)
             {
-                writer.WriteLine(value);
+                writer.WriteLine(text);
                 writer.Flush();
             }
         }

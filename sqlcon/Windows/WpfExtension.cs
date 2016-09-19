@@ -45,7 +45,13 @@ namespace sqlcon.Windows
             return currentColumnNumber + 1;
         }
 
-        public static string GetAllText(this RichTextBox textBox)
+
+        /// <summary>
+        /// get selected text or all text if nothing is selected
+        /// </summary>
+        /// <param name="textBox"></param>
+        /// <returns></returns>
+        public static string GetSelectionOrAllText(this RichTextBox textBox)
         {
             if (string.IsNullOrEmpty(textBox.Selection.Text))
             {
@@ -54,6 +60,12 @@ namespace sqlcon.Windows
             }
             else
                 return textBox.Selection.Text;
+        }
+
+        public static string GetAllText(this RichTextBox textBox)
+        {
+            TextRange textRange = new TextRange(textBox.Document.ContentStart, textBox.Document.ContentEnd);
+            return textRange.Text;
         }
     }
 }
