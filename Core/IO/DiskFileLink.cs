@@ -53,5 +53,10 @@ namespace Sys.IO
         {
             return File.ReadAllText(fileName);
         }
+
+        public override void Save(string contents)
+        {
+            File.WriteAllText(fileName, contents);
+        }
     }
 }

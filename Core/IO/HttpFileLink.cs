@@ -36,5 +36,10 @@ namespace Sys.IO
         {
             return HttpRequest.ReadText(new Uri(url));
         }
+
+        public override void Save(string contents)
+        {
+            throw new NotImplementedException("cannot save hyperlink file");
+        }
     }
 }

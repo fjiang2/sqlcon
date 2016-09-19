@@ -23,6 +23,8 @@ namespace sqlcon.Windows
         private FileLink link;
         private ConnectionProvider provider;
 
+        private const string untitled = "untitled.sql";
+
         public SqlEditor(Configuration cfg, ConnectionProvider provider, FileLink link)
         {
             InitializeComponent(cfg);
@@ -33,39 +35,76 @@ namespace sqlcon.Windows
             textBox.SelectionChanged += TextBox_SelectionChanged;
             textBox.Focus();
 
-            btnExecute.Click += (sender, e) => Execute();
-            btnSave.Click += (sender, e) => Save();
 
-
+            textBox.Document.Blocks.Clear();
             if (link != null)
             {
                 this.link = link;
                 string text = link.ReadAllText();
-                textBox.Document.Blocks.Clear();
                 textBox.Document.Blocks.Add(new Paragraph(new Run(text)));
             }
             else
             {
-                this.link = FileLink.CreateLink("untitled.sql", null, null);
+                textBox.Document.Blocks.Clear();
+                this.link = FileLink.CreateLink(untitled);
             }
 
             this.Title = $"{this.link} - sqlcon";
 
+            CommandBinding binding;
+            RoutedUICommand[] commands = new RoutedUICommand[]
+               {
+                  ApplicationCommands.Open,
+                  ApplicationCommands.Save,
+                  ExecuteCommand
+               };
+
+            foreach (var cmd in commands)
+            {
+                binding = new CommandBinding(cmd);
+                binding.Executed += commandExecute;
+                binding.CanExecute += commandCanExecute;
+                this.CommandBindings.Add(binding);
+            }
+
+        }
+
+        private void commandCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (e.Command == ExecuteCommand)
+            {
+                e.CanExecute = textBox.GetAllText() != string.Empty;
+            }
+            else
+                e.CanExecute = true;
+        }
+
+        private void commandExecute(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (e.Command == ExecuteCommand)
+                Execute();
+            else if (e.Command == ApplicationCommands.Save)
+                Save();
+            else if (e.Command == ApplicationCommands.Open)
+                Open();
         }
 
 
         private RichTextBox textBox = new RichTextBox { FontFamily = new FontFamily("Consolas"), FontSize = 12 };
         private TabControl tabControl = new TabControl();
-        private TextBlock lblCursorPosition = new TextBlock { Width = 200 };
+        private TextBlock lblMessage = new TextBlock { Width = 200 };
+        private TextBlock lblCursorPosition = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Right };
 
-        private Button btnOpen = new Button { Command = ApplicationCommands.Open, Content = "Open", Width = 40, Margin = new Thickness(5) };
-        private Button btnSave = new Button { Command = ApplicationCommands.Save, Content = "Save", Width = 40, Margin = new Thickness(5) };
-        private Button btnExecute = new Button { Content = "Execute", Width = 50, Margin = new Thickness(5) };
+        private static RoutedUICommand ExecuteCommand = new RoutedUICommand("Execute", "execute", typeof(SqlEditor), new InputGestureCollection { new KeyGesture(Key.F5, ModifierKeys.None, "F5") });
 
         private void InitializeComponent(Configuration cfg)
         {
             this.Width = 1024;
             this.Height = 768;
+
+            Button btnOpen = new Button { Command = ApplicationCommands.Open, Content = "Open", Width = 40, Margin = new Thickness(5), ToolTip = "Open(Ctrl-O)" };
+            Button btnSave = new Button { Command = ApplicationCommands.Save, Content = "Save", Width = 40, Margin = new Thickness(5), ToolTip = "Save(Ctrl-S)" };
+            Button btnExecute = new Button { Command = ExecuteCommand, Content = "Execute", Width = 50, Margin = new Thickness(5), ToolTip = "Execute(F5)" };
 
             DockPanel dockPanel = new DockPanel();
             this.Content = dockPanel;
@@ -83,7 +122,8 @@ namespace sqlcon.Windows
 
             //status bar
             StatusBar statusBar = new StatusBar { Height = 20 };
-            statusBar.Items.Add(new StatusBarItem { Content = lblCursorPosition });
+            statusBar.Items.Add(new StatusBarItem { Content = lblMessage, HorizontalAlignment = HorizontalAlignment.Left });
+            statusBar.Items.Add(new StatusBarItem { Content = lblCursorPosition, HorizontalAlignment = HorizontalAlignment.Right });
             statusBar.SetValue(DockPanel.DockProperty, Dock.Bottom);
             dockPanel.Children.Add(statusBar);
 
@@ -100,8 +140,8 @@ namespace sqlcon.Windows
 
             //Paragraph space
             Style style = new Style { TargetType = typeof(Paragraph) };
-            style.Setters.Add(new Setter { Property = FrameworkElement.MarginProperty, Value = new Thickness(0) });
-            textBox.Resources.Add("line-space", style);
+            style.Setters.Add(new Setter { Property = Block.MarginProperty, Value = new Thickness(0) });
+            textBox.Resources.Add(typeof(Paragraph), style);
 
             GridSplitter splitter = new GridSplitter { Height = 5, HorizontalAlignment = HorizontalAlignment.Stretch };
 
@@ -140,14 +180,17 @@ namespace sqlcon.Windows
             {
                 try
                 {
+                    StringBuilder builder = new StringBuilder();
                     var ds = cmd.FillDataSet();
                     int i = 1;
                     foreach (DataTable dt in ds.Tables)
                     {
                         var tab = new TabItem { Header = $"Table {i++}", Content = DisplayTable(dt) };
                         tabControl.Items.Add(tab);
-                        tab.Focus();
+                        builder.AppendLine($"{dt.Rows.Count} row(s) affected");
                     }
+
+                    DisplayMessage(builder.ToString());
                 }
                 catch (Exception ex)
                 {
@@ -160,8 +203,7 @@ namespace sqlcon.Windows
                 try
                 {
                     int count = cmd.ExecuteNonQuery();
-
-                    string message = $"({count} row(s) affected)";
+                    string message = $"{count} row(s) affected";
                     DisplayMessage(message);
                 }
                 catch (Exception ex)
@@ -169,16 +211,24 @@ namespace sqlcon.Windows
                     DisplayMessage(ex.Message);
                 }
             }
+
+            if (tabControl.HasItems)
+                (tabControl.Items[0] as TabItem).Focus();
         }
 
         private void DisplayMessage(string message)
         {
+            var fkColor = cfg.GetSolidBrush("gui.sql.result.message.Foreground", Colors.White);
+            var bkColor = cfg.GetSolidBrush("gui.sql.result.message.Background", Colors.Black);
+
             var tab = new TabItem
             {
                 Header = "Messages",
                 Content = new TextBox
                 {
                     Text = message,
+                    Foreground = fkColor,
+                    Background = bkColor,
                     IsReadOnly = true,
                     TextWrapping = TextWrapping.Wrap,
                     AcceptsReturn = true
@@ -207,8 +257,7 @@ namespace sqlcon.Windows
             var style = new Style(typeof(DataGridColumnHeader));
             style.Setters.Add(new Setter { Property = ForegroundProperty, Value = fkColor });
             style.Setters.Add(new Setter { Property = BackgroundProperty, Value = bkColor });
-
-            dataGrid.Resources.Add("header-color", style);
+            dataGrid.ColumnHeaderStyle = style;
 
             dataGrid.IsReadOnly = true;
             dataGrid.ItemsSource = table.DefaultView;
@@ -216,10 +265,44 @@ namespace sqlcon.Windows
             return dataGrid;
         }
 
+
+        public void Open()
+        {
+            var openFile = new Microsoft.Win32.OpenFileDialog();
+            openFile.Filter = "Sql Script Files (*.sql)|*.sql|Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+            openFile.FileName = link.Url;
+
+            if (openFile.ShowDialog(this) == true)
+            {
+                link = FileLink.CreateLink(openFile.FileName);
+                string text = link.ReadAllText();
+                textBox.Document.Blocks.Clear();
+                textBox.Document.Blocks.Add(new Paragraph(new Run(text)));
+                this.Title = $"{this.link} - sqlcon";
+            }
+        }
+
         public void Save()
         {
+
+            if (link.Url != untitled)
+            {
+                try
+                {
+                    link.Save(textBox.GetAllText());
+                    lblMessage.Text = "saved successfully";
+                }
+                catch (Exception ex)
+                {
+                    lblMessage.Text = ex.Message;
+                }
+                return;
+            }
+
             var saveFile = new Microsoft.Win32.SaveFileDialog();
             saveFile.Filter = "Sql Script Files (*.sql)|*.sql|Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+            saveFile.FileName = link.Url;
+
             if (saveFile.ShowDialog(this) == true)
             {
                 TextRange documentTextRange = new TextRange(textBox.Document.ContentStart, textBox.Document.ContentEnd);
@@ -235,6 +318,9 @@ namespace sqlcon.Windows
                     {
                         documentTextRange.Save(fs, DataFormats.Text);
                     }
+
+                    link = FileLink.CreateLink(saveFile.FileName);
+                    this.Title = $"{this.link} - sqlcon";
                 }
             }
 

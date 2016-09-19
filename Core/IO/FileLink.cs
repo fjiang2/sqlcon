@@ -11,13 +11,15 @@ namespace Sys.IO
     /// </summary>
     public abstract class FileLink
     {
-      
+
         protected string url;
 
         protected FileLink(string url)
         {
             this.url = url;
         }
+
+        public string Url => this.url;
 
         public bool Exists
         {
@@ -32,11 +34,17 @@ namespace Sys.IO
 
         public abstract string ReadAllText();
 
+        public abstract void Save(string contents);
+
         public override string ToString()
         {
             return this.url;
         }
 
+        public static FileLink CreateLink(string url)
+        {
+            return CreateLink(url, null, null);
+        }
 
         public static FileLink CreateLink(string url, string userName, string password)
         {

@@ -67,5 +67,12 @@ namespace Sys.IO
 
             return File.ReadAllText(temp);
         }
+
+        public override void Save(string contents)
+        {
+            string temp = Path.GetTempFileName();
+            File.WriteAllText(temp, contents);
+            client.Upload(fileName, temp);
+        }
     }
 }

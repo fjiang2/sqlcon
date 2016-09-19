@@ -1371,8 +1371,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("   /pwd                       : FTP password");
                 stdio.WriteLine("examples:");
                 stdio.WriteLine("  edit c:\\db\\northwind.sql");
-                stdio.WriteLine("  edit http://www.datcon.com/example.sql");
-                stdio.WriteLine("  edit ftp://www.datcon.com/example.sql /usr:user /pwd:password");
+                stdio.WriteLine("  edit http://www.datconn.com/example.sql");
+                stdio.WriteLine("  edit ftp://www.datconn.com/example.sql /usr:user /pwd:password");
                 return;
             }
 
