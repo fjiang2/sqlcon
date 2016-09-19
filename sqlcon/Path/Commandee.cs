@@ -1382,13 +1382,21 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             if (cmd.arg1 != null)
             {
                 string inputfile = cmd.arg1;
-                Func<bool> isLocalFile = () => fileLink.Url.IndexOf("://") < 0;
+
+                if (inputfile.IndexOf("://") < 0)
+                {
+                    if (Path.GetDirectoryName(inputfile) == string.Empty)
+                    {
+                        string path = cmd.Configuration.GetValue<string>("MyDocuments", Directory.GetCurrentDirectory());
+                        inputfile = $"{path}\\{inputfile}";
+                    }
+                }
 
                 fileLink = FileLink.CreateLink(inputfile, cmd.GetValue("usr"), cmd.GetValue("pwd"));
-                
+
                 if (!fileLink.Exists)
                 {
-                    if (!isLocalFile())
+                    if (!fileLink.IsLocalLink)
                     {
                         stdio.ErrorFormat("file {0} doesn't exist", fileLink);
                         return;
@@ -1397,12 +1405,6 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     {
                         try
                         {
-                            if (Path.GetDirectoryName(inputfile) == string.Empty)
-                            {
-                                string path = Directory.GetCurrentDirectory();
-                                inputfile = $"{path}\\{inputfile}";
-                            }
-
                             File.WriteAllText(inputfile, string.Empty);
                             fileLink = FileLink.CreateLink(inputfile);
                         }
@@ -1411,19 +1413,6 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                             stdio.Error(ex.Message);
                         }
                     }
-                }
-                else
-                {
-                    if (isLocalFile())
-                    {
-                        if (Path.GetDirectoryName(inputfile) == string.Empty)
-                        {
-                            string path = Directory.GetCurrentDirectory();
-                            inputfile = $"{path}\\{inputfile}";
-                        }
-                    }
-
-                    fileLink = FileLink.CreateLink(inputfile);
                 }
             }
 

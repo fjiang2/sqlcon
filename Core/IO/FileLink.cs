@@ -26,6 +26,11 @@ namespace Sys.IO
             get { return exists(); }
         }
 
+        public bool IsLocalLink
+        {
+            get { return url.IndexOf("://") < 0; }
+        }
+
         protected abstract bool exists();
 
         public abstract string PathCombine(string path1, string path2);
