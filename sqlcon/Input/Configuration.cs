@@ -8,20 +8,21 @@ using System.IO;
 using System.Data.SqlClient;
 using System.Data.OleDb;
 using Tie;
+using Sys.IO;
 using Sys.Data;
 
 namespace sqlcon
 {
     class Configuration
     {
-        
+
         public const string _SERVER0 = "home";
 
         const string _FUNC_CONFIG = "config";
         const string _FUNC_CFG = "cfg";
         const string _SERVERS = "servers";
 
-        const string _FILE_SYSTEM_CONFIG = "sqlcon.cfg"; 
+        const string _FILE_SYSTEM_CONFIG = "sqlcon.cfg";
         const string _FILE_OUTPUT = "output";
         const string _XML_DB_FOLDER = "xmldb";
         const string _FILE_LOG = "log";
@@ -38,7 +39,7 @@ namespace sqlcon
         private Memory Cfg = new Memory();
 
         public string CfgFile { get; private set; } = "user.cfg";
-        
+
         public string OutputFile { get; set; }
         public string XmlDbFolder { get; set; }
 
@@ -79,7 +80,7 @@ namespace sqlcon
                         return new VAL();
 
                 case _FUNC_CFG:
-                    conn = SearchTieConnectionString(parameters);
+                    conn = SearchTieConnectionString(parameters, DS);
                     if (conn != null)
                         return new VAL(conn);
                     else
@@ -193,7 +194,7 @@ namespace sqlcon
                 ConnectionProvider provider = ConnectionProviderManager.Register(serverName, connectionString);
                 pvds.Add(provider);
             }
-             
+
             return pvds;
         }
 
@@ -251,7 +252,7 @@ namespace sqlcon
                 Console.WriteLine("configuration file {0} not found", sysCfgFile);
                 return false;
             }
-                
+
             if (!TryReadCfg(sysCfgFile))
                 return false;
 
@@ -317,7 +318,7 @@ namespace sqlcon
 
         private static string SearchXmlConnectionString(VAL val)
         {
-            if(val.Size != 3)
+            if (val.Size != 3)
             {
                 Console.WriteLine("required 2 parameters on function config(file,path,value), 1: app.config/web.config name; 2: path to reach connection string; 3:connection string attribute");
                 return null;
@@ -337,7 +338,7 @@ namespace sqlcon
             {
                 return SearchConnectionString(xmlFile, path, value);
             }
-            catch (Exception) 
+            catch (Exception)
             {
                 Console.WriteLine("cannot find connection string on {0}, path={1}", xmlFile, path);
                 return null;
@@ -392,8 +393,67 @@ namespace sqlcon
         }
 
 
-        private static string SearchTieConnectionString(VAL val)
+        /// <summary>
+        /// load cfg file from ftp site or web site
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="DS"></param>
+        private static void LoadRemoteCfg(string url, Memory DS)
         {
+            if (string.IsNullOrEmpty(url))
+                return;
+
+            var link = FileLink.CreateLink(url);
+            bool exists = false;
+            try
+            {
+                exists = link.Exists;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("configuration file {0} doesn't exist, {1}", link, ex.Message);
+                return;
+            }
+
+            if (!exists)
+            {
+                Console.WriteLine("configuration file {0} doesn't exist", link);
+                return;
+            }
+
+            string code = null;
+            try
+            {
+                code = link.ReadAllText();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("failed to load configuration file {0}, {1}", link, ex.Message);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(code))
+                return;
+
+            try
+            {
+                Script.Execute(code, DS);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("configuration file format error in {0}, {1}", link, ex.Message);
+            }
+        }
+
+        private static string SearchTieConnectionString(VAL val, Memory DS)
+        {
+            if (val.Size == 1 && val[0].VALTYPE == VALTYPE.stringcon)
+            {
+                string url = (string)val[0];
+                LoadRemoteCfg(url, DS);
+                return null;
+            }
+
             if (val.Size != 2)
             {
                 Console.WriteLine("required 2 parameters on function config(file,variable), 1: app.config/web.config name; 2: variable to reach connection string");
@@ -411,7 +471,7 @@ namespace sqlcon
 
             try
             {
-                Memory DS = new Memory();
+                Memory localDS = new Memory();
                 if (File.Exists(cfgFile))
                 {
                     using (var reader = new StreamReader(cfgFile))
@@ -419,7 +479,7 @@ namespace sqlcon
                         string code = reader.ReadToEnd();
                         try
                         {
-                            Script.Execute(code, DS);
+                            Script.Execute(code, localDS);
                         }
                         catch (Exception ex)
                         {
@@ -430,7 +490,7 @@ namespace sqlcon
                 else
                     Console.WriteLine("cannot find configuration file: {0}", cfgFile);
 
-                VAL value = DS.GetValue(variable);
+                VAL value = localDS.GetValue(variable);
                 if (value.Undefined)
                 {
                     Console.WriteLine("undefined variable {0}", variable);

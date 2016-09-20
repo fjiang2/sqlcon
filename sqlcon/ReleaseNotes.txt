@@ -3,6 +3,7 @@
 9/20/2016 v1.7.5.0
 	New Features:
 	1. command>edit to launch query edit window, to edit, execute sql script
+	2. configuration file can be loaded from clouds
 
 9/12/2016 v1.7.4.0
 	New Features:

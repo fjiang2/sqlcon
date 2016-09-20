@@ -16,6 +16,17 @@ namespace Sys.IO
             : base(url)
         {
             this.uri = new Uri(url);
+
+            if (this.uri.UserInfo != string.Empty && string.IsNullOrEmpty(userName) && string.IsNullOrEmpty(password))
+            {
+                string[] items = this.uri.UserInfo.Split(':');
+                if (items.Length >= 1)
+                    userName = items[0];
+
+                if (items.Length >= 2)
+                    password = items[1];
+            }
+
             this.client = new FtpClient(uri.Host, uri.Port)
             {
                 UserName = userName,
