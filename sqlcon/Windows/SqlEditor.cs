@@ -205,9 +205,12 @@ namespace sqlcon.Windows
 
         private void Execute()
         {
-            tabControl.Items.Clear();
-
             string text = textBox.GetSelectionOrAllText();
+
+            if (text == string.Empty)
+                return;
+
+            tabControl.Items.Clear();
 
             var cmd = new SqlCmd(provider, text);
             if (text.IndexOf("select", StringComparison.CurrentCultureIgnoreCase) >= 0

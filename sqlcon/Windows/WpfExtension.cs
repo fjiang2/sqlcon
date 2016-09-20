@@ -53,13 +53,32 @@ namespace sqlcon.Windows
         /// <returns></returns>
         public static string GetSelectionOrAllText(this RichTextBox textBox)
         {
-            if (string.IsNullOrEmpty(textBox.Selection.Text))
+            string text;
+            int i;
+
+            if (!string.IsNullOrEmpty(textBox.Selection.Text))
             {
-                TextRange textRange = new TextRange(textBox.Document.ContentStart, textBox.Document.ContentEnd);
-                return textRange.Text;
+                text = textBox.Selection.Text;
+
+                i = 0;
+                while (i < text.Length)
+                {
+                    if (char.IsLetterOrDigit(text[i++]))
+                        return text;
+                }
             }
-            else
-                return textBox.Selection.Text;
+
+            TextRange textRange = new TextRange(textBox.Document.ContentStart, textBox.Document.ContentEnd);
+            text = textRange.Text;
+
+            i = 0;
+            while (i < text.Length)
+            {
+                if (char.IsLetterOrDigit(text[i++]))
+                    return text;
+            }
+
+            return string.Empty;
         }
 
         public static string GetAllText(this RichTextBox textBox)
