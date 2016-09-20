@@ -101,7 +101,14 @@ namespace sqlcon.Windows
         }
 
 
-        private RichTextBox textBox = new RichTextBox { FontFamily = new FontFamily("Consolas"), FontSize = 12 };
+        private RichTextBox textBox = new RichTextBox
+        {
+            FontFamily = new FontFamily("Consolas"),
+            FontSize = 12,
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+        };
+
         private TabControl tabControl = new TabControl();
         private TextBlock lblMessage = new TextBlock { Width = 200 };
         private TextBlock lblCursorPosition = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Right };

@@ -1418,9 +1418,16 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             }
 
-
-            var editor = new Windows.SqlEditor(cmd.Configuration, theSide.Provider, fileLink);
-            editor.ShowDialog();
+            try
+            {
+                var editor = new Windows.SqlEditor(cmd.Configuration, theSide.Provider, fileLink);
+                editor.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                stdio.Error(ex.Message);
+                return;
+            }
         }
     }
 }
