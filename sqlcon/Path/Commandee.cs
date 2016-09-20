@@ -1372,9 +1372,9 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("   /pwd                       : FTP password");
                 stdio.WriteLine("examples:");
                 stdio.WriteLine("  edit c:\\db\\northwind.sql");
-                stdio.WriteLine("  edit file://datconn/example.sql");
-                stdio.WriteLine("  edit http://www.datconn.com/example.sql");
-                stdio.WriteLine("  edit ftp://www.datconn.com/example.sql /usr:user /pwd:password");
+                stdio.WriteLine("  edit file://datconn/northwind.sql");
+                stdio.WriteLine("  edit http://www.datconn.com/demos/northwind.sql");
+                stdio.WriteLine("  edit ftp://www.datconn.com/demos/northwind.sql /usr:user /pwd:password");
                 return;
             }
 
@@ -1394,26 +1394,28 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
                 fileLink = FileLink.CreateLink(inputfile, cmd.GetValue("usr"), cmd.GetValue("pwd"));
 
-                if (!fileLink.Exists)
+                try
                 {
-                    if (!fileLink.IsLocalLink)
+                    if (!fileLink.Exists)
                     {
-                        stdio.ErrorFormat("file {0} doesn't exist", fileLink);
-                        return;
-                    }
-                    else
-                    {
-                        try
+                        if (!fileLink.IsLocalLink)
+                        {
+                            stdio.ErrorFormat("file {0} doesn't exist", fileLink);
+                            return;
+                        }
+                        else
                         {
                             File.WriteAllText(inputfile, string.Empty);
                             fileLink = FileLink.CreateLink(inputfile);
                         }
-                        catch (Exception ex)
-                        {
-                            stdio.Error(ex.Message);
-                        }
                     }
                 }
+                catch (Exception ex)
+                {
+                    stdio.Error(ex.Message);
+                    return;
+                }
+
             }
 
 

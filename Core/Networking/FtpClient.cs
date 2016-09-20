@@ -93,7 +93,7 @@ namespace Sys.Networking
 
             request.Credentials = new NetworkCredential(UserName, Password);
             request.Proxy = null;
-
+            //request.UsePassive = true;
             return request;
         }
 
