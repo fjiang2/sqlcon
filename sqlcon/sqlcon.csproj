@@ -147,6 +147,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Output\ConsoleGrid.cs" />
+    <Resource Include="Windows\images\New_16x16.png" />
+    <Resource Include="Windows\images\Next_16x16.png" />
+    <Resource Include="Windows\images\Open_16x16.png" />
+    <Resource Include="Windows\images\Save_16x16.png" />
     <None Include="app.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>

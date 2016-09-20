@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Documents;
@@ -110,10 +111,48 @@ namespace sqlcon.Windows
             this.Width = 1024;
             this.Height = 768;
 
-            Button btnNew = new Button { Command = ApplicationCommands.New, Content = "New", Width = 40, Margin = new Thickness(5), ToolTip = "New(Ctrl-N)" };
-            Button btnOpen = new Button { Command = ApplicationCommands.Open, Content = "Open", Width = 40, Margin = new Thickness(5), ToolTip = "Open(Ctrl-O)" };
-            Button btnSave = new Button { Command = ApplicationCommands.Save, Content = "Save", Width = 40, Margin = new Thickness(5), ToolTip = "Save(Ctrl-S)" };
-            Button btnExecute = new Button { Command = ExecuteCommand, Content = "Execute", Width = 50, Margin = new Thickness(5), ToolTip = "Execute(F5)" };
+            string pack = "pack://application:,,,/sqlcon;component/Windows/images";
+            StackPanel stackPanel;
+            Button btnNew = new Button
+            {
+                Command = ApplicationCommands.New,
+                Content = stackPanel = new StackPanel { Orientation = Orientation.Horizontal },
+                Margin = new Thickness(5),
+                ToolTip = "New(Ctrl-N)"
+            };
+            stackPanel.Children.Add(new Image { Source = new BitmapImage(new Uri($"{pack}/New_16x16.png", UriKind.Absolute)) });
+            stackPanel.Children.Add(new TextBlock { Text = "New" });
+
+            Button btnOpen = new Button
+            {
+                Command = ApplicationCommands.Open,
+                Content = stackPanel = new StackPanel { Orientation = Orientation.Horizontal },
+                Margin = new Thickness(5),
+                ToolTip = "Open(Ctrl-O)"
+            };
+            stackPanel.Children.Add(new Image { Source = new BitmapImage(new Uri($"{pack}/Open_16x16.png", UriKind.Absolute)) });
+            stackPanel.Children.Add(new TextBlock { Text = "Open" });
+
+
+            Button btnSave = new Button
+            {
+                Command = ApplicationCommands.Save,
+                Content = stackPanel = new StackPanel { Orientation = Orientation.Horizontal },
+                Margin = new Thickness(5),
+                ToolTip = "Save(Ctrl-S)"
+            };
+            stackPanel.Children.Add(new Image { Source = new BitmapImage(new Uri($"{pack}/Save_16x16.png", UriKind.Absolute)) });
+            stackPanel.Children.Add(new TextBlock { Text = "Save" });
+
+            Button btnExecute = new Button
+            {
+                Command = ExecuteCommand,
+                Content = stackPanel = new StackPanel { Orientation = Orientation.Horizontal },
+                Margin = new Thickness(5),
+                ToolTip = "Execute(F5)"
+            };
+            stackPanel.Children.Add(new Image { Source = new BitmapImage(new Uri($"{pack}/Next_16x16.png", UriKind.Absolute)) });
+            stackPanel.Children.Add(new TextBlock { Text = "Execute" });
 
             DockPanel dockPanel = new DockPanel();
             this.Content = dockPanel;
@@ -155,6 +194,8 @@ namespace sqlcon.Windows
             textBox.Resources.Add(typeof(Paragraph), style);
 
             GridSplitter splitter = new GridSplitter { Height = 5, HorizontalAlignment = HorizontalAlignment.Stretch };
+            tabControl.Foreground = cfg.GetSolidBrush("gui.sql.editor.Foreground", Colors.Black);
+            tabControl.Background = cfg.GetSolidBrush("gui.sql.editor.Background", Colors.White);
 
             textBox.SetValue(Grid.RowProperty, 0);
             splitter.SetValue(Grid.RowProperty, 1);
@@ -166,7 +207,21 @@ namespace sqlcon.Windows
             #endregion
         }
 
-
+        private static Button NewButton(ICommand command, string text, string image, string toolTip)
+        {
+            string pack = "pack://application:,,,/sqlcon;component/Windows/images";
+            StackPanel stackPanel;
+            Button button = new Button
+            {
+                Command = command,
+                Content = stackPanel = new StackPanel { Orientation = Orientation.Horizontal },
+                Margin = new Thickness(5),
+                ToolTip = toolTip
+            };
+            stackPanel.Children.Add(new Image { Source = new BitmapImage(new Uri($"{pack}/{image}", UriKind.Absolute)) });
+            stackPanel.Children.Add(new TextBlock { Text = text });
+            return button;
+        }
 
         private void TextBox_SelectionChanged(object sender, RoutedEventArgs e)
         {
