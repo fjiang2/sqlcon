@@ -24,14 +24,14 @@ namespace sqlcon
                     Directory.CreateDirectory(folder);
             }
             catch (ArgumentException)
-            { 
+            {
             }
 
             return new StreamWriter(fileName);
         }
 
 
-      
+
         public static bool parse(this string arg, out string t1, out string t2)
         {
             if (string.IsNullOrEmpty(arg) || arg.StartsWith("/"))
@@ -109,5 +109,17 @@ namespace sqlcon
             return defaultColor;
         }
 
+        public static string Message(this SqlException ex)
+        {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < ex.Errors.Count; i++)
+            {
+                var err = ex.Errors[i];
+                builder.AppendLine($"Msg {err.Number}, Level {err.Class}, State {err.State}, Line {err.LineNumber}");
+                builder.AppendLine(err.Message);
+            }
+
+            return builder.ToString();
+        }
     }
 }

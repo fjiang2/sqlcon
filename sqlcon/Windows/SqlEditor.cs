@@ -13,6 +13,7 @@ using System.Windows.Documents;
 using System.Windows.Controls.Primitives;
 using System.IO;
 using System.Data;
+using System.Data.SqlClient;
 using Sys.Data;
 using Sys.IO;
 
@@ -233,6 +234,10 @@ namespace sqlcon.Windows
 
                     DisplayMessage(builder.ToString());
                 }
+                catch (SqlException ex)
+                {
+                    DisplayMessage(ex.Message());
+                }
                 catch (Exception ex)
                 {
                     DisplayMessage(ex.Message);
@@ -246,6 +251,10 @@ namespace sqlcon.Windows
                     int count = cmd.ExecuteNonQuery();
                     string message = $"{count} row(s) affected";
                     DisplayMessage(message);
+                }
+                catch (SqlException ex)
+                {
+                    DisplayMessage(ex.Message());
                 }
                 catch (Exception ex)
                 {
