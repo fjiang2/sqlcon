@@ -16,6 +16,7 @@ using System.Data;
 using System.Data.SqlClient;
 using Sys.Data;
 using Sys.IO;
+using System.ComponentModel;
 
 namespace sqlcon.Windows
 {
@@ -34,10 +35,6 @@ namespace sqlcon.Windows
             this.cfg = cfg;
             this.provider = provider;
 
-            textBox.SelectionChanged += TextBox_SelectionChanged;
-            textBox.Focus();
-
-
             textBox.Document.Blocks.Clear();
             if (link != null)
             {
@@ -47,30 +44,16 @@ namespace sqlcon.Windows
             }
             else
             {
-                textBox.Document.Blocks.Clear();
                 this.link = FileLink.CreateLink(untitled);
             }
-
             UpdateTitle();
 
-            CommandBinding binding;
-            RoutedUICommand[] commands = new RoutedUICommand[]
-               {
-                  ApplicationCommands.New,
-                  ApplicationCommands.Open,
-                  ApplicationCommands.Save,
-                  ExecuteCommand
-               };
-
-            foreach (var cmd in commands)
-            {
-                binding = new CommandBinding(cmd);
-                binding.Executed += commandExecute;
-                binding.CanExecute += commandCanExecute;
-                this.CommandBindings.Add(binding);
-            }
-
+            textBox.SelectionChanged += TextBox_SelectionChanged;
+            textBox.TextChanged += TextBox_TextChanged;
+            textBox.Focus();
         }
+
+
 
         private void commandCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -177,6 +160,24 @@ namespace sqlcon.Windows
             grid.Children.Add(tabControl);
 
             #endregion
+
+
+            CommandBinding binding;
+            RoutedUICommand[] commands = new RoutedUICommand[]
+               {
+                  ApplicationCommands.New,
+                  ApplicationCommands.Open,
+                  ApplicationCommands.Save,
+                  ExecuteCommand
+               };
+
+            foreach (var cmd in commands)
+            {
+                binding = new CommandBinding(cmd);
+                binding.Executed += commandExecute;
+                binding.CanExecute += commandCanExecute;
+                this.CommandBindings.Add(binding);
+            }
         }
 
         private static Button NewImageButton(ICommand command, string text, string toolTip, string image)
@@ -203,6 +204,12 @@ namespace sqlcon.Windows
             lblCursorPosition.Text = $"Ln {row}, Col {col}";
         }
 
+
+        private bool isDirty = false;
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            isDirty = true;
+        }
 
         private void Execute()
         {
@@ -314,6 +321,26 @@ namespace sqlcon.Windows
 
             return dataGrid;
         }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            if(isDirty && link.IsLocalLink)
+            {
+                var result = MessageBox.Show($"Save changes to {this.link}", "Warning", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.Yes)
+                {
+                    Save();
+                }
+                else if(result == MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
+            }
+
+            base.OnClosed(e);
+        }
+
+
         public void New()
         {
             link = FileLink.CreateLink(untitled);
@@ -348,6 +375,7 @@ namespace sqlcon.Windows
                 {
                     link.Save(textBox.GetAllText());
                     lblMessage.Text = "saved successfully";
+                    isDirty = false;
                 }
                 catch (Exception ex)
                 {
@@ -380,6 +408,7 @@ namespace sqlcon.Windows
 
                     link = FileLink.CreateLink(saveFile.FileName);
                     UpdateTitle();
+                    isDirty = false;
                 }
             }
 

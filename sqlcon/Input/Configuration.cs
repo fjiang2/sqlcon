@@ -85,6 +85,10 @@ namespace sqlcon
                         return new VAL(conn);
                     else
                         return new VAL();
+
+                case "include":
+                    include(parameters, DS);
+                    return new VAL();
             }
 
             return null;
@@ -396,10 +400,17 @@ namespace sqlcon
         /// <summary>
         /// load cfg file from ftp site or web site
         /// </summary>
-        /// <param name="url"></param>
+        /// <param name="val"></param>
         /// <param name="DS"></param>
-        private static void LoadRemoteCfg(string url, Memory DS)
+        private static void include(VAL val, Memory DS)
         {
+            if (val.Size != 1 || val[0].VALTYPE != VALTYPE.stringcon)
+            {
+                Console.WriteLine("required 1 parameters on function include(file), file can be local disk file, hyperlink, and ftp link");
+                return;
+            }
+
+            string url = (string)val[0];
             if (string.IsNullOrEmpty(url))
                 return;
 
@@ -447,13 +458,6 @@ namespace sqlcon
 
         private static string SearchTieConnectionString(VAL val, Memory DS)
         {
-            if (val.Size == 1 && val[0].VALTYPE == VALTYPE.stringcon)
-            {
-                string url = (string)val[0];
-                LoadRemoteCfg(url, DS);
-                return null;
-            }
-
             if (val.Size != 2)
             {
                 Console.WriteLine("required 2 parameters on function config(file,variable), 1: app.config/web.config name; 2: variable to reach connection string");
