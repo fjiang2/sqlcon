@@ -48,6 +48,7 @@ namespace sqlcon.Windows
             }
             UpdateTitle();
 
+            tabControl.SelectionChanged += TabControl_SelectionChanged;
             textBox.SelectionChanged += TextBox_SelectionChanged;
             textBox.TextChanged += TextBox_TextChanged;
             textBox.Focus();
@@ -55,29 +56,6 @@ namespace sqlcon.Windows
 
 
 
-        private void commandCanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (e.Command == ExecuteCommand)
-            {
-                e.CanExecute = textBox.GetSelectionOrAllText() != string.Empty;
-            }
-            else if (e.Command == ApplicationCommands.Save)
-                e.CanExecute = link.IsLocalLink;
-            else
-                e.CanExecute = true;
-        }
-
-        private void commandExecute(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (e.Command == ExecuteCommand)
-                Execute();
-            else if (e.Command == ApplicationCommands.New)
-                New();
-            else if (e.Command == ApplicationCommands.Save)
-                Save();
-            else if (e.Command == ApplicationCommands.Open)
-                Open();
-        }
 
         private void UpdateTitle()
         {
@@ -86,16 +64,19 @@ namespace sqlcon.Windows
 
 
         private RichTextBox textBox = new RichTextBox
-        {
-            FontFamily = new FontFamily("Consolas"),
-            FontSize = 12,
-            HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
-            VerticalScrollBarVisibility = ScrollBarVisibility.Auto
-        };
+            {
+                FontFamily = new FontFamily("Consolas"),
+                FontSize = 12,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+            };
+
+        #region InitializeComponent
 
         private TabControl tabControl = new TabControl();
-        private TextBlock lblMessage = new TextBlock { Width = 200 };
-        private TextBlock lblCursorPosition = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Right };
+        private TextBlock lblMessage = new TextBlock { Width = 300 };
+        private TextBlock lblCursorPosition = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Left};
+        private TextBlock lblRowCount = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Right };
 
         private static RoutedUICommand ExecuteCommand = new RoutedUICommand("Execute", "execute", typeof(SqlEditor), new InputGestureCollection { new KeyGesture(Key.F5, ModifierKeys.None, "F5") });
 
@@ -129,6 +110,7 @@ namespace sqlcon.Windows
             StatusBar statusBar = new StatusBar { Height = 20 };
             statusBar.Items.Add(new StatusBarItem { Content = lblMessage, HorizontalAlignment = HorizontalAlignment.Left });
             statusBar.Items.Add(new StatusBarItem { Content = lblCursorPosition, HorizontalAlignment = HorizontalAlignment.Right });
+            statusBar.Items.Add(new StatusBarItem { Content = lblRowCount, HorizontalAlignment = HorizontalAlignment.Right });
             statusBar.SetValue(DockPanel.DockProperty, Dock.Bottom);
             dockPanel.Children.Add(statusBar);
 
@@ -196,6 +178,9 @@ namespace sqlcon.Windows
                 ToolTip = toolTip
             };
         }
+        
+        #endregion
+
 
         private void TextBox_SelectionChanged(object sender, RoutedEventArgs e)
         {
@@ -209,6 +194,27 @@ namespace sqlcon.Windows
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             isDirty = true;
+        }
+
+
+        //display #of rows
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            TabItem tab = (tabControl.SelectedItem as TabItem);
+
+            if (tab == null) return;
+
+            DataGrid grid = tab.Content as DataGrid;
+            if (grid == null)
+            {
+                lblRowCount.Text = "";
+                return;
+            }
+
+            var view = grid.ItemsSource as DataView;
+            if (view == null) return;
+
+            lblRowCount.Text = $"{view.Table.Rows.Count} row(s)";
         }
 
         private void Execute()
@@ -324,14 +330,14 @@ namespace sqlcon.Windows
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            if(isDirty && link.IsLocalLink)
+            if (isDirty && link.IsLocalLink)
             {
                 var result = MessageBox.Show($"Save changes to {this.link}", "Warning", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.Yes)
                 {
                     Save();
                 }
-                else if(result == MessageBoxResult.Cancel)
+                else if (result == MessageBoxResult.Cancel)
                 {
                     e.Cancel = true;
                 }
@@ -340,12 +346,38 @@ namespace sqlcon.Windows
             base.OnClosed(e);
         }
 
+        #region Commands
+
+        private void commandCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (e.Command == ExecuteCommand)
+            {
+                e.CanExecute = textBox.GetSelectionOrAllText() != string.Empty;
+            }
+            else if (e.Command == ApplicationCommands.Save)
+                e.CanExecute = link.IsLocalLink;
+            else
+                e.CanExecute = true;
+        }
+
+        private void commandExecute(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (e.Command == ExecuteCommand)
+                Execute();
+            else if (e.Command == ApplicationCommands.New)
+                New();
+            else if (e.Command == ApplicationCommands.Save)
+                Save();
+            else if (e.Command == ApplicationCommands.Open)
+                Open();
+        }
 
         public void New()
         {
             link = FileLink.CreateLink(untitled);
             textBox.Document.Blocks.Clear();
             UpdateTitle();
+            isDirty = false;
         }
 
         public void Open()
@@ -363,6 +395,7 @@ namespace sqlcon.Windows
                 textBox.Document.Blocks.Clear();
                 textBox.Document.Blocks.Add(new Paragraph(new Run(text)));
                 UpdateTitle();
+                isDirty = false;
             }
         }
 
@@ -414,5 +447,7 @@ namespace sqlcon.Windows
 
             return;
         }
+        
+        #endregion
     }
 }
