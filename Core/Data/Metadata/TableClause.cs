@@ -95,10 +95,12 @@ namespace Sys.Data
             return string.Format(selectCommandTemplate, string.Join(",", L), primaryWhere(columns));
         }
 
-        public string INSERT(IEnumerable<IColumn> columns)
+        public string INSERT(IEnumerable<IColumn> columns, bool hasQuotationMark = true)
         {
-            var x1 = columns.Select(column => "[" + column.ColumnName + "]");
-            var x2 = columns.Select(column => ColumnValue.ToScript(column));
+            IEnumerable<string> x1 = columns.Select(column => "[" + column.ColumnName + "]");
+            IEnumerable<string> x2 = columns.Select(column => ColumnValue.ToScript(column));
+            if (!hasQuotationMark)
+                x2 = columns.Select(column => column.ColumnName).Select(c => c.SqlParameterName());
 
             return string.Format(insertCommandTemplate,
              string.Join(",", x1),
@@ -119,6 +121,47 @@ namespace Sys.Data
             }
 
             return string.Format(updateCommandTemplate, string.Join(",", L), primaryWhere(columns));
+        }
+
+        public string INSERT_OR_UPDATE(IEnumerable<IColumn> columns)
+        {
+            StringBuilder builder = new StringBuilder();
+            string exists = string.Format(selectCommandTemplate, "*", primaryWhere(columns));
+            builder.AppendLine($"IF NOT EXISTS({exists})");
+            builder.AppendLine("\t" + INSERT(schema.Columns, false));
+            builder.AppendLine("ELSE");
+            builder.AppendLine("\t" + UPDATE(schema.Columns));
+
+            builder.AppendLine();
+            builder.AppendLine("//C# row object");
+            builder.AppendLine("var obj = new");
+            builder.AppendLine("{");
+            int i = 1;
+            foreach (var column in columns)
+            {
+                Type type = column.CType.ToType();
+                string VAR = column.ColumnName.SqlParameterName().Replace("@", "");
+                string VAL;
+                if (type == typeof(string))
+                    VAL = "\"\"";
+                else if (type == typeof(DateTime) || type == typeof(DateTime?))
+                    VAL = "DateTime.Now";
+                else if (type.IsValueType)
+                    VAL = Activator.CreateInstance(type).ToString();
+                else
+                    VAL = "null";
+                string COMMA = string.Empty;
+                if (i++ < columns.Count())
+                    COMMA = ",";
+                var COMMENT = column.CType.GetCSharpType(column.Nullable);
+                builder.AppendLine($"\t//{COMMENT}");
+                builder.AppendLine($"\t{VAR} = {VAL}{COMMA}");
+                if (COMMA != string.Empty)
+                    builder.AppendLine();
+            }
+
+            builder.AppendLine("};");
+            return builder.ToString();
         }
 
 

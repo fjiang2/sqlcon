@@ -9,7 +9,7 @@ namespace Sys.Data.Comparison
 {
     public static class Compare
     {
-       
+
 
         #region compare database schema/data
         public static string DatabaseSchemaDifference(CompareSideType sideType, DatabaseName dname1, DatabaseName dname2)
@@ -41,7 +41,7 @@ namespace Sys.Data.Comparison
         }
 
 
-       
+
         public static string DatabaseDifference(CompareSideType sideType, DatabaseName dname1, DatabaseName dname2, string[] excludedTables)
         {
             TableName[] names = dname1.GetDependencyTableNames();
@@ -55,7 +55,7 @@ namespace Sys.Data.Comparison
 
                 TableSchema schema1 = new TableSchema(tname1);
                 TableSchema schema2 = new TableSchema(tname2);
-                
+
                 Console.WriteLine(tname1.ShortName);
 
                 if (excludedTables.Contains(tableName.ShortName.ToUpper()))
@@ -124,7 +124,7 @@ namespace Sys.Data.Comparison
         private static string GenerateRows(TableSchema schema, TableReader reader)
         {
 
-            var table = reader.Table; 
+            var table = reader.Table;
 
             TableClause script = new TableClause(schema);
 
@@ -162,7 +162,7 @@ namespace Sys.Data.Comparison
                         while (reader.Read())
                         {
                             reader.GetValues(values);
-                            if(hasIfExists)
+                            if (hasIfExists)
                                 writer.WriteLine(script.IF_NOT_EXISTS_INSERT(columns, values));
                             else
                                 writer.WriteLine(script.INSERT(columns, values));
@@ -196,6 +196,9 @@ namespace Sys.Data.Comparison
 
                 case SqlScriptType.UPDATE:
                     return script.UPDATE(schema.Columns);
+
+                case SqlScriptType.INSERT_OR_UPDATE:
+                    return script.INSERT_OR_UPDATE(schema.Columns);
 
                 case SqlScriptType.DELETE:
                     return new Dependency(tableName.DatabaseName).DELETE(tableName)

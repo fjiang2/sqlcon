@@ -903,6 +903,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("   /create  : generate CREATE TABLE script on current table/database");
                 stdio.WriteLine("   /select  : generate SELECT FROM WHERE template");
                 stdio.WriteLine("   /update  : generate UPDATE SET WHERE template");
+                stdio.WriteLine("   /save    : generate IF EXISTS UPDATE ELSE INSERT template");
                 stdio.WriteLine("   /delete  : generate DELETE FROM WHERE template, delete rows with foreign keys constraints");
                 stdio.WriteLine("   /schema  : generate database schema xml file");
                 stdio.WriteLine("   /data    : generate database/table data xml file");
@@ -937,6 +938,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     exporter.ExportScud(SqlScriptType.DELETE);
                 else if (cmd.Has("update"))
                     exporter.ExportScud(SqlScriptType.UPDATE);
+                else if (cmd.Has("save"))
+                    exporter.ExportScud(SqlScriptType.INSERT_OR_UPDATE);
                 else if (cmd.Has("schema"))
                     exporter.ExportSchema();
                 else if (cmd.Has("data"))

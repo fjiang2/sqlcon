@@ -13,6 +13,7 @@ namespace Sys.Data.Comparison
         DELETE,
         INSERT,
         CREATE,
-        DROP
+        DROP,
+        INSERT_OR_UPDATE
     }
 }

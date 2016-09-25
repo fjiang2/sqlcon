@@ -308,121 +308,20 @@ namespace Sys.Data
                 case "xml":
                     return CType.Xml;
 
+                case "sql_variant":
+                    return CType.Object;
             }
 
             throw new MessageException("data type [{0}] is not supported", sqlType);
         }
 
-
-
         public static string GetFieldType(string sqlType, bool nullable)
         {
-            string ty = "";
-            switch (sqlType.ToLower())
-            {
-                case "varchar":
-                case "char":
-                case "text":
-                case "nvarchar":
-                case "nchar":
-                case "ntext":
-                    ty = "string";
-                    break;
-
-                case "date":
-                case "datetime":
-                case "smalldatetime":
-                    ty = "DateTime";
-                    if (nullable) ty += "?";
-                    break;
-
-                case "time":
-                case "timestamp":
-                    ty = "TimeSpan";
-                    if (nullable) ty += "?";
-                    break;
-
-                case "bit":
-                    ty = "bool";
-                    if (nullable) ty += "?";
-                    break;
-
-                case "money":
-                case "smallmoney":
-                case "decimal":
-                case "numeric":
-                    ty = "decimal";
-                    if (nullable) ty += "?";
-                    break;
-
-                case "real":
-                    ty = "Single";
-                    if (nullable) ty += "?";
-                    break;
-
-                case "float":
-                    ty = "double";
-                    if (nullable) ty += "?";
-                    break;
-
-                case "tinyint":
-                    ty = "byte";
-                    if (nullable) ty += "?";
-                    break;
-
-                case "smallint":
-                    ty = "short";
-                    if (nullable) ty += "?";
-                    break;
-
-                case "int":
-                    ty = "int";
-                    if (nullable) ty += "?";
-                    break;
-
-                case "bigint":
-                    ty = "long";
-                    if (nullable) ty += "?";
-                    break;
-
-
-                case "varbinary":
-                case "binary":
-                case "image":
-                    ty = "byte[]";
-                    break;
-
-                case "uniqueidentifier":
-                    ty = "Guid";
-                    break;
-
-                case "sql_variant":
-                    ty = "object";
-                    break;
-
-                case "geography":
-                    ty = "SqlGeography";
-                    break;
-
-                case "geometry":
-                    ty = "SqlGeometry";
-                    break;
-
-                case "hierarchyid":
-                    ty = "SqlHierarchyId";
-                    break;
-
-                default:
-                    ty = sqlType;
-                    break;
-            }
-            return ty;
+            CType ty = GetCType(sqlType);
+            return ty.GetCSharpType(nullable);
         }
 
-
-
-
-
+     
         public static string GetSQLField(IColumn column)
         {
             string ty = GetSQLType(column);
