@@ -20,9 +20,9 @@ namespace Sys.CodeBuilder
 
         }
 
-        public Method Copy()
+        public Method CopyFrom()
         {
-            Method mtd = new Method("Copy")
+            Method mtd = new Method("CopyFrom")
             {
                 modifier = Modifier.Public,
             };
@@ -124,7 +124,7 @@ namespace Sys.CodeBuilder
             sent.AppendLine("return ");
 
             variables.ForEach(
-                variable => sent.Append($"this.{variable} == x.{variable}"),
+                variable => sent.Append($"this.{variable}.Equals(x.{variable})"),
                 variable => sent.AppendLine("&& ")
                 );
 
@@ -146,7 +146,7 @@ namespace Sys.CodeBuilder
             sent.AppendLine("return ");
 
             variables.ForEach(
-                variable => sent.Append($"this.{variable} == obj.{variable}"),
+                variable => sent.Append($"this.{variable}.Equals(obj.{variable})"),
                 variable => sent.AppendLine("&& ")
                 );
 

@@ -916,6 +916,12 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("      [/class:name] default class name is defined on the .cfg");
                 stdio.WriteLine("      [/method:foo] default convert method is defined on the .cfg");
                 stdio.WriteLine("      [/col:pk1,pk2] default primary key is the first column");
+                stdio.WriteLine("      [/out:path] output path");
+                stdio.WriteLine("   /ef      : generate C# method copy/compare/clone for Entity framework");
+                stdio.WriteLine("      [/ns:name] default name space is defined on the .cfg");
+                stdio.WriteLine("      [/base:type] define base class or interface, use ~ to represent generic class itself");
+                stdio.WriteLine("      [/using:assembly] allow the use of types in a namespace, delimited by ;");
+                stdio.WriteLine("      [/out:path] output path");
                 stdio.WriteLine("   /csv     : generate table csv file");
                 stdio.WriteLine("   /json    : generate json from last result");
                 return;
@@ -954,6 +960,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     exporter.ExportDataContract(cmd, 1);
                 else if (cmd.Has("dc2"))
                     exporter.ExportDataContract(cmd, 2);
+                else if (cmd.Has("ef"))
+                    exporter.ExportEntityClass(cmd);
                 else if (cmd.Has("l2s"))
                     exporter.ExportLinq2SQLClass(cmd);
                 else if (cmd.ToJson)

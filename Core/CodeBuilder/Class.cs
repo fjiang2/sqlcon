@@ -216,10 +216,20 @@ namespace Sys.CodeBuilder
 
             var x = new UtilsMethod(this.name, rw);
 
-            Add(x.Copy())
+            Add(x.CopyFrom())
             .Add(x.Clone())
             .Add(x.Compare());
         }
+
+        public void AddCopyCloneEqualsFunc(string className, IEnumerable<string> propertyNames)
+        {
+            var x = new UtilsMethod(className, propertyNames);
+
+            Add(x.CopyFrom())
+            .Add(x.Clone())
+            .Add(x.Compare());
+        }
+
 
         public void AddCopyCloneCompareExtension(string className, IEnumerable<string> propertyNames)
         {

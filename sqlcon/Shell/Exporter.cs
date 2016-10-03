@@ -398,7 +398,7 @@ namespace sqlcon
 
 
 
-            string path = cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
+            string path = cmd.GetValue("out") ?? cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
             string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("dc.ns", "Sys.DataModel.DataContracts");
             string clss = cmd.GetValue("class") ?? cfg.GetValue<string>("dc.class", "DataContract");
             string mtd = cmd.GetValue("method");
@@ -429,6 +429,67 @@ namespace sqlcon
                 string file = builder.WriteFile(path);
                 stdio.WriteLine("code generated on {0}", file);
             }
+        }
+
+        public void ExportEntityClass(Command cmd)
+        {
+            if (dname == null)
+            {
+                stdio.ErrorFormat("select a database first");
+                return;
+            }
+
+            string path = cmd.GetValue("out") ?? cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
+            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("dc.ns", "Sys.DataModel.DataContracts");
+
+            if (tname != null)
+            {
+                stdio.WriteLine("start to generate {0} entity framework class file", tname);
+                var builder = new EntityClassBuilder(cmd, tname)
+                {
+                    ns = ns
+                };
+
+                string file = builder.WriteFile(path);
+                stdio.WriteLine("completed {0} => {1}", tname.ShortName, file);
+            }
+            else if (dname != null)
+            {
+                stdio.WriteLine("start to generate {0} entity framework class to directory: {1}", dname, path);
+                CancelableWork.CanCancel(cts =>
+                {
+                    var md = new MatchedDatabase(dname, cmd.wildcard, null); //cfg.exportExcludedTables);
+                    TableName[] tnames = md.MatchedTableNames;
+                    foreach (var tn in tnames)
+                    {
+                        if (cts.IsCancellationRequested)
+                            return;
+
+                        try
+                        {
+                            var builder = new EntityClassBuilder(cmd, tn)
+                            {
+                                ns = ns
+                            };
+
+                            string file = builder.WriteFile(path);
+                            stdio.WriteLine("generated for {0} at {1}", tn.ShortName, path);
+                        }
+                        catch (Exception ex)
+                        {
+                            stdio.ErrorFormat("failed to generate {0}, {1}", tn.ShortName, ex.Message);
+                        }
+                    }
+
+                    stdio.WriteLine("completed");
+                    return;
+                });
+            }
+            else
+            {
+                stdio.ErrorFormat("warning: table or database is not seleted");
+            }
+
         }
 
 
