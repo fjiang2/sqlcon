@@ -10,19 +10,16 @@ using Sys.Data;
 
 namespace sqlcon
 {
-    class DataContract2ClassBuilder
+
+    class DataContract2ClassBuilder : TheClassBuilder
     {
         private DataTable dt;
-
-        public string ns { get; set; }
-        public string cname { get; set; }
+  
         public string mtd { get; set; }
 
 
-        private const string mtd2 = "ToDataTable";
-
-
-        public DataContract2ClassBuilder(DataTable dt)
+        public DataContract2ClassBuilder(string ns, Command cmd, DataTable dt)
+            :base(ns, cmd)
         {
             this.dt = dt;
 
@@ -39,25 +36,28 @@ namespace sqlcon
                 dict.Add(column, ty);
             }
 
-        }
-
-        private Dictionary<DataColumn, TypeInfo> dict = new Dictionary<DataColumn, TypeInfo>();
-
-        private CSharpBuilder CreateDataContract()
-        {
-
-            CSharpBuilder builder = new CSharpBuilder { nameSpace = ns, };
-            var clss = new Class(cname, new TypeInfo { type = typeof(IDataContractRow) }, new TypeInfo { userType = $"IEquatable<{cname}>" })
-            {
-                modifier = Modifier.Public | Modifier.Partial
-            };
-            builder.AddClass(clss);
 
             builder.AddUsing("System");
             builder.AddUsing("System.Collections.Generic");
             builder.AddUsing("System.Data");
             builder.AddUsing("System.Linq");
             builder.AddUsing("Sys.Data");
+
+            AddOptionalUsing();
+        }
+
+        private Dictionary<DataColumn, TypeInfo> dict = new Dictionary<DataColumn, TypeInfo>();
+
+        protected override void CreateClass()
+        {
+
+            var clss = new Class(cname, new TypeInfo { type = typeof(IDataContractRow) }, new TypeInfo { userType = $"IEquatable<{cname}>" })
+            {
+                modifier = Modifier.Public | Modifier.Partial
+            };
+            builder.AddClass(clss);
+
+   
 
             foreach (DataColumn column in dt.Columns)
             {
@@ -216,19 +216,7 @@ namespace sqlcon
                 clss.Add(field);
             }
 
-            return builder;
         }
 
-        public string WriteFile(string path)
-        {
-            var builder = CreateDataContract();
-            // CreateDataContractExtension(builder);
-
-            string code = $"{ builder}";
-            string file = Path.ChangeExtension(Path.Combine(path, cname), "cs");
-            code.WriteIntoFile(file);
-
-            return file;
-        }
     }
 }

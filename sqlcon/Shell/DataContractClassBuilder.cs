@@ -9,22 +9,19 @@ using Sys.CodeBuilder;
 
 namespace sqlcon
 {
-    class DataContractClassBuilder
+    class DataContractClassBuilder : TheClassBuilder
     {
-        const string LP = "{";
-        const string RP = "}";
 
         private DataTable dt;
 
-        public string ns { get; set; }
-        public string cname { get; set; }
         public string mtd { get; set; }
         public string[] keys { get; set; }
 
         private const string mtd2 = "ToDataTable";
 
 
-        public DataContractClassBuilder(DataTable dt)
+        public DataContractClassBuilder(string ns, Command cmd, DataTable dt)
+            :base(ns, cmd)
         {
             this.dt = dt;
 
@@ -41,38 +38,36 @@ namespace sqlcon
                 dict.Add(column, ty);
             }
 
-        }
-
-        private Dictionary<DataColumn, TypeInfo> dict = new Dictionary<DataColumn, TypeInfo>();
-
-        private CSharpBuilder CreateDataContract()
-        {
-
-            CSharpBuilder builder = new CSharpBuilder { nameSpace = ns, };
-            var clss = new Class(cname) { modifier = Modifier.Public | Modifier.Partial };
-
-            builder.AddClass(clss);
 
             builder.AddUsing("System");
             builder.AddUsing("System.Collections.Generic");
             builder.AddUsing("System.Data");
             builder.AddUsing("System.Linq");
+            AddOptionalUsing();
+
+        }
+
+        private Dictionary<DataColumn, TypeInfo> dict = new Dictionary<DataColumn, TypeInfo>();
+
+   
+        protected override void CreateClass()
+        {
+            var clss = new Class(cname) { modifier = Modifier.Public | Modifier.Partial };
+
+            builder.AddClass(clss);
+
 
             foreach (DataColumn column in dt.Columns)
             {
                 clss.Add(new Property(dict[column], column.ColumnName) { modifier = Modifier.Public });
             }
 
-            return builder;
-        }
 
-        private CSharpBuilder CreateDataContractExtension(CSharpBuilder builder)
-        {
             int i;
             int count;
             Statement sent;
 
-            var clss = new Class(cname + "Extension") { modifier = Modifier.Public | Modifier.Static };
+            clss = new Class(cname + "Extension") { modifier = Modifier.Public | Modifier.Static };
             builder.AddClass(clss);
 
             Func<DataColumn, string> COLUMN = column => "_" + column.ColumnName.ToUpper();
@@ -328,19 +323,6 @@ namespace sqlcon
 
 
             clss.AddCopyCloneCompareExtension(cname, dict.Keys.Select(column => column.ColumnName));
-            return builder;
-        }
-
-        public string WriteFile(string path)
-        {
-            var builder = CreateDataContract();
-            CreateDataContractExtension(builder);
-
-            string code = $"{ builder}";
-            string file = Path.ChangeExtension(Path.Combine(path, cname), "cs");
-            code.WriteIntoFile(file);
-
-            return file;
         }
     }
 }

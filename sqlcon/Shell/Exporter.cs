@@ -392,8 +392,15 @@ namespace sqlcon
 
             if (dt == null)
             {
-                stdio.ErrorFormat("data table cannot find, use command type or select first");
-                return;
+                if (tname != null)
+                {
+                    dt = new SqlCmd(tname.Provider, $"SELECT TOP 1 * FROM {tname.FormalName}").FillDataTable();
+                }
+                else
+                {
+                    stdio.ErrorFormat("data table cannot find, use command type or select first");
+                    return;
+                }
             }
 
 
@@ -406,9 +413,8 @@ namespace sqlcon
 
             if (version == 1)
             {
-                var builder = new DataContractClassBuilder(dt)
+                var builder = new DataContractClassBuilder(ns, cmd, dt)
                 {
-                    ns = ns,
                     cname = clss,
                     mtd = mtd,
                     keys = keys
@@ -419,9 +425,8 @@ namespace sqlcon
             }
             else
             {
-                var builder = new DataContract2ClassBuilder(dt)
+                var builder = new DataContract2ClassBuilder(ns, cmd, dt)
                 {
-                    ns = ns,
                     cname = clss,
                     mtd = mtd
                 };
@@ -445,10 +450,7 @@ namespace sqlcon
             if (tname != null)
             {
                 stdio.WriteLine("start to generate {0} entity framework class file", tname);
-                var builder = new EntityClassBuilder(cmd, tname)
-                {
-                    ns = ns
-                };
+                var builder = new EntityClassBuilder(ns, cmd, tname);
 
                 string file = builder.WriteFile(path);
                 stdio.WriteLine("completed {0} => {1}", tname.ShortName, file);
@@ -467,10 +469,7 @@ namespace sqlcon
 
                         try
                         {
-                            var builder = new EntityClassBuilder(cmd, tn)
-                            {
-                                ns = ns
-                            };
+                            var builder = new EntityClassBuilder(ns, cmd, tn);
 
                             string file = builder.WriteFile(path);
                             stdio.WriteLine("generated for {0} at {1}", tn.ShortName, path);

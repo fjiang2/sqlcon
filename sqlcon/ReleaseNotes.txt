@@ -1,5 +1,10 @@
 ﻿sqlcon release notes
 
+10/20/2016 v1.7.6.0
+	New Features:
+	1. command>export /entity /ns:xxx /base:inheritance /out:path generate method CopyFrom, Compare, Clone for entity framrework classes
+	2. command>export /save create template for IF EXISTS UPDATE ELSE INSERT 
+
 9/20/2016 v1.7.5.0
 	New Features:
 	1. command>edit to launch query edit window, to edit, execute sql script
