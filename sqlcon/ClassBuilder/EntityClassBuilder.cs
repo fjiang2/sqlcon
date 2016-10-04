@@ -55,6 +55,6 @@ namespace sqlcon
             clss.AddCopyCloneEqualsFunc(cname, schema.Columns.Select(column => column.ColumnName));
         }
 
-      
+
     }
 }

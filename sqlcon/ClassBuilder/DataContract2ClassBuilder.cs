@@ -14,12 +14,12 @@ namespace sqlcon
     class DataContract2ClassBuilder : TheClassBuilder
     {
         private DataTable dt;
-  
+
         public string mtd { get; set; }
 
 
         public DataContract2ClassBuilder(string ns, Command cmd, DataTable dt)
-            :base(ns, cmd)
+            : base(ns, cmd)
         {
             this.dt = dt;
 
@@ -57,7 +57,7 @@ namespace sqlcon
             };
             builder.AddClass(clss);
 
-   
+
 
             foreach (DataColumn column in dt.Columns)
             {

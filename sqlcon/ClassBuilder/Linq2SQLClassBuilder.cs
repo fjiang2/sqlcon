@@ -13,20 +13,23 @@ using Sys.Data.Manager;
 
 namespace sqlcon
 {
-    class Linq2SQLClassBuilder
+    class Linq2SQLClassBuilder : TheClassBuilder
     {
         private TableName tname;
-
-        public string ns { get; set; }
-
-        private string cname;
         private Dictionary<TableName, TableSchema> schemas;
 
-        public Linq2SQLClassBuilder(TableName tname, Dictionary<TableName, TableSchema> schemas)
+        public Linq2SQLClassBuilder(string ns, Command cmd, TableName tname, Dictionary<TableName, TableSchema> schemas)
+            : base(ns, cmd)
         {
             this.tname = tname;
             this.cname = tname.ToClassName(null);
             this.schemas = schemas;
+
+            builder.AddUsing("System");
+            //builder.AddUsing("System.Collections.Generic");
+            //builder.AddUsing("System.Data");
+            builder.AddUsing("System.Data.Linq");
+            builder.AddUsing("System.Data.Linq.Mapping");
         }
 
 
@@ -43,10 +46,9 @@ namespace sqlcon
         private static PluralizationService Pluralization
           => PluralizationService.CreateService(CultureInfo.GetCultureInfo("en-us"));
 
-        private CSharpBuilder CreateClass()
+        protected override void CreateClass()
         {
 
-            CSharpBuilder builder = new CSharpBuilder { nameSpace = ns, };
             var clss = new Class(cname)
             {
                 modifier = Modifier.Public | Modifier.Partial
@@ -55,11 +57,6 @@ namespace sqlcon
 
             builder.AddClass(clss);
 
-            builder.AddUsing("System");
-            //builder.AddUsing("System.Collections.Generic");
-            //builder.AddUsing("System.Data");
-            builder.AddUsing("System.Data.Linq");
-            builder.AddUsing("System.Data.Linq.Mapping");
 
             TableSchema schema = GetSchema(tname);
 
@@ -128,7 +125,6 @@ namespace sqlcon
             foreach (var p in list)
                 clss.Add(p);
 
-            return builder;
         }
 
 
@@ -235,15 +231,6 @@ namespace sqlcon
             return prop;
         }
 
-        public string WriteFile(string path)
-        {
-            var builder = CreateClass();
 
-            string code = $"{ builder}";
-            string file = Path.ChangeExtension(Path.Combine(path, cname), "cs");
-            code.WriteIntoFile(file);
-
-            return file;
-        }
     }
 }

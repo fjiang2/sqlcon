@@ -21,7 +21,7 @@ namespace sqlcon
 
 
         public DataContractClassBuilder(string ns, Command cmd, DataTable dt)
-            :base(ns, cmd)
+            : base(ns, cmd)
         {
             this.dt = dt;
 
@@ -49,7 +49,7 @@ namespace sqlcon
 
         private Dictionary<DataColumn, TypeInfo> dict = new Dictionary<DataColumn, TypeInfo>();
 
-   
+
         protected override void CreateClass()
         {
             var clss = new Class(cname) { modifier = Modifier.Public | Modifier.Partial };
