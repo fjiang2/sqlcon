@@ -269,6 +269,12 @@
     <Compile Include="SqlBuilder\SqlExprExtension.cs" />
     <Compile Include="SqlBuilder\SqlMaker.cs" />
     <Compile Include="SqlBuilder\SqlValue.cs" />
+    <Compile Include="SqlParser\CompilingException.cs" />
+    <Compile Include="SqlParser\Constant.cs" />
+    <Compile Include="SqlParser\Error.cs" />
+    <Compile Include="SqlParser\JLex.cs" />
+    <Compile Include="SqlParser\Position.cs" />
+    <Compile Include="SqlParser\Token.cs" />
     <Compile Include="Sys\BackgroundTask.cs" />
     <Compile Include="Networking\FtpClient.cs" />
     <Compile Include="Networking\HttpRequest.cs" />
