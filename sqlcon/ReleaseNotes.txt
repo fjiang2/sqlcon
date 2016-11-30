@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+11/30/2016 v1.7.7.0
+	New Features:
+	1. command>export /c# /ns:xxx /class:name /out:path generate C# class and data from last table result
+
 10/20/2016 v1.7.6.0
 	New Features:
 	1. command>export /entity /ns:xxx /base:inheritance /out:path generate method CopyFrom, Compare, Clone for entity framrework classes

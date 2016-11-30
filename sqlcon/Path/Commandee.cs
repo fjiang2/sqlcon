@@ -924,6 +924,10 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("      [/out:path] output path");
                 stdio.WriteLine("   /csv     : generate table csv file");
                 stdio.WriteLine("   /json    : generate json from last result");
+                stdio.WriteLine("   /c#      : generate C# data from last result");
+                stdio.WriteLine("      [/ns:name] default name space is defined on the .cfg");
+                stdio.WriteLine("      [/class:name] default class name is defined on the .cfg");
+                stdio.WriteLine("      [/out:path] output path");
                 return;
             }
 
@@ -976,6 +980,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                         stdio.ErrorFormat("display data table first by sql clause or command [type]");
                     }
                 }
+                else if (cmd.ToCSharp)
+                    exporter.ExportCSharpData(cmd);
                 else
                     stdio.ErrorFormat("invalid command options");
             }

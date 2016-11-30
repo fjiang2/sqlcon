@@ -13,7 +13,11 @@ namespace Sys.Data.Manager
         public static string ToFieldName(this IColumn column)
         {
             string columnName = column.ColumnName;
+            return ToFieldName(columnName);
+        }
 
+        public static string ToFieldName(this string columnName)
+        {
             string fieldName = columnName;
             if (columnName.IndexOf("#") != -1
                 || columnName.IndexOf(" ") != -1
@@ -27,7 +31,6 @@ namespace Sys.Data.Manager
             }
 
             return fieldName;
-
         }
 
 
