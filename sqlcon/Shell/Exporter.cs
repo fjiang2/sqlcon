@@ -10,6 +10,7 @@ using Sys.Data;
 using Sys.Data.Comparison;
 using Sys.Data.Manager;
 using Sys.CodeBuilder;
+using Tie;
 
 namespace sqlcon
 {
@@ -589,6 +590,89 @@ namespace sqlcon
             code.WriteIntoFile(file);
             stdio.WriteLine("code generated on {0}", file);
 
+        }
+
+
+        /// <summary>
+        /// create C# data from data table
+        /// </summary>
+        /// <param name="cmd"></param>
+        public void ExportCSharpData(Command cmd)
+        {
+            
+            if (!(SqlShell.LastResult is DataTable))
+            {
+                stdio.ErrorFormat("display data table first by sql clause or command [type]");
+                return;
+            }
+
+            string ns = cmd.GetValue("ns") ?? "Sql.Data";
+            string cname = cmd.GetValue("class") ?? "Table";
+
+            var dt = SqlShell.LastResult as DataTable;
+
+            var builder = new CSharpBuilder { nameSpace = ns };
+            var clss = new Class(cname)
+            {
+                modifier = Modifier.Public | Modifier.Partial
+            };
+
+            builder.AddClass(clss);
+
+            Property prop;
+            foreach (DataColumn column in dt.Columns)
+            {
+                bool nullable = dt.AsEnumerable().Any(row => row[column] is DBNull);
+                TypeInfo ty = new TypeInfo(column.DataType) { Nullable = nullable };
+
+                prop = new Property(ty, column.ColumnName.ToFieldName()) { modifier = Modifier.Public};
+                clss.Add(prop);
+            }
+
+            clss = new Class(cname + "Data")
+            {
+                modifier = Modifier.Public
+            };
+            builder.AddClass(clss);
+
+            Func<int, string> tab = n => new string('\t', n);
+
+            string[] columns = dt.Columns.Cast<DataColumn>().Select(col => col.ColumnName).ToArray();
+            List<string> L = new List<string>();
+            foreach (DataRow row in dt.Rows)
+            {
+                List<string> V = new List<string>();
+                for (int i = 0; i < columns.Length; i++)
+                {
+                    V.Add(string.Format("{0} = {1}", columns[i], VAL.Boxing(row[i]).ToString()));
+                }
+
+                L.Add($"{tab(3)}new {cname} {{ " + string.Join(", ", V) + " }");
+            }
+
+            var value = $"new {cname}[]\n" + $"{tab(2)}{{\n" + string.Join(",\n", L) + $"\n{tab(2)}}}";
+
+            Field field = new Field(new TypeInfo { userType = $"{cname}[]" }, "data")
+            {
+                modifier = Modifier.Public | Modifier.Static | Modifier.Readonly,
+                userValue = value
+            };
+
+            clss.Add(field);
+
+            string code = $"{builder}";
+
+            string path = cmd.GetValue("out");
+            if (path == null)
+            {
+                stdio.WriteLine(code);
+            }
+            else
+            {
+                string file = Path.ChangeExtension(Path.Combine(path, cname), "cs");
+                code.WriteIntoFile(file);
+                stdio.WriteLine("code generated on {0}", file);
+            }
         }
     }
 }
