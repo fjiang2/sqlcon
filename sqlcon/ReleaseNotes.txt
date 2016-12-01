@@ -3,6 +3,8 @@
 11/30/2016 v1.7.7.0
 	New Features:
 	1. command>export /c# /ns:xxx /class:name /out:path generate C# class and data from last table result
+	Bugs Fixes:
+	1. cannot lauch editor application if defined editor application doesn't exist. use notepad.exe instead
 
 10/20/2016 v1.7.6.0
 	New Features:
