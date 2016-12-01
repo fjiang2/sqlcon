@@ -16,7 +16,7 @@ namespace sqlcon
             string fileName = Context.GetValue<string>("log", "sqlcon.log");
             writer = fileName.NewStreamWriter();
 
-          //  Console.CancelKeyPress += Console_CancelKeyPress;
+            //  Console.CancelKeyPress += Console_CancelKeyPress;
         }
 
         static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
@@ -28,25 +28,40 @@ namespace sqlcon
 
         public static void Close()
         {
-            if(writer != null)
+            if (writer != null)
                 writer.Close();
         }
 
         public static void OpenEditor(string fileName)
         {
-            string editor = Context.GetValue<string>("editor", "notepad.exe");
-            
+            const string notepad = "notepad.exe";
+            if (!File.Exists(fileName))
+            {
+                stdio.ErrorFormat("file not found: {0}", fileName);
+                return;
+            }
+
+            string editor = Context.GetValue<string>("editor", notepad);
+            if (!Launch(fileName, editor))
+            {
+                if (editor != notepad)
+                {
+                    //try notepad.exe to open
+                    Launch(fileName, notepad);
+                }
+            }
+
+        }
+
+        private static bool Launch(string fileName, string editor)
+        {
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             process.StartInfo.ErrorDialog = true;
             process.StartInfo.UseShellExecute = false;
             //process.StartInfo.WorkingDirectory = startin;
             process.StartInfo.FileName = editor;
             process.StartInfo.Arguments = fileName;
-            if (!File.Exists(fileName))
-            {
-                stdio.ErrorFormat("file not found: {0}", fileName);
-                return;
-            }
+
 
             try
             {
@@ -55,7 +70,10 @@ namespace sqlcon
             catch (Exception ex)
             {
                 stdio.ErrorFormat("failed to lauch application: {0} {1}, {2}", editor, fileName, ex.Message);
+                return false;
             }
+
+            return true;
         }
 
         public static void Write(string format, params object[] args)
@@ -97,7 +115,7 @@ namespace sqlcon
             var keep = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine(value);
-            Console.ForegroundColor =keep;
+            Console.ForegroundColor = keep;
 
             if (writer != null)
             {
@@ -193,7 +211,7 @@ namespace sqlcon
                         break;
                 }
 
-                    
+
                 builder.Append(ch);
                 if (writer != null)
                 {
@@ -202,7 +220,7 @@ namespace sqlcon
                 }
 
                 keyInfo = Console.ReadKey();
-            } ;
+            };
 
             if (writer != null)
             {
@@ -244,6 +262,6 @@ namespace sqlcon
             return true;
         }
 
-      
+
     }
 }
