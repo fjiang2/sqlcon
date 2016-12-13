@@ -28,6 +28,11 @@ namespace Sys.CodeBuilder
                 List<string> list = new List<string>();
                 foreach (var arg in args)
                 {
+                    if (arg is AttributeInfoArg)
+                    {
+                        list.Add((arg as AttributeInfoArg).ToString());
+                        continue;
+                    }
                     foreach (var propertyInfo in arg.GetType().GetProperties())
                     {
                         var val = VAL.Boxing(propertyInfo.GetValue(arg));

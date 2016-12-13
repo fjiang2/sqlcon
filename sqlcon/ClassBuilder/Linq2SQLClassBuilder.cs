@@ -81,6 +81,9 @@ namespace sqlcon
                 if (!column.IsPrimary && !column.Nullable)
                     args.Add(new { CanBeNull = false });
 
+                if (column.CType == CType.Text || column.CType == CType.NText)
+                    args.Add(new AttributeInfoArg("UpdateCheck", "UpdateCheck.Never"));
+
                 prop.AddAttribute(new AttributeInfo("Column", args.ToArray()));
 
                 if (!column.IsComputed)
