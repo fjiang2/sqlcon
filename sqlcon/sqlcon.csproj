@@ -64,7 +64,7 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>FB3773F0843E4491183F03544A0F5775AA99D568</ManifestCertificateThumbprint>

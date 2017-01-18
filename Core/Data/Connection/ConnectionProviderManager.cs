@@ -165,40 +165,7 @@ namespace Sys.Data
 
         public static ConnectionProvider Register(string serverName, string connectionString)
         {
-            DbConnectionStringBuilder conn = new DbConnectionStringBuilder();
-            conn.ConnectionString = connectionString.ToLower();
-
-            string providerName = "sqldb";
-            object value;
-            if (conn.TryGetValue("provider", out value))
-            {
-                if (value is string)
-                    providerName = (string)value;
-            }
-
-            ConnectionProvider pvd = null;
-            switch (providerName)
-            {
-                case "xmlfile":
-                    pvd = new XmlDbConnectionProvider(serverName, connectionString);
-                    break;
-
-                case "riadb":                   //Remote Invoke Agent
-                    pvd = new RiaDbConnectionProvider(serverName, connectionString);
-                    break;
-
-                case "Microsoft.ACE.OLEDB.12.0": //Excel 2010
-                case "Microsoft.Jet.OLEDB.4.0":  //Excel 2007 or Access
-                case "MySqlProv":                //MySql
-                case "MSDAORA":                  //Oracle
-                case "sqloledb":
-                    pvd = new OleDbConnectionProvider(serverName, connectionString);
-                    break;
-
-                case "sqldb":                   //Sql Server
-                    pvd = new SqlDbConnectionProvider(serverName, connectionString);
-                    break;
-            }
+            ConnectionProvider pvd = ConnectionProvider.CreateProvider(serverName, connectionString);
 
             if (pvd != null)
                 Register(pvd);

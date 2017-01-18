@@ -999,10 +999,10 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("   /db:database           : initial catalog, default is 'master'");
                 stdio.WriteLine("   /u:username            : user id, default is 'sa'");
                 stdio.WriteLine("   /p:password            : password, default is empty, use Windows Security when /u /p not setup");
-                stdio.WriteLine("   /pvd:provider          : sqloledb,xmlfile, default is SQL client");
+                stdio.WriteLine("   /pvd:provider          : sqloledb, xmlfile, default is SQL client");
                 stdio.WriteLine("example:");
-                stdio.WriteLine("  mount ip100=192.168.0.100\\sqlexpress /u:sa /pwd:p@ss");
-                stdio.WriteLine("  mount web=http://192.168.0.100/db/northwind.xml /u:sa /pwd:p@ss");
+                stdio.WriteLine("  mount ip100=192.168.0.100\\sqlexpress /u:sa /p:p@ss");
+                stdio.WriteLine("  mount web=http://192.168.0.100/db/northwind.xml /u:sa /p:p@ss");
                 stdio.WriteLine("  mount xml=file://c:\\db\\northwind.xml");
                 return;
             }

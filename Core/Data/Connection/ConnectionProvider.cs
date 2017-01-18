@@ -31,11 +31,11 @@ namespace Sys.Data
     {
         internal const int DEFAULT_HANDLE = 0;
         internal const int USER_HANDLE_BASE = DEFAULT_HANDLE + 1000;
-        
+
         private DbConnectionStringBuilder ConnectionBuilder;
 
 
-        internal ConnectionProvider(string name, ConnectionProviderType type, string connectionString)
+        protected ConnectionProvider(string name, ConnectionProviderType type, string connectionString)
         {
             this.Name = name;
             this.Type = type;
@@ -43,7 +43,7 @@ namespace Sys.Data
             SetDbConnectionString(connectionString);
         }
 
-    
+
         public string Name { get; private set; }
 
         internal int Handle { get; set; } = DEFAULT_HANDLE;
@@ -69,11 +69,6 @@ namespace Sys.Data
         }
 
 
-    
-
-      
-
-
         public string InitialCatalog
         {
             get { return (string)ConnectionBuilder["Initial Catalog"]; }
@@ -90,7 +85,7 @@ namespace Sys.Data
 
         public string UserId
         {
-            get 
+            get
             {
                 if (ConnectionBuilder.ContainsKey("User Id"))
                     return (string)ConnectionBuilder["User Id"];
@@ -99,10 +94,10 @@ namespace Sys.Data
             }
             set { ConnectionBuilder["User Id"] = value; }
         }
-      
+
         public string Password
         {
-            get 
+            get
             {
                 if (ConnectionBuilder.ContainsKey("Password"))
                     return (string)ConnectionBuilder["Password"];
@@ -115,7 +110,7 @@ namespace Sys.Data
         public override bool Equals(object obj)
         {
             ConnectionProvider pvd = (ConnectionProvider)obj;
-            return this.Handle.Equals(pvd.Handle) ;
+            return this.Handle.Equals(pvd.Handle);
         }
 
         public override int GetHashCode()
@@ -174,10 +169,10 @@ namespace Sys.Data
 
             return val;
         }
-       
-      
 
-        
+
+
+
         private static Dictionary<string, ServerName> _serverNames = new Dictionary<string, ServerName>();
         public ServerName ServerName
         {
@@ -225,7 +220,7 @@ namespace Sys.Data
         {
             get
             {
-              return  2005;
+                return 2005;
             }
         }
 
@@ -233,16 +228,58 @@ namespace Sys.Data
 
         public abstract bool CheckConnection();
 
-      
+
 
         protected abstract DbSchemaProvider GetSchema();
 
         internal abstract DbProviderType DpType { get; }
 
-        internal abstract DbConnection NewDbConnection { get;}
+        internal abstract DbConnection NewDbConnection { get; }
 
         internal abstract string CurrentDatabaseName();
 
         internal abstract DbProvider CreateDbProvider(string script);
+
+
+        public static ConnectionProvider CreateProvider(string serverName, string connectionString)
+        {
+            DbConnectionStringBuilder conn = new DbConnectionStringBuilder();
+            conn.ConnectionString = connectionString.ToLower();
+
+            string providerName = "sqldb";
+            object value;
+            if (conn.TryGetValue("provider", out value))
+            {
+                if (value is string)
+                    providerName = (string)value;
+            }
+
+            ConnectionProvider pvd = null;
+
+            switch (providerName)
+            {
+                case "xmlfile":
+                    pvd = new XmlDbConnectionProvider(serverName, connectionString);
+                    break;
+
+                case "riadb":                   //Remote Invoke Agent
+                    pvd = new RiaDbConnectionProvider(serverName, connectionString);
+                    break;
+
+                case "Microsoft.ACE.OLEDB.12.0": //Excel 2010
+                case "Microsoft.Jet.OLEDB.4.0":  //Excel 2007 or Access
+                case "MySqlProv":                //MySql
+                case "MSDAORA":                  //Oracle
+                case "sqloledb":
+                    pvd = new OleDbConnectionProvider(serverName, connectionString);
+                    break;
+
+                case "sqldb":                   //Sql Server
+                    pvd = new SqlDbConnectionProvider(serverName, connectionString);
+                    break;
+            }
+
+            return pvd;
+        }
     }
 }
