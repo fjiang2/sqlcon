@@ -72,9 +72,28 @@ namespace Sys.Data
         public static DataTable CreateTable(DbDataReader reader)
         {
             DataTable table = new DataTable();
+            Dictionary<string, int> d = new Dictionary<string, int>();
+
             for (int i = 0; i < reader.FieldCount; i++)
             {
-                DataColumn column = new DataColumn(reader.GetName(i), reader.GetFieldType(i));
+                string name = reader.GetName(i);
+
+                string columnName;
+                //processing duplicated column name
+                if (d.ContainsKey(name))
+                {
+                    int sub = d[name] + 1;
+                    d[name] = sub;
+                    columnName = name + sub;
+                }
+                else
+                {
+                    d.Add(name, 0);
+                    columnName = name;
+                }
+
+                DataColumn column = new DataColumn(columnName, reader.GetFieldType(i));
+                column.Caption = name;
                 table.Columns.Add(column);
             }
 
