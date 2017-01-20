@@ -1322,7 +1322,14 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     using (var progress = new ProgressBar { Count = count })
                     {
                         TableBulkCopy bulkCopy = new TableBulkCopy(tableReader);
-                        bulkCopy.CopyTo(tname2, maps.ToArray(), cts, progress);
+                        try
+                        {
+                            bulkCopy.CopyTo(tname2, maps.ToArray(), cts, progress);
+                        }
+                        catch (Exception ex)
+                        {
+                            stdio.Error(ex.Message);
+                        }
 
                         if (cts.IsCancellationRequested)
                             progress.Report(count);
