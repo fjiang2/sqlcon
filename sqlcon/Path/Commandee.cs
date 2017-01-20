@@ -1309,9 +1309,16 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     else
                         tableReader = new TableReader(tname1);
 
-                    int count = tableReader.Count;
-
-                    stdio.Write("copying {0}", tname1.Name);
+                    long _cnt = tableReader.Count;
+                    int count = 0;
+                    if (_cnt < int.MaxValue)
+                        count = (int)_cnt;
+                    else
+                    {
+                        count = int.MaxValue;
+                        stdio.Error($"total count={_cnt}, too many rows, progress bar may not be accurate");
+                    }
+                    stdio.Write("copying {0} ", tname1.Name);
                     using (var progress = new ProgressBar { Count = count })
                     {
                         TableBulkCopy bulkCopy = new TableBulkCopy(tableReader);

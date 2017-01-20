@@ -262,6 +262,11 @@ namespace sqlcon
             return true;
         }
 
+        public static bool IsKeyPressed(ConsoleKey key)
+        {
+            return Console.KeyAvailable && Console.ReadKey(true).Key == key;
+        }
+
 
     }
 }

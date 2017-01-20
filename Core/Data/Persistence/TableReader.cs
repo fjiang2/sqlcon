@@ -65,14 +65,23 @@ namespace Sys.Data
         }
 
 
-        public int Count
+        public long Count
         {
             get
             {
-                var items = this.sql.ToUpper().Split(new string[] { "SELECT", "FROM" }, StringSplitOptions.RemoveEmptyEntries);
-                string query = sql.Replace(items[0], " COUNT(*) ");
+                string query;
+                if (tableName.Provider.Type == ConnectionProviderType.SqlServer)
+                {
+                    query = $"SELECT CONVERT(bigint, rows) FROM sysindexes WHERE id = OBJECT_ID('{tableName.Name}') AND indid < 2";
+                }
+                else
+                {
+                    var items = this.sql.ToUpper().Split(new string[] { "SELECT", "FROM" }, StringSplitOptions.RemoveEmptyEntries);
+                    query = sql.Replace(items[0], " COUNT(*) ");
+                }
+
                 object obj = new SqlCmd(tableName.Provider, query).ExecuteScalar();
-                return (int)obj;
+                return (long)obj;
             }
         }
 
