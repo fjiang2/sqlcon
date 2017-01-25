@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+01/24/2017 v1.7.8.0
+	Improvements/Enhancements:
+	1. improve command xcopy performance
+
 11/30/2016 v1.7.7.0
 	New Features:
 	1. command>export /c# /ns:xxx /class:name /out:path generate C# class and data from last table result

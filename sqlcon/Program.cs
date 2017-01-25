@@ -16,7 +16,7 @@ namespace sqlcon
         {
             Console.Title = "sqlcon";
             Console.WriteLine("SQL Console [Version {0}]", SysExtension.ApplicationVerison);
-            Console.WriteLine("Copyright (c) 2014-2016 Datconn. All rights reserved.");
+            Console.WriteLine("Copyright (c) 2014-2017 Datconn. All rights reserved.");
             Console.WriteLine();
 
             Tie.Constant.MAX_CPU_REG_NUM = 600;
