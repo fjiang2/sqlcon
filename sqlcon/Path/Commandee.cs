@@ -891,6 +891,58 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             stdio.ErrorFormat("select database or table first");
         }
 
+        public void import(Command cmd, Configuration cfg, ShellContext context)
+        {
+            if (cmd.HasHelp)
+            {
+                stdio.WriteLine("import data, xml");
+                stdio.WriteLine("option:");
+                stdio.WriteLine("   /ds  : import System.Data.DataSet xml file");
+                stdio.WriteLine("   /dt  : import System.Data.DataTable xml file");
+            }
+
+            string file = cmd.arg1;
+            if (file == null)
+            {
+                stdio.ErrorFormat("file name not specified");
+                return;
+            }
+
+            if (!File.Exists(file))
+            {
+                stdio.ErrorFormat($"file \"{file}\" not exist");
+                return;
+            }
+
+            if (cmd.Has("ds"))
+            {
+                var ds = new DataSet();
+                try
+                {
+                    SqlShell.LastResult = ds.ReadXml(file);
+                    stdio.WriteLine($"System.Data.DataSet xml file \"{file}\" has been loaded");
+                }
+                catch (Exception ex)
+                {
+                    stdio.ErrorFormat($"{ex.Message}");
+                    return;
+                }
+            }
+            else if (cmd.Has("dt"))
+            {
+                var dt = new DataTable();
+                try
+                {
+                    SqlShell.LastResult = dt.ReadXml(file);
+                }
+                catch (Exception ex)
+                {
+                    stdio.ErrorFormat($"{ex.Message}");
+                    return;
+                }
+                stdio.WriteLine($"System.Data.DataTable xml file \"{file}\" has been loaded");
+            }
+        }
 
         public void export(Command cmd, Configuration cfg, ShellContext context)
         {

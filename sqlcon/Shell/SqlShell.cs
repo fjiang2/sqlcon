@@ -324,6 +324,10 @@ namespace sqlcon
                     commandee.export(cmd, cfg, this);
                     return true;
 
+                case "import":
+                    commandee.import(cmd, cfg, this);
+                    return true;
+
                 case "clean":
                     commandee.clean(cmd, cfg);
                     return true;
@@ -595,6 +599,7 @@ namespace sqlcon
             stdio.WriteLine("          /s            : compare schema otherwise compare data");
             stdio.WriteLine("          /col:c1,c2    : skip columns defined during comparing");
             stdio.WriteLine("export /?               : see more info");
+            stdio.WriteLine("import /?               : see more info");
             stdio.WriteLine("clean /?                : see more info");
             stdio.WriteLine("mount /?                : see more info");
             stdio.WriteLine("umount /?               : see more info");

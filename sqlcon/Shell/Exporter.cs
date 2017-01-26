@@ -390,6 +390,12 @@ namespace sqlcon
             {
                 dt = SqlShell.LastResult as DataTable;
             }
+            else if (SqlShell.LastResult is DataSet)
+            {
+                var ds = SqlShell.LastResult as DataSet;
+                if (ds != null && ds.Tables.Count > 0)
+                    dt = ds.Tables[0];
+            }
 
             if (dt == null)
             {
@@ -599,7 +605,7 @@ namespace sqlcon
         /// <param name="cmd"></param>
         public void ExportCSharpData(Command cmd)
         {
-            
+
             if (!(SqlShell.LastResult is DataTable))
             {
                 stdio.ErrorFormat("display data table first by sql clause or command [type]");
@@ -625,7 +631,7 @@ namespace sqlcon
                 bool nullable = dt.AsEnumerable().Any(row => row[column] is DBNull);
                 TypeInfo ty = new TypeInfo(column.DataType) { Nullable = nullable };
 
-                prop = new Property(ty, column.ColumnName.ToFieldName()) { modifier = Modifier.Public};
+                prop = new Property(ty, column.ColumnName.ToFieldName()) { modifier = Modifier.Public };
                 clss.Add(prop);
             }
 
