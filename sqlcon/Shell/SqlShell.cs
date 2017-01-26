@@ -21,6 +21,24 @@ namespace sqlcon
         /// </summary>
         public static object LastResult;
 
+        public static DataTable LastTable()
+        {
+            DataTable dt = null;
+            if (SqlShell.LastResult is DataTable)
+            {
+                dt = SqlShell.LastResult as DataTable;
+            }
+            else if (SqlShell.LastResult is DataSet)
+            {
+                var ds = SqlShell.LastResult as DataSet;
+                if (ds.Tables.Count > 0)
+                    dt = ds.Tables[0];
+            }
+
+            return dt;
+        }
+
+
         public SqlShell(Configuration cfg)
             : base(cfg)
         {

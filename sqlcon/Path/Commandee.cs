@@ -1028,9 +1028,9 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     exporter.ExportLinq2SQLClass(cmd);
                 else if (cmd.ToJson)
                 {
-                    if (SqlShell.LastResult is DataTable)
+                    DataTable dt = SqlShell.LastTable();
+                    if (dt != null)
                     {
-                        var dt = SqlShell.LastResult as DataTable;
                         stdio.WriteLine(TableOut.ToJson(dt));
                     }
                     else
@@ -1267,13 +1267,11 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
         }
 
+      
+
         public void OpenEditor()
         {
-            DataTable dt = null;
-            if (SqlShell.LastResult is DataTable)
-            {
-                dt = SqlShell.LastResult as DataTable;
-            }
+            DataTable dt = SqlShell.LastTable();
 
             if (dt == null)
             {

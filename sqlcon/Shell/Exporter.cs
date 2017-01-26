@@ -385,17 +385,7 @@ namespace sqlcon
         public void ExportDataContract(Command cmd, int version)
         {
 
-            DataTable dt = null;
-            if (SqlShell.LastResult is DataTable)
-            {
-                dt = SqlShell.LastResult as DataTable;
-            }
-            else if (SqlShell.LastResult is DataSet)
-            {
-                var ds = SqlShell.LastResult as DataSet;
-                if (ds != null && ds.Tables.Count > 0)
-                    dt = ds.Tables[0];
-            }
+            DataTable dt = SqlShell.LastTable();
 
             if (dt == null)
             {
@@ -546,11 +536,7 @@ namespace sqlcon
         public void ExportEnum(Command cmd)
         {
 
-            DataTable dt = null;
-            if (SqlShell.LastResult is DataTable)
-            {
-                dt = SqlShell.LastResult as DataTable;
-            }
+            DataTable dt = SqlShell.LastTable();
 
             if (dt == null)
             {
@@ -605,8 +591,8 @@ namespace sqlcon
         /// <param name="cmd"></param>
         public void ExportCSharpData(Command cmd)
         {
-
-            if (!(SqlShell.LastResult is DataTable))
+            var dt = SqlShell.LastTable();
+            if (dt == null)
             {
                 stdio.ErrorFormat("display data table first by sql clause or command [type]");
                 return;
@@ -615,8 +601,7 @@ namespace sqlcon
             string ns = cmd.GetValue("ns") ?? "Sql.Data";
             string cname = cmd.GetValue("class") ?? "Table";
 
-            var dt = SqlShell.LastResult as DataTable;
-
+            
             var builder = new CSharpBuilder { nameSpace = ns };
             var clss = new Class(cname)
             {
