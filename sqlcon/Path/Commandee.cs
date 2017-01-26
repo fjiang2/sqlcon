@@ -919,7 +919,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 var ds = new DataSet();
                 try
                 {
-                    SqlShell.LastResult = ds.ReadXml(file);
+                    ds.ReadXml(file, XmlReadMode.ReadSchema); ;
+                    SqlShell.LastResult = ds;
                     stdio.WriteLine($"System.Data.DataSet xml file \"{file}\" has been loaded");
                 }
                 catch (Exception ex)
@@ -933,7 +934,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 var dt = new DataTable();
                 try
                 {
-                    SqlShell.LastResult = dt.ReadXml(file);
+                    dt.ReadXml(file); ;
+                    SqlShell.LastResult = dt;
                 }
                 catch (Exception ex)
                 {
@@ -941,6 +943,10 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     return;
                 }
                 stdio.WriteLine($"System.Data.DataTable xml file \"{file}\" has been loaded");
+            }
+            else
+            {
+                stdio.ErrorFormat("invalid command");
             }
         }
 
