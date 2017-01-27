@@ -895,10 +895,10 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("import data, xml");
+                stdio.WriteLine("import file");
                 stdio.WriteLine("option:");
-                stdio.WriteLine("   /ds  : import System.Data.DataSet xml file");
-                stdio.WriteLine("   /dt  : import System.Data.DataTable xml file");
+                stdio.WriteLine("   /xml:ds  : load System.Data.DataSet xml file");
+                stdio.WriteLine("   /xml:dt  : load System.Data.DataTable xml file");
             }
 
             string file = cmd.arg1;
@@ -914,35 +914,37 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            if (cmd.Has("ds"))
+            string fmt = cmd.GetValue("xml") ?? "ds";
+
+            if (fmt == "ds")
             {
                 var ds = new DataSet();
                 try
                 {
                     ds.ReadXml(file, XmlReadMode.ReadSchema); ;
-                    SqlShell.LastResult = ds;
-                    stdio.WriteLine($"System.Data.DataSet xml file \"{file}\" has been loaded");
+                    ShellHistory.SetLastResult(ds);
+                    stdio.WriteLine($"{typeof(DataSet).FullName} xml file \"{file}\" has been loaded");
                 }
                 catch (Exception ex)
                 {
-                    stdio.ErrorFormat($"{ex.Message}");
+                    stdio.ErrorFormat($"invalid {typeof(DataSet).FullName} xml file, {ex.Message}");
                     return;
                 }
             }
-            else if (cmd.Has("dt"))
+            else if (fmt == "dt")
             {
                 var dt = new DataTable();
                 try
                 {
                     dt.ReadXml(file); ;
-                    SqlShell.LastResult = dt;
+                    ShellHistory.SetLastResult(dt);
                 }
                 catch (Exception ex)
                 {
-                    stdio.ErrorFormat($"{ex.Message}");
+                    stdio.ErrorFormat($"invalid {typeof(DataTable).FullName} xml file, {ex.Message}");
                     return;
                 }
-                stdio.WriteLine($"System.Data.DataTable xml file \"{file}\" has been loaded");
+                stdio.WriteLine($"{typeof(DataTable).FullName} xml file \"{file}\" has been loaded");
             }
             else
             {
@@ -1028,7 +1030,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     exporter.ExportLinq2SQLClass(cmd);
                 else if (cmd.ToJson)
                 {
-                    DataTable dt = SqlShell.LastTable();
+                    DataTable dt = ShellHistory.LastTable();
                     if (dt != null)
                     {
                         stdio.WriteLine(TableOut.ToJson(dt));
@@ -1198,80 +1200,13 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void open(Command cmd, Configuration cfg)
-        {
-            if (cmd.HasHelp)
-            {
-                stdio.WriteLine("open files in the editor");
-                stdio.WriteLine("open files");
-                stdio.WriteLine("options:");
-                stdio.WriteLine("   log              : open log file");
-                stdio.WriteLine("   viewer           : open GUI viewer to see the last data table retrieved");
-                stdio.WriteLine("   output           : open output file");
-                stdio.WriteLine("   config [/s]      : open user configure file, /s open system configurate");
-                stdio.WriteLine("   dpo              : open table class output directory");
-                stdio.WriteLine("   dc               : open data contract class output directory");
-                stdio.WriteLine("   l2s              : open Linq to SQL class output directory");
-                stdio.WriteLine("   release          : open release notes");
-
-                return;
-            }
-
-            string path;
-
-            switch (cmd.arg1)
-            {
-                case "output":
-                    stdio.OpenEditor(cfg.OutputFile);
-                    break;
-
-                case "log":
-                    stdio.OpenEditor(Context.GetValue<string>("log"));
-                    break;
-
-                case "config":
-                    if (cmd.IsSchema)
-                        stdio.OpenEditor("sqlcon.cfg");
-                    else
-                        stdio.OpenEditor(cfg.CfgFile);
-                    break;
-
-                case "release":
-                    stdio.OpenEditor("ReleaseNotes.txt");
-                    break;
-
-                case "dpo":
-                    path = cfg.GetValue<string>("dpo.path", $"{Configuration.MyDocuments}\\DataModel\\Dpo");
-                    OpenDirectory(path, "table class");
-                    break;
-
-                case "dc":
-                    path = cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\DataModel\\DataContracts");
-                    OpenDirectory(path, "data contract class");
-                    break;
-
-                case "l2s":
-                    path = cfg.GetValue<string>("l2s.path", $"{Configuration.MyDocuments}\\DataModel\\L2s");
-                    OpenDirectory(path, "data Linq to SQL class");
-                    break;
-
-                case "viewer":
-                    OpenEditor();
-                    break;
-
-                default:
-                    stdio.ErrorFormat("invalid arguments");
-                    return;
-            }
 
 
-        }
 
-      
 
         public void OpenEditor()
         {
-            DataTable dt = SqlShell.LastTable();
+            DataTable dt = ShellHistory.LastTable();
 
             if (dt == null)
             {
@@ -1515,6 +1450,141 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.Error(ex.Message);
                 return;
             }
+        }
+
+        public void open(Command cmd, Configuration cfg)
+        {
+            if (cmd.HasHelp)
+            {
+                stdio.WriteLine("open files in the editor");
+                stdio.WriteLine("open files");
+                stdio.WriteLine("options:");
+                stdio.WriteLine("   log              : open log file");
+                stdio.WriteLine("   last             : open GUI viewer to see the last data table retrieved");
+                stdio.WriteLine("   output           : open output file");
+                stdio.WriteLine("   config [/s]      : open user configure file, /s open system configurate");
+                stdio.WriteLine("   dpo              : open table class output directory");
+                stdio.WriteLine("   dc               : open data contract class output directory");
+                stdio.WriteLine("   l2s              : open Linq to SQL class output directory");
+                stdio.WriteLine("   release          : open release notes");
+
+                return;
+            }
+
+            string path;
+
+            switch (cmd.arg1)
+            {
+                case "output":
+                    stdio.OpenEditor(cfg.OutputFile);
+                    break;
+
+                case "log":
+                    stdio.OpenEditor(Context.GetValue<string>("log"));
+                    break;
+
+                case "config":
+                    if (cmd.IsSchema)
+                        stdio.OpenEditor("sqlcon.cfg");
+                    else
+                        stdio.OpenEditor(cfg.CfgFile);
+                    break;
+
+                case "release":
+                    stdio.OpenEditor("ReleaseNotes.txt");
+                    break;
+
+                case "dpo":
+                    path = cfg.GetValue<string>("dpo.path", $"{Configuration.MyDocuments}\\DataModel\\Dpo");
+                    OpenDirectory(path, "table class");
+                    break;
+
+                case "dc":
+                    path = cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\DataModel\\DataContracts");
+                    OpenDirectory(path, "data contract class");
+                    break;
+
+                case "l2s":
+                    path = cfg.GetValue<string>("l2s.path", $"{Configuration.MyDocuments}\\DataModel\\L2s");
+                    OpenDirectory(path, "data Linq to SQL class");
+                    break;
+
+                case "last":
+                    OpenEditor();
+                    break;
+
+                default:
+                    stdio.ErrorFormat("invalid arguments");
+                    return;
+            }
+
+
+        }
+
+        public void save(Command cmd, Configuration cfg)
+        {
+            if (cmd.HasHelp)
+            {
+                stdio.WriteLine("save [file]");
+                stdio.WriteLine("options:");
+                stdio.WriteLine("  /output       : copy sql script ouput to clipboard");
+                stdio.WriteLine("  /last         : last dataset to xml file");
+                stdio.WriteLine("example:");
+                stdio.WriteLine("  save /output");
+                stdio.WriteLine("  save products.xml /last");
+                return;
+            }
+
+            if (cmd.Has("output"))
+            {
+                if (!File.Exists(cfg.OutputFile))
+                {
+                    stdio.ErrorFormat("no output file found : {0}", cfg.OutputFile);
+                    return;
+                }
+                using (var reader = new StreamReader(cfg.OutputFile))
+                {
+                    string data = reader.ReadToEnd();
+                    System.Windows.Clipboard.SetText(data);
+                    stdio.WriteLine("copied to clipboard");
+                }
+            }
+            else if (cmd.Has("last"))
+            {
+                var ds = ShellHistory.LastDataSet();
+                if (ds == null)
+                {
+                    stdio.ErrorFormat("last result is null");
+                    return;
+                }
+
+                string file = cmd.arg1;
+                if (file == null)
+                {
+                    stdio.ErrorFormat("file name missing");
+                    return;
+                }
+
+                try
+                {
+                    string path = Path.GetDirectoryName(file);
+                    if (!Directory.Exists(path))
+                        Directory.CreateDirectory(path);
+
+                    ds.WriteXml(file, XmlWriteMode.WriteSchema);
+                    stdio.WriteLine($"last result saved into {file}");
+                }
+                catch (Exception ex)
+                {
+                    stdio.Error(ex.Message);
+                }
+            }
+            else
+            {
+                stdio.ErrorFormat("invalid arguments");
+            }
+
+            return;
         }
     }
 }

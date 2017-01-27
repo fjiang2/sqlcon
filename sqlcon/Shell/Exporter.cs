@@ -385,7 +385,7 @@ namespace sqlcon
         public void ExportDataContract(Command cmd, int version)
         {
 
-            DataTable dt = SqlShell.LastTable();
+            DataTable dt = ShellHistory.LastTable();
 
             if (dt == null)
             {
@@ -536,7 +536,7 @@ namespace sqlcon
         public void ExportEnum(Command cmd)
         {
 
-            DataTable dt = SqlShell.LastTable();
+            DataTable dt = ShellHistory.LastTable();
 
             if (dt == null)
             {
@@ -591,7 +591,7 @@ namespace sqlcon
         /// <param name="cmd"></param>
         public void ExportCSharpData(Command cmd)
         {
-            var dt = SqlShell.LastTable();
+            var dt = ShellHistory.LastTable();
             if (dt == null)
             {
                 stdio.ErrorFormat("display data table first by sql clause or command [type]");

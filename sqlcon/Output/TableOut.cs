@@ -163,7 +163,7 @@ namespace sqlcon
             {
                 DataTable table = builder.SqlCmd.FillDataTable();
                 table.TableName = tname.ShortName;
-                SqlShell.LastResult = table;
+                ShellHistory.SetLastResult(table);
 
                 return Display(cmd, table, top);
             }

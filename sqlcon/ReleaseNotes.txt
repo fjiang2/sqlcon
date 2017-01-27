@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+01/25/2017 v1.7.9.0
+	New Features:
+	1. command>import file /ds /dt load xml file
+
 01/24/2017 v1.7.8.0
 	Improvements/Enhancements:
 	1. improve command xcopy performance

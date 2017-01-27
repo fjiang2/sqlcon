@@ -106,6 +106,7 @@
     <Compile Include="Data\DuplicatedTable.cs" />
     <Compile Include="ClassBuilder\EntityClassBuilder.cs" />
     <Compile Include="ClassBuilder\TheClassBuilder.cs" />
+    <Compile Include="Shell\ShellHistory.cs" />
     <Compile Include="Windows\SqlEditor.cs" />
     <Compile Include="Windows\TableEditor.cs" />
     <Compile Include="Input\KeyValueTable.cs" />

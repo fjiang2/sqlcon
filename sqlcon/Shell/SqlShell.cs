@@ -16,27 +16,7 @@ namespace sqlcon
 {
     class SqlShell : ShellContext
     {
-        /// <summary>
-        /// keep last answer
-        /// </summary>
-        public static object LastResult;
 
-        public static DataTable LastTable()
-        {
-            DataTable dt = null;
-            if (SqlShell.LastResult is DataTable)
-            {
-                dt = SqlShell.LastResult as DataTable;
-            }
-            else if (SqlShell.LastResult is DataSet)
-            {
-                var ds = SqlShell.LastResult as DataSet;
-                if (ds.Tables.Count > 0)
-                    dt = ds.Tables[0];
-            }
-
-            return dt;
-        }
 
 
         public SqlShell(Configuration cfg)
@@ -52,9 +32,9 @@ namespace sqlcon
 
             while (true)
             {
-                L1:
+            L1:
                 stdio.Write("{0}> ", mgr);
-                L2:
+            L2:
                 line = stdio.ReadLine();
 
                 //ctrl-c captured
@@ -234,22 +214,8 @@ namespace sqlcon
                     return true;
 
                 case "save":
-                    if (cmd.arg1 == "output")
-                    {
-                        if (!File.Exists(this.cfg.OutputFile))
-                        {
-                            stdio.ErrorFormat("no output file found : {0}", this.cfg.OutputFile);
-                            break;
-                        }
-                        using (var reader = new StreamReader(this.cfg.OutputFile))
-                        {
-                            string data = reader.ReadToEnd();
-                            System.Windows.Clipboard.SetText(data);
-                            stdio.WriteLine("copied to clipboard");
-                        }
-                    }
+                    commandee.save(cmd, cfg);
                     return true;
-
 
                 case "execute":
                     commandee.execute(cmd, theSide);
@@ -622,6 +588,7 @@ namespace sqlcon
             stdio.WriteLine("mount /?                : see more info");
             stdio.WriteLine("umount /?               : see more info");
             stdio.WriteLine("open /?                 : see more info");
+            stdio.WriteLine("save /?                 : see more info");
             stdio.WriteLine("execute /?              : see more info");
             stdio.WriteLine("edit /?                 : see more info");
             stdio.WriteLine();
@@ -638,7 +605,6 @@ namespace sqlcon
             stdio.WriteLine("<show var>              : show variable list");
             stdio.WriteLine("<run> query(..)         : run predefined query. e.g. run query(var1=val1,...);");
             stdio.WriteLine("<sync table1 table2>    : synchronize, make table2 is the same as table1");
-            stdio.WriteLine("<save output>           : copy sql script ouput to clipboard");
             stdio.WriteLine();
             stdio.WriteLine("type [;] to execute following SQL script or functions");
             stdio.WriteLine("<SQL>");
@@ -657,5 +623,7 @@ namespace sqlcon
             stdio.WriteLine("10+3; results 13");
             stdio.WriteLine();
         }
+
+
     }
 }
