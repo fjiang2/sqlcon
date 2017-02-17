@@ -57,6 +57,28 @@ namespace sqlcon
 
         }
 
+        private TableName[] getTableNames(Command cmd, string[] excludedTables = null)
+        {
+            TableName[] tnames;
+            if (cmd.wildcard != null)
+            {
+                var md = new MatchedDatabase(dname, cmd.wildcard, excludedTables);
+                tnames = md.MatchedTableNames;
+                if (tnames.Length == 0)
+                {
+                    stdio.ErrorFormat("warning: no table is matched");
+                    return new TableName[] { };
+                }
+            }
+            else
+            {
+                tnames = dname.GetTableNames();
+            }
+
+            return tnames;
+        }
+
+
         public void ExportScud(SqlScriptType type)
         {
             if (tname != null)
@@ -384,14 +406,33 @@ namespace sqlcon
 
         public void ExportDataContract(Command cmd, int version)
         {
-
             DataTable dt = ShellHistory.LastTable();
+            string ns = cmd.GetValue("ns");
+            string clss = cmd.GetValue("class");
+            string path = cmd.GetValue("out") ?? cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
 
-            if (dt == null)
+            if (dt != null)
+            {
+                ns = ns ?? cfg.GetValue<string>("dc.ns", "Sys.DataModel.DataContract");
+                clss = clss ?? cfg.GetValue<string>("dc.class", "DataContract");
+                ExportDataContractClass(cmd, path, version, dt, ns, clss);
+            }
+            else
             {
                 if (tname != null)
                 {
-                    dt = new SqlCmd(tname.Provider, $"SELECT TOP 1 * FROM {tname.FormalName}").FillDataTable();
+                    dt = new SqlCmd(tname.Provider, $"SELECT TOP 1 * FROM [{tname.FormalName}]").FillDataTable();
+                    ExportDataContractClass(cmd, path, version, dt, ns ?? $"Sys.DataModel.{tname.DatabaseName.Name}", clss ?? tname.ShortName);
+                }
+                else if (dname != null)
+                {
+                    path = path + "\\" + dname.Name;
+                    TableName[] tnames = getTableNames(cmd);
+                    foreach (var tn in tnames)
+                    {
+                        dt = new SqlCmd(tn.Provider, $"SELECT TOP 1 * FROM {tn.FormalName}").FillDataTable();
+                        ExportDataContractClass(cmd, path, version, dt, ns ?? $"Sys.DataModel.{dname.Name}", tn.ShortName);
+                    }
                 }
                 else
                 {
@@ -399,11 +440,11 @@ namespace sqlcon
                     return;
                 }
             }
+        }
 
+        private void ExportDataContractClass(Command cmd, string path, int version, DataTable dt, string ns, string className)
+        {
 
-            string path = cmd.GetValue("out") ?? cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
-            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("dc.ns", "Sys.DataModel.DataContracts");
-            string clss = cmd.GetValue("class") ?? cfg.GetValue<string>("dc.class", "DataContract");
             string mtd = cmd.GetValue("method");
             string[] keys = cmd.Columns;
 
@@ -411,7 +452,7 @@ namespace sqlcon
             {
                 var builder = new DataContractClassBuilder(ns, cmd, dt)
                 {
-                    cname = clss,
+                    cname = className,
                     mtd = mtd,
                     keys = keys
                 };
@@ -423,7 +464,7 @@ namespace sqlcon
             {
                 var builder = new DataContract2ClassBuilder(ns, cmd, dt)
                 {
-                    cname = clss,
+                    cname = className,
                     mtd = mtd
                 };
 
@@ -488,6 +529,7 @@ namespace sqlcon
         }
 
 
+
         public void ExportLinq2SQLClass(Command cmd)
         {
             string path = cfg.GetValue<string>("l2s.path", $"{Configuration.MyDocuments}\\dc");
@@ -502,22 +544,8 @@ namespace sqlcon
             }
             else if (dname != null)
             {
-                TableName[] tnames;
-                if (cmd.wildcard != null)
-                {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, new string[] { });
-                    tnames = md.MatchedTableNames;
-                    if (tnames.Length == 0)
-                    {
-                        stdio.ErrorFormat("warning: no table is matched");
-                        return;
-                    }
-                }
-                else
-                {
-                    tnames = dname.GetTableNames();
-                }
 
+                TableName[] tnames = getTableNames(cmd);
                 foreach (var tname in tnames)
                 {
                     var builder = new Linq2SQLClassBuilder(ns, cmd, tname, schemas);
@@ -601,7 +629,7 @@ namespace sqlcon
             string ns = cmd.GetValue("ns") ?? "Sql.Data";
             string cname = cmd.GetValue("class") ?? "Table";
 
-            
+
             var builder = new CSharpBuilder { nameSpace = ns };
             var clss = new Class(cname)
             {
