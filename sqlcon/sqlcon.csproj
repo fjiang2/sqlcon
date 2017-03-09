@@ -94,8 +94,8 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Tie, Version=2.0.2.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Tie.2.0.2.1\lib\net452\Tie.dll</HintPath>
+    <Reference Include="Tie, Version=2.0.3.0, Culture=neutral, PublicKeyToken=783687458c7c579a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Tie.2.0.3.0\lib\net45\Tie.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="WindowsBase" />
@@ -150,15 +150,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Output\ConsoleGrid.cs" />
+    <None Include="packages.config" />
     <None Include="sqlcon_TemporaryKey.pfx" />
     <Resource Include="Windows\images\New_16x16.png" />
     <Resource Include="Windows\images\Next_16x16.png" />
     <Resource Include="Windows\images\Open_16x16.png" />
     <Resource Include="Windows\images\Save_16x16.png" />
     <None Include="app.config" />
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Properties\app.manifest" />
     <Content Include="user.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
