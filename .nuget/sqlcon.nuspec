@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>sqlcon</id>
+    <version>1.7.8.0</version>
+    <title>sqlcon</title>
+    <authors>datconn</authors>
+    <licenseUrl>http://tie.codeplex.com/license</licenseUrl>
+    <projectUrl>http://tie.codeplex.com</projectUrl>
+    <iconUrl>http://download-codeplex.sec.s-msft.com/Download?ProjectName=tie&amp;DownloadId=331680&amp;Build=20841</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>
+      sql console tools, 
+      support SQL Server, LocalDB, SQL Server Azure, Xml file, http database, ftp database
+      compare/copy/delete/search/create data and schema.
+      edit data on GUI or console
+      support all SQL statements
+      generate data contract class, json, Linq to SQL class, entity framework class, and SQL clauses.
+    </description>
+    <summary>sql console tools</summary>
+    <releaseNotes>
+      03/15/2017 v1.7.9.0
+      New Features:
+      1. first release to nuget
+    </releaseNotes>
+  </metadata>
+  <files>
+    <file src="..\sqlcon\bin\Release\sqlcon.exe" target="lib\net45\sqlcon.exe" />
+    <file src="..\sqlcon\bin\Release\sqlcon.cfg" target="lib\net45\sqlcon.cfg" />
+    <file src="..\sqlcon\bin\Release\syscore.dll" target="lib\net45\syscore.dll" />
+    <file src="..\sqlcon\bin\Release\Tie.dll" target="lib\net45\Tie.dll" />
+  </files>
+</package>

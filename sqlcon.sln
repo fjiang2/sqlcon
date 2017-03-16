@@ -1,11 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Blend for Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlcon", "sqlcon\sqlcon.csproj", "{C60691C9-DA2E-4DFD-9923-9349A1777C5D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sys.Core", "Core\Sys.Core.csproj", "{58332852-369D-4045-93C2-5CFE9CFB2313}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{770A34FA-CDFE-47C9-8DE8-D0128BFF9117}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\sqlcon.nuspec = .nuget\sqlcon.nuspec
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
