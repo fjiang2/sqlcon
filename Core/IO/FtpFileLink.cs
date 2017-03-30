@@ -5,7 +5,7 @@ using System.Data;
 using System.IO;
 using Sys.Networking;
 
-namespace Sys.IO
+namespace Sys.Data.IO
 {
     class FtpFileLink : FileLink
     {

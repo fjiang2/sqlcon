@@ -21,7 +21,6 @@ using System.Text;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Data.OleDb;
-using Sys.IO;
 using Tie;
 using Sys.Networking;
 

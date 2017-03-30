@@ -4,7 +4,7 @@ using System.Linq;
 using System.IO;
 using System.Data;
 
-namespace Sys.IO
+namespace Sys.Data.IO
 {
     class DiskFileLink : FileLink
     {

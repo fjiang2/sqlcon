@@ -20,7 +20,7 @@ using System.Linq;
 using System.Text;
 using System.Data;
 
-namespace Sys.Data.Persistence.Level4
+namespace Sys.Data
 {
     /// <summary>
     /// n..n table mapping(many-to-many)

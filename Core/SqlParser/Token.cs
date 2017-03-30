@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
-namespace Sys.SqlParser
+namespace Sys.Data.SqlParser
 {
     /// <summary>
     /// Token Type used on Tokenizer

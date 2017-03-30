@@ -8,7 +8,7 @@ using System.IO;
 using System.Data.SqlClient;
 using System.Data.OleDb;
 using Tie;
-using Sys.IO;
+using Sys.Data.IO;
 using Sys.Data;
 
 namespace sqlcon

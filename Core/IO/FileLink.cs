@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data;
 
-namespace Sys.IO
+namespace Sys.Data.IO
 {
     /// <summary>
     /// File Link is file pointing to disk, web or ftp site

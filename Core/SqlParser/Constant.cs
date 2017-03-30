@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Sys.SqlParser
+namespace Sys.Data.SqlParser
 {
     /// <summary>
     /// TIE configuration parameters

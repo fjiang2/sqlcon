@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>sqlcon</id>
-    <version>1.7.9.0</version>
+    <version>1.7.10.0</version>
     <title>sqlcon</title>
     <authors>datconn</authors>
     <licenseUrl>http://tie.codeplex.com/license</licenseUrl>
@@ -26,6 +26,9 @@
     </description>
     <summary> SQL Console Tools for DevOps</summary>
     <releaseNotes>
+      03/29/2017 v1.7.10.0
+      Bug fixes:
+      1. fixed namespace of some classes in syscore.dll
       03/15/2017 v1.7.9.0
       New Features:
       1. first release to nuget

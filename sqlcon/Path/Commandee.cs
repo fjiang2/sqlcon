@@ -12,7 +12,7 @@ using System.IO;
 using Sys;
 using Sys.Data;
 using Sys.Data.Comparison;
-using Sys.IO;
+using Sys.Data.IO;
 using Tie;
 
 namespace sqlcon

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Data;
 using Sys.Networking;
 
-namespace Sys.IO
+namespace Sys.Data.IO
 {
     class HttpFileLink : FileLink
     {
