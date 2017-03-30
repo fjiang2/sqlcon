@@ -460,13 +460,13 @@ namespace sqlcon
         {
             if (val.Size != 2)
             {
-                Console.WriteLine("required 2 parameters on function config(file,variable), 1: app.config/web.config name; 2: variable to reach connection string");
+                Console.WriteLine("required 2 parameters on function cfg(file,variable), 1: app.cfg/web.cfg name; 2: variable to reach connection string");
                 return null;
             }
 
             if (val[0].VALTYPE != VALTYPE.stringcon || val[1].VALTYPE != VALTYPE.stringcon)
             {
-                Console.WriteLine("error on function config(file,variable) argument type, 1: string, 2: string");
+                Console.WriteLine("error on function cfg(file,variable) argument type, 1: string, 2: string");
                 return null;
             }
 
@@ -488,11 +488,15 @@ namespace sqlcon
                         catch (Exception ex)
                         {
                             Console.WriteLine("configuration file format error in {0}, {1}", cfgFile, ex.Message);
+                            return null;
                         }
                     }
                 }
                 else
+                {
                     Console.WriteLine("cannot find configuration file: {0}", cfgFile);
+                    return null;
+                }
 
                 VAL value = localDS.GetValue(variable);
                 if (value.Undefined)
