@@ -673,9 +673,30 @@ namespace sqlcon
                 string pkName = items[1];
                 string pkColumn = items[2];
 
-                //check fkColumn, pkColumn is valid
+                //generate unique constraint name
+                string constraintName = $"FK_{fkName.Name}_{pkName}";
+                try
+                {
+                    string[] exists = fkName
+                        .ForeignKeySchema()
+                        .AsEnumerable()
+                        .Select(row => row.Field<string>("Constraint_Name"))
+                        .ToArray();
 
-                string SQL = $"ALTER TABLE [{fkName.Name}] ADD CONSTRAINT [FK_{fkName.Name}_{pkName}] FOREIGN KEY([{fkColumn}]) REFERENCES [{pkName}]([{pkColumn}])";
+                    int i = 1;
+                    while (exists.Contains(constraintName) && i < 1000)
+                    {
+                        constraintName += i++;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    stdio.ErrorFormat($"fails in generating foreign key constraint name, {ex.Message}");
+                    return;
+                }
+
+                //check fkColumn, pkColumn is valid
+                string SQL = $"ALTER TABLE [{fkName.Name}] ADD CONSTRAINT [{constraintName}] FOREIGN KEY([{fkColumn}]) REFERENCES [{pkName}]([{pkColumn}])";
                 ExecuteNonQuery(fkName.Provider, SQL);
                 return;
             }

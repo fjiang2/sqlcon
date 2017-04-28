@@ -11,18 +11,20 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>
       Operate databases(servers) like file system on the disk
-      sqlcon command: dir,cd,mk,del,type,ren,copy,comp,xcopy,cls,ver,echo,rem,set,import,export,mount,umount,open,save,edit,clean,execute
-      Support SQL Server, LocalDB, SQL Server Azure, SQL Server Express
-      Support Xml database on disk, web site and ftp site
-      Support unlimited databse connections
-      Compare and copy data/schema between 2+ databases or database servers
-      Create/Search/Delete data and schema
+      sqlcon command: dir,cd,md,rd,del,type,ren,copy,comp,xcopy,cls,ver,echo,rem,set,import,export,mount,umount,open,save,edit,clean,execute,attrib
+      Support SQL Server, LocalDB, SQL Azure, SQL Server Express
+      Support Xml database on disk or web/ftp site which is used to compare database on 2 differnet networks.
+      Support unlimited database server connections
+      Compare data/schema between 2+ databases or database servers, and generate SQL script
+      Copy data/schema between 2+ databases or database servers
+      Search data rows, column, table, view, proc and database name by wildcard(*,?)
       Edit data on GUI or console
-      Clean redundant rows
-      Support all SQL statements
+      Clean redundant rows 
+      Delete rows with constraints
+      Generate data in format of json, CSV, and SQL script
       Generate C# class: data contract, Linq to SQL, and entity framework
-      Export json data,CSV,
-      Generate SQL clauses
+      Execute SQL Script file
+      Support all SQL statements
     </description>
     <summary> SQL Console Tools for DevOps</summary>
     <releaseNotes>

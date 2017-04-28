@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+04/27/2017 v1.7.10.0
+	Bugs Fixes:
+	1. cannot create 2+ foreign keys constraints pointing to the same primary key table 
+
 01/25/2017 v1.7.9.0
 	New Features:
 	1. command>import file /ds /dt load xml file
