@@ -602,7 +602,7 @@ namespace sqlcon
                 stdio.WriteLine("  attrib [table] +p:col1,col2            : add primary key");
                 stdio.WriteLine("  attrib [table] +p:col1,col2            : remove primary key");
                 stdio.WriteLine("foreign keys:");
-                stdio.WriteLine("  attrib [table] +f:col1=table2.col2     : add foreign key");
+                stdio.WriteLine("  attrib [table] +f:col1=table2[.col2]   : add foreign key");
                 stdio.WriteLine("  attrib [table] -f:col1                 : remove foreign key");
                 stdio.WriteLine("identiy key:");
                 stdio.WriteLine("  attrib [table] +i:col1                 : add identity");
@@ -662,16 +662,36 @@ namespace sqlcon
             {
                 TableName fkName = (TableName)pt.Item;
                 string expr = cmd.options.GetValue("+f");
-                string[] items = expr.Split(new string[] { "=", "." }, StringSplitOptions.RemoveEmptyEntries);
-                if (items.Length != 3)
+                string[] items = expr.Split('=');
+
+                if (items.Length != 2)
                 {
-                    stdio.ErrorFormat("invalid foreign key expression:{0}, correct is col1->pktable.col2", expr);
+                    stdio.ErrorFormat("invalid foreign key expression:{0}, correct is col1=pktable.col2", expr);
                     return;
                 }
 
                 string fkColumn = items[0];
                 string pkName = items[1];
-                string pkColumn = items[2];
+                string pkColumn = fkColumn;
+
+                items = items[1].Split('.');
+                if (items.Length == 2)
+                {
+                    pkName = items[1];
+                    if (items[2] != string.Empty)
+                        pkColumn = items[2];
+                }
+                else if (items.Length == 1)
+                {
+                    pkName = items[1];
+                    pkColumn = fkColumn;
+                }
+                else
+                {
+                    stdio.ErrorFormat("invalid foreign key expression:{0}, correct is col1=pktable.col2", expr);
+                    return;
+                }
+
 
                 //generate unique constraint name
                 string constraintName = $"FK_{fkName.Name}_{pkName}";
