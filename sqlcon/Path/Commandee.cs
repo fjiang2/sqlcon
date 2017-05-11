@@ -677,13 +677,13 @@ namespace sqlcon
                 items = items[1].Split('.');
                 if (items.Length == 2)
                 {
-                    pkName = items[1];
-                    if (items[2] != string.Empty)
-                        pkColumn = items[2];
+                    pkName = items[0];
+                    if (items[1] != string.Empty)
+                        pkColumn = items[1];
                 }
                 else if (items.Length == 1)
                 {
-                    pkName = items[1];
+                    pkName = items[0];
                     pkColumn = fkColumn;
                 }
                 else
