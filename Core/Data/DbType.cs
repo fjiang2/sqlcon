@@ -161,6 +161,11 @@ namespace Sys.Data
                     if (nullable) ty += "?";
                     break;
 
+                case CType.DateTimeOffset:
+                    ty = "DateTimeOffset";
+                    if (nullable) ty += "?";
+                    break;
+
                 case CType.Time:
                 case CType.Timestamp:
                     ty = "TimeSpan";
