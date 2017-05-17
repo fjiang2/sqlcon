@@ -205,6 +205,39 @@ namespace Sys.Data
 
         public string ADD_COLUMN(IColumn column)
         {
+            if (column.Nullable)
+            {
+                return _ADD_COLUMN(column);
+            }
+            else
+            {
+                //add new column with type NULL
+                StringBuilder builder = new StringBuilder();
+                (column as ColumnSchema).Nullable = true;
+                builder.AppendLine(_ADD_COLUMN(column));
+                (column as ColumnSchema).Nullable = false;
+
+                //Update Column value
+                Type type = column.CType.ToType();
+                string val = string.Empty;
+                try
+                {
+                    object obj = Activator.CreateInstance(type);
+                    val = new ColumnValue(obj).ToScript();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"doesn't support to get default value of type:{type}, {ex.Message}");
+                }
+                builder.AppendLine($"UPDATE {tableName.FormalName} SET {column.ColumnName} = {val}");
+
+                //Change column type to NOT NULL
+                builder.AppendLine(ALTER_COLUMN(column));
+                return builder.ToString();
+            }
+        }
+        private string _ADD_COLUMN(IColumn column)
+        {
             return string.Format("ALTER TABLE {0} ADD {1}", tableName.FormalName, ColumnSchema.GetSQLField(column));
         }
 
