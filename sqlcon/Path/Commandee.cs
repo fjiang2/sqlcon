@@ -938,8 +938,9 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             {
                 stdio.WriteLine("import file");
                 stdio.WriteLine("option:");
-                stdio.WriteLine("   /xml:ds  : load System.Data.DataSet xml file");
-                stdio.WriteLine("   /xml:dt  : load System.Data.DataTable xml file");
+                stdio.WriteLine("   /fmt:xml,ds  : load System.Data.DataSet xml file");
+                stdio.WriteLine("   /fmt:xml,dt  : load System.Data.DataTable xml file");
+                stdio.WriteLine("   /fmt:txt     : load text/csv file");
             }
 
             string file = cmd.arg1;
@@ -955,41 +956,47 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            string fmt = cmd.GetValue("xml") ?? "ds";
+            string fmt = cmd.GetValue("fmt") ?? Path.GetExtension(file).ToLower();
+            switch (fmt)
+            {
+                case ".xml":
+                case "xml":
+                case "xml,ds":
+                    var ds = new DataSet();
+                    try
+                    {
+                        ds.ReadXml(file, XmlReadMode.ReadSchema); ;
+                        ShellHistory.SetLastResult(ds);
+                        stdio.WriteLine($"{typeof(DataSet).FullName} xml file \"{file}\" has been loaded");
+                    }
+                    catch (Exception ex)
+                    {
+                        stdio.ErrorFormat($"invalid {typeof(DataSet).FullName} xml file, {ex.Message}");
+                        return;
+                    }
+                    break;
 
-            if (fmt == "ds")
-            {
-                var ds = new DataSet();
-                try
-                {
-                    ds.ReadXml(file, XmlReadMode.ReadSchema); ;
-                    ShellHistory.SetLastResult(ds);
-                    stdio.WriteLine($"{typeof(DataSet).FullName} xml file \"{file}\" has been loaded");
-                }
-                catch (Exception ex)
-                {
-                    stdio.ErrorFormat($"invalid {typeof(DataSet).FullName} xml file, {ex.Message}");
-                    return;
-                }
-            }
-            else if (fmt == "dt")
-            {
-                var dt = new DataTable();
-                try
-                {
-                    dt.ReadXml(file); ;
-                    ShellHistory.SetLastResult(dt);
-                }
-                catch (Exception ex)
-                {
-                    stdio.ErrorFormat($"invalid {typeof(DataTable).FullName} xml file, {ex.Message}");
-                    return;
-                }
-                stdio.WriteLine($"{typeof(DataTable).FullName} xml file \"{file}\" has been loaded");
-            }
-            else
-            {
-                stdio.ErrorFormat("invalid command");
+                case "xml,dt":
+                    var dt = new DataTable();
+                    try
+                    {
+                        dt.ReadXml(file); ;
+                        ShellHistory.SetLastResult(dt);
+                    }
+                    catch (Exception ex)
+                    {
+                        stdio.ErrorFormat($"invalid {typeof(DataTable).FullName} xml file, {ex.Message}");
+                        return;
+                    }
+                    stdio.WriteLine($"{typeof(DataTable).FullName} xml file \"{file}\" has been loaded");
+                    break;
+
+                case "txt":
+                    break;
+
+                default:
+                    stdio.ErrorFormat("invalid command");
+                    break;
             }
         }
 

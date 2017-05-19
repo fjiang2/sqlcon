@@ -51,7 +51,7 @@ namespace Sys
             string id = ident.Identifier(str);
             return new ident(id);
         }
-   
+
         /// <summary>
         /// Has attribute(T) defined?
         /// </summary>
@@ -72,7 +72,7 @@ namespace Sys
         public static T[] GetAttributes<T>(this Type type) where T : Attribute
         {
             return (T[])type.GetCustomAttributes(typeof(T), true);
-            
+
         }
 
         /// <summary>
@@ -128,9 +128,9 @@ namespace Sys
                     {
                         string f = Path.GetFileNameWithoutExtension(file);
                         Assembly assembly = Assembly.Load(f);
-                        
+
                         string name = assembly.GetName().Name;
-                        if(!name.StartsWith("DevExpress"))
+                        if (!name.StartsWith("DevExpress"))
                             list.Add(assembly);
                     }
                     catch (Exception)

@@ -654,8 +654,6 @@ namespace sqlcon
             };
             builder.AddClass(clss);
 
-            Func<int, string> tab = n => new string('\t', n);
-
             string[] columns = dt.Columns.Cast<DataColumn>().Select(col => col.ColumnName).ToArray();
             List<string> L = new List<string>();
             foreach (DataRow row in dt.Rows)
@@ -665,16 +663,14 @@ namespace sqlcon
                 {
                     V.Add(string.Format("{0} = {1}", columns[i], VAL.Boxing(row[i]).ToString()));
                 }
+                string obj = $"new {cname} {{ " + string.Join(", ", V) + " }";
 
-                L.Add($"{tab(3)}new {cname} {{ " + string.Join(", ", V) + " }");
+                L.Add(obj);
             }
 
-            var value = $"new {cname}[]\n" + $"{tab(2)}{{\n" + string.Join(",\n", L) + $"\n{tab(2)}}}";
-
-            Field field = new Field(new TypeInfo { userType = $"{cname}[]" }, "data")
+            Field field = new Field(new TypeInfo { userType = $"{cname}[]" }, "data", L.ToArray())
             {
-                modifier = Modifier.Public | Modifier.Static | Modifier.Readonly,
-                userValue = value
+                modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
             };
 
             clss.Add(field);
@@ -689,8 +685,15 @@ namespace sqlcon
             else
             {
                 string file = Path.ChangeExtension(Path.Combine(path, cname), "cs");
-                code.WriteIntoFile(file);
-                stdio.WriteLine("code generated on {0}", file);
+                try
+                {
+                    code.WriteIntoFile(file);
+                    stdio.WriteLine("code generated on {0}", file);
+                }
+                catch(Exception ex)
+                {
+                    stdio.WriteLine(ex.Message);
+                }
             }
         }
     }

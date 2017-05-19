@@ -134,7 +134,7 @@ namespace Sys.CodeBuilder
 
         public CodeBlock AppendLine()
         {
-            lines.Add(CodeLine.EmptyLine);
+            lines.Add(new CodeLine());
 
             return this;
         }
