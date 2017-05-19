@@ -54,13 +54,18 @@ namespace Sys.CodeBuilder
                 if (value is string)
                     value = $"\"{value}\"";
 
-                if (!(value is Array))
-                    block.AppendFormat("{0} = {1};", Signature, value);
-                else
+                if (value is Array)
                 {
-                    block.AppendFormat("{0} =", Signature);
+                    block.AppendFormat("{0} = new {1}", Signature, type);
                     WriteArrayValue(block, value as Array, 10);
                 }
+                else if (value is Dictionary<string, string>)
+                {
+                    block.AppendFormat("{0} = new {1}", Signature, type);
+                    WriteDictionaryValue(block, value as Dictionary<string, string>, 10);
+                }
+                else
+                    block.AppendFormat("{0} = {1};", Signature, value);
             }
             else
             {
@@ -106,6 +111,16 @@ namespace Sys.CodeBuilder
 
             }
 
+            block.End(";");
+        }
+
+        private void WriteDictionaryValue(CodeBlock block, Dictionary<string, string> A, int columnNumber)
+        {
+            block.Begin();
+            foreach (var kvp in A)
+            {
+                block.AppendFormat("[{0}] = {1},", kvp.Key, kvp.Value);
+            }
             block.End(";");
         }
     }

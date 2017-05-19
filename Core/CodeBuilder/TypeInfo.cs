@@ -28,6 +28,7 @@ namespace Sys.CodeBuilder
         public bool Nullable { get; set; } = false;
 
         public string userType { get; set; }
+        public bool isArray { get; set; }
 
         public TypeInfo()
         {
@@ -53,6 +54,13 @@ namespace Sys.CodeBuilder
                 Nullable = false;
                 return "void";
             }
+
+            if (isArray)
+            {
+                Nullable = false;
+                return new TypeInfo(type).typeText() + "[]";
+            }
+
 
             if (type.IsArray)
             {

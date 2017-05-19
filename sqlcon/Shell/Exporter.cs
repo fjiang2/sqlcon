@@ -655,25 +655,97 @@ namespace sqlcon
             builder.AddClass(clss);
 
             string[] columns = dt.Columns.Cast<DataColumn>().Select(col => col.ColumnName).ToArray();
-            List<string> L = new List<string>();
-            foreach (DataRow row in dt.Rows)
+
+            string dataType = cmd.GetValue("type") ?? "list";
+
+            if (dataType == "list")
             {
-                List<string> V = new List<string>();
-                for (int i = 0; i < columns.Length; i++)
+                List<string> L = new List<string>();
+                foreach (DataRow row in dt.Rows)
                 {
-                    V.Add(string.Format("{0} = {1}", columns[i], VAL.Boxing(row[i]).ToString()));
+                    List<string> V = new List<string>();
+                    for (int i = 0; i < columns.Length; i++)
+                    {
+                        V.Add(string.Format("{0} = {1}", columns[i], VAL.Boxing(row[i]).ToString()));
+                    }
+                    string obj = $"new {cname} {{ " + string.Join(", ", V) + " }";
+
+                    L.Add(obj);
                 }
-                string obj = $"new {cname} {{ " + string.Join(", ", V) + " }";
 
-                L.Add(obj);
+                TypeInfo typeinfo = new TypeInfo { userType = $"{cname}[]" };
+                Field field = new Field(typeinfo, "data", L.ToArray())
+                {
+                    modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
+                };
+
+                clss.Add(field);
             }
-
-            Field field = new Field(new TypeInfo { userType = $"{cname}[]" }, "data", L.ToArray())
+            else
             {
-                modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
-            };
+                if (dt.Columns.Count < 2)
+                {
+                    stdio.ErrorFormat("cannot generate dictionary class, column# > 2");
+                    return;
+                }
 
-            clss.Add(field);
+                List<KeyValuePair<string, string>> L = new List<KeyValuePair<string, string>>();
+                var keyType = new TypeInfo(dt.Columns[0].DataType);
+                var valueType = new TypeInfo(dt.Columns[1].DataType);
+                if (dt.Columns.Count != 2)
+                    valueType = new TypeInfo { userType = cname };
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    string key = VAL.Boxing(row[0]).ToString();
+                    if (dt.Columns.Count != 2)
+                    {
+                        List<string> V = new List<string>();
+                        for (int i = 0; i < columns.Length; i++)
+                        {
+                            V.Add(string.Format("{0} = {1}", columns[i], VAL.Boxing(row[i]).ToString()));
+                        }
+                        string obj = $"new {cname} {{ " + string.Join(", ", V) + " }";
+
+                        L.Add(new KeyValuePair<string, string>(key, obj));
+                    }
+                    else
+                    {
+                        string obj = VAL.Boxing(row[1]).ToString();
+                        L.Add(new KeyValuePair<string, string>(key, obj));
+                    }
+                }
+
+                var groups = L.GroupBy(x => x.Key, x => x.Value);
+                Dictionary<string, string> dict = new Dictionary<string, string>();
+                foreach (var group in groups)
+                {
+                    var A = group.ToArray();
+                    if (A.Length > 1)
+                        valueType.isArray = true;
+                }
+
+                foreach (var group in groups)
+                {
+                    var A = group.ToArray();
+                    string val;
+                    if (A.Length > 1)
+                        val = $"new {valueType} {{" + string.Join(",", A) + "}";
+                    else
+                        val = A[0];
+
+                    dict.Add(group.Key, val);
+                }
+
+
+                TypeInfo typeinfo = new TypeInfo { userType = $"Dictionary<{keyType},{valueType}>" };
+                Field field = new Field(typeinfo, "data", dict)
+                {
+                    modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
+                };
+
+                clss.Add(field);
+            }
 
             string code = $"{builder}";
 
@@ -690,7 +762,7 @@ namespace sqlcon
                     code.WriteIntoFile(file);
                     stdio.WriteLine("code generated on {0}", file);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     stdio.WriteLine(ex.Message);
                 }
