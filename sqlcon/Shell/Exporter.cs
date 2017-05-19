@@ -729,8 +729,8 @@ namespace sqlcon
                 {
                     var A = group.ToArray();
                     string val;
-                    if (A.Length > 1)
-                        val = $"new {valueType} {{" + string.Join(",", A) + "}";
+                    if (valueType.isArray)
+                        val = $"new {valueType} " + "{" + string.Join(",", A) + "}";
                     else
                         val = A[0];
 

@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+05/19/2016 v1.7.11.0
+	New Features:
+	1. command>export /c# /ns:xxx /class:name /type:dict|[list] /out:path generate C# class of List<T> or Dictionary<T1,T2> data from last table result
+
 04/27/2017 v1.7.10.0
 	Bugs Fixes:
 	1. cannot create 2+ foreign keys constraints pointing to the same primary key table 
