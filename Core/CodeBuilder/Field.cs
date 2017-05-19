@@ -54,7 +54,13 @@ namespace Sys.CodeBuilder
                 if (value is string)
                     value = $"\"{value}\"";
 
-                block.AppendFormat("{0} = {1};", Signature, value);
+                if (!(value is Array))
+                    block.AppendFormat("{0} = {1};", Signature, value);
+                else
+                {
+                    block.AppendFormat("{0} =", Signature);
+                    WriteArrayValue(block, value as Array, 10);
+                }
             }
             else
             {
@@ -62,6 +68,45 @@ namespace Sys.CodeBuilder
             }
 
             return block;
+        }
+
+
+        private void WriteArrayValue(CodeBlock block, Array A, int columnNumber)
+        {
+            if (A.Length <= columnNumber)
+            {
+                block
+                    .Append("{")
+                    .Append(string.Join(",", A))
+                    .Append("};");
+                return;
+            }
+
+            block.Begin();
+            for (int i = 0; i < A.Length; i++)
+            {
+                if (i != 0 && i % columnNumber == 0)
+                {
+                    block.AppendLine();
+                }
+
+                string text = A.GetValue(i).ToString();
+                if (text.Length > 100)
+                    block.AppendLine(text);
+                else
+                {
+                    if (i == 0)
+                        block.AppendLine();
+
+                    block.Append(text);
+                }
+
+                if (i != A.Length - 1)
+                    block.Append(",");
+
+            }
+
+            block.End(";");
         }
     }
 }
