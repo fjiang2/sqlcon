@@ -51,21 +51,11 @@ namespace Sys.CodeBuilder
             }
             else if (value != null)
             {
-                if (value is string)
-                    value = $"\"{value}\"";
-
-                if (value is Array)
-                {
-                    block.AppendFormat("{0} = new {1}", Signature, type);
-                    WriteArrayValue(block, value as Array, 10);
-                }
-                else if (value is Dictionary<string, string>)
-                {
-                    block.AppendFormat("{0} = new {1}", Signature, type);
-                    WriteDictionaryValue(block, value as Dictionary<string, string>, 10);
-                }
-                else
-                    block.AppendFormat("{0} = {1};", Signature, value);
+                Value v = new Value(value) { type = type };
+                block.AppendLine();
+                block.Append($"{Signature} = ");
+                v.BuildCode(block);
+                block.Append(";");
             }
             else
             {

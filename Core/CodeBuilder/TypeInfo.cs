@@ -23,6 +23,8 @@ namespace Sys.CodeBuilder
 {
     public class TypeInfo
     {
+        public static readonly TypeInfo Anonymous = new TypeInfo { userType = string.Empty };
+
         public Type type { get; set; } = null;
 
         public bool Nullable { get; set; } = false;

@@ -648,11 +648,13 @@ namespace sqlcon
                 clss.Add(prop);
             }
 
-            clss = new Class(cname + "Data")
+            clss = new Class("DbStaticData")
             {
-                modifier = Modifier.Public
+                modifier = Modifier.Public | Modifier.Partial
             };
             builder.AddClass(clss);
+
+            string fieldName = $"{cname}Data";
 
             string[] columns = dt.Columns.Cast<DataColumn>().Select(col => col.ColumnName).ToArray();
 
@@ -666,7 +668,7 @@ namespace sqlcon
                     List<string> V = new List<string>();
                     for (int i = 0; i < columns.Length; i++)
                     {
-                        V.Add(string.Format("{0} = {1}", columns[i], VAL.Boxing(row[i]).ToString()));
+                        V.Add(string.Format("{0} = {1}", columns[i], new Value(row[i])));
                     }
                     string obj = $"new {cname} {{ " + string.Join(", ", V) + " }";
 
@@ -674,7 +676,7 @@ namespace sqlcon
                 }
 
                 TypeInfo typeinfo = new TypeInfo { userType = $"{cname}[]" };
-                Field field = new Field(typeinfo, "data", L.ToArray())
+                Field field = new Field(typeinfo, fieldName, L.ToArray())
                 {
                     modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
                 };
@@ -689,7 +691,7 @@ namespace sqlcon
                     return;
                 }
 
-                List<KeyValuePair<string, string>> L = new List<KeyValuePair<string, string>>();
+                List<KeyValuePair<object, object>> L = new List<KeyValuePair<object, object>>();
                 var keyType = new TypeInfo(dt.Columns[0].DataType);
                 var valueType = new TypeInfo(dt.Columns[1].DataType);
                 if (dt.Columns.Count != 2)
@@ -697,27 +699,28 @@ namespace sqlcon
 
                 foreach (DataRow row in dt.Rows)
                 {
-                    string key = VAL.Boxing(row[0]).ToString();
+                    string key = new Value(row[0]).ToString();
+
                     if (dt.Columns.Count != 2)
                     {
                         List<string> V = new List<string>();
                         for (int i = 0; i < columns.Length; i++)
                         {
-                            V.Add(string.Format("{0} = {1}", columns[i], VAL.Boxing(row[i]).ToString()));
+                            V.Add(string.Format("{0} = {1}", columns[i], new Value(row[i])));
                         }
                         string obj = $"new {cname} {{ " + string.Join(", ", V) + " }";
 
-                        L.Add(new KeyValuePair<string, string>(key, obj));
+                        L.Add(new KeyValuePair<object, object>(key, obj));
                     }
                     else
                     {
-                        string obj = VAL.Boxing(row[1]).ToString();
-                        L.Add(new KeyValuePair<string, string>(key, obj));
+                        string obj = new Value(row[1]).ToString();
+                        L.Add(new KeyValuePair<object, object>(key, obj));
                     }
                 }
 
                 var groups = L.GroupBy(x => x.Key, x => x.Value);
-                Dictionary<string, string> dict = new Dictionary<string, string>();
+                Dictionary<object, object> dict = new Dictionary<object, object>();
                 foreach (var group in groups)
                 {
                     var A = group.ToArray();
@@ -728,7 +731,7 @@ namespace sqlcon
                 foreach (var group in groups)
                 {
                     var A = group.ToArray();
-                    string val;
+                    object val;
                     if (valueType.isArray)
                         val = $"new {valueType} " + "{" + string.Join(",", A) + "}";
                     else
@@ -739,7 +742,7 @@ namespace sqlcon
 
 
                 TypeInfo typeinfo = new TypeInfo { userType = $"Dictionary<{keyType},{valueType}>" };
-                Field field = new Field(typeinfo, "data", dict)
+                Field field = new Field(typeinfo, fieldName, dict)
                 {
                     modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
                 };
