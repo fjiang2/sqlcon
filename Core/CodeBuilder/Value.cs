@@ -7,19 +7,41 @@ using Tie;
 
 namespace Sys.CodeBuilder
 {
+    public enum ValueOutputFormat
+    {
+        SingleLine,
+        MultipleLine,
+        Wrap
+    }
+
     public class Value : Buildable
     {
         private object value;
         public TypeInfo type { get; set; } = TypeInfo.Anonymous;
+        public ValueOutputFormat format { get; set; } = ValueOutputFormat.MultipleLine;
 
         public Value(object value)
         {
             this.value = value;
         }
 
+        private static string ToPrimitive(object value)
+        {
+            return VAL.Boxing(value).ToString();
+        }
+        private static Value ConvertToValue(object value)
+        {
+            if (value is Value)
+                return (Value)value;
+
+            else
+                return new Value(value);
+        }
+
+
         public void BuildCode(CodeBlock block)
         {
-            if(value is Value)
+            if (value is Value)
             {
                 (value as Value).BuildCode(block);
             }
@@ -39,7 +61,7 @@ namespace Sys.CodeBuilder
                 WriteDictionary(block, value as Dictionary<object, object>);
             }
             else
-                block.Append(VAL.Boxing(value).ToString());
+                block.Append(ToPrimitive(value));
         }
 
         private void WriteArrayValue(CodeBlock block, Array A, int columnNumber)
@@ -64,7 +86,7 @@ namespace Sys.CodeBuilder
                 }
 
                 block.AppendLine();
-                Value item = new Value(A.GetValue(i));
+                Value item = ConvertToValue(A.GetValue(i));
                 item.BuildCode(block);
 
                 if (i != A.Length - 1)
@@ -84,7 +106,7 @@ namespace Sys.CodeBuilder
                     {
                         block.AppendLine();
                         block.Append($"[{kvp.Key}] = ");
-                        new Value(kvp.Value).BuildCode(block);
+                        ConvertToValue(kvp.Value).BuildCode(block);
                     },
                 _ => block.Append(",")
                 );
@@ -95,7 +117,7 @@ namespace Sys.CodeBuilder
         private void WriteDictionary(CodeBlock block, ObjectValue A)
         {
             block.Begin();
-            
+
             A.ForEach(
                   kvp =>
                   {
@@ -111,7 +133,7 @@ namespace Sys.CodeBuilder
 
         public override string ToString()
         {
-            return VAL.Boxing(value).ToString();
+            return ToPrimitive(value);
         }
     }
 
