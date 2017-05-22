@@ -45,11 +45,11 @@ namespace Sys
             }
         }
 
-        public static string Concatenate<T>(this IEnumerable<T> items, string delimiter)
+        public static string Concatenate<T>(this IEnumerable<T> items, Func<T, string> doit, string delimiter)
         {
             StringBuilder builder = new StringBuilder();
             items.ForEach(
-                item => builder.Append(item),
+                item => builder.Append(doit(item)),
                 _ => builder.Append(delimiter)
              );
 
