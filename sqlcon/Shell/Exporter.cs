@@ -421,7 +421,7 @@ namespace sqlcon
             {
                 if (tname != null)
                 {
-                    dt = new SqlCmd(tname.Provider, $"SELECT TOP 1 * FROM [{tname.FormalName}]").FillDataTable();
+                    dt = new SqlCmd(tname.Provider, $"SELECT TOP 1 * FROM {tname.FormalName}").FillDataTable();
                     ExportDataContractClass(cmd, path, version, dt, ns ?? $"Sys.DataModel.{tname.DatabaseName.Name}", clss ?? tname.ShortName);
                 }
                 else if (dname != null)
