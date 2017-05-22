@@ -675,7 +675,7 @@ namespace sqlcon
                 }
 
                 TypeInfo typeinfo = new TypeInfo { userType = $"{cname}[]" };
-                Field field = new Field(typeinfo, fieldName, new Value(L.ToArray()) { format = ValueOutputFormat.MultipleLine})
+                Field field = new Field(typeinfo, fieldName, new Value(L.ToArray()) { type = typeinfo, format = ValueOutputFormat.MultipleLine })
                 {
                     modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
                 };

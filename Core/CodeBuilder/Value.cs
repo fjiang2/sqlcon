@@ -29,13 +29,16 @@ namespace Sys.CodeBuilder
         {
             return VAL.Boxing(value).ToString();
         }
-        private static Value NewValue(object value)
+        private Value NewValue(object value)
         {
             if (value is Value)
-                return (Value)value;
-
+            {
+                Value val = (Value)value;
+                //val.format = format;
+                return val;
+            }
             else
-                return new Value(value);
+                return new Value(value) { format = format };
         }
 
 
