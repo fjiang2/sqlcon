@@ -23,7 +23,7 @@ namespace Sys.CodeBuilder
 {
     public class Field : Declare, ICodeBlock
     {
-        private object value;
+        private Value value;
         public string userValue { get; set; }
 
         public Field(TypeInfo type, string fieldName)
@@ -32,7 +32,7 @@ namespace Sys.CodeBuilder
         }
 
 
-        public Field(TypeInfo type, string fieldName, object value)
+        public Field(TypeInfo type, string fieldName, Value value)
             : base(fieldName)
         {
             this.type = type;
@@ -50,10 +50,9 @@ namespace Sys.CodeBuilder
             }
             else if (value != null)
             {
-                Value v = new Value(value) { type = type };
                 block.AppendLine();
                 block.Append($"{Signature} = ");
-                v.BuildCode(block);
+                value.BuildCode(block);
                 block.Append(";");
             }
             else
@@ -64,52 +63,5 @@ namespace Sys.CodeBuilder
         }
 
 
-        private void WriteArrayValue(CodeBlock block, Array A, int columnNumber)
-        {
-            if (A.Length <= columnNumber)
-            {
-                block
-                    .Append("{")
-                    .Append(string.Join(",", A))
-                    .Append("};");
-                return;
-            }
-
-            block.Begin();
-            for (int i = 0; i < A.Length; i++)
-            {
-                if (i != 0 && i % columnNumber == 0)
-                {
-                    block.AppendLine();
-                }
-
-                string text = A.GetValue(i).ToString();
-                if (text.Length > 100)
-                    block.AppendLine(text);
-                else
-                {
-                    if (i == 0)
-                        block.AppendLine();
-
-                    block.Append(text);
-                }
-
-                if (i != A.Length - 1)
-                    block.Append(",");
-
-            }
-
-            block.End(";");
-        }
-
-        private void WriteDictionaryValue(CodeBlock block, Dictionary<string, string> A, int columnNumber)
-        {
-            block.Begin();
-            foreach (var kvp in A)
-            {
-                block.AppendFormat("[{0}] = {1},", kvp.Key, kvp.Value);
-            }
-            block.End(";");
-        }
     }
 }

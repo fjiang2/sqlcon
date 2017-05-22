@@ -648,7 +648,7 @@ namespace sqlcon
                 clss.Add(prop);
             }
 
-            clss = new Class("DbStaticData")
+            clss = new Class("DbReadOnly")
             {
                 modifier = Modifier.Public | Modifier.Partial
             };
@@ -675,7 +675,7 @@ namespace sqlcon
                 }
 
                 TypeInfo typeinfo = new TypeInfo { userType = $"{cname}[]" };
-                Field field = new Field(typeinfo, fieldName, L.ToArray())
+                Field field = new Field(typeinfo, fieldName, new Value(L.ToArray()) { format = ValueOutputFormat.MultipleLine})
                 {
                     modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
                 };
@@ -699,7 +699,7 @@ namespace sqlcon
                 TypeInfo type = new TypeInfo { userType = $"{cname}" };
                 foreach (DataRow row in dt.Rows)
                 {
-                    string key = new Value(row[0]).ToString();
+                    string key = Value.ToPrimitive(row[0]);
 
                     if (dt.Columns.Count != 2)
                     {
@@ -730,7 +730,7 @@ namespace sqlcon
                     var A = group.ToArray();
                     object val;
                     if (valueType.isArray)
-                        val = new Value(A) { type = valueType };
+                        val = new Value(A) { type = valueType, format = ValueOutputFormat.Wrap };
                     else
                         val = A[0];
 
@@ -739,7 +739,7 @@ namespace sqlcon
 
 
                 TypeInfo typeinfo = new TypeInfo { userType = $"Dictionary<{keyType},{valueType}>" };
-                Field field = new Field(typeinfo, fieldName, dict)
+                Field field = new Field(typeinfo, fieldName, new Value(dict) { format = ValueOutputFormat.MultipleLine })
                 {
                     modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
                 };

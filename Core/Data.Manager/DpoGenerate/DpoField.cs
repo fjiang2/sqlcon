@@ -111,7 +111,7 @@ namespace Sys.Data.Manager
             string _columnName = dpoClass.dict_column_field[column.ColumnName].PropertyName;
 
 
-            Field field = new Field(new CodeBuilder.TypeInfo { type = typeof(string) }, $"_{_columnName}", $"{column.ColumnName}")
+            Field field = new Field(new CodeBuilder.TypeInfo { type = typeof(string) }, $"_{_columnName}", new Value($"{column.ColumnName}"))
             {
                 modifier= Modifier.Public | Modifier.Const
             };

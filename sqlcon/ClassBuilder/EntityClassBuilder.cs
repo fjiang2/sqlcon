@@ -44,7 +44,7 @@ namespace sqlcon
             Field field;
             foreach (var column in schema.Columns)
             {
-                field = new Field(new TypeInfo { type = typeof(string) }, COLUMN(column), column.ColumnName)
+                field = new Field(new TypeInfo { type = typeof(string) }, COLUMN(column), new Value(column.ColumnName))
                 {
                     modifier = Modifier.Public | Modifier.Const
                 };

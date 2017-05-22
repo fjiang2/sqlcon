@@ -209,7 +209,7 @@ namespace sqlcon
             //Const Field
             foreach (DataColumn column in dt.Columns)
             {
-                Field field = new Field(new TypeInfo { type = typeof(string) }, COLUMN(column), column.ColumnName)
+                Field field = new Field(new TypeInfo { type = typeof(string) }, COLUMN(column), new Value(column.ColumnName))
                 {
                     modifier = Modifier.Public | Modifier.Const
                 };

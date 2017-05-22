@@ -59,7 +59,7 @@ namespace Sys.CodeBuilder
             return constructor;
         }
 
-        public Field AddField<T>(Modifier modifier, string name, object value = null)
+        public Field AddField<T>(Modifier modifier, string name, Value value = null)
         {
             var field = new Field(new TypeInfo { type = typeof(T) }, name, value)
             {

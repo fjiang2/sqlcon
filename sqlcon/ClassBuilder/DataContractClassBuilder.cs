@@ -77,7 +77,7 @@ namespace sqlcon
             Field field;
             foreach (DataColumn column in dt.Columns)
             {
-                field = new Field(new TypeInfo { type = typeof(string) }, COLUMN(column), column.ColumnName)
+                field = new Field(new TypeInfo { type = typeof(string) }, COLUMN(column), new Value(column.ColumnName))
                 {
                     modifier = Modifier.Public | Modifier.Const
                 };
@@ -86,7 +86,7 @@ namespace sqlcon
 
             if (dt.TableName != null)
             {
-                field = new Field(new TypeInfo { type = typeof(string) }, "TableName", dt.TableName)
+                field = new Field(new TypeInfo { type = typeof(string) }, "TableName", new Value(dt.TableName))
                 {
                     modifier = Modifier.Public | Modifier.Const
                 };
