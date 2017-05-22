@@ -41,9 +41,8 @@ namespace Sys.CodeBuilder
 
 
 
-        protected override CodeBlock BuildBlock()
+        protected override void BuildBlock(CodeBlock block)
         {
-            CodeBlock block = base.BuildBlock();
 
             if (userValue != null)
             {
@@ -62,7 +61,6 @@ namespace Sys.CodeBuilder
                 block.AppendLine(Signature + ";");
             }
 
-            return block;
         }
 
 

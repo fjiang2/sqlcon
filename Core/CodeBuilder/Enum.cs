@@ -49,14 +49,10 @@ namespace Sys.CodeBuilder
             statements.AppendLine();
         }
 
-        protected override CodeBlock BuildBlock()
+        protected override void BuildBlock(CodeBlock block)
         {
-            CodeBlock block = base.BuildBlock();
-
             block.AppendLine(Signature);
             block.AddWithBeginEnd(statements);
-
-            return block;
         }
     }
 }

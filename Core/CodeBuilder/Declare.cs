@@ -52,9 +52,8 @@ namespace Sys.CodeBuilder
 
 
 
-        protected override CodeBlock BuildBlock()
+        protected override void BuildBlock(CodeBlock block)
         {
-            CodeBlock block = base.BuildBlock();
 
             if (attributes.Count != 0)
             {
@@ -62,7 +61,6 @@ namespace Sys.CodeBuilder
                     block.AppendLine(attr.ToString());
             }
 
-            return block;
         }
 
     }

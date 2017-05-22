@@ -21,11 +21,9 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        protected override CodeBlock BuildBlock()
+        protected override void BuildBlock(CodeBlock block)
         {
-            CodeBlock block = base.BuildBlock();
             block.Add(code);
-            return block;
         }
 
     }

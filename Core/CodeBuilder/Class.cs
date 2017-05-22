@@ -138,10 +138,8 @@ namespace Sys.CodeBuilder
 
 
 
-        protected override CodeBlock BuildBlock()
+        protected override void BuildBlock(CodeBlock clss)
         {
-            CodeBlock clss = base.BuildBlock();
-
             clss.AppendFormat("{0} class {1}", new ModifierString(modifier), base.name);
             if (inherits.Length > 0)
                 clss.AppendFormat("\t: {0}", string.Join(", ", inherits.Select(inherit => inherit.ToString())));
@@ -205,7 +203,6 @@ namespace Sys.CodeBuilder
             }
 
             clss.AddWithBeginEnd(body);
-            return clss;
         }
 
         public void AddCopyCloneEqualsFunc()

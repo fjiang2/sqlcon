@@ -36,14 +36,15 @@ namespace Sys.CodeBuilder
 
         private void WriteArrayValue(CodeBlock block, Array A, int columnNumber)
         {
-            if (A.Length <= columnNumber)
-            {
-                block
-                    .Append("{")
-                    .Append(string.Join(",", A))
-                    .Append("}");
-                return;
-            }
+            //if (A.Length <= columnNumber)
+            //{
+            //    block
+            //        .Append("{")
+            //        .Append(A.Concatenate(","))
+            //        .Append("}");
+
+            //    return;
+            //}
 
             block.Begin();
             for (int i = 0; i < A.Length; i++)

@@ -29,11 +29,15 @@ namespace Sys.CodeBuilder
         /// Generate code, BuildBlock can be invoked only once
         /// </summary>
         /// <returns></returns>
-        protected virtual CodeBlock BuildBlock()
+        private CodeBlock BuildBlock()
         {
             CodeBlock block = new CodeBlock();
-
+            BuildBlock(block);
             return block;
+        }
+
+        protected virtual void BuildBlock(CodeBlock block)
+        {
         }
 
         public override string ToString()

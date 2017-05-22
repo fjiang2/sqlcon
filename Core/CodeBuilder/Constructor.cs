@@ -36,9 +36,8 @@ namespace Sys.CodeBuilder
             base.type = null;
         }
 
-        protected override CodeBlock BuildBlock()
+        protected override void BuildBlock(CodeBlock block)
         {
-            CodeBlock block = base.BuildBlock();
 
             block.AppendFormat("{0}({1})", Signature, args);
             if (baseArgs != null)
@@ -47,7 +46,6 @@ namespace Sys.CodeBuilder
             }
 
             block.AddWithBeginEnd(statements);
-            return block;
         }
         
 

@@ -52,10 +52,8 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        protected override CodeBlock BuildBlock()
+        protected override void BuildBlock(CodeBlock block)
         {
-            CodeBlock block = base.BuildBlock();
-
             foreach (var name in usings)
                 block.AppendFormat("using {0};", name);
 
@@ -72,7 +70,6 @@ namespace Sys.CodeBuilder
 
             block.AddWithBeginEnd(c);
 
-            return block;
         }
 
     }

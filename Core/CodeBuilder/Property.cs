@@ -84,10 +84,8 @@ namespace Sys.CodeBuilder
             }
         }
 
-        protected override CodeBlock BuildBlock()
+        protected override void BuildBlock(CodeBlock block)
         {
-            CodeBlock block = base.BuildBlock();
-
             if (gets.Count == 0 && sets.Count == 0)
             {
                 block.AppendFormat("{0}{1}", $"{Signature} {{ {get}; {set}; }}", comment);
@@ -111,7 +109,7 @@ namespace Sys.CodeBuilder
                 block.End();
             }
 
-            return block;
+            return;
         }
     }
 }
