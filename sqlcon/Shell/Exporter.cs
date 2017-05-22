@@ -631,6 +631,8 @@ namespace sqlcon
 
 
             var builder = new CSharpBuilder { nameSpace = ns };
+            builder.AddUsing("System.Collections.Generic");
+
             var clss = new Class(cname)
             {
                 modifier = Modifier.Public | Modifier.Partial
@@ -738,7 +740,7 @@ namespace sqlcon
                 }
 
 
-                TypeInfo typeinfo = new TypeInfo { userType = $"Dictionary<{keyType},{valueType}>" };
+                TypeInfo typeinfo = new TypeInfo { userType = $"Dictionary<{keyType}, {valueType}>" };
                 Field field = new Field(typeinfo, fieldName, new Value(dict) {type= typeinfo, format = ValueOutputFormat.MultipleLine })
                 {
                     modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
