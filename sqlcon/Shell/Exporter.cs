@@ -739,7 +739,7 @@ namespace sqlcon
 
 
                 TypeInfo typeinfo = new TypeInfo { userType = $"Dictionary<{keyType},{valueType}>" };
-                Field field = new Field(typeinfo, fieldName, new Value(dict) { format = ValueOutputFormat.MultipleLine })
+                Field field = new Field(typeinfo, fieldName, new Value(dict) {type= typeinfo, format = ValueOutputFormat.MultipleLine })
                 {
                     modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
                 };
