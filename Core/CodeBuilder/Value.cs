@@ -19,16 +19,24 @@ namespace Sys.CodeBuilder
 
         public void BuildCode(CodeBlock block)
         {
-
-            if (value is Array)
+            if(value is Value)
+            {
+                (value as Value).BuildCode(block);
+            }
+            else if (value is Array)
             {
                 block.Append($"new {type}");
                 WriteArrayValue(block, value as Array, 10);
             }
+            else if (value is ObjectValue)
+            {
+                block.Append($"new {type}");
+                WriteDictionary(block, value as ObjectValue);
+            }
             else if (value is Dictionary<object, object>)
             {
                 block.Append($"new {type}");
-                WriteDictionaryValue(block, value as Dictionary<object, object>, 10);
+                WriteDictionary(block, value as Dictionary<object, object>);
             }
             else
                 block.Append(VAL.Boxing(value).ToString());
@@ -47,6 +55,7 @@ namespace Sys.CodeBuilder
             //}
 
             block.Begin();
+
             for (int i = 0; i < A.Length; i++)
             {
                 if (i != 0 && i % columnNumber == 0)
@@ -54,16 +63,9 @@ namespace Sys.CodeBuilder
                     block.AppendLine();
                 }
 
-                string text = A.GetValue(i).ToString();
-                if (text.Length > 100)
-                    block.AppendLine(text);
-                else
-                {
-                    if (i == 0)
-                        block.AppendLine();
-
-                    block.Append(text);
-                }
+                block.AppendLine();
+                Value item = new Value(A.GetValue(i));
+                item.BuildCode(block);
 
                 if (i != A.Length - 1)
                     block.Append(",");
@@ -73,20 +75,48 @@ namespace Sys.CodeBuilder
             block.End();
         }
 
-        private void WriteDictionaryValue(CodeBlock block, Dictionary<object, object> A, int columnNumber)
+        private void WriteDictionary(CodeBlock block, Dictionary<object, object> A)
         {
             block.Begin();
-            foreach (var kvp in A)
-            {
-                block.AppendFormat("[{0}] = {1},", kvp.Key, kvp.Value);
-            }
+
+            A.ForEach(
+                kvp =>
+                    {
+                        block.AppendLine();
+                        block.Append($"[{kvp.Key}] = ");
+                        new Value(kvp.Value).BuildCode(block);
+                    },
+                _ => block.Append(",")
+                );
+
             block.End();
         }
 
+        private void WriteDictionary(CodeBlock block, ObjectValue A)
+        {
+            block.Begin();
+            
+            A.ForEach(
+                  kvp =>
+                  {
+                      block.AppendLine();
+                      block.Append($"{kvp.Key} = ");
+                      kvp.Value.BuildCode(block);
+                  },
+                   _ => block.Append(",")
+                );
+
+            block.End();
+        }
 
         public override string ToString()
         {
             return VAL.Boxing(value).ToString();
         }
+    }
+
+    public class ObjectValue : Dictionary<string, Value>
+    {
+
     }
 }

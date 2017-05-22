@@ -134,7 +134,7 @@ namespace Sys.CodeBuilder
 
         public CodeBlock AppendLine()
         {
-            lines.Add(new CodeLine());
+            lines.Add(new CodeLine { tab = curruent });
 
             return this;
         }

@@ -662,17 +662,16 @@ namespace sqlcon
 
             if (dataType == "list")
             {
-                List<string> L = new List<string>();
+                List<Value> L = new List<Value>();
+                TypeInfo type = new TypeInfo { userType = $"{cname}" };
                 foreach (DataRow row in dt.Rows)
                 {
-                    List<string> V = new List<string>();
+                    ObjectValue V = new ObjectValue();
                     for (int i = 0; i < columns.Length; i++)
                     {
-                        V.Add(string.Format("{0} = {1}", columns[i], new Value(row[i])));
+                        V.Add(columns[i], new Value(row[i]));
                     }
-                    string obj = $"new {cname} {{ " + string.Join(", ", V) + " }";
-
-                    L.Add(obj);
+                    L.Add(new Value(V) { type = type });
                 }
 
                 TypeInfo typeinfo = new TypeInfo { userType = $"{cname}[]" };
@@ -697,25 +696,23 @@ namespace sqlcon
                 if (dt.Columns.Count != 2)
                     valueType = new TypeInfo { userType = cname };
 
+                TypeInfo type = new TypeInfo { userType = $"{cname}" };
                 foreach (DataRow row in dt.Rows)
                 {
                     string key = new Value(row[0]).ToString();
 
                     if (dt.Columns.Count != 2)
                     {
-                        List<string> V = new List<string>();
+                        ObjectValue V = new ObjectValue();
                         for (int i = 0; i < columns.Length; i++)
                         {
-                            V.Add(string.Format("{0} = {1}", columns[i], new Value(row[i])));
+                            V.Add(columns[i], new Value(row[i]));
                         }
-                        string obj = $"new {cname} {{ " + string.Join(", ", V) + " }";
-
-                        L.Add(new KeyValuePair<object, object>(key, obj));
+                        L.Add(new KeyValuePair<object, object>(key, new Value(V) { type = type }));
                     }
                     else
                     {
-                        string obj = new Value(row[1]).ToString();
-                        L.Add(new KeyValuePair<object, object>(key, obj));
+                        L.Add(new KeyValuePair<object, object>(key, new Value(row[1])));
                     }
                 }
 
@@ -733,7 +730,7 @@ namespace sqlcon
                     var A = group.ToArray();
                     object val;
                     if (valueType.isArray)
-                        val = $"new {valueType} " + "{" + string.Join(",", A) + "}";
+                        val = new Value(A) { type = valueType };
                     else
                         val = A[0];
 
