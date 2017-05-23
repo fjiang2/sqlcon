@@ -16,8 +16,9 @@ namespace Sys.CodeBuilder
 
     public class Value : Buildable
     {
-        private object value;
         public TypeInfo type { get; set; } = TypeInfo.Anonymous;
+
+        private object value;
         private ValueOutputFormat format { get; set; } = ValueOutputFormat.MultipleLine;
 
         public Value(object value)
@@ -25,30 +26,48 @@ namespace Sys.CodeBuilder
             this.value = value;
         }
 
+  
+        public static Value NewPropertyObject(TypeInfo type)
+        {
+            return new Value(new Dictionary<string, Value>()) { type = type };
+        }
+
         public static string ToPrimitive(object value)
         {
             return VAL.Boxing(value).ToString();
         }
+
         private Value NewValue(object value)
         {
             if (value is Value)
             {
                 Value val = (Value)value;
-                //val.format = format;
                 return val;
             }
             else
                 return new Value(value) { format = format };
         }
 
+        private Dictionary<string, Value> objectValue => value as Dictionary<string, Value>;
 
-        public void BuildCode(CodeBlock block)
+        public void AddProperty(string propertyName, Value value)
+        {
+            if (objectValue == null)
+                throw new Exception("object property is initialized, use new Value()");
+
+            if (objectValue.ContainsKey(propertyName))
+                throw new Exception($"duplicated property name:{propertyName}");
+
+            objectValue.Add(propertyName, value);
+        }
+
+        internal void BuildCode(CodeBlock block)
         {
             if (value is Value)
             {
                 (value as Value).BuildCode(block);
             }
-            else if (value is Array)
+            else if (value is Array)                        // new Foo[] { new Foo {...}, new Foo {...}, ...}
             {
                 var A = value as Array;
                 if (type == TypeInfo.Anonymous)
@@ -57,12 +76,12 @@ namespace Sys.CodeBuilder
                 block.Append($"new {type}");
                 WriteArrayValue(block, A, 10);
             }
-            else if (value is ObjectValue)
+            else if (value is Dictionary<string, Value>)    // new Foo { A = 1, B = true }
             {
                 block.Append($"new {type}");
-                WriteDictionary(block, value as ObjectValue);
+                WriteDictionary(block, value as Dictionary<string, Value>);
             }
-            else if (value is Dictionary<object, object>)
+            else if (value is Dictionary<object, object>)   // new Dictionary<T1,T2> { [t1] = new T2 {...}, ... }
             {
                 block.Append($"new {type}");
                 WriteDictionary(block, value as Dictionary<object, object>);
@@ -192,7 +211,7 @@ namespace Sys.CodeBuilder
             }
         }
 
-        private void WriteDictionary(CodeBlock block, ObjectValue A)
+        private void WriteDictionary(CodeBlock block, Dictionary<string, Value> A)
         {
             switch (format)
             {
@@ -234,8 +253,4 @@ namespace Sys.CodeBuilder
         }
     }
 
-    public class ObjectValue : Dictionary<string, Value>
-    {
-
-    }
 }

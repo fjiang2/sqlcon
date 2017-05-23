@@ -626,9 +626,10 @@ namespace sqlcon
                 return;
             }
 
-            string ns = cmd.GetValue("ns") ?? "Sql.Data";
+            string ns = cmd.GetValue("ns") ?? "Sys.DataModel.Db";
             string cname = cmd.GetValue("class") ?? "Table";
-
+            string dataType = cmd.GetValue("type") ?? "list";
+            string dataclass = cmd.GetValue("dataclass") ?? "DbReadOnly";
 
             var builder = new CSharpBuilder { nameSpace = ns };
             builder.AddUsing("System.Collections.Generic");
@@ -650,7 +651,7 @@ namespace sqlcon
                 clss.Add(prop);
             }
 
-            clss = new Class("DbReadOnly")
+            clss = new Class(dataclass)
             {
                 modifier = Modifier.Public | Modifier.Partial
             };
@@ -660,7 +661,6 @@ namespace sqlcon
 
             string[] columns = dt.Columns.Cast<DataColumn>().Select(col => col.ColumnName).ToArray();
 
-            string dataType = cmd.GetValue("type") ?? "list";
 
             if (dataType == "list")
             {
@@ -668,12 +668,12 @@ namespace sqlcon
                 TypeInfo type = new TypeInfo { userType = $"{cname}" };
                 foreach (DataRow row in dt.Rows)
                 {
-                    ObjectValue V = new ObjectValue();
+                    var V = Value.NewPropertyObject(type);
                     for (int i = 0; i < columns.Length; i++)
                     {
-                        V.Add(columns[i], new Value(row[i]));
+                        V.AddProperty(columns[i], new Value(row[i]));
                     }
-                    L.Add(new Value(V) { type = type });
+                    L.Add(V);
                 }
 
                 TypeInfo typeinfo = new TypeInfo { userType = $"{cname}[]" };
@@ -705,12 +705,12 @@ namespace sqlcon
 
                     if (dt.Columns.Count != 2)
                     {
-                        ObjectValue V = new ObjectValue();
+                        var V = Value.NewPropertyObject(type);
                         for (int i = 0; i < columns.Length; i++)
                         {
-                            V.Add(columns[i], new Value(row[i]));
+                            V.AddProperty(columns[i], new Value(row[i]));
                         }
-                        L.Add(new KeyValuePair<object, object>(key, new Value(V) { type = type }));
+                        L.Add(new KeyValuePair<object, object>(key, V));
                     }
                     else
                     {
