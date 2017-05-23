@@ -46,6 +46,14 @@ namespace Sys.CodeBuilder
             this.type = type;
         }
 
+        public Type GetElementType()
+        {
+            if (isArray)
+                return type;
+            else
+                return type?.GetElementType();
+        }
+
         private string typeText()
         {
             if (userType != null)

@@ -7,7 +7,7 @@ using Tie;
 
 namespace Sys.CodeBuilder
 {
-    public enum ValueOutputFormat
+    enum ValueOutputFormat
     {
         SingleLine,
         MultipleLine,
@@ -18,7 +18,7 @@ namespace Sys.CodeBuilder
     {
         private object value;
         public TypeInfo type { get; set; } = TypeInfo.Anonymous;
-        public ValueOutputFormat format { get; set; } = ValueOutputFormat.MultipleLine;
+        private ValueOutputFormat format { get; set; } = ValueOutputFormat.MultipleLine;
 
         public Value(object value)
         {
@@ -50,8 +50,12 @@ namespace Sys.CodeBuilder
             }
             else if (value is Array)
             {
+                var A = value as Array;
+                if (type == TypeInfo.Anonymous)
+                    type = new TypeInfo { type = A.GetType() };
+
                 block.Append($"new {type}");
-                WriteArrayValue(block, value as Array, 10);
+                WriteArrayValue(block, A, 10);
             }
             else if (value is ObjectValue)
             {
@@ -69,6 +73,26 @@ namespace Sys.CodeBuilder
 
         private void WriteArrayValue(CodeBlock block, Array A, int columnNumber)
         {
+            Type ty = type.GetElementType();
+
+            if (ty != null && ty.IsPrimitive)
+            {
+                if (A.Length < 30)
+                {
+                    format = ValueOutputFormat.SingleLine;
+                }
+                else if (A.Length < 100)
+                {
+                    format = ValueOutputFormat.Wrap;
+                    columnNumber = 10;
+                }
+                else
+                {
+                    format = ValueOutputFormat.Wrap;
+                    columnNumber = 20;
+                }
+            }
+
             switch (format)
             {
 
@@ -94,8 +118,8 @@ namespace Sys.CodeBuilder
                         if (i % columnNumber == 0)
                             block.AppendLine();
 
-                        //if (i != 0 && i % (columnNumber * 10) == 0)     //add empty line every 10 lines
-                        //    block.AppendLine();
+                        if (i != 0 && i % (columnNumber * 10) == 0)     //add empty line every 10 lines
+                            block.AppendLine();
 
                         Value item = NewValue(A.GetValue(i));
                         item.BuildCode(block);

@@ -677,7 +677,7 @@ namespace sqlcon
                 }
 
                 TypeInfo typeinfo = new TypeInfo { userType = $"{cname}[]" };
-                Field field = new Field(typeinfo, fieldName, new Value(L.ToArray()) { type = typeinfo, format = ValueOutputFormat.MultipleLine })
+                Field field = new Field(typeinfo, fieldName, new Value(L.ToArray()) { type = typeinfo })
                 {
                     modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
                 };
@@ -732,7 +732,7 @@ namespace sqlcon
                     var A = group.ToArray();
                     object val;
                     if (valueType.isArray)
-                        val = new Value(A) { type = valueType, format = ValueOutputFormat.Wrap };
+                        val = new Value(A) { type = valueType };
                     else
                         val = A[0];
 
@@ -741,7 +741,7 @@ namespace sqlcon
 
 
                 TypeInfo typeinfo = new TypeInfo { userType = $"Dictionary<{keyType}, {valueType}>" };
-                Field field = new Field(typeinfo, fieldName, new Value(dict) {type= typeinfo, format = ValueOutputFormat.MultipleLine })
+                Field field = new Field(typeinfo, fieldName, new Value(dict) { type = typeinfo })
                 {
                     modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
                 };
