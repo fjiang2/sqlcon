@@ -14,9 +14,9 @@ using Sys.Data;
 namespace sqlcon
 {
 
-    
 
-    partial class PathManager 
+
+    partial class PathManager
     {
 
         public void Display(TreeNode<IDataPath> pt, Command cmd)
@@ -125,7 +125,7 @@ namespace sqlcon
                 TableName tname = (TableName)node.Item;
                 ++i;
 
-                if (IsMatch(cmd.wildcard, tname.Path))
+                if (IsMatch(cmd.wildcard, tname.Path) || (tname.SchemaName == TableName.dbo && IsMatch(cmd.wildcard, tname.Name)))
                 {
                     if (!tname.IsViewName) count[0]++;
                     if (tname.IsViewName) count[1]++;
@@ -136,7 +136,7 @@ namespace sqlcon
                 }
             }
 
-            
+
             stdio.WriteLine("\t{0} Table(s)", count[0]);
             stdio.WriteLine("\t{0} View(s)", count[1]);
 
@@ -232,7 +232,7 @@ namespace sqlcon
             }
             else
             {
-                stdio.WriteLine(title+ " not found");
+                stdio.WriteLine(title + " not found");
             }
         }
 
@@ -317,7 +317,7 @@ namespace sqlcon
                         sub(++i),
                         string.Format("{0}", columnName),
                         row["DATA_TYPE"],
-                        (string)row["IS_NULLABLE"] =="YES" ? "null" : "not null");
+                        (string)row["IS_NULLABLE"] == "YES" ? "null" : "not null");
 
                     h = PagePause(cmd, ++h);
                 }
@@ -328,7 +328,7 @@ namespace sqlcon
             return true;
         }
 
-      
+
         private static string sub(int i)
         {
             return string.Format("[{0}]", i);
