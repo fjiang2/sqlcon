@@ -151,9 +151,11 @@ namespace sqlcon
 
         public static void TrimWriteLine(string value)
         {
-            int w = Console.WindowWidth;
+            int w = -1;
+            if (!Console.IsOutputRedirected)
+                w = Console.WindowWidth;
 
-            if (value.Length > w)
+            if (w != -1 && value.Length > w)
                 Console.WriteLine(value.Substring(0, w - 1));
             else
                 Console.WriteLine(value);
