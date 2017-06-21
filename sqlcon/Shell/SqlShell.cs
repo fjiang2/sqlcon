@@ -32,10 +32,13 @@ namespace sqlcon
 
             while (true)
             {
-            L1:
+                L1:
                 stdio.Write("{0}> ", mgr);
-            L2:
+                L2:
                 line = stdio.ReadLine();
+
+                if (Console.IsOutputRedirected)
+                    Console.WriteLine(line);
 
                 //ctrl-c captured
                 if (line == null)
