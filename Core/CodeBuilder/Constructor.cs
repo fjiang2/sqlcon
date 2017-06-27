@@ -38,6 +38,7 @@ namespace Sys.CodeBuilder
 
         protected override void BuildBlock(CodeBlock block)
         {
+            base.BuildBlock(block);
 
             block.AppendFormat("{0}({1})", Signature, args);
             if (baseArgs != null)

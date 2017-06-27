@@ -57,6 +57,8 @@ namespace Sys.CodeBuilder
 
         protected override void BuildBlock(CodeBlock block)
         {
+            base.BuildBlock(block);
+
             block.AppendLine(signature);
             block.AddWithBeginEnd(statements);
         }

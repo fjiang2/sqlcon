@@ -43,6 +43,7 @@ namespace Sys.CodeBuilder
 
         protected override void BuildBlock(CodeBlock block)
         {
+            base.BuildBlock(block);
 
             if (userValue != null)
             {

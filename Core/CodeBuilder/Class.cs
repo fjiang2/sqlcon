@@ -140,6 +140,8 @@ namespace Sys.CodeBuilder
 
         protected override void BuildBlock(CodeBlock clss)
         {
+            base.BuildBlock(clss);
+
             clss.AppendFormat("{0} class {1}", new ModifierString(modifier), base.name);
             if (inherits.Length > 0)
                 clss.AppendFormat("\t: {0}", string.Join(", ", inherits.Select(inherit => inherit.ToString())));
