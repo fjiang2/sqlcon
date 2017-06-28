@@ -1,5 +1,12 @@
 ﻿sqlcon release notes
 
+06/27/2017 v1.7.12.0
+	Improvements/Enhancements:
+	1. command dir can match table name without dbo schema, for example, command>dir cust* can match dbo.cust* 
+	Bugs Fixes:
+	1. code builder doesn't generate attributes
+	2. output of sqlcon cannot redirect when table displays.
+
 05/19/2016 v1.7.11.0
 	New Features:
 	1. command>export /c# /ns:xxx /class:name /type:dict|[list] /out:path generate C# class of List<T> or Dictionary<T1,T2> data from last table result
