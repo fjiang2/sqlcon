@@ -422,6 +422,7 @@ namespace sqlcon
                 if (tname != null)
                 {
                     dt = new SqlCmd(tname.Provider, $"SELECT TOP 1 * FROM {tname.FormalName}").FillDataTable();
+                    dt.TableName = tname.Name;
                     ExportDataContractClass(cmd, path, version, dt, ns ?? $"Sys.DataModel.{tname.DatabaseName.Name}", clss ?? tname.ShortName);
                 }
                 else if (dname != null)
@@ -431,6 +432,7 @@ namespace sqlcon
                     foreach (var tn in tnames)
                     {
                         dt = new SqlCmd(tn.Provider, $"SELECT TOP 1 * FROM {tn.FormalName}").FillDataTable();
+                        dt.TableName = tn.Name;
                         ExportDataContractClass(cmd, path, version, dt, ns ?? $"Sys.DataModel.{dname.Name}", tn.ShortName);
                     }
                 }

@@ -70,19 +70,19 @@ namespace sqlcon
             clss = new Class(cname + "Extension") { modifier = Modifier.Public | Modifier.Static };
             builder.AddClass(clss);
 
-            Func<DataColumn, string> COLUMN = column => "_" + column.ColumnName.ToUpper();
+            Func<DataColumn, string> COLUMN = column => $"nameof({cname}.{column.ColumnName})";
 
 
             //Const Field
             Field field;
-            foreach (DataColumn column in dt.Columns)
-            {
-                field = new Field(new TypeInfo { type = typeof(string) }, COLUMN(column), new Value(column.ColumnName))
-                {
-                    modifier = Modifier.Public | Modifier.Const
-                };
-                clss.Add(field);
-            }
+            //foreach (DataColumn column in dt.Columns)
+            //{
+            //    field = new Field(new TypeInfo { type = typeof(string) }, COLUMN(column), new Value(column.ColumnName))
+            //    {
+            //        modifier = Modifier.Public | Modifier.Const
+            //    };
+            //    clss.Add(field);
+            //}
 
             if (dt.TableName != null)
             {
