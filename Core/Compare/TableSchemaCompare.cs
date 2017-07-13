@@ -37,6 +37,7 @@ namespace Sys.Data.Comparison
                 else if (schema2.Columns.Where(c =>
                     c.ColumnName.Equals(column.ColumnName)
                     && (c.CType != column.CType
+                    || c.Length != column.Length
                     || c.Nullable != column.Nullable
                     || c.Precision != column.Precision
                     || c.Scale != column.Scale
