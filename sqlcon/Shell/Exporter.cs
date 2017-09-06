@@ -566,7 +566,7 @@ namespace sqlcon
         public void ExportEnum(Command cmd)
         {
 
-            DataTable dt = ShellHistory.LastTable();
+            DataTable dt = ShellHistory.LastOrCurrentTable(tname);
 
             if (dt == null)
             {
@@ -621,7 +621,7 @@ namespace sqlcon
         /// <param name="cmd"></param>
         public void ExportCSharpData(Command cmd)
         {
-            var dt = ShellHistory.LastTable();
+            var dt = ShellHistory.LastOrCurrentTable(tname);
             if (dt == null)
             {
                 stdio.ErrorFormat("display data table first by sql clause or command [type]");
@@ -640,7 +640,7 @@ namespace sqlcon
             else if (!string.IsNullOrEmpty(dt.TableName))
             {
                 //use table name as class name
-                string name = new string(dt.TableName.Trim().Where(ch => char.IsLetterOrDigit(ch)).ToArray());
+                string name = new string(dt.TableName.Trim().Where(ch => char.IsLetterOrDigit(ch) || ch == '_').ToArray());
                 if (name.Length > 0 && char.IsDigit(name[0]))
                     name = $"_{name}";
 

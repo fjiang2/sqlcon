@@ -1,5 +1,11 @@
 ﻿sqlcon release notes
 
+09/06/2017 v1.7.13.0
+	Improvements/Enhancements:
+	1. command export /c# uses current table name as class name 
+	Bugs Fixes:
+	1. command export /c# doesn't export UniqueIdentifier type column correctly.
+
 06/27/2017 v1.7.12.0
 	Improvements/Enhancements:
 	1. command dir can match table name without dbo schema, for example, command>dir cust* can match dbo.cust* 

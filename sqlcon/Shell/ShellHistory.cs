@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
+using Sys.Data;
 
 namespace sqlcon
 {
-    class ShellHistory
+    static class ShellHistory
     {
         /// <summary>
         /// keep last answer
@@ -22,6 +23,27 @@ namespace sqlcon
         public static void SetLastResult(DataSet ds)
         {
             LastResult = ds;
+        }
+
+        public static DataTable LastOrCurrentTable(TableName tname, int rows = -1)
+        {
+            var dt = LastTable();
+            if (dt != null)
+                return dt;
+
+            if (tname != null)
+            {
+                string sql;
+                if (rows > 0)
+                    sql = $"SELECT TOP {rows} * FROM {tname.FormalName}";
+                else
+                    sql = $"SELECT * FROM {tname.FormalName}";
+
+                dt = new SqlCmd(tname.Provider, sql).FillDataTable();
+                dt.TableName = tname.Name;
+            }
+
+            return dt;
         }
 
         public static DataTable LastTable()

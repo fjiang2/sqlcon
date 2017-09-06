@@ -39,6 +39,10 @@ namespace Sys.CodeBuilder
             {
                 return value.ToString();
             }
+            else if (value is Guid)
+            {
+                return $"new Guid(\"{value}\")";
+            }
 
             return VAL.Boxing(value).ToString();
         }
