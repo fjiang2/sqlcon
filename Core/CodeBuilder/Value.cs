@@ -26,7 +26,7 @@ namespace Sys.CodeBuilder
             this.value = value;
         }
 
-  
+
         public static Value NewPropertyObject(TypeInfo type)
         {
             return new Value(new Dictionary<string, Value>()) { type = type };
@@ -34,6 +34,12 @@ namespace Sys.CodeBuilder
 
         public static string ToPrimitive(object value)
         {
+            //make double value likes integer, e.g. ToPrimitive(25.0) returns "25, ToPrimitive(25.3) returns "25.3"
+            if (value is double)
+            {
+                return value.ToString();
+            }
+
             return VAL.Boxing(value).ToString();
         }
 

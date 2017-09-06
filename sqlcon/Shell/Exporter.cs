@@ -628,8 +628,26 @@ namespace sqlcon
                 return;
             }
 
+            //get namespace
             string ns = cmd.GetValue("ns") ?? "Sys.DataModel.Db";
-            string cname = cmd.GetValue("class") ?? "Table";
+
+            //get class name
+            string cname = "Table";
+            if (cmd.GetValue("class") != null)
+            {
+                cname = cmd.GetValue("class");
+            }
+            else if (!string.IsNullOrEmpty(dt.TableName))
+            {
+                //use table name as class name
+                string name = new string(dt.TableName.Trim().Where(ch => char.IsLetterOrDigit(ch)).ToArray());
+                if (name.Length > 0 && char.IsDigit(name[0]))
+                    name = $"_{name}";
+
+                if (name != string.Empty)
+                    cname = name;
+            }
+
             string dataType = cmd.GetValue("type") ?? "list";
             string dataclass = cmd.GetValue("dataclass") ?? "DbReadOnly";
 
