@@ -43,6 +43,14 @@ namespace Sys.CodeBuilder
             {
                 return $"new Guid(\"{value}\")";
             }
+            else if (value is byte[])
+            {
+                var hex = (value as byte[])
+                    .Select(b => "0x" + b.ToString("X"))
+                    .Aggregate((x1, x2) => $"{x1},{x2}");
+                return "new byte[] {" + hex + "}";
+                //return "new byte[] {0x" + BitConverter.ToString((byte[])value).Replace("-", ",0x") + "}";
+            }
 
             return VAL.Boxing(value).ToString();
         }
