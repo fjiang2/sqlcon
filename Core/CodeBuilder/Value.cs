@@ -46,8 +46,8 @@ namespace Sys.CodeBuilder
             else if (value is byte[])
             {
                 var hex = (value as byte[])
-                    .Select(b => "0x" + b.ToString("X"))
-                    .Aggregate((x1, x2) => $"{x1},{x2}");
+                    .Select(b => $"0x{b:X}")
+                    .Aggregate((b1, b2) => $"{b1},{b2}");
                 return "new byte[] {" + hex + "}";
                 //return "new byte[] {0x" + BitConverter.ToString((byte[])value).Replace("-", ",0x") + "}";
             }
