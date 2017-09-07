@@ -64,18 +64,18 @@ namespace sqlcon.Windows
 
 
         private RichTextBox textBox = new RichTextBox
-            {
-                FontFamily = new FontFamily("Consolas"),
-                FontSize = 12,
-                HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
-                VerticalScrollBarVisibility = ScrollBarVisibility.Auto
-            };
+        {
+            FontFamily = new FontFamily("Consolas"),
+            FontSize = 12,
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+        };
 
         #region InitializeComponent
 
         private TabControl tabControl = new TabControl();
         private TextBlock lblMessage = new TextBlock { Width = 300 };
-        private TextBlock lblCursorPosition = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Left};
+        private TextBlock lblCursorPosition = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Left };
         private TextBlock lblRowCount = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Right };
 
         private static RoutedUICommand ExecuteCommand = new RoutedUICommand("Execute", "execute", typeof(SqlEditor), new InputGestureCollection { new KeyGesture(Key.F5, ModifierKeys.None, "F5") });
@@ -92,6 +92,7 @@ namespace sqlcon.Windows
 
             DockPanel dockPanel = new DockPanel();
             this.Content = dockPanel;
+
 
             //Tool bar
             ToolBarTray tray = new ToolBarTray();
@@ -115,13 +116,40 @@ namespace sqlcon.Windows
             dockPanel.Children.Add(statusBar);
 
 
-            #region editor and results
+            #region tree, editor and results
             Grid grid = new Grid();
-            grid.RowDefinitions.Add(new RowDefinition());
-            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(5) });
-            grid.RowDefinitions.Add(new RowDefinition());
-
             dockPanel.Children.Add(grid);
+
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(5) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+
+            Grid grid1 = new Grid();
+            GridSplitter vSplitter = new GridSplitter { Width = 5, VerticalAlignment = VerticalAlignment.Stretch };
+            Grid grid2 = new Grid();
+
+            grid1.SetValue(Grid.ColumnProperty, 0);
+            vSplitter.SetValue(Grid.ColumnProperty, 1);
+            grid2.SetValue(Grid.ColumnProperty, 2);
+            grid.Children.Add(grid1);
+            grid.Children.Add(vSplitter);
+            grid.Children.Add(grid2);
+
+            //Database Tree
+            TreeView treeView = new TreeView
+            {
+                //Width = 160,
+                Foreground = Brushes.White,
+                //Background = Brushes.Black
+            };
+            grid1.Children.Add(treeView);
+
+            createTree(cfg, treeView);
+
+            grid2.RowDefinitions.Add(new RowDefinition());
+            grid2.RowDefinitions.Add(new RowDefinition { Height = new GridLength(5) });
+            grid2.RowDefinitions.Add(new RowDefinition());
+
             textBox.Foreground = cfg.GetSolidBrush("gui.sql.editor.Foreground", Colors.Black);
             textBox.Background = cfg.GetSolidBrush("gui.sql.editor.Background", Colors.White);
 
@@ -130,16 +158,16 @@ namespace sqlcon.Windows
             style.Setters.Add(new Setter { Property = Block.MarginProperty, Value = new Thickness(0) });
             textBox.Resources.Add(typeof(Paragraph), style);
 
-            GridSplitter splitter = new GridSplitter { Height = 5, HorizontalAlignment = HorizontalAlignment.Stretch };
+            GridSplitter hSplitter = new GridSplitter { Height = 5, HorizontalAlignment = HorizontalAlignment.Stretch };
             tabControl.Foreground = cfg.GetSolidBrush("gui.sql.editor.Foreground", Colors.Black);
             tabControl.Background = cfg.GetSolidBrush("gui.sql.editor.Background", Colors.White);
 
             textBox.SetValue(Grid.RowProperty, 0);
-            splitter.SetValue(Grid.RowProperty, 1);
+            hSplitter.SetValue(Grid.RowProperty, 1);
             tabControl.SetValue(Grid.RowProperty, 2);
-            grid.Children.Add(textBox);
-            grid.Children.Add(splitter);
-            grid.Children.Add(tabControl);
+            grid2.Children.Add(textBox);
+            grid2.Children.Add(hSplitter);
+            grid2.Children.Add(tabControl);
 
             #endregion
 
@@ -162,6 +190,41 @@ namespace sqlcon.Windows
             }
         }
 
+        private static void createTree(Configuration cfg, TreeView treeView)
+        {
+            foreach (var pvd in cfg.Providers)
+            {
+                ServerName sname = pvd.ServerName;
+                TreeViewItem item1 = new TreeViewItem { Header = $"{sname.Path} ({sname.Provider.DataSource})" };
+                treeView.Items.Add(item1);
+
+                item1.Expanded += (sender1, e1) =>
+                {
+                    if (item1.Items.Count > 0)
+                        return;
+
+                    foreach (DatabaseName dname in sname.GetDatabaseNames())
+                    {
+                        var item2 = new TreeViewItem { Header = dname.Path };
+                        item1.Items.Add(item2);
+
+                        item2.Expanded += (sender2, e2) =>
+                          {
+                              if (item2.Items.Count > 0)
+                                  return;
+
+                              foreach (TableName tname in dname.GetTableNames())
+                              {
+                                  var item3 = new TreeViewItem { Header = tname.Path };
+                                  item2.Items.Add(item3);
+                              }
+                          };
+                    }
+                };
+
+            }
+        }
+
         private static Button NewImageButton(ICommand command, string text, string toolTip, string image)
         {
             //make sure: build action on image to Resource
@@ -178,7 +241,7 @@ namespace sqlcon.Windows
                 ToolTip = toolTip
             };
         }
-        
+
         #endregion
 
 
@@ -447,7 +510,7 @@ namespace sqlcon.Windows
 
             return;
         }
-        
+
         #endregion
     }
 }
