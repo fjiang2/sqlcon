@@ -331,6 +331,16 @@ namespace sqlcon
                     commandee.edit(cmd, theSide);
                     return true;
 
+                case "last":
+                    {
+                        DataTable dt = ShellHistory.LastTable();
+                        if (dt != null)
+                            dt.ToConsole();
+                        else
+                            stdio.WriteLine("last result not found");
+                    }
+                    return true;
+
                 default:
                     break;
             }
@@ -594,6 +604,7 @@ namespace sqlcon
             stdio.WriteLine("save /?                 : see more info");
             stdio.WriteLine("execute /?              : see more info");
             stdio.WriteLine("edit /?                 : see more info");
+            stdio.WriteLine("last                    : display last result");
             stdio.WriteLine();
             stdio.WriteLine("<Commands>");
             stdio.WriteLine("<find> pattern          : find table name or column name");

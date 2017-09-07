@@ -260,7 +260,7 @@ namespace sqlcon
             char[] buf = new char[200];
             while (k < line.Length)
             {
-                if (line[k] == ' ' || line[k] == '.' || line[k] == '~' || line[k] == '\\' || line[k] == '"')
+                if (line[k] == ' ' || line[k] == '.' || line[k] == '~' || line[k] == '\\' || line[k] == '/' || line[k] == '"')
                 {
                     break;
                 }

@@ -83,14 +83,6 @@ namespace sqlcon
                 return;
             }
 
-            if (cmd.ToCSharp)
-            {
-                string clss = cmd.GetValue("class");
-
-                stdio.WriteLine(ToCSharp(table, clss));
-                return;
-            }
-
             if (cmd.Has("edit"))
             {
                 var editor = new Windows.TableEditor(cmd.Configuration, udt);
@@ -123,38 +115,24 @@ namespace sqlcon
                 VAL V = new VAL();
                 for (int i = 0; i < columns.Length; i++)
                 {
-                    V.AddMember(columns[i], row[i]);
+                    object obj;
+                    switch (row[i])
+                    {
+                        case Guid x:
+                            obj = "{" + row[i].ToString() + "}";
+                            break;
+
+                        default:
+                            obj = row[i];
+                            break;
+                    }
+
+                    V.AddMember(columns[i], obj);
                 }
                 L.Add(V);
             }
 
             return L.ToJson();
-        }
-
-        private static string ToCSharp(DataTable dt, string clss)
-        {
-            clss = clss ?? string.Empty;
-            //array
-            if (dt.Columns.Count == 1)
-            {
-                var L1 = dt.ToArray(row => VAL.Boxing(row[0]).ToString());
-                return "{" + string.Join(",", L1) + "}";
-            }
-
-            string[] columns = dt.Columns.Cast<DataColumn>().Select(col => col.ColumnName).ToArray();
-            List<string> L = new List<string>();
-            foreach (DataRow row in dt.Rows)
-            {
-                List<string> V = new List<string>();
-                for (int i = 0; i < columns.Length; i++)
-                {
-                    V.Add(string.Format("{0}={1}", columns[i], VAL.Boxing(row[i]).ToString()));
-                }
-
-                L.Add($"new {clss}" + "{" + string.Join(", ", V) + "}");
-            }
-
-            return $"new {clss}[]" + "{\n" + string.Join(",\n", L) + "\n}";
         }
 
         private bool Display(Command cmd, SqlBuilder builder, TableName tname, int top)

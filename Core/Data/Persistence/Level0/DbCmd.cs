@@ -163,6 +163,11 @@ namespace Sys.Data
             return ds;
         }
 
+        public EnumerableRowCollection<DataRow> AsEnumerable()
+        {
+            return FillDataTable()?.AsEnumerable();
+        }
+
         public DataTable FillDataTable()
         {
             DataSet ds = FillDataSet();
@@ -176,7 +181,7 @@ namespace Sys.Data
         }
 
 
-        public IEnumerable<T> FillDataColumn<T>(int column)
+        public IEnumerable<T> FillDataColumn<T>(int column = 0)
         {
             Contract.Requires(column >= 0);
 
@@ -214,12 +219,7 @@ namespace Sys.Data
             return list;
         }
 
-        public DataRow FillDataRow()
-        {
-            return FillDataRow(0);
-        }
-
-        public DataRow FillDataRow(int row)
+        public DataRow FillDataRow(int row = 0)
         {
             Contract.Requires(row >= 0);
 

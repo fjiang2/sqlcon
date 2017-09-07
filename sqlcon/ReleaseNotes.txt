@@ -3,6 +3,8 @@
 09/06/2017 v1.7.13.0
 	Improvements/Enhancements:
 	1. command export /c# uses current table name as class name 
+	2. remove /c# option on the command> type, use export /c# instead.
+	3. add new command> last to display last query result.
 	Bugs Fixes:
 	1. command export /c# doesn't export UniqueIdentifier type column correctly.
 
