@@ -79,6 +79,7 @@ namespace sqlcon.Windows
         private TextBlock lblRowCount = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Right };
 
         private static RoutedUICommand ExecuteCommand = new RoutedUICommand("Execute", "execute", typeof(SqlEditor), new InputGestureCollection { new KeyGesture(Key.F5, ModifierKeys.None, "F5") });
+        private ComboBox comboPath;
 
         private void InitializeComponent(Configuration cfg)
         {
@@ -89,6 +90,7 @@ namespace sqlcon.Windows
             Button btnOpen = NewImageButton(ApplicationCommands.Open, "Open", "Open(Ctrl-O)", "Open_16x16.png");
             Button btnSave = NewImageButton(ApplicationCommands.Save, "Save", "Save(Ctrl-S)", "Save_16x16.png");
             Button btnExecute = NewImageButton(ExecuteCommand, "Execute", "Execute(F5)", "Next_16x16.png");
+            this.comboPath = new ComboBox { Width = 300, HorizontalAlignment = HorizontalAlignment.Right };
 
             DockPanel dockPanel = new DockPanel();
             this.Content = dockPanel;
@@ -106,6 +108,8 @@ namespace sqlcon.Windows
             toolBar.Items.Add(btnSave);
             tray.ToolBars.Add(toolBar = new ToolBar());
             toolBar.Items.Add(btnExecute);
+            tray.ToolBars.Add(toolBar = new ToolBar());
+            toolBar.Items.Add(comboPath);
 
             //status bar
             StatusBar statusBar = new StatusBar { Height = 20 };
@@ -136,7 +140,7 @@ namespace sqlcon.Windows
             grid.Children.Add(grid2);
 
             //Database Tree
-            TreeView treeView = new TreeView
+            DbTreeUI treeView = new DbTreeUI
             {
                 //Width = 160,
                 Foreground = Brushes.White,
@@ -144,7 +148,8 @@ namespace sqlcon.Windows
             };
             grid1.Children.Add(treeView);
 
-            createTree(cfg, treeView);
+            treeView.CreateTree(cfg);
+            treeView.PathChanged += TreeView_PathChanged;
 
             grid2.RowDefinitions.Add(new RowDefinition());
             grid2.RowDefinitions.Add(new RowDefinition { Height = new GridLength(5) });
@@ -190,39 +195,17 @@ namespace sqlcon.Windows
             }
         }
 
-        private static void createTree(Configuration cfg, TreeView treeView)
+        private void TreeView_PathChanged(object sender, Sys.EventArgs<string> e)
         {
-            foreach (var pvd in cfg.Providers)
+            string path = e.Value;
+            var found = comboPath.Items.OfType<string>().FirstOrDefault(x => x == path);
+            if (found == null)
             {
-                ServerName sname = pvd.ServerName;
-                TreeViewItem item1 = new TreeViewItem { Header = $"{sname.Path} ({sname.Provider.DataSource})" };
-                treeView.Items.Add(item1);
-
-                item1.Expanded += (sender1, e1) =>
-                {
-                    if (item1.Items.Count > 0)
-                        return;
-
-                    foreach (DatabaseName dname in sname.GetDatabaseNames())
-                    {
-                        var item2 = new TreeViewItem { Header = dname.Path };
-                        item1.Items.Add(item2);
-
-                        item2.Expanded += (sender2, e2) =>
-                          {
-                              if (item2.Items.Count > 0)
-                                  return;
-
-                              foreach (TableName tname in dname.GetTableNames())
-                              {
-                                  var item3 = new TreeViewItem { Header = tname.Path };
-                                  item2.Items.Add(item3);
-                              }
-                          };
-                    }
-                };
-
+                comboPath.Items.Add(path);
+                found = path;
             }
+
+            comboPath.SelectedValue = found;
         }
 
         private static Button NewImageButton(ICommand command, string text, string toolTip, string image)

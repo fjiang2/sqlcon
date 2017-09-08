@@ -68,6 +68,8 @@ namespace Sys.Data
                 dbType = SqlDbType.TinyInt;
             else if (value is DateTime)
                 dbType = SqlDbType.DateTime;
+            else if (value is DateTimeOffset)
+                dbType = SqlDbType.DateTimeOffset;
             else if (value is Double)
                 dbType = SqlDbType.Float;
             else if (value is Single)
