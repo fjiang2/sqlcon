@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Data;
@@ -55,13 +56,17 @@ namespace Sys.Data
 
         public override bool CheckConnection()
         {
-            return !InvalidSqlClause("EXEC sp_databases");
+            bool x = InvalidSqlClause("EXEC sp_databases");
+            return !x;
         }
-
 
         private bool InvalidSqlClause(string sql)
         {
-            SqlConnection conn = new SqlConnection(ConnectionString);
+            string connString = ConnectionString;
+            if (connString.ToLower().IndexOf("timeout") == -1)
+                connString += ";Connection Timeout = 3";
+
+            SqlConnection conn = new SqlConnection(connString);
             try
             {
                 conn.Open();
