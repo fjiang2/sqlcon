@@ -15,7 +15,6 @@ using System.IO;
 using System.Data;
 using System.Data.SqlClient;
 using Sys.Data;
-using Sys.Data.IO;
 using System.ComponentModel;
 using Sys;
 
@@ -82,27 +81,27 @@ namespace sqlcon.Windows
                 DbTreeNodeUI item = new DbTreeNodeUI($"{sname.Path} ({sname.Provider.DataSource})", "EditDataSource_16x16.png") { Path = sname };
                 treeView.Items.Add(item);
                 item.Expanded += serverName_Expanded;
-                item.MouseDoubleClick += treeViewItem_MouseDoubleClick;
+                item.Selected += node_Selected;
             }
 
             return;
         }
 
-        private void treeViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void node_Selected(object sender, RoutedEventArgs e)
         {
             if (sender is DbTreeNodeUI node)
             {
                 chdir(node.Path);
             }
-        }
 
+            e.Handled = true;
+        }
 
 
         private void serverName_Expanded(object sender, RoutedEventArgs e)
         {
             DbTreeNodeUI theItem = (DbTreeNodeUI)sender;
             ServerName sname = theItem.Path as ServerName;
-            chdir(sname);
 
             if (theItem.Items.Count > 0)
                 return;
@@ -112,6 +111,7 @@ namespace sqlcon.Windows
                 DbTreeNodeUI item = new DbTreeNodeUI(dname.Path, "Database_16x16.png") { Path = dname };
                 theItem.Items.Add(item);
                 item.Expanded += databaseName_Expanded;
+                item.Selected += node_Selected;
             }
         }
 
@@ -119,7 +119,6 @@ namespace sqlcon.Windows
         {
             DbTreeNodeUI theItem = (DbTreeNodeUI)sender;
             DatabaseName dname = theItem.Path as DatabaseName;
-            chdir(dname);
 
             if (theItem.Items.Count > 0)
                 return;
@@ -129,6 +128,7 @@ namespace sqlcon.Windows
                 DbTreeNodeUI item = new DbTreeNodeUI(tname.Path, "ContentArrangeInRows_16x16.png") { Path = tname };
                 theItem.Items.Add(item);
                 item.Expanded += tableName_Expanded;
+                item.Selected += node_Selected;
             }
         }
 
@@ -136,7 +136,6 @@ namespace sqlcon.Windows
         {
             DbTreeNodeUI theItem = (DbTreeNodeUI)sender;
             TableName tname = theItem.Path as TableName;
-            chdir(tname);
 
             if (theItem.Items.Count > 0)
                 return;
