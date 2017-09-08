@@ -23,9 +23,7 @@ namespace sqlcon.Windows
 {
     class DbTreeUI : TreeView
     {
-        PathManager mgr;
-        string path;
-
+        private PathManager mgr;
         public event EventHandler<EventArgs<string>> PathChanged;
 
         public DbTreeUI()
@@ -38,25 +36,32 @@ namespace sqlcon.Windows
             createTree(cfg, this);
         }
 
-        private void createTree(Configuration cfg, TreeView treeView)
+        private void chdir(IDataPath node)
         {
-            foreach (var pvd in cfg.Providers)
+            switch (node)
             {
-                ServerName sname = pvd.ServerName;
-                TreeViewItem item = new TreeViewItem { Header = $"{sname.Path} ({sname.Provider.DataSource})" };
-                treeView.Items.Add(item);
-                item.Tag = sname;
-                item.Expanded += serverName_Expanded;
-                //item.MouseDoubleClick += serverName_MouseDoubleClick;
+                case ServerName sname:
+                    {
+                        chdir($@"\{sname.Path}");
+                    }
+                    break;
+
+                case DatabaseName dname:
+                    {
+                        ServerName sname = dname.ServerName;
+                        chdir($@"\{sname.Path}\{dname.Path}");
+                    }
+                    break;
+
+                case TableName tname:
+                    {
+                        DatabaseName dname = tname.DatabaseName;
+                        ServerName sname = dname.ServerName;
+                        chdir($@"\{sname.Path}\{dname.Path}\{tname.ShortName}");
+                    }
+                    break;
             }
-
-            return;
         }
-
-        //private void serverName_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        //{
-        //    string path = string.Format("\\{0}\\{1}\\", serverName.Path, databaseName.Path);
-        //}
 
         private void chdir(string path)
         {
@@ -69,52 +74,69 @@ namespace sqlcon.Windows
             }
         }
 
+        private void createTree(Configuration cfg, TreeView treeView)
+        {
+            foreach (var pvd in cfg.Providers)
+            {
+                ServerName sname = pvd.ServerName;
+                DbTreeNodeUI item = new DbTreeNodeUI($"{sname.Path} ({sname.Provider.DataSource})", "EditDataSource_16x16.png") { Path = sname };
+                treeView.Items.Add(item);
+                item.Expanded += serverName_Expanded;
+                item.MouseDoubleClick += treeViewItem_MouseDoubleClick;
+            }
+
+            return;
+        }
+
+        private void treeViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is DbTreeNodeUI node)
+            {
+                chdir(node.Path);
+            }
+        }
+
+
+
         private void serverName_Expanded(object sender, RoutedEventArgs e)
         {
-            TreeViewItem theItem = (TreeViewItem)sender;
-            ServerName sname = theItem.Tag as ServerName;
-            chdir($@"\{sname.Path}");
+            DbTreeNodeUI theItem = (DbTreeNodeUI)sender;
+            ServerName sname = theItem.Path as ServerName;
+            chdir(sname);
 
             if (theItem.Items.Count > 0)
                 return;
 
             foreach (DatabaseName dname in sname.GetDatabaseNames())
             {
-                var item = new TreeViewItem { Header = dname.Path };
+                DbTreeNodeUI item = new DbTreeNodeUI(dname.Path, "Database_16x16.png") { Path = dname };
                 theItem.Items.Add(item);
-                item.Tag = dname;
                 item.Expanded += databaseName_Expanded;
             }
         }
 
         private void databaseName_Expanded(object sender, RoutedEventArgs e)
         {
-            TreeViewItem theItem = (TreeViewItem)sender;
-            DatabaseName dname = theItem.Tag as DatabaseName;
-            ServerName sname = dname.ServerName;
-
-            chdir($@"\{sname.Path}\{dname.Path}");
+            DbTreeNodeUI theItem = (DbTreeNodeUI)sender;
+            DatabaseName dname = theItem.Path as DatabaseName;
+            chdir(dname);
 
             if (theItem.Items.Count > 0)
                 return;
 
             foreach (TableName tname in dname.GetTableNames())
             {
-                var item = new TreeViewItem { Header = tname.Path };
+                DbTreeNodeUI item = new DbTreeNodeUI(tname.Path, "ContentArrangeInRows_16x16.png") { Path = tname };
                 theItem.Items.Add(item);
-                item.Tag = tname;
                 item.Expanded += tableName_Expanded;
             }
         }
 
         private void tableName_Expanded(object sender, RoutedEventArgs e)
         {
-            TreeViewItem theItem = (TreeViewItem)sender;
-            TableName tname = theItem.Tag as TableName;
-            DatabaseName dname = tname.DatabaseName;
-            ServerName sname = dname.ServerName;
-
-            chdir($@"\{sname.Path}\{dname.Path}\{tname.ShortName}");
+            DbTreeNodeUI theItem = (DbTreeNodeUI)sender;
+            TableName tname = theItem.Path as TableName;
+            chdir(tname);
 
             if (theItem.Items.Count > 0)
                 return;
@@ -122,10 +144,53 @@ namespace sqlcon.Windows
             TableSchema schema = new TableSchema(tname);
             foreach (ColumnSchema column in schema.Columns)
             {
-                var item = new TreeViewItem { Header = ColumnSchema.GetSQLField(column) };
+                string image = "AlignHorizontalTop_16x16.png";
+                if (column.IsPrimary || column.IsForeignKey)
+                    image = "key.png";
+
+                DbTreeNodeUI item = new DbTreeNodeUI(GetSQLField(column), image) { Path = tname };
                 theItem.Items.Add(item);
-                item.Tag = column;
             }
         }
+
+        private static string GetSQLField(ColumnSchema column)
+        {
+            string ty = ColumnSchema.GetSQLType(column);
+            List<string> list = new List<string>();
+            if (column.IsPrimary)
+                list.Add("PK");
+
+            if (column.IsForeignKey)
+                list.Add("FK");
+
+            if (column.IsIdentity)
+                list.Add("++");
+
+            list.Add(ty);
+            list.Add(column.Nullable ? "null" : "not null");
+
+            if (column.IsComputed)
+            {
+                list.Add($"={column.Definition}");
+            }
+
+            string line = string.Join(", ", list);
+            return $"{column.ColumnName} ({line})";
+        }
+
+    }
+
+    class DbTreeNodeUI : TreeViewItem
+    {
+        public IDataPath Path { get; set; }
+        public string Text { get; }
+
+        public DbTreeNodeUI(string text, string imageName)
+        {
+            this.Text = text;
+            var label = WpfUtils.NewImageLabel(text, imageName);
+            this.Header = label;
+        }
+
     }
 }

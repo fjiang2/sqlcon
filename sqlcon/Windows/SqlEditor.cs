@@ -86,10 +86,10 @@ namespace sqlcon.Windows
             this.Width = 1024;
             this.Height = 768;
 
-            Button btnNew = NewImageButton(ApplicationCommands.New, "New", "New(Ctrl-N)", "New_16x16.png");
-            Button btnOpen = NewImageButton(ApplicationCommands.Open, "Open", "Open(Ctrl-O)", "Open_16x16.png");
-            Button btnSave = NewImageButton(ApplicationCommands.Save, "Save", "Save(Ctrl-S)", "Save_16x16.png");
-            Button btnExecute = NewImageButton(ExecuteCommand, "Execute", "Execute(F5)", "Next_16x16.png");
+            Button btnNew = WpfUtils.NewImageButton(ApplicationCommands.New, "New", "New(Ctrl-N)", "New_16x16.png");
+            Button btnOpen = WpfUtils.NewImageButton(ApplicationCommands.Open, "Open", "Open(Ctrl-O)", "Open_16x16.png");
+            Button btnSave = WpfUtils.NewImageButton(ApplicationCommands.Save, "Save", "Save(Ctrl-S)", "Save_16x16.png");
+            Button btnExecute = WpfUtils.NewImageButton(ExecuteCommand, "Execute", "Execute(F5)", "Next_16x16.png");
             this.comboPath = new ComboBox { Width = 300, HorizontalAlignment = HorizontalAlignment.Right };
 
             DockPanel dockPanel = new DockPanel();
@@ -208,23 +208,7 @@ namespace sqlcon.Windows
             comboPath.SelectedValue = found;
         }
 
-        private static Button NewImageButton(ICommand command, string text, string toolTip, string image)
-        {
-            //make sure: build action on image to Resource
-            string pack = "pack://application:,,,/sqlcon;component/Windows/images";
-            StackPanel stackPanel = new StackPanel { Orientation = Orientation.Horizontal };
-            stackPanel.Children.Add(new Image { Source = new BitmapImage(new Uri($"{pack}/{image}", UriKind.Absolute)) });
-            stackPanel.Children.Add(new TextBlock { Text = text });
-
-            return new Button
-            {
-                Command = command,
-                Content = stackPanel,
-                Margin = new Thickness(5),
-                ToolTip = toolTip
-            };
-        }
-
+    
         #endregion
 
 

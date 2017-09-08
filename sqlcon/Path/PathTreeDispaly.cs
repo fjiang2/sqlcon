@@ -254,7 +254,7 @@ namespace sqlcon
                     List<string> L = new List<string>();
                     if (column.IsIdentity) L.Add("++");
                     if (column.IsPrimary) L.Add("pk");
-                    if ((column as ColumnSchema).FkContraintName != null) L.Add("fk");
+                    if ((column as ColumnSchema).IsForeignKey) L.Add("fk");
                     string keys = string.Join(",", L);
 
                     stdio.WriteLine("{0,5} {1,26} {2,-16} {3,10} {4,10}",

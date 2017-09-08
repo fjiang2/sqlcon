@@ -22,7 +22,7 @@ using System.Data;
 
 namespace Sys.Data
 {
-    
+
 
 
     class ForeignKeys : IForeignKeys
@@ -36,7 +36,7 @@ namespace Sys.Data
 
         public ForeignKeys(TableName tableName, ColumnCollection columns)
         {
-            var fkeys = columns.Where(column => (column as ColumnSchema).FkContraintName != null).ToArray();
+            var fkeys = columns.Where(column => (column as ColumnSchema).IsForeignKey).ToArray();
             this.keys = new ForeignKey[fkeys.Length];
 
             int i = 0;
@@ -56,7 +56,7 @@ namespace Sys.Data
 
         public override string ToString()
         {
-            return string.Join <IForeignKey>(" + ", keys);
+            return string.Join<IForeignKey>(" + ", keys);
         }
 
     }
@@ -79,7 +79,7 @@ namespace Sys.Data
 
 
         public ForeignKey()
-        { 
+        {
         }
 
         public ForeignKey(TableName tableName, IColumn column)
@@ -97,8 +97,8 @@ namespace Sys.Data
         }
 
 
-      
-    
+
+
         internal static string GetAttribute(IForeignKey key, Type pkTableType)
         {
             return GetAttribute(key, pkTableType.FullName);

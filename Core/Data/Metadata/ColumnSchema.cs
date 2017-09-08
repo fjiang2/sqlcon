@@ -165,7 +165,7 @@ namespace Sys.Data
         }
 
 
-
+        public bool IsForeignKey => FkContraintName != null;
 
 
         public IForeignKey ForeignKey
@@ -321,7 +321,7 @@ namespace Sys.Data
             return ty.GetCSharpType(nullable);
         }
 
-     
+
         public static string GetSQLField(IColumn column)
         {
             string ty = GetSQLType(column);
