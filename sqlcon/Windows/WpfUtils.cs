@@ -33,11 +33,16 @@ namespace sqlcon.Windows
             };
         }
 
-        public static Image NewImage(string image)
+        public static BitmapImage NewBitmapImage(string image)
         {
             //make sure: build action on image to Resource
             string pack = "pack://application:,,,/sqlcon;component/Windows/images";
-            return new Image { Source = new BitmapImage(new Uri($"{pack}/{image}", UriKind.Absolute)) };
+            return new BitmapImage(new Uri($"{pack}/{image}", UriKind.Absolute));
+        }
+
+        public static Image NewImage(string image)
+        {
+            return new Image { Source = NewBitmapImage(image) };
         }
 
         public static StackPanel NewImageLabel(string text, string image)
@@ -48,6 +53,6 @@ namespace sqlcon.Windows
 
             return stackPanel;
         }
-        
+
     }
 }

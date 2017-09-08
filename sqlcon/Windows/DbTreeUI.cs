@@ -78,7 +78,7 @@ namespace sqlcon.Windows
             foreach (var pvd in cfg.Providers)
             {
                 ServerName sname = pvd.ServerName;
-                DbTreeNodeUI item = new DbTreeNodeUI($"{sname.Path} ({sname.Provider.DataSource})", "EditDataSource_16x16.png") { Path = sname };
+                DbTreeNodeUI item = new DbTreeNodeUI($"{sname.Path} ({sname.Provider.DataSource})", "server.png") { Path = sname };
                 treeView.Items.Add(item);
                 item.Expanded += serverName_Expanded;
                 item.Selected += node_Selected;
@@ -106,9 +106,15 @@ namespace sqlcon.Windows
             if (theItem.Items.Count > 0)
                 return;
 
+            if (sname.Disconnected)
+            {
+                theItem.ChangeImage("server_error.png");
+                return;
+            }
+
             foreach (DatabaseName dname in sname.GetDatabaseNames())
             {
-                DbTreeNodeUI item = new DbTreeNodeUI(dname.Path, "Database_16x16.png") { Path = dname };
+                DbTreeNodeUI item = new DbTreeNodeUI(dname.Path, "database.png") { Path = dname };
                 theItem.Items.Add(item);
                 item.Expanded += databaseName_Expanded;
                 item.Selected += node_Selected;
@@ -189,6 +195,13 @@ namespace sqlcon.Windows
             this.Text = text;
             var label = WpfUtils.NewImageLabel(text, imageName);
             this.Header = label;
+        }
+
+        public void ChangeImage(string imageName)
+        {
+            StackPanel panel = (StackPanel)this.Header;
+            Image image = panel.Children[0] as Image;
+            image.Source = WpfUtils.NewBitmapImage(imageName);
         }
 
     }
