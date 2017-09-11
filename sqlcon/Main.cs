@@ -174,14 +174,18 @@ namespace sqlcon
         {
             stdio.WriteLine("SQL Server Command Console");
             stdio.WriteLine("Usage: sqlcon");
-            stdio.WriteLine("     [/cfg configuration file(.cfg)]");
-            stdio.WriteLine("     [/f sql script file(.sql)]");
-            stdio.WriteLine("     [file] sqlcon command batch file (.sqc)");
+            stdio.WriteLine("     [/cfg configuration file name (.cfg)]");
+            stdio.WriteLine("     [/i sql script file name (.sql)]");
+            stdio.WriteLine("     [file] sqlcon command batch file name (.sqc)");
             stdio.WriteLine();
-            stdio.WriteLine("/h,/?      : this help");
-            stdio.WriteLine($"/cfg      : congfiguration file default file:{_USER_CFG}]");
-            stdio.WriteLine("/i         : input sql script file");
-            stdio.WriteLine("/o         : result of comparsion(diff=server1-server2),sql script file");
+            stdio.WriteLine( "/h,/?      : this help");
+            stdio.WriteLine($"/cfg       : congfiguration file default file:{_USER_CFG}]");
+            stdio.WriteLine( "/i         : input sql script file name");
+            stdio.WriteLine( "/o         : result of sql script");
+            stdio.WriteLine( "examples:");
+            stdio.WriteLine("  sqlcon file1.sqc");
+            stdio.WriteLine("  sqlcon /cfg my.cfg");
+            stdio.WriteLine("  sqlcon /i script1.sql /o c:\\temp\\o.txt");
         }
     }
 }

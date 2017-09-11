@@ -51,6 +51,7 @@ namespace sqlcon
 
             switch (Run(line))
             {
+                case NEXTSTEP.NEXT:
                 case NEXTSTEP.CONTINUE:
                     goto L1;
 
