@@ -23,7 +23,8 @@ namespace sqlcon
         {
             CONTINUE,
             CONTINUE2,
-            RETURN
+            RETURN,
+            NEXT
         };
 
         public SqlShell(Configuration cfg)
@@ -69,16 +70,14 @@ namespace sqlcon
             NEXTSTEP next = NEXTSTEP.CONTINUE;
             foreach (string line in lines)
             {
-                if (next == NEXTSTEP.CONTINUE)
+                if (next == NEXTSTEP.CONTINUE || next == NEXTSTEP.NEXT)
                     stdio.Write("{0}> ", mgr);
                 else if (next == NEXTSTEP.RETURN)
                     return;
 
                 Console.WriteLine(line);
                 next = Run(line);
-
             }
-
         }
 
         private bool multipleLineMode = false;
@@ -144,7 +143,7 @@ namespace sqlcon
                 return NEXTSTEP.CONTINUE2;
             }
 
-            return NEXTSTEP.RETURN;
+            return NEXTSTEP.NEXT;
         }
 
         private bool TrySingleLineCommand(string text)

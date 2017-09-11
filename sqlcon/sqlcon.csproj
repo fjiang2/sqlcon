@@ -32,7 +32,7 @@
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>index.html</WebPage>
     <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>1.7.12.%2a</ApplicationVersion>
+    <ApplicationVersion>1.7.13.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -126,7 +126,7 @@
     <Compile Include="Path\PathTreeTypeFileData.cs" />
     <Compile Include="Shell\CompareAdapter.cs" />
     <Compile Include="Shell\ActionType.cs" />
-    <Compile Include="CompareConsole.cs" />
+    <Compile Include="Main.cs" />
     <Compile Include="Input\Configuration.cs" />
     <Compile Include="Output\ConsoleTable.cs" />
     <Compile Include="Shell\Context.cs" />
@@ -201,6 +201,14 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <FileAssociation Include=".sqc">
+      <Visible>False</Visible>
+      <Description>sqlcon command file</Description>
+      <Progid>{3E5082AA-93C8-419E-A04C-200196AC90C0}</Progid>
+      <DefaultIcon>Tie.ico</DefaultIcon>
+    </FileAssociation>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

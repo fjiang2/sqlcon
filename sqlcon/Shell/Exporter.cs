@@ -782,7 +782,7 @@ namespace sqlcon
                 try
                 {
                     code.WriteIntoFile(file);
-                    stdio.WriteLine("code generated on {0}", file);
+                    stdio.WriteLine("code generated on {0}", Path.GetFullPath(file));
                 }
                 catch (Exception ex)
                 {
