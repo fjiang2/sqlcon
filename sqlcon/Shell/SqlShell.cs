@@ -14,94 +14,137 @@ using Tie;
 
 namespace sqlcon
 {
+
+
+
     class SqlShell : ShellContext
     {
-
-
+        enum NEXTSTEP
+        {
+            CONTINUE,
+            CONTINUE2,
+            RETURN
+        };
 
         public SqlShell(Configuration cfg)
             : base(cfg)
         {
         }
 
-        public void DoCommand()
+        public void DoConsole()
         {
-            StringBuilder builder = new StringBuilder();
+
             string line = null;
-            bool multipleLineMode = false;
 
-            while (true)
+            L1:
+            stdio.Write("{0}> ", mgr);
+            L2:
+            line = stdio.ReadLine();
+
+            if (Console.IsOutputRedirected)
+                Console.WriteLine(line);
+
+            //ctrl-c captured
+            if (line == null)
+                return;
+
+            switch (Run(line))
             {
-                L1:
-                stdio.Write("{0}> ", mgr);
-                L2:
-                line = stdio.ReadLine();
+                case NEXTSTEP.CONTINUE:
+                    goto L1;
 
-                if (Console.IsOutputRedirected)
-                    Console.WriteLine(line);
+                case NEXTSTEP.CONTINUE2:
+                    goto L2;
 
-                //ctrl-c captured
-                if (line == null)
+                case NEXTSTEP.RETURN:
                     return;
 
+            }
+        }
 
-                if (!multipleLineMode)
+        public void DoBatch(string fileName)
+        {
+            string[] lines = File.ReadAllLines(fileName);
+
+            NEXTSTEP next = NEXTSTEP.CONTINUE;
+            foreach (string line in lines)
+            {
+                if (next == NEXTSTEP.CONTINUE)
+                    stdio.Write("{0}> ", mgr);
+                else if (next == NEXTSTEP.RETURN)
+                    return;
+
+                Console.WriteLine(line);
+                next = Run(line);
+
+            }
+
+        }
+
+        private bool multipleLineMode = false;
+        private StringBuilder multipleLineBuilder = new StringBuilder();
+
+        private NEXTSTEP Run(string line)
+        {
+
+            if (!multipleLineMode)
+            {
+
+                if (line == "exit")
+                    return NEXTSTEP.RETURN;
+
+                switch (line)
                 {
+                    case "help":
+                    case "?":
+                        Help();
+                        multipleLineBuilder.Clear();
+                        return NEXTSTEP.CONTINUE;
 
-                    if (line == "exit")
+                    case "cls":
+                        Console.Clear();
+                        return NEXTSTEP.CONTINUE;
+
+                    default:
+                        if (TrySingleLineCommand(line))
+                        {
+                            stdio.WriteLine();
+                            return NEXTSTEP.CONTINUE;
+                        }
                         break;
-
-                    switch (line)
-                    {
-                        case "help":
-                        case "?":
-                            Help();
-                            builder.Clear();
-                            goto L1;
-
-                        case "cls":
-                            Console.Clear();
-                            goto L1;
-
-                        default:
-                            if (TrySingleLineCommand(line))
-                            {
-                                stdio.WriteLine();
-                                goto L1;
-                            }
-                            break;
-                    }
-                }
-
-                if (line != "" && line != ";")
-                    builder.AppendLine(line);
-
-                if (line.EndsWith(";"))
-                {
-                    string text = builder.ToString().Trim();
-                    builder.Clear();
-
-                    if (text.EndsWith(";"))
-                        text = text.Substring(0, text.Length - 1);
-
-                    try
-                    {
-                        DoMultipleLineCommand(text);
-                        multipleLineMode = false;
-                        stdio.WriteLine();
-                    }
-                    catch (Exception ex)
-                    {
-                        stdio.WriteLine(ex.Message);
-                    }
-                }
-                else if (builder.ToString() != "")
-                {
-                    multipleLineMode = true;
-                    stdio.Write("...");
-                    goto L2;
                 }
             }
+
+            if (line != "" && line != ";")
+                multipleLineBuilder.AppendLine(line);
+
+            if (line.EndsWith(";"))
+            {
+                string text = multipleLineBuilder.ToString().Trim();
+                multipleLineBuilder.Clear();
+
+                if (text.EndsWith(";"))
+                    text = text.Substring(0, text.Length - 1);
+
+                try
+                {
+                    DoMultipleLineCommand(text);
+                    multipleLineMode = false;
+                    stdio.WriteLine();
+                }
+                catch (Exception ex)
+                {
+                    stdio.WriteLine(ex.Message);
+                }
+            }
+            else if (multipleLineBuilder.ToString() != "")
+            {
+                multipleLineMode = true;
+                stdio.Write("...");
+                return NEXTSTEP.CONTINUE2;
+            }
+
+            return NEXTSTEP.RETURN;
         }
 
         private bool TrySingleLineCommand(string text)

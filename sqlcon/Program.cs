@@ -148,9 +148,10 @@ namespace sqlcon
             stdio.WriteLine("Usage: sqlcon");
             stdio.WriteLine("     [/cfg configuration file(.cfg)]");
             stdio.WriteLine("     [/f sql script file(.sql)]");
+            stdio.WriteLine("     [file.sc] sqlcon command batch file");
             stdio.WriteLine();
             stdio.WriteLine("/h,/?      : this help");
-            stdio.WriteLine($"/cfg       : congfiguration file default file:{_USER_CFG}]");
+            stdio.WriteLine($"/cfg      : congfiguration file default file:{_USER_CFG}]");
             stdio.WriteLine("/i         : input sql script file");
             stdio.WriteLine("/o         : result of comparsion(diff=server1-server2),sql script file");
         }

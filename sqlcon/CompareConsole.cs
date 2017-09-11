@@ -13,7 +13,7 @@ using Tie;
 
 namespace sqlcon
 {
-    class CompareConsole  
+    class CompareConsole
     {
         Configuration cfg;
 
@@ -22,15 +22,15 @@ namespace sqlcon
             this.cfg = cfg;
         }
 
-   
+
         public void Run(string[] args)
         {
             int i = 0;
 
             while (i < args.Length)
             {
-
-                switch (args[i++])
+                string arg = args[i++];
+                switch (arg)
                 {
                     case "/cfg":
                         i++;
@@ -66,15 +66,47 @@ namespace sqlcon
                         }
 
                     default:
-                        Program.Help();
-                        return;
+                        if (!string.IsNullOrEmpty(arg))
+                            RunBatch(arg);
+                        else
+                            Program.Help();
 
+                        return;
                 }
             }
 
-       
-            new SqlShell(cfg).DoCommand();
 
+            new SqlShell(cfg).DoConsole();
+
+        }
+
+        const string EXT = ".sc";
+
+        private bool RunBatch(string path)
+        {
+            string ext = Path.GetExtension(path);
+
+            //no extension file
+            if (ext == string.Empty)
+            {
+                path = $"{path}{EXT}";
+            }
+            else if (ext != EXT)
+            {
+                stdio.Error($"must be {EXT} file: {path}");
+                return false;
+            }
+
+
+            if (File.Exists(path))
+            {
+                new SqlShell(cfg).DoBatch(path);
+                return true;
+            }
+
+            stdio.Error($"file not found: {path}");
+
+            return false;
         }
     }
 }
