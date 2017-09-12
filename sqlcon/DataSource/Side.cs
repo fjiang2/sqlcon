@@ -86,7 +86,7 @@ namespace sqlcon
             };
 
             script.Execute(stopOnError);
-            stdio.WriteLine("completed to run {0}", scriptFile);
+            stdio.WriteLine("completed {0}", scriptFile);
 
             return !hasError;
         }

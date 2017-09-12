@@ -26,6 +26,7 @@ namespace sqlcon
     {
         private PathManager mgr;
         private TreeNode<IDataPath> pt;
+        public int ERRORLEVEL { get; private set; } = 0;
 
         public Commandee(PathManager mgr)
         {
@@ -1426,7 +1427,12 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 }
             }
             else
-                theSide.ExecuteScript(inputfile);
+            {
+                if (theSide.ExecuteScript(inputfile))
+                    ERRORLEVEL = 0;
+                else
+                    ERRORLEVEL = -1;
+            }
         }
 
         public void edit(Command cmd, Side theSide)

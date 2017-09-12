@@ -24,7 +24,10 @@ namespace sqlcon
             CONTINUE,
             CONTINUE2,
             RETURN,
-            NEXT
+            NEXT,
+
+            INTERRUPT,
+            COMPLETED
         };
 
         public SqlShell(Configuration cfg)
@@ -56,6 +59,7 @@ namespace sqlcon
             {
                 case NEXTSTEP.NEXT:
                 case NEXTSTEP.CONTINUE:
+                case NEXTSTEP.INTERRUPT:
                     goto L1;
 
                 case NEXTSTEP.CONTINUE2:
@@ -80,9 +84,19 @@ namespace sqlcon
                     stdio.Write("{0}> ", mgr);
                 else if (next == NEXTSTEP.RETURN)
                     return;
+                else if (next == NEXTSTEP.INTERRUPT)
+                {
+                    if (!stdio.YesOrNo($"are you sure to continue to {line} (y/n)?"))
+                    {
+                        stdio.ErrorFormat("interupted.");
+                        return;
+                    }
+                }
 
                 stdio.WriteLine(line);
                 next = Run(line);
+
+             
             }
         }
 
@@ -111,10 +125,15 @@ namespace sqlcon
                         return NEXTSTEP.CONTINUE;
 
                     default:
-                        if (TrySingleLineCommand(line))
                         {
-                            stdio.WriteLine();
-                            return NEXTSTEP.CONTINUE;
+                            var _result = TrySingleLineCommand(line);
+                            if (_result == NEXTSTEP.COMPLETED)
+                            {
+                                stdio.WriteLine();
+                                return NEXTSTEP.CONTINUE;
+                            }
+                            else if (_result == NEXTSTEP.INTERRUPT)
+                                return NEXTSTEP.INTERRUPT;
                         }
                         break;
                 }
@@ -152,7 +171,7 @@ namespace sqlcon
             return NEXTSTEP.NEXT;
         }
 
-        private bool TrySingleLineCommand(string text)
+        private NEXTSTEP TrySingleLineCommand(string text)
         {
 
 #if DEBUG
@@ -176,11 +195,11 @@ namespace sqlcon
         }
 
 
-        private bool DoSingleLineCommand(string text)
+        private NEXTSTEP DoSingleLineCommand(string text)
         {
             text = text.Trim();
             if (text == string.Empty)
-                return false;
+                return NEXTSTEP.NEXT;
 
 
             Command cmd = new Command(text, cfg);
@@ -188,21 +207,21 @@ namespace sqlcon
             {
                 case "set":
                     commandee.set(cmd);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "let":
                     commandee.let(cmd);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "md":
                 case "mkdir":
                     commandee.mkdir(cmd);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "rd":
                 case "rmdir":
                     commandee.rmdir(cmd);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
             }
 
 
@@ -211,7 +230,7 @@ namespace sqlcon
                 case "ls":
                 case "dir":
                     commandee.dir(cmd);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "cd":
                 case "chdir":
@@ -219,62 +238,65 @@ namespace sqlcon
                         chdir(cmd);
                     else
                         stdio.WriteLine(mgr.ToString());
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "type":
                     commandee.type(cmd);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "del":
                 case "erase":
                     commandee.del(cmd);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "ren":
                 case "rename":
                     commandee.rename(cmd);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "attrib":
                     commandee.attrib(cmd);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "echo":
                     commandee.echo(cmd);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "rem":
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "ver":
                     stdio.WriteLine("sqlcon [Version {0}]", SysExtension.ApplicationVerison);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "show":
                     if (cmd.arg1 != null)
                         Show(cmd.arg1.ToLower(), cmd.arg2);
                     else
                         stdio.ErrorFormat("invalid argument");
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "find":
                     if (cmd.arg1 != null)
                         theSide.FindName(cmd.arg1);
                     else
                         stdio.ErrorFormat("find object undefined");
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "save":
                     commandee.save(cmd, cfg);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "execute":
                     commandee.execute(cmd, theSide);
-                    return true;
+                    if (commandee.ERRORLEVEL == 0)
+                        return NEXTSTEP.COMPLETED;
+                    else
+                        return NEXTSTEP.INTERRUPT;
 
                 case "open":
                     commandee.open(cmd, cfg);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "compare":
                     {
@@ -290,7 +312,7 @@ namespace sqlcon
 
                             if (both.Invalid)
                             {
-                                return true;
+                                return NEXTSTEP.COMPLETED;
                             }
 
                             var adapter = new CompareAdapter(both.ps1.side, both.ps2.side);
@@ -298,38 +320,38 @@ namespace sqlcon
                             writer.Write(sql);
                         }
                         stdio.WriteLine("completed");
-                        return true;
+                        return NEXTSTEP.COMPLETED;
                     }
 
                 case "copy":
                     commandee.copy(cmd, CompareSideType.copy);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "sync":
                     commandee.copy(cmd, CompareSideType.sync);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "comp":
                     commandee.copy(cmd, CompareSideType.compare);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "xcopy":
                     commandee.xcopy(cmd);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "lcd":
                     if (cmd.arg1 != null)
                         WorkingDirectory.lcd(cmd.arg1);
                     else
                         stdio.WriteLine(WorkingDirectory.CurrentDirectory);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "call":
                     if (cmd.arg1 != null)
                     {
                         new Batch(cfg, cmd.arg1).Call(cmd.arguments);
                     }
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 //example: run func(id=20)
                 case "run":
@@ -346,7 +368,7 @@ namespace sqlcon
                             if (!result.IsList && result.Size != 2)
                             {
                                 stdio.ErrorFormat("invalid format, run query like >run query(id=1)");
-                                return true;
+                                return NEXTSTEP.COMPLETED;
                             }
 
                             try
@@ -363,35 +385,35 @@ namespace sqlcon
                             catch (Exception ex)
                             {
                                 stdio.ErrorFormat("{0}", ex.Message);
-                                return true;
+                                return NEXTSTEP.COMPLETED;
                             }
                         }
                     }
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "export":
                     commandee.export(cmd, cfg, this);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "import":
                     commandee.import(cmd, cfg, this);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "clean":
                     commandee.clean(cmd, cfg);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "mount":
                     commandee.mount(cmd, cfg);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "umount":
                     commandee.umount(cmd, cfg);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "edit":
                     commandee.edit(cmd, theSide);
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 case "last":
                     {
@@ -401,13 +423,13 @@ namespace sqlcon
                         else
                             stdio.WriteLine("last result not found");
                     }
-                    return true;
+                    return NEXTSTEP.COMPLETED;
 
                 default:
                     break;
             }
 
-            return false;
+            return NEXTSTEP.NEXT;
         }
 
 
