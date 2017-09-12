@@ -1396,7 +1396,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             string inputfile;
             if (cmd.arg1 != null)
-                inputfile = cmd.arg1;
+                inputfile = WorkingDirectory.GetFullPath(cmd.arg1, ".sql");
             else
             {
                 stdio.ErrorFormat("input undefined");

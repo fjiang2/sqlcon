@@ -317,6 +317,13 @@ namespace sqlcon
                     commandee.xcopy(cmd);
                     return true;
 
+                case "lcd":
+                    if (cmd.arg1 != null)
+                        WorkingDirectory.lcd(cmd.arg1);
+                    else
+                        stdio.WriteLine(WorkingDirectory.CurrentDirectory);
+                    return true;
+
                 case "call":
                     if (cmd.arg1 != null)
                     {
@@ -645,6 +652,7 @@ namespace sqlcon
             stdio.WriteLine("comp /?                 : see more info");
             stdio.WriteLine("xcopy /?                : see more info");
             stdio.WriteLine("echo /?                 : see more info");
+            stdio.WriteLine("lcd [path]              : change or display current directory");
             stdio.WriteLine("call [drive:][path]file : call one batch program (.sqc)");
             stdio.WriteLine("rem                     : records comments/remarks");
             stdio.WriteLine("ver                     : display version");

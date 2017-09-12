@@ -13,25 +13,17 @@ namespace sqlcon
         private string path;
         private Configuration cfg;
 
+
         public bool IsBatch { get; } = false;
 
         public Batch(Configuration cfg, string path)
         {
             this.cfg = cfg;
-            string ext = Path.GetExtension(path);
-
-            //if no extension file defined
-            if (ext == string.Empty)
-            {
-                this.path = $"{path}{EXT}";
-                this.IsBatch = true;
-            }
-            else
-            {
-                this.path = path;
-                this.IsBatch = ext == EXT;
-            }
+            this.path = WorkingDirectory.GetFullPath(path, EXT);
+            this.IsBatch = EXT == Path.GetExtension(this.path); ;
         }
+
+
 
         public bool Call(string[] args)
         {
