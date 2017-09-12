@@ -6,29 +6,15 @@ using System.Threading.Tasks;
 using Sys.Data;
 using Sys.Data.Comparison;
 using System.Data;
-using System.Data.SqlClient;
-using System.Data.OleDb;
-using System.IO;
 using Sys;
 using Tie;
 
 namespace sqlcon
 {
-
-
+   
 
     class SqlShell : ShellContext
     {
-        enum NEXTSTEP
-        {
-            CONTINUE,
-            CONTINUE2,
-            RETURN,
-            NEXT,
-
-            INTERRUPT,
-            COMPLETED
-        };
 
         public SqlShell(Configuration cfg)
             : base(cfg)
@@ -57,15 +43,15 @@ namespace sqlcon
 
             switch (Run(line))
             {
-                case NEXTSTEP.NEXT:
-                case NEXTSTEP.CONTINUE:
-                case NEXTSTEP.INTERRUPT:
+                case NextStep.NEXT:
+                case NextStep.COMPLETED:
+                case NextStep.ERROR:
                     goto L1;
 
-                case NEXTSTEP.CONTINUE2:
+                case NextStep.CONTINUE:
                     goto L2;
 
-                case NEXTSTEP.RETURN:
+                case NextStep.EXIT:
                     return;
 
             }
@@ -77,14 +63,17 @@ namespace sqlcon
         /// <param name="lines"></param>
         public void DoBatch(IEnumerable<string> lines)
         {
-            NEXTSTEP next = NEXTSTEP.CONTINUE;
+            NextStep next = NextStep.NEXT;
             foreach (string line in lines)
             {
-                if (next == NEXTSTEP.CONTINUE || next == NEXTSTEP.NEXT)
-                    stdio.Write("{0}> ", mgr);
-                else if (next == NEXTSTEP.RETURN)
+                if (next == NextStep.EXIT)
                     return;
-                else if (next == NEXTSTEP.INTERRUPT)
+
+                if (next == NextStep.COMPLETED || next == NextStep.NEXT)
+                {
+                    stdio.Write("{0}> ", mgr);
+                }
+                else if (next == NextStep.ERROR)
                 {
                     if (!stdio.YesOrNo($"are you sure to continue to {line} (y/n)?"))
                     {
@@ -95,22 +84,20 @@ namespace sqlcon
 
                 stdio.WriteLine(line);
                 next = Run(line);
-
-             
             }
         }
 
         private bool multipleLineMode = false;
         private StringBuilder multipleLineBuilder = new StringBuilder();
 
-        private NEXTSTEP Run(string line)
+        private NextStep Run(string line)
         {
 
             if (!multipleLineMode)
             {
 
                 if (line == "exit")
-                    return NEXTSTEP.RETURN;
+                    return NextStep.EXIT;
 
                 switch (line)
                 {
@@ -118,22 +105,22 @@ namespace sqlcon
                     case "?":
                         Help();
                         multipleLineBuilder.Clear();
-                        return NEXTSTEP.CONTINUE;
+                        return NextStep.COMPLETED;
 
                     case "cls":
                         Console.Clear();
-                        return NEXTSTEP.CONTINUE;
+                        return NextStep.COMPLETED;
 
                     default:
                         {
                             var _result = TrySingleLineCommand(line);
-                            if (_result == NEXTSTEP.COMPLETED)
+                            if (_result == NextStep.COMPLETED)
                             {
                                 stdio.WriteLine();
-                                return NEXTSTEP.CONTINUE;
+                                return NextStep.COMPLETED;
                             }
-                            else if (_result == NEXTSTEP.INTERRUPT)
-                                return NEXTSTEP.INTERRUPT;
+                            else if (_result == NextStep.ERROR)
+                                return NextStep.ERROR;
                         }
                         break;
                 }
@@ -152,26 +139,28 @@ namespace sqlcon
 
                 try
                 {
-                    DoMultipleLineCommand(text);
+                    var result = DoMultipleLineCommand(text);
                     multipleLineMode = false;
                     stdio.WriteLine();
+                    return result;
                 }
                 catch (Exception ex)
                 {
                     stdio.WriteLine(ex.Message);
+                    return NextStep.ERROR;
                 }
             }
             else if (multipleLineBuilder.ToString() != "")
             {
                 multipleLineMode = true;
                 stdio.Write("...");
-                return NEXTSTEP.CONTINUE2;
+                return NextStep.CONTINUE;
             }
 
-            return NEXTSTEP.NEXT;
+            return NextStep.NEXT;
         }
 
-        private NEXTSTEP TrySingleLineCommand(string text)
+        private NextStep TrySingleLineCommand(string text)
         {
 
 #if DEBUG
@@ -195,11 +184,11 @@ namespace sqlcon
         }
 
 
-        private NEXTSTEP DoSingleLineCommand(string text)
+        private NextStep DoSingleLineCommand(string text)
         {
             text = text.Trim();
             if (text == string.Empty)
-                return NEXTSTEP.NEXT;
+                return NextStep.CONTINUE;
 
 
             Command cmd = new Command(text, cfg);
@@ -207,21 +196,21 @@ namespace sqlcon
             {
                 case "set":
                     commandee.set(cmd);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "let":
                     commandee.let(cmd);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "md":
                 case "mkdir":
                     commandee.mkdir(cmd);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "rd":
                 case "rmdir":
                     commandee.rmdir(cmd);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
             }
 
 
@@ -230,7 +219,7 @@ namespace sqlcon
                 case "ls":
                 case "dir":
                     commandee.dir(cmd);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "cd":
                 case "chdir":
@@ -238,65 +227,65 @@ namespace sqlcon
                         chdir(cmd);
                     else
                         stdio.WriteLine(mgr.ToString());
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "type":
                     commandee.type(cmd);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "del":
                 case "erase":
                     commandee.del(cmd);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "ren":
                 case "rename":
                     commandee.rename(cmd);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "attrib":
                     commandee.attrib(cmd);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "echo":
                     commandee.echo(cmd);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "rem":
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "ver":
                     stdio.WriteLine("sqlcon [Version {0}]", SysExtension.ApplicationVerison);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "show":
                     if (cmd.arg1 != null)
                         Show(cmd.arg1.ToLower(), cmd.arg2);
                     else
                         stdio.ErrorFormat("invalid argument");
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "find":
                     if (cmd.arg1 != null)
                         theSide.FindName(cmd.arg1);
                     else
                         stdio.ErrorFormat("find object undefined");
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "save":
                     commandee.save(cmd, cfg);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "execute":
                     commandee.execute(cmd, theSide);
                     if (commandee.ERRORLEVEL == 0)
-                        return NEXTSTEP.COMPLETED;
+                        return NextStep.COMPLETED;
                     else
-                        return NEXTSTEP.INTERRUPT;
+                        return NextStep.ERROR;
 
                 case "open":
                     commandee.open(cmd, cfg);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "compare":
                     {
@@ -312,7 +301,7 @@ namespace sqlcon
 
                             if (both.Invalid)
                             {
-                                return NEXTSTEP.COMPLETED;
+                                return NextStep.COMPLETED;
                             }
 
                             var adapter = new CompareAdapter(both.ps1.side, both.ps2.side);
@@ -320,38 +309,38 @@ namespace sqlcon
                             writer.Write(sql);
                         }
                         stdio.WriteLine("completed");
-                        return NEXTSTEP.COMPLETED;
+                        return NextStep.COMPLETED;
                     }
 
                 case "copy":
                     commandee.copy(cmd, CompareSideType.copy);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "sync":
                     commandee.copy(cmd, CompareSideType.sync);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "comp":
                     commandee.copy(cmd, CompareSideType.compare);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "xcopy":
                     commandee.xcopy(cmd);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "lcd":
                     if (cmd.arg1 != null)
                         WorkingDirectory.lcd(cmd.arg1);
                     else
                         stdio.WriteLine(WorkingDirectory.CurrentDirectory);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "call":
                     if (cmd.arg1 != null)
                     {
                         new Batch(cfg, cmd.arg1).Call(cmd.arguments);
                     }
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 //example: run func(id=20)
                 case "run":
@@ -368,7 +357,7 @@ namespace sqlcon
                             if (!result.IsList && result.Size != 2)
                             {
                                 stdio.ErrorFormat("invalid format, run query like >run query(id=1)");
-                                return NEXTSTEP.COMPLETED;
+                                return NextStep.COMPLETED;
                             }
 
                             try
@@ -385,35 +374,35 @@ namespace sqlcon
                             catch (Exception ex)
                             {
                                 stdio.ErrorFormat("{0}", ex.Message);
-                                return NEXTSTEP.COMPLETED;
+                                return NextStep.COMPLETED;
                             }
                         }
                     }
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "export":
                     commandee.export(cmd, cfg, this);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "import":
                     commandee.import(cmd, cfg, this);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "clean":
                     commandee.clean(cmd, cfg);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "mount":
                     commandee.mount(cmd, cfg);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "umount":
                     commandee.umount(cmd, cfg);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "edit":
                     commandee.edit(cmd, theSide);
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 case "last":
                     {
@@ -423,13 +412,13 @@ namespace sqlcon
                         else
                             stdio.WriteLine("last result not found");
                     }
-                    return NEXTSTEP.COMPLETED;
+                    return NextStep.COMPLETED;
 
                 default:
                     break;
             }
 
-            return NEXTSTEP.NEXT;
+            return NextStep.NEXT;
         }
 
 
@@ -466,11 +455,11 @@ namespace sqlcon
             return string.Format("S={0} db={1} U={2} P={3}", cs.DataSource, cs.InitialCatalog, cs.UserId, cs.Password);
         }
 
-        private void DoMultipleLineCommand(string text)
+        private NextStep DoMultipleLineCommand(string text)
         {
             text = text.Trim();
             if (text == string.Empty)
-                return;
+                return NextStep.NEXT;
 
             string[] A = text.Split(' ', '\r');
             string cmd = null;
@@ -502,7 +491,9 @@ namespace sqlcon
                         }
                     }
                     else
+                    {
                         new SqlCmd(theSide.Provider, text).Read(reader => reader.ToConsole(Context.GetValue<int>(Context.MAXROWS, 100)));
+                    }
                     break;
 
                 case "update":
@@ -525,6 +516,7 @@ namespace sqlcon
                     catch (Exception ex)
                     {
                         stdio.ErrorFormat(ex.Message);
+                        return NextStep.ERROR;
                     }
                     break;
 
@@ -538,6 +530,7 @@ namespace sqlcon
                         catch (Exception ex)
                         {
                             stdio.ErrorFormat("execute error: {0}", ex.Message);
+                            return NextStep.ERROR;
                         }
                     }
                     else
@@ -550,11 +543,14 @@ namespace sqlcon
                         catch (Exception ex)
                         {
                             stdio.ErrorFormat("evaluate error: {0}", ex.Message);
+                            return NextStep.ERROR;
                         }
                     }
 
                     break;
             }
+
+            return NextStep.COMPLETED;
         }
 
 
