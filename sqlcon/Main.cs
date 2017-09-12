@@ -80,8 +80,8 @@ namespace sqlcon
 
         private void RunBatch(string path, params string[] args)
         {
-            Batch batch = new Batch(path);
-            batch.Run(cfg, args);
+            Batch batch = new Batch(cfg, path);
+            batch.Call(args);
         }
 
         public static string PrepareConfigureFile(bool overwrite)

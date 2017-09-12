@@ -32,6 +32,9 @@ namespace sqlcon
         {
         }
 
+        /// <summary>
+        /// read command line from console and run command
+        /// </summary>
         public void DoConsole()
         {
 
@@ -64,26 +67,22 @@ namespace sqlcon
             }
         }
 
-        public void DoBatch(string fileName, string[] args)
+        /// <summary>
+        /// process command batch file
+        /// </summary>
+        /// <param name="lines"></param>
+        public void DoBatch(IEnumerable<string> lines)
         {
-            string[] lines = File.ReadAllLines(fileName);
-
             NEXTSTEP next = NEXTSTEP.CONTINUE;
             foreach (string line in lines)
             {
-                string cmd = line;
-                for (int i = 1; i < args.Length; i++)
-                {
-                    cmd = cmd.Replace($"%{i}", args[i]);
-                }
-
                 if (next == NEXTSTEP.CONTINUE || next == NEXTSTEP.NEXT)
                     stdio.Write("{0}> ", mgr);
                 else if (next == NEXTSTEP.RETURN)
                     return;
 
-                stdio.WriteLine(cmd);
-                next = Run(cmd);
+                stdio.WriteLine(line);
+                next = Run(line);
             }
         }
 
@@ -321,7 +320,7 @@ namespace sqlcon
                 case "call":
                     if (cmd.arg1 != null)
                     {
-                        new Batch(cmd.arg1).Run(cfg, cmd.arguments);
+                        new Batch(cfg, cmd.arg1).Call(cmd.arguments);
                     }
                     return true;
 
