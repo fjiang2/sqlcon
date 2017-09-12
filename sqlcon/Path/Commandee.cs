@@ -76,15 +76,15 @@ namespace sqlcon
         {
             if (cmd.HasHelp)
             {
+                stdio.WriteLine("Change current database directory");
                 stdio.WriteLine("command cd or chdir");
-                stdio.WriteLine("cd [path]              : change directory");
+                stdio.WriteLine("cd [path]              : change database directory");
                 stdio.WriteLine("cd \\                  : change to root directory");
                 stdio.WriteLine("cd ..                  : change to the parent directory");
                 stdio.WriteLine("cd ...                 : change to the grand parent directory");
                 stdio.WriteLine("cd ~                   : change to default database defined on the connection string, or change to default server");
                 return true;
             }
-
 
             if (cmd.wildcard != null)
             {
@@ -1384,14 +1384,10 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("execute sql script files");
-                stdio.WriteLine("execute variable_name /s");
-                stdio.WriteLine("execute file");
-                stdio.WriteLine("       /s                     : execute multiple sql script files defined on the user.cfg");
+                stdio.WriteLine("execute sql script file");
+                stdio.WriteLine("execute file (.sql)");
                 stdio.WriteLine("examples:");
                 stdio.WriteLine("  execute northwind.sql       : execute single sql script file");
-                stdio.WriteLine("  execute db_install /s       : variable db_install = {file1, file2, ...};");
-                stdio.WriteLine("                                defined on the user.cfg");
                 return;
             }
 
@@ -1404,35 +1400,10 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            if (cmd.IsSchema)
-            {
-                string tag = inputfile;
-                string[] files = mgr.Configuration.GetValue<string[]>(tag);
-                if (files == null)
-                {
-                    stdio.ErrorFormat("no varible string[] {0} found on config file: {0}", tag);
-                    return;
-                }
-
-                foreach (var file in files)
-                {
-                    if (!theSide.ExecuteScript(file))
-                    {
-                        if (!stdio.YesOrNo("are you sure to continue to run next file(y/n)?"))
-                        {
-                            stdio.ErrorFormat("interupted on {0}", file);
-                            return;
-                        }
-                    }
-                }
-            }
+            if (theSide.ExecuteScript(inputfile))
+                ErrorCode = CommandState.OK;
             else
-            {
-                if (theSide.ExecuteScript(inputfile))
-                    ErrorCode = CommandState.OK;
-                else
-                    ErrorCode = CommandState.SQL_FAILS;
-            }
+                ErrorCode = CommandState.SQL_FAILS;
         }
 
         public void edit(Command cmd, Side theSide)

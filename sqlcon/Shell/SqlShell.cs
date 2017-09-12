@@ -335,6 +335,10 @@ namespace sqlcon
                         stdio.WriteLine(WorkingDirectory.CurrentDirectory);
                     return NextStep.COMPLETED;
 
+                case "ldir":
+                    WorkingDirectory.ShowCurrentDirectory(cmd.arg1);
+                    return NextStep.COMPLETED;
+
                 case "call":
                     if (cmd.arg1 != null)
                     {
@@ -659,6 +663,8 @@ namespace sqlcon
             stdio.WriteLine("cls                     : clears the screen");
             stdio.WriteLine("dir,ls /?               : see more info");
             stdio.WriteLine("cd,chdir /?             : see more info");
+            stdio.WriteLine("lcd [path]              : change or display current directory");
+            stdio.WriteLine("ldir [path]             : display files");
             stdio.WriteLine("md,mkdir /?             : see more info");
             stdio.WriteLine("rd,rmdir /?             : see more info");
             stdio.WriteLine("type /?                 : see more info");
@@ -670,7 +676,6 @@ namespace sqlcon
             stdio.WriteLine("comp /?                 : see more info");
             stdio.WriteLine("xcopy /?                : see more info");
             stdio.WriteLine("echo /?                 : see more info");
-            stdio.WriteLine("lcd [path]              : change or display current directory");
             stdio.WriteLine("call [drive:][path]file : call one batch program (.sqc)");
             stdio.WriteLine("rem                     : records comments/remarks");
             stdio.WriteLine("ver                     : display version");

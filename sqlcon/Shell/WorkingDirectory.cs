@@ -19,7 +19,7 @@ namespace sqlcon
             if (!Directory.Exists(path))
                 stdio.Error($"path not exists {path}");
             else
-                CurrentDirectory = path;
+                CurrentDirectory = Path.GetFullPath(path);
         }
 
         public static string GetFullPath(string path, string ext)
@@ -38,6 +38,39 @@ namespace sqlcon
             }
 
             return Path.GetFullPath(path);
+        }
+
+        public static void ShowCurrentDirectory(string path)
+        {
+            const string DIR = "<DIR>";
+
+            if (string.IsNullOrEmpty(path))
+                path = CurrentDirectory;
+            else if (!Path.IsPathRooted(path))
+                path = Path.Combine(CurrentDirectory, path);
+
+
+            if (Directory.Exists(path))
+            {
+                stdio.WriteLine($"Directory of {path}\n");
+                var directories = Directory.GetDirectories(path).OrderBy(x => x);
+                foreach (string directory in directories)
+                {
+                    var directoryInfo = new DirectoryInfo(directory);
+                    stdio.WriteLine($"{directoryInfo.LastWriteTime,20}{DIR,20} {directoryInfo.Name,-30}");
+                }
+
+                var files = Directory.GetFiles(path).OrderBy(x => x);
+                foreach (string file in files)
+                {
+                    var fileInfo = new FileInfo(file);
+                    stdio.WriteLine($"{fileInfo.LastWriteTime,20}{fileInfo.Length,20} {fileInfo.Name,-30}");
+                }
+            }
+            else
+            {
+                stdio.Error("directory not exists");
+            }
         }
     }
 }
