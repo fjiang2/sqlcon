@@ -1,5 +1,11 @@
 ﻿sqlcon release notes
 
+09/11/2017 v1.8.0.0
+	Improvements/Enhancements:
+	1. sqlcon support command batch file (.sqc).
+	2. support command echo [on|off]
+
+
 09/06/2017 v1.7.13.0
 	Improvements/Enhancements:
 	1. command export /c# uses current table name as class name 

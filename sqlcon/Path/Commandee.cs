@@ -1633,5 +1633,45 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             return;
         }
+
+        public void echo(Command cmd)
+        {
+            if (cmd.HasHelp)
+            {
+                stdio.WriteLine("Displays messages, or turns command-echoing on or off");
+                stdio.WriteLine("  echo [on | off]");
+                stdio.WriteLine("  echo [message]");
+                stdio.WriteLine("Type echo without parameters to display the current echo setting.");
+                return;
+            }
+
+            string text = cmd.args;
+            if (string.IsNullOrEmpty(text))
+            {
+                string status = "on";
+                if (!stdio.echo)
+                    status = "off";
+
+                Console.WriteLine($"echo is {status}");
+                return;
+            }
+
+            switch (text)
+            {
+                case "on":
+                    stdio.echo = true;
+                    break;
+
+                case "off":
+                    stdio.echo = false;
+                    break;
+
+                default:
+                    stdio.WriteLine(text);
+                    break;
+            }
+
+            return;
+        }
     }
 }

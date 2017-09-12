@@ -9,6 +9,10 @@ namespace sqlcon
 {
     sealed class stdio
     {
+        /// <summary>
+        /// turn command-echoing on/off
+        /// </summary>
+        public static bool echo { get; set; } = true;
 
         private static StreamWriter writer = null;
         static stdio()
@@ -22,8 +26,8 @@ namespace sqlcon
         static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
             e.Cancel = true;
-            Console.WriteLine();
-            Console.WriteLine("exit application...");
+            stdio.WriteLine();
+            stdio.WriteLine("exit application...");
         }
 
         public static void Close()
@@ -78,7 +82,8 @@ namespace sqlcon
 
         public static void Write(string format, params object[] args)
         {
-            Console.Write(format, args);
+            if (echo)
+                Console.Write(format, args);
 
             if (writer != null)
             {
@@ -94,7 +99,8 @@ namespace sqlcon
 
         public static void WriteLine(string value)
         {
-            Console.WriteLine(value);
+            if (echo)
+                Console.WriteLine(value);
 
             if (writer != null)
             {
@@ -105,17 +111,25 @@ namespace sqlcon
 
         public static void WriteLine(string format, params object[] args)
         {
-            Console.WriteLine(format, args);
-            writer.WriteLine(format, args);
-            writer.Flush();
+            if (echo)
+                Console.WriteLine(format, args);
+
+            if (writer != null)
+            {
+                writer.WriteLine(format, args);
+                writer.Flush();
+            }
         }
 
         public static void DisplayTitle(string value)
         {
-            var keep = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine(value);
-            Console.ForegroundColor = keep;
+            if (echo)
+            {
+                var keep = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine(value);
+                Console.ForegroundColor = keep;
+            }
 
             if (writer != null)
             {
@@ -137,10 +151,13 @@ namespace sqlcon
 
         public static void Error(string text)
         {
-            var keep = Console.ForegroundColor;
-            //Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine(text);
-            Console.ForegroundColor = keep;
+            if (echo)
+            {
+                var keep = Console.ForegroundColor;
+                //Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine(text);
+                Console.ForegroundColor = keep;
+            }
 
             if (writer != null)
             {
@@ -151,14 +168,17 @@ namespace sqlcon
 
         public static void TrimWriteLine(string value)
         {
-            int w = -1;
-            if (!Console.IsOutputRedirected)
-                w = Console.WindowWidth;
+            if (echo)
+            {
+                int w = -1;
+                if (!Console.IsOutputRedirected)
+                    w = Console.WindowWidth;
 
-            if (w != -1 && value.Length > w)
-                Console.WriteLine(value.Substring(0, w - 1));
-            else
-                Console.WriteLine(value);
+                if (w != -1 && value.Length > w)
+                    Console.WriteLine(value.Substring(0, w - 1));
+                else
+                    Console.WriteLine(value);
+            }
 
             if (writer != null)
             {

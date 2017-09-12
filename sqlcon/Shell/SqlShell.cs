@@ -76,7 +76,7 @@ namespace sqlcon
                 else if (next == NEXTSTEP.RETURN)
                     return;
 
-                Console.WriteLine(line);
+                stdio.WriteLine(line);
                 next = Run(line);
             }
         }
@@ -235,7 +235,7 @@ namespace sqlcon
                     return true;
 
                 case "echo":
-                    stdio.WriteLine(text);
+                    commandee.echo(cmd);
                     return true;
 
                 case "rem":
@@ -632,7 +632,7 @@ namespace sqlcon
             stdio.WriteLine("copy /?                 : see more info");
             stdio.WriteLine("comp /?                 : see more info");
             stdio.WriteLine("xcopy /?                : see more info");
-            stdio.WriteLine("echo                    : display message");
+            stdio.WriteLine("echo /?                 : see more info");
             stdio.WriteLine("rem                     : records comments/remarks");
             stdio.WriteLine("ver                     : display version");
             stdio.WriteLine("compare path1 [path2]   : compare table scheam or data");
