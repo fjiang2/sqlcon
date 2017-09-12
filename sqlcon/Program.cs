@@ -67,7 +67,7 @@ namespace sqlcon
 #else
             try
             {
-                var site = new CompareConsole(cfg);
+                var site = new Main(cfg);
                 site.Run(args);
             }
             catch (Exception ex)
