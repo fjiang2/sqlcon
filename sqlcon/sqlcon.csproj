@@ -152,7 +152,7 @@
     <Compile Include="Data\Tools.cs" />
     <Compile Include="Windows\WpfExtension.cs" />
     <Compile Include="Windows\WpfUtils.cs" />
-    <Compile Include="WorkingDirectory.cs" />
+    <Compile Include="Shell\WorkingDirectory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Output\ConsoleGrid.cs" />

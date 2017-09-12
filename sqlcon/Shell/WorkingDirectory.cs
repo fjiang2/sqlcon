@@ -9,7 +9,7 @@ namespace sqlcon
 {
     class WorkingDirectory
     {
-        public static string CurrentDirectory { get; private set; } = ".";
+        public static string CurrentDirectory { get; private set; } = Path.GetFullPath(".");
 
         public static void lcd(string path)
         {

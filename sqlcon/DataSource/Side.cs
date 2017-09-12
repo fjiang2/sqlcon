@@ -66,7 +66,7 @@ namespace sqlcon
                 return false;
             }
 
-            stdio.WriteLine("Execute {0}", scriptFile);
+            stdio.WriteLine("executing {0}", scriptFile);
             var script = new SqlScript(provider, scriptFile);
             script.Reported += (sender, e) =>
             {
@@ -86,7 +86,7 @@ namespace sqlcon
             };
 
             script.Execute(stopOnError);
-            stdio.WriteLine("completed {0}", scriptFile);
+            stdio.WriteLine("completed.");
 
             return !hasError;
         }
