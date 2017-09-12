@@ -16,7 +16,7 @@ namespace sqlcon
         public string args { get; private set; }
         public string arg1 { get; private set; }
         public string arg2 { get; private set; }
-
+        public string[] arguments { get; private set; }
         public readonly bool Refresh;
 
         public readonly bool IsVertical;
@@ -62,6 +62,7 @@ namespace sqlcon
 
             string[] L;
             this.badcommand = !parseArgument(this.args, out L);
+            this.arguments = L;
 
             if (L.Length > 0 && !L[0].StartsWith("/"))
                 this.arg1 = L[0];

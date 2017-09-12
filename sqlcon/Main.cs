@@ -1,15 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using Sys.Data;
-using Sys.Data.Comparison;
-using System.Data;
-using System.Data.SqlClient;
 using System.IO;
-using Tie;
 
 namespace sqlcon
 {
@@ -17,7 +10,6 @@ namespace sqlcon
     {
         private const string _USER_CFG_TEMPLATE = "user.ini";
         private const string _USER_CFG = "user.cfg";
-        private const string EXT = ".sqc";
 
         private Configuration cfg;
 
@@ -71,7 +63,7 @@ namespace sqlcon
 
                     default:
                         if (!string.IsNullOrEmpty(arg))
-                            RunBatch(arg);
+                            RunBatch(arg, args);  
                         else
                             ShowHelp();
 
@@ -85,35 +77,14 @@ namespace sqlcon
         }
 
 
-        private bool RunBatch(string path)
+
+        private void RunBatch(string path, params string[] args)
         {
-            string ext = Path.GetExtension(path);
-
-            //if no extension file defined
-            if (ext == string.Empty)
-            {
-                path = $"{path}{EXT}";
-            }
-            else if (ext != EXT)
-            {
-                stdio.Error($"must be {EXT} file: {path}");
-                return false;
-            }
-
-
-            if (File.Exists(path))
-            {
-                new SqlShell(cfg).DoBatch(path);
-                return true;
-            }
-            else
-            {
-                stdio.Error($"file not found: {path}");
-                return false;
-            }
+            Batch batch = new Batch(path);
+            batch.Run(cfg, args);
         }
 
-        public static string PrepareConfigureFile( bool overwrite)
+        public static string PrepareConfigureFile(bool overwrite)
         {
             string cfgFile = _USER_CFG;
             var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
@@ -178,11 +149,11 @@ namespace sqlcon
             stdio.WriteLine("     [/i sql script file name (.sql)]");
             stdio.WriteLine("     [file] sqlcon command batch file name (.sqc)");
             stdio.WriteLine();
-            stdio.WriteLine( "/h,/?      : this help");
+            stdio.WriteLine("/h,/?      : this help");
             stdio.WriteLine($"/cfg       : congfiguration file default file:{_USER_CFG}]");
-            stdio.WriteLine( "/i         : input sql script file name");
-            stdio.WriteLine( "/o         : result of sql script");
-            stdio.WriteLine( "examples:");
+            stdio.WriteLine("/i         : input sql script file name");
+            stdio.WriteLine("/o         : result of sql script");
+            stdio.WriteLine("examples:");
             stdio.WriteLine("  sqlcon file1.sqc");
             stdio.WriteLine("  sqlcon /cfg my.cfg");
             stdio.WriteLine("  sqlcon /i script1.sql /o c:\\temp\\o.txt");

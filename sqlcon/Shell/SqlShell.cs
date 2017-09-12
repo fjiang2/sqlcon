@@ -64,20 +64,26 @@ namespace sqlcon
             }
         }
 
-        public void DoBatch(string fileName)
+        public void DoBatch(string fileName, string[] args)
         {
             string[] lines = File.ReadAllLines(fileName);
 
             NEXTSTEP next = NEXTSTEP.CONTINUE;
             foreach (string line in lines)
             {
+                string cmd = line;
+                for (int i = 1; i < args.Length; i++)
+                {
+                    cmd = cmd.Replace($"%{i}", args[i]);
+                }
+
                 if (next == NEXTSTEP.CONTINUE || next == NEXTSTEP.NEXT)
                     stdio.Write("{0}> ", mgr);
                 else if (next == NEXTSTEP.RETURN)
                     return;
 
-                stdio.WriteLine(line);
-                next = Run(line);
+                stdio.WriteLine(cmd);
+                next = Run(cmd);
             }
         }
 
@@ -310,6 +316,13 @@ namespace sqlcon
 
                 case "xcopy":
                     commandee.xcopy(cmd);
+                    return true;
+
+                case "call":
+                    if (cmd.arg1 != null)
+                    {
+                        new Batch(cmd.arg1).Run(cfg, cmd.arguments);
+                    }
                     return true;
 
                 //example: run func(id=20)
@@ -633,6 +646,7 @@ namespace sqlcon
             stdio.WriteLine("comp /?                 : see more info");
             stdio.WriteLine("xcopy /?                : see more info");
             stdio.WriteLine("echo /?                 : see more info");
+            stdio.WriteLine("call [drive:][path]file : call one batch program (.sqc)");
             stdio.WriteLine("rem                     : records comments/remarks");
             stdio.WriteLine("ver                     : display version");
             stdio.WriteLine("compare path1 [path2]   : compare table scheam or data");
