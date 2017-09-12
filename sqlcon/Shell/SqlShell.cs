@@ -346,44 +346,6 @@ namespace sqlcon
                     }
                     return NextStep.COMPLETED;
 
-                //example: run func(id=20)
-                case "run":
-                    {
-                        VAL result = Context.Evaluate(cmd.args);
-                        if (result.IsNull)
-                            stdio.ErrorFormat("undefined query function");
-                        else if (result.IsInt)
-                        {
-                            //show error code
-                        }
-                        else
-                        {
-                            if (!result.IsList && result.Size != 2)
-                            {
-                                stdio.ErrorFormat("invalid format, run query like >run query(id=1)");
-                                return NextStep.COMPLETED;
-                            }
-
-                            try
-                            {
-                                DataSet ds = new SqlCmd(theSide.Provider, (string)result[0]).ParseParameters(result[1]).FillDataSet();
-                                if (ds != null)
-                                {
-                                    foreach (DataTable dt in ds.Tables)
-                                        dt.ToConsole();
-                                }
-                                else
-                                    stdio.ErrorFormat("cannot retrieve data from server");
-                            }
-                            catch (Exception ex)
-                            {
-                                stdio.ErrorFormat("{0}", ex.Message);
-                                return NextStep.COMPLETED;
-                            }
-                        }
-                    }
-                    return NextStep.COMPLETED;
-
                 case "export":
                     commandee.export(cmd, cfg, this);
                     return NextStep.COMPLETED;
@@ -704,7 +666,6 @@ namespace sqlcon
             stdio.WriteLine("<show connection>       : show connection-string list");
             stdio.WriteLine("<show current>          : show current active connection-string");
             stdio.WriteLine("<show var>              : show variable list");
-            stdio.WriteLine("<run> query(..)         : run predefined query. e.g. run query(var1=val1,...);");
             stdio.WriteLine("<sync table1 table2>    : synchronize, make table2 is the same as table1");
             stdio.WriteLine();
             stdio.WriteLine("type [;] to execute following SQL script or functions");

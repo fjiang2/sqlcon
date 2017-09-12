@@ -57,14 +57,14 @@ namespace sqlcon
                 foreach (string directory in directories)
                 {
                     var directoryInfo = new DirectoryInfo(directory);
-                    stdio.WriteLine($"{directoryInfo.LastWriteTime,20}{DIR,20} {directoryInfo.Name,-30}");
+                    stdio.WriteLine($"{directoryInfo.LastWriteTime,24}{DIR,20} {directoryInfo.Name,-30}");
                 }
 
                 var files = Directory.GetFiles(path).OrderBy(x => x);
                 foreach (string file in files)
                 {
                     var fileInfo = new FileInfo(file);
-                    stdio.WriteLine($"{fileInfo.LastWriteTime,20}{fileInfo.Length,20} {fileInfo.Name,-30}");
+                    stdio.WriteLine($"{fileInfo.LastWriteTime,24}{fileInfo.Length,20} {fileInfo.Name,-30}");
                 }
             }
             else
