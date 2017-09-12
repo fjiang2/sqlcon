@@ -26,7 +26,7 @@ namespace sqlcon
     {
         private PathManager mgr;
         private TreeNode<IDataPath> pt;
-        public int ERRORLEVEL { get; private set; } = 0;
+        public CommandState ErrorCode { get; private set; } = CommandState.OK;
 
         public Commandee(PathManager mgr)
         {
@@ -1429,9 +1429,9 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             else
             {
                 if (theSide.ExecuteScript(inputfile))
-                    ERRORLEVEL = 0;
+                    ErrorCode = CommandState.OK;
                 else
-                    ERRORLEVEL = -1;
+                    ErrorCode = CommandState.SQL_FAILS;
             }
         }
 

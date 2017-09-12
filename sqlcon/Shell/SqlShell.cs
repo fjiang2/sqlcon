@@ -11,7 +11,7 @@ using Tie;
 
 namespace sqlcon
 {
-   
+
 
     class SqlShell : ShellContext
     {
@@ -278,7 +278,7 @@ namespace sqlcon
 
                 case "execute":
                     commandee.execute(cmd, theSide);
-                    if (commandee.ERRORLEVEL == 0)
+                    if (commandee.ErrorCode == CommandState.OK)
                         return NextStep.COMPLETED;
                     else
                         return NextStep.ERROR;

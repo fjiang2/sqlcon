@@ -107,6 +107,7 @@
     <Compile Include="Data\DuplicatedTable.cs" />
     <Compile Include="ClassBuilder\EntityClassBuilder.cs" />
     <Compile Include="ClassBuilder\TheClassBuilder.cs" />
+    <Compile Include="Path\CommandState.cs" />
     <Compile Include="Path\NextStep.cs" />
     <Compile Include="Shell\ShellHistory.cs" />
     <Compile Include="Windows\DbTreeUI.cs" />

@@ -11,7 +11,7 @@ namespace sqlcon
         NEXT,
 
         /// <summary>
-        /// multiple lines command incompleted
+        /// multiple lines command incompleting
         /// </summary>
         CONTINUE,  
 
