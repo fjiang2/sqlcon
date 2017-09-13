@@ -28,6 +28,8 @@ namespace sqlcon
         const string _FILE_LOG = "log";
         const string _FILE_EDITOR = "editor";
 
+        const string _WORKING_DIRECTORY = "working.directory.commands";
+
         const string _LIMIT = "limit";
         const string _COMPARE_EXCLUDED_TABLES = "compare_excluded_tables";
         const string _EXPORT_EXCLUDED_TABLES = "export_excluded_tables";
@@ -41,7 +43,8 @@ namespace sqlcon
         public string CfgFile { get; private set; } = "user.cfg";
 
         public string OutputFile { get; set; }
-        public string XmlDbFolder { get; set; }
+        public string XmlDbDirectory { get; set; }
+        public WorkingDirectory WorkingDirectory { get; }
 
         public string[] compareExcludedTables = new string[] { };
         public string[] exportExcludedTables = new string[] { };
@@ -57,6 +60,7 @@ namespace sqlcon
             HostType.Register(typeof(DateTime), true);
             HostType.Register(typeof(Environment), true);
             Cfg.AddObject("MyDocuments", MyDocuments);
+            WorkingDirectory = new WorkingDirectory();
         }
 
         public static string MyDocuments
@@ -280,7 +284,8 @@ namespace sqlcon
 
 
             this.OutputFile = Cfg.GetValue<string>(_FILE_OUTPUT, "script.sql");
-            this.XmlDbFolder = Cfg.GetValue<string>(_XML_DB_FOLDER, "db");
+            this.XmlDbDirectory = Cfg.GetValue<string>(_XML_DB_FOLDER, "db");
+            this.WorkingDirectory.SetCurrentDirectory(Cfg.GetValue<string>(_WORKING_DIRECTORY, "."));
 
             var limit = Cfg[_LIMIT];
             if (limit["top"].Defined)

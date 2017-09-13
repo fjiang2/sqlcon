@@ -9,9 +9,18 @@ namespace sqlcon
 {
     class WorkingDirectory
     {
-        public static string CurrentDirectory { get; private set; } = Path.GetFullPath(".");
+        public string CurrentDirectory { get; private set; } = Path.GetFullPath(".");
 
-        public static void lcd(string path)
+        public WorkingDirectory()
+        {
+        }
+
+        public void SetCurrentDirectory(string currentDirectory)
+        {
+            this.CurrentDirectory = Path.GetFullPath(currentDirectory);
+        }
+
+        public void ChangeDirectory(string path)
         {
             if (!Path.IsPathRooted(path))
                 path = Path.Combine(CurrentDirectory, path);
@@ -22,7 +31,7 @@ namespace sqlcon
                 CurrentDirectory = Path.GetFullPath(path);
         }
 
-        public static string GetFullPath(string path, string ext)
+        public string GetFullPath(string path, string ext)
         {
             if (!Path.IsPathRooted(path))
             {
@@ -40,7 +49,7 @@ namespace sqlcon
             return Path.GetFullPath(path);
         }
 
-        public static void ShowCurrentDirectory(string path)
+        public void ShowCurrentDirectory(string path)
         {
             const string DIR = "<DIR>";
 

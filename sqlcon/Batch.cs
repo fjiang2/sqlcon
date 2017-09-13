@@ -19,7 +19,7 @@ namespace sqlcon
         public Batch(Configuration cfg, string path)
         {
             this.cfg = cfg;
-            this.path = WorkingDirectory.GetFullPath(path, EXT);
+            this.path = cfg.WorkingDirectory.GetFullPath(path, EXT);
             this.IsBatch = EXT == Path.GetExtension(this.path); ;
         }
 

@@ -330,13 +330,13 @@ namespace sqlcon
 
                 case "lcd":
                     if (cmd.arg1 != null)
-                        WorkingDirectory.lcd(cmd.arg1);
+                        cfg.WorkingDirectory.ChangeDirectory(cmd.arg1);
                     else
-                        stdio.WriteLine(WorkingDirectory.CurrentDirectory);
+                        stdio.WriteLine(cfg.WorkingDirectory.CurrentDirectory);
                     return NextStep.COMPLETED;
 
                 case "ldir":
-                    WorkingDirectory.ShowCurrentDirectory(cmd.arg1);
+                    cfg.WorkingDirectory.ShowCurrentDirectory(cmd.arg1);
                     return NextStep.COMPLETED;
 
                 case "call":

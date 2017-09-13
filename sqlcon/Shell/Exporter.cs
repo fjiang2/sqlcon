@@ -28,7 +28,7 @@ namespace sqlcon
         {
             this.mgr = mgr;
             this.cfg = cfg;
-            this.xml = new XmlDbFile { XmlDbFolder = cfg.XmlDbFolder };
+            this.xml = new XmlDbFile { XmlDbFolder = cfg.XmlDbDirectory };
             this.fileName = cfg.OutputFile;
             if (pt.Item is Locator)
             {
