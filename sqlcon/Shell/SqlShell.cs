@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data;
+using System.Data.SqlClient;
 using Sys.Data;
 using Sys.Data.Comparison;
-using System.Data;
 using Sys;
 using Tie;
 
@@ -179,7 +180,7 @@ namespace sqlcon
                 stdio.ErrorFormat(ex2.Message);
             }
 
-            return true;
+            return NextStep.ERROR;
 #endif
         }
 
