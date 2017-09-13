@@ -1,10 +1,14 @@
 ﻿sqlcon release notes
 
+09/11/2017 v1.8.1.0
+	Improvements/Enhancements:
+	1. disable query function on the user.cfg, use command batch file instead.
+	2. run batch file by arguments %1, %2, ....
+
 09/11/2017 v1.8.0.0
 	Improvements/Enhancements:
 	1. sqlcon support command batch file (.sqc).
 	2. support command echo [on|off]
-
 
 09/06/2017 v1.7.13.0
 	Improvements/Enhancements:

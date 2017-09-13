@@ -340,7 +340,7 @@ namespace sqlcon
                     cfg.WorkingDirectory.ShowCurrentDirectory(cmd.arg1);
                     return NextStep.COMPLETED;
 
-                case "call":
+                case "run":
                     if (cmd.arg1 != null)
                     {
                         new Batch(cfg, cmd.arg1).Call(cmd.arguments);
@@ -639,7 +639,7 @@ namespace sqlcon
             stdio.WriteLine("comp /?                 : see more info");
             stdio.WriteLine("xcopy /?                : see more info");
             stdio.WriteLine("echo /?                 : see more info");
-            stdio.WriteLine("call [drive:][path]file : call one batch program (.sqc)");
+            stdio.WriteLine("run [drive:][path]file  : run a batch program (.sqc)");
             stdio.WriteLine("rem                     : records comments/remarks");
             stdio.WriteLine("ver                     : display version");
             stdio.WriteLine("compare path1 [path2]   : compare table scheam or data");
