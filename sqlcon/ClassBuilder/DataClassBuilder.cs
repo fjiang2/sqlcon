@@ -16,10 +16,11 @@ namespace sqlcon
 {
     enum DataClassType
     {
-        undefined,
-        list,
-        dict,
-        key
+        Undefined,
+        List,
+        Dictionary,
+        Enum,
+        Key
     }
 
     class DataClassBuilder
@@ -31,6 +32,44 @@ namespace sqlcon
             this.cmd = cmd;
             this.tname = tname;
         }
+
+        public void ExportCSharpData(DataTable dt)
+        {
+            switch (dataType)
+            {
+                case DataClassType.Key:
+                    ExportConfigKey(dt);
+                    return;
+
+                case DataClassType.List:
+                case DataClassType.Dictionary:
+                    ExportCSData(dt);
+                    return;
+
+                case DataClassType.Enum:
+                    ExportEnum(dt);
+                    return;
+            }
+        }
+
+
+        private DataClassType dataType
+        {
+            get
+            {
+                string _dataType = cmd.GetValue("type") ?? "list";
+                switch (_dataType)
+                {
+                    case "list": return DataClassType.List;
+                    case "dict": return DataClassType.Dictionary;
+                    case "key": return DataClassType.Key;
+                    case "enum": return DataClassType.Enum;
+                }
+
+                return DataClassType.Undefined;
+            }
+        }
+
 
         private string ns
         {
@@ -62,30 +101,30 @@ namespace sqlcon
         }
 
 
-
-        private DataClassType dataType
+        private void PrintOutput(CSharpBuilder builder, string cname)
         {
-            get
-            {
-                string _dataType = cmd.GetValue("type") ?? "list";
-                switch (_dataType)
-                {
-                    case "list": return DataClassType.list;
-                    case "dict": return DataClassType.dict;
-                    case "key": return DataClassType.key;
-                }
+            string code = $"{builder}";
 
-                return DataClassType.undefined;
+            string path = cmd.GetValue("out");
+            if (path == null)
+            {
+                stdio.WriteLine(code);
+            }
+            else
+            {
+                string file = Path.ChangeExtension(Path.Combine(path, cname), "cs");
+                try
+                {
+                    code.WriteIntoFile(file);
+                    stdio.WriteLine("code generated on {0}", Path.GetFullPath(file));
+                }
+                catch (Exception ex)
+                {
+                    stdio.WriteLine(ex.Message);
+                }
             }
         }
 
-        public void ExportCSharpData(DataTable dt)
-        {
-            if (dataType == DataClassType.key)
-                ExportConfigKey(dt);
-            else
-                ExportCSData(dt);
-        }
 
 
         public void ExportConfigKey(DataTable dt)
@@ -103,22 +142,42 @@ namespace sqlcon
 
             string columnName = cmd.GetValue("col");
 
-            Field field;
+            List<string> keys = new List<string>();
             foreach (DataRow row in dt.Rows)
             {
-                TypeInfo ty = new TypeInfo(typeof(string));
                 string key;
                 if (columnName != null)
                     key = row[columnName].ToString();
                 else
                     key = row[0].ToString();
 
+                string[] items = key.Split('.');
+
+                if (items.Length > 1)
+                {
+                    for (int i = 0; i < items.Length - 1; i++)
+                    {
+                        string _key = string.Join(".", items.Take(i + 1));
+                        if (keys.IndexOf(_key) < 0)
+                            keys.Add(_key);
+                    }
+
+                }
+
+                keys.Add(key);
+            }
+
+            Field field;
+            foreach (string key in keys)
+            {
+                TypeInfo ty = new TypeInfo(typeof(string));
+
                 string fieldName = key.Replace(".", "_").ToUpper();
                 field = new Field(ty, fieldName, new Value(key)) { modifier = Modifier.Public | Modifier.Const };
                 clss.Add(field);
             }
 
-            PrintCode(builder, cname);
+            PrintOutput(builder, cname);
         }
 
 
@@ -162,7 +221,7 @@ namespace sqlcon
             string[] columns = dt.Columns.Cast<DataColumn>().Select(col => col.ColumnName).ToArray();
 
 
-            if (dataType == DataClassType.list)
+            if (dataType == DataClassType.List)
             {
                 Field field = CreateListField(dt, cname, columns);
                 clss.Add(field);
@@ -179,32 +238,9 @@ namespace sqlcon
                 clss.Add(field);
             }
 
-            PrintCode(builder, cname);
+            PrintOutput(builder, cname);
         }
 
-        private void PrintCode(CSharpBuilder builder, string cname)
-        {
-            string code = $"{builder}";
-
-            string path = cmd.GetValue("out");
-            if (path == null)
-            {
-                stdio.WriteLine(code);
-            }
-            else
-            {
-                string file = Path.ChangeExtension(Path.Combine(path, cname), "cs");
-                try
-                {
-                    code.WriteIntoFile(file);
-                    stdio.WriteLine("code generated on {0}", Path.GetFullPath(file));
-                }
-                catch (Exception ex)
-                {
-                    stdio.WriteLine(ex.Message);
-                }
-            }
-        }
 
         private static Field CreateDictionaryField(DataTable dt, string cname, string[] columns)
         {
@@ -291,5 +327,42 @@ namespace sqlcon
 
             return field;
         }
+
+
+        private void ExportEnum(DataTable dt)
+        {
+            CSharpBuilder builder = new CSharpBuilder()
+            {
+                nameSpace = ns
+            };
+
+            string cname = ClassName(dt.TableName);
+            builder.AddUsing("Sys.Data");
+
+            var rows = dt
+                .AsEnumerable()
+                .Select(row => new
+                {
+                    Category = row.Field<string>("Category"),
+                    Feature = row.Field<string>("Feature"),
+                    Value = row.Field<int>("Value"),
+                    Label = row.Field<string>("Label")
+                });
+
+            var groups = rows.GroupBy(row => row.Category);
+
+            foreach (var group in groups)
+            {
+                var _enum = new Sys.CodeBuilder.Enum(group.First().Category);
+                foreach (var row in group)
+                    _enum.Add(row.Feature, row.Value, row.Label);
+
+                builder.AddEnum(_enum);
+            }
+
+            PrintOutput(builder, cname);
+
+        }
+
     }
 }
