@@ -1034,7 +1034,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("   /c#      : generate C# data from last result");
                 stdio.WriteLine("      [/ns:name] default name space is defined on the .cfg");
                 stdio.WriteLine("      [/class:name] default class name is defined on the .cfg");
-                stdio.WriteLine("      [/type:dict] data type, default is list");
+                stdio.WriteLine("      [/type:dict|list|enum|key] data type, default is list");
                 stdio.WriteLine("      [/out:path] output path");
                 return;
             }

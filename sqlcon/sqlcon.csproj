@@ -103,6 +103,7 @@
   <ItemGroup>
     <Compile Include="Batch.cs" />
     <Compile Include="CancelableWork.cs" />
+    <Compile Include="ClassBuilder\DataClassBuilder.cs" />
     <Compile Include="Data\CsvFile.cs" />
     <Compile Include="Data\DuplicatedTable.cs" />
     <Compile Include="ClassBuilder\EntityClassBuilder.cs" />
