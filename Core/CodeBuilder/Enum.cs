@@ -27,7 +27,7 @@ namespace Sys.CodeBuilder
 
 
         public Enum(string enumName)
-            :base(enumName)
+            : base(enumName)
         {
             type = new TypeInfo { userType = "enum" };
         }
@@ -44,7 +44,9 @@ namespace Sys.CodeBuilder
 
         public void Add(string feature, int value, string label)
         {
-            statements.AppendLine($"[DataEnum(\"{label}\")]");
+            if (label != null)
+                statements.AppendLine($"[DataEnum(\"{label}\")]");
+
             statements.AppendLine($"{feature} = {value},");
             statements.AppendLine();
         }

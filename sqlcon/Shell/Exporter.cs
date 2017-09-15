@@ -563,60 +563,9 @@ namespace sqlcon
             }
         }
 
-        public void ExportEnum(Command cmd)
-        {
-
-            DataTable dt = ShellHistory.LastOrCurrentTable(tname);
-
-            if (dt == null)
-            {
-                stdio.ErrorFormat("data table cannot find, use command type or select first");
-                return;
-            }
-
-            string path = cfg.GetValue<string>("de.path", $"{Configuration.MyDocuments}\\DataModel\\DataEnum");
-            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("de.ns", "Sys.DataModel.DataEnum");
-
-            CSharpBuilder builder = new CSharpBuilder()
-            {
-                nameSpace = ns
-            };
-            builder.AddUsing("Sys.Data");
-
-            var rows = dt
-                .AsEnumerable()
-                .Select(row => new
-                {
-                    Category = row.Field<string>("Category"),
-                    Feature = row.Field<string>("Feature"),
-                    Value = row.Field<int>("Value"),
-                    Label = row.Field<string>("Label")
-                });
-
-            var groups = rows.GroupBy(row => row.Category);
-
-            foreach (var group in groups)
-            {
-                var _enum = new Sys.CodeBuilder.Enum(group.First().Category);
-                foreach (var row in group)
-                    _enum.Add(row.Feature, row.Value, row.Label);
-
-                builder.AddEnum(_enum);
-            }
-
-
-            string filename = "DataEnum";
-
-            string code = builder.ToString();
-            string file = Path.ChangeExtension(Path.Combine(path, filename), "cs");
-            code.WriteIntoFile(file);
-            stdio.WriteLine("code generated on {0}", file);
-
-        }
-
-
+       
         /// <summary>
-        /// create C# data from data table
+        /// create C# data class from data table
         /// </summary>
         /// <param name="cmd"></param>
         public void ExportCSharpData(Command cmd)

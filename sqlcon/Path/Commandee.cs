@@ -1015,7 +1015,6 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("   /schema  : generate database schema xml file");
                 stdio.WriteLine("   /data    : generate database/table data xml file");
                 stdio.WriteLine("   /dpo     : generate C# table class");
-                stdio.WriteLine("   /enum    : generate C# enum class");
                 stdio.WriteLine("   /l2s     : generate C# Linq to SQL class");
                 stdio.WriteLine("   /dc1     : generate C# data contract class and extension class from last result");
                 stdio.WriteLine("   /dc2     : generate C# data contract class from last result");
@@ -1036,6 +1035,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("      [/class:name] default class name is defined on the .cfg");
                 stdio.WriteLine("      [/type:dict|list|enum|key] data type, default is list");
                 stdio.WriteLine("      [/out:path] output path");
+                stdio.WriteLine("      [/aggregate] create aggregation keys, used for /type:key only");
                 return;
             }
 
@@ -1064,8 +1064,6 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     exporter.ExportData(cmd);
                 else if (cmd.Has("dpo"))
                     exporter.ExportClass(cmd);
-                else if (cmd.Has("enum"))
-                    exporter.ExportEnum(cmd);
                 else if (cmd.Has("csv"))
                     exporter.ExportCsvFile(cmd);
                 else if (cmd.Has("dc1"))

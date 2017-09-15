@@ -129,6 +129,7 @@ namespace sqlcon
 
         public void ExportConfigKey(DataTable dt)
         {
+            bool aggregationKey = cmd.Has("aggregate");
             var builder = new CSharpBuilder { nameSpace = ns };
             builder.AddUsing("System.Collections.Generic");
 
@@ -151,17 +152,23 @@ namespace sqlcon
                 else
                     key = row[0].ToString();
 
-                string[] items = key.Split('.');
 
-                if (items.Length > 1)
+                //Aggregation key, 
+                // key = "a.b.c" will create 3 keys, A, A_B, A_B_C
+                if (aggregationKey)
                 {
-                    for (int i = 0; i < items.Length - 1; i++)
-                    {
-                        string _key = string.Join(".", items.Take(i + 1));
-                        if (keys.IndexOf(_key) < 0)
-                            keys.Add(_key);
-                    }
+                    string[] items = key.Split('.');
 
+                    if (items.Length > 1)
+                    {
+                        for (int i = 0; i < items.Length - 1; i++)
+                        {
+                            string _key = string.Join(".", items.Take(i + 1));
+                            if (keys.IndexOf(_key) < 0)
+                                keys.Add(_key);
+                        }
+
+                    }
                 }
 
                 keys.Add(key);
@@ -331,30 +338,81 @@ namespace sqlcon
 
         private void ExportEnum(DataTable dt)
         {
+            int count = dt.Columns.Count;
+            if (count < 2)
+            {
+                stdio.Error("cannot generate enum class because table is < 2 columns");
+                return;
+            }
+
             CSharpBuilder builder = new CSharpBuilder()
             {
                 nameSpace = ns
             };
 
             string cname = ClassName(dt.TableName);
-            builder.AddUsing("Sys.Data");
+            if (count > 2)
+                builder.AddUsing("Sys.Data");
+
+            DataColumn _feature = null;     //1st string column as property name
+            DataColumn _value = null;       //1st int column as property value
+            DataColumn _label = null;       //2nd string column as attribute [DataEnum("label")]
+            DataColumn _category = null;    //3rd string column as category to generate multiple enum types
+            foreach (DataColumn column in dt.Columns)
+            {
+                if (column.DataType == typeof(string))
+                {
+                    if (_feature == null)
+                        _feature = column;
+                    else if (_label == null)
+                        _label = column;
+                    else if (_category == null)
+                        _category = column;
+                }
+
+                if (_value == null && column.DataType == typeof(int))
+                    _value = column;
+            }
+
+            if (_feature == null)
+            {
+                stdio.Error("invalid enum property name");
+                return;
+            }
+
+            if (_value == null)
+            {
+                stdio.Error("invalid enum property value");
+                return;
+            }
 
             var rows = dt
                 .AsEnumerable()
                 .Select(row => new
                 {
-                    Category = row.Field<string>("Category"),
-                    Feature = row.Field<string>("Feature"),
-                    Value = row.Field<int>("Value"),
-                    Label = row.Field<string>("Label")
+                    Feature = row.Field<string>(_feature),
+                    Value = row.Field<int>(_value),
+                    Category = _category != null ? row.Field<string>(_category) : null,
+                    Label = _label != null ? row.Field<string>(_label) : null
                 });
 
-            var groups = rows.GroupBy(row => row.Category);
-
-            foreach (var group in groups)
+            if (_category != null)
             {
-                var _enum = new Sys.CodeBuilder.Enum(group.First().Category);
-                foreach (var row in group)
+                var groups = rows.GroupBy(row => row.Category);
+
+                foreach (var group in groups)
+                {
+                    var _enum = new Sys.CodeBuilder.Enum(group.First().Category);
+                    foreach (var row in group)
+                        _enum.Add(row.Feature, row.Value, row.Label);
+
+                    builder.AddEnum(_enum);
+                }
+            }
+            else
+            {
+                var _enum = new Sys.CodeBuilder.Enum(cname);
+                foreach (var row in rows)
                     _enum.Add(row.Feature, row.Value, row.Label);
 
                 builder.AddEnum(_enum);
