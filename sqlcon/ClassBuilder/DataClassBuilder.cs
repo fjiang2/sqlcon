@@ -4,11 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
-using System.IO;
 
-using Sys;
 using Sys.Data;
-using Sys.Data.Comparison;
 using Sys.Data.Manager;
 using Sys.CodeBuilder;
 
@@ -23,17 +20,18 @@ namespace sqlcon
         Key
     }
 
-    class DataClassBuilder
+    class DataClassBuilder : ClassMaker
     {
-        private Command cmd;
-        private TableName tname;
-        public DataClassBuilder(Command cmd, TableName tname)
+        private DataTable dt;
+
+        public DataClassBuilder(Command cmd, DataTable dt)
+            : base(cmd)
         {
             this.cmd = cmd;
-            this.tname = tname;
+            this.dt = dt;
         }
 
-        public void ExportCSharpData(DataTable dt)
+        public void ExportCSharpData()
         {
             switch (dataType)
             {
@@ -71,69 +69,43 @@ namespace sqlcon
         }
 
 
-        private string ns
+
+
+        protected override string ClassName
         {
             get
             {
-                string _ns = cmd.GetValue("ns") ?? "Sys.DataModel.Db";
-                return _ns;
-            }
-        }
+                string tableName = dt.TableName;
+                string _cname = base.ClassName;
+                if (_cname != nameof(DataTable))
+                    return _cname;
 
-        private string ClassName(string tableName)
-        {
-            string _cname = "Table";
-            if (cmd.GetValue("class") != null)
-            {
-                _cname = cmd.GetValue("class");
-            }
-            else if (!string.IsNullOrEmpty(tableName))
-            {
-                //use table name as class name
-                string name = new string(tableName.Trim().Where(ch => char.IsLetterOrDigit(ch) || ch == '_').ToArray());
-                if (name.Length > 0 && char.IsDigit(name[0]))
-                    name = $"_{name}";
-
-                if (name != string.Empty)
-                    _cname = name;
-            }
-            return _cname;
-        }
-
-
-        private void PrintOutput(CSharpBuilder builder, string cname)
-        {
-            string code = $"{builder}";
-
-            string path = cmd.GetValue("out");
-            if (path == null)
-            {
-                stdio.WriteLine(code);
-            }
-            else
-            {
-                string file = Path.ChangeExtension(Path.Combine(path, cname), "cs");
-                try
+                if (!string.IsNullOrEmpty(tableName))
                 {
-                    code.WriteIntoFile(file);
-                    stdio.WriteLine("code generated on {0}", Path.GetFullPath(file));
+                    //use table name as class name
+                    string name = new string(tableName.Trim().Where(ch => char.IsLetterOrDigit(ch) || ch == '_').ToArray());
+                    if (name.Length > 0 && char.IsDigit(name[0]))
+                        name = $"_{name}";
+
+                    if (name != string.Empty)
+                        _cname = name;
                 }
-                catch (Exception ex)
-                {
-                    stdio.WriteLine(ex.Message);
-                }
+
+                return _cname;
             }
         }
+
+
 
 
 
         public void ExportConfigKey(DataTable dt)
         {
             bool aggregationKey = cmd.Has("aggregate");
-            var builder = new CSharpBuilder { nameSpace = ns };
+            var builder = new CSharpBuilder { nameSpace = NameSpace };
             builder.AddUsing("System.Collections.Generic");
 
-            string cname = ClassName(dt.TableName);
+            string cname = ClassName;
             var clss = new Class(cname)
             {
                 modifier = Modifier.Public
@@ -197,9 +169,9 @@ namespace sqlcon
 
             string dataclass = cmd.GetValue("dataclass") ?? "DbReadOnly";
 
-            var builder = new CSharpBuilder { nameSpace = ns };
+            var builder = new CSharpBuilder { nameSpace = NameSpace };
             builder.AddUsing("System.Collections.Generic");
-            string cname = ClassName(dt.TableName);
+            string cname = ClassName;
 
             var clss = new Class(cname)
             {
@@ -347,10 +319,10 @@ namespace sqlcon
 
             CSharpBuilder builder = new CSharpBuilder()
             {
-                nameSpace = ns
+                nameSpace = NameSpace
             };
 
-            string cname = ClassName(dt.TableName);
+            string cname = ClassName;
             if (count > 2)
                 builder.AddUsing("Sys.Data");
 

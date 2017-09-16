@@ -577,8 +577,8 @@ namespace sqlcon
                 return;
             }
 
-            var builder = new DataClassBuilder(cmd, tname);
-            builder.ExportCSharpData(dt);
+            var builder = new DataClassBuilder(cmd, dt);
+            builder.ExportCSharpData();
         }
     }
 }
