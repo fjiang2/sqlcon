@@ -112,9 +112,8 @@ namespace sqlcon
                 }
                 else if (dataType == ConfClassType.Prop)
                 {
-                    var clss = new Class(cname) { modifier = Modifier.Public | Modifier.Static | Modifier.Partial };
+                    var clss = CreateConfigSettingClass(ClassName, lines);
                     builder.AddClass(clss);
-                    CreateConfigSettingClass(clss, lines);
                 }
             }
             else if (dataType == ConfClassType.Cfg)
@@ -126,11 +125,19 @@ namespace sqlcon
                     return;
                 }
 
-                var clss = new Class(cname) { modifier = Modifier.Public | Modifier.Static | Modifier.Partial };
-                builder.AddClass(clss);
                 string code = File.ReadAllText(path);
-                var maker = new ConfigScript(code);
-                maker.Generate(clss);
+                var maker = new ConfigScript(cname, code);
+                var clss = maker.Generate();
+                builder.AddClass(clss);
+
+                var _builder = maker.CreateConstKeyClass();
+                PrintOutput(_builder, $"{cname}~1");
+
+                _builder = maker.CreateDefaultValueClass();
+                PrintOutput(_builder, $"{cname}~2");
+
+                _builder = maker.CreateGetValueClass();
+                PrintOutput(_builder, $"{cname}~3");
             }
 
             PrintOutput(builder, cname);
@@ -245,15 +252,15 @@ namespace sqlcon
         /// </summary>
         /// <param name="clss"></param>
         /// <param name="lines"></param>
-        private void CreateConfigSettingClass(Class clss, List<KeyLine> lines)
+        private Class CreateConfigSettingClass(string cname, List<KeyLine> lines)
         {
             StringBuilder builder = new StringBuilder();
             foreach (var line in lines)
             {
                 builder.AppendLine($"{line.Key}={line.DefaultValue};");
             }
-            var maker = new ConfigScript(builder.ToString());
-            maker.Generate(clss);
+            var maker = new ConfigScript(cname, builder.ToString());
+            return maker.Generate();
         }
 
 
