@@ -8,6 +8,7 @@ using System.Data;
 using Sys.Data;
 using Sys.Data.Manager;
 using Sys.CodeBuilder;
+using Tie;
 
 namespace sqlcon
 {
@@ -97,7 +98,14 @@ namespace sqlcon
 
 
 
+        class KeyLine
+        {
+            public string Key { get; set; }
+            public string Value { get; set; }
+            public string DefaultValue { get; set; }
+            public string ConstKey => Key.Replace(".", "_").ToUpper();
 
+        }
 
         public void ExportConfigKey(DataTable dt)
         {
@@ -106,30 +114,61 @@ namespace sqlcon
             builder.AddUsing("System.Collections.Generic");
 
             string cname = ClassName;
-            var clss = new Class(cname)
-            {
-                modifier = Modifier.Public
-            };
 
-            builder.AddClass(clss);
 
-            string columnName = cmd.GetValue("col");
 
-            List<string> keys = new List<string>();
+            string columnKey = cmd.GetValue("key");
+            string columnValue = cmd.GetValue("value");
+            string defaultValue = cmd.GetValue("default");
+
+            List<KeyLine> lines = new List<KeyLine>();
             foreach (DataRow row in dt.Rows)
             {
-                string key;
-                if (columnName != null)
-                    key = row[columnName].ToString();
+
+                KeyLine line = new KeyLine();
+
+                if (columnKey != null)
+                    line.Key = row[columnKey].ToString();
                 else
-                    key = row[0].ToString();
+                    line.Key = row[0].ToString();
+
+                if (columnValue != null)
+                    line.Value = row[columnValue].ToString();
+
+                if (defaultValue != null)
+                    line.DefaultValue = row[defaultValue].ToString();
+
+                lines.Add(line);
+            }
 
 
+
+            if (columnValue == null)
+            {
+                var clss = new Class(cname) { modifier = Modifier.Public };
+                builder.AddClass(clss);
+                CreateConfigKeyClass(clss, lines, aggregationKey);
+            }
+            else if (columnKey != null && columnValue != null)
+            {
+                var clss = new Class(cname) { modifier = Modifier.Public | Modifier.Static };
+                builder.AddClass(clss);
+                CreateConfigValueClass(clss, lines);
+            }
+
+            PrintOutput(builder, cname);
+        }
+
+        private static void CreateConfigKeyClass(Class clss, List<KeyLine> lines, bool aggregationKey)
+        {
+            List<string> keys = new List<string>();
+            foreach (var line in lines)
+            {
                 //Aggregation key, 
                 // key = "a.b.c" will create 3 keys, A, A_B, A_B_C
                 if (aggregationKey)
                 {
-                    string[] items = key.Split('.');
+                    string[] items = line.Key.Split('.');
 
                     if (items.Length > 1)
                     {
@@ -143,20 +182,55 @@ namespace sqlcon
                     }
                 }
 
-                keys.Add(key);
+                keys.Add(line.Key);
             }
 
-            Field field;
+            char lastCh = lines.First().ConstKey[0];
             foreach (string key in keys)
             {
                 TypeInfo ty = new TypeInfo(typeof(string));
 
                 string fieldName = key.Replace(".", "_").ToUpper();
-                field = new Field(ty, fieldName, new Value(key)) { modifier = Modifier.Public | Modifier.Const };
+                var field = new Field(ty, fieldName, new Value(key)) { modifier = Modifier.Public | Modifier.Const };
                 clss.Add(field);
-            }
 
-            PrintOutput(builder, cname);
+                if (lastCh != key[0])
+                    clss.AppendLine();
+
+                lastCh = key[0];
+            }
+        }
+
+        private void CreateConfigValueClass(Class clss, List<KeyLine> lines)
+        {
+
+            char lastCh = lines.First().ConstKey[0];
+            foreach (var line in lines)
+            {
+                VAL val = Script.Evaluate(line.Value);
+                Type type = typeof(string);
+                if (val.Value != null)
+                    type = val.Value.GetType();
+
+                TypeInfo ty = new TypeInfo(type);
+
+                string expr;
+                if (line.DefaultValue != null)
+                    expr = $"GetValue<{ty}>(ConfigKey.{line.ConstKey}, {line.DefaultValue})";
+                else
+                    expr = $"GetValue<{ty}>(ConfigKey.{line.ConstKey})";
+
+                //    Property prop = new Property(ty, line.ConstKey) { modifier = Modifier.Public | Modifier.Static };
+                //   prop.Expression = 
+
+                Field field = new Field(ty, line.ConstKey) { modifier = Modifier.Public | Modifier.Static | Modifier.Readonly, userValue = expr };
+                clss.Add(field);
+
+                if (lastCh != line.ConstKey[0])
+                    clss.AppendLine();
+
+                lastCh = line.ConstKey[0];
+            }
         }
 
 

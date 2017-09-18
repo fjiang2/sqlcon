@@ -84,11 +84,17 @@ namespace Sys.CodeBuilder
             }
         }
 
+        public string Expression { get; set; }
+
         protected override void BuildBlock(CodeBlock block)
         {
             base.BuildBlock(block);
 
-            if (gets.Count == 0 && sets.Count == 0)
+            if (Expression != null)
+            {
+                block.AppendFormat("{0}{1}", $"{Signature} => {Expression};", comment);
+            }
+            else if (gets.Count == 0 && sets.Count == 0)
             {
                 block.AppendFormat("{0}{1}", $"{Signature} {{ {get}; {set}; }}", comment);
             }

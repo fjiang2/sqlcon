@@ -577,6 +577,12 @@ namespace sqlcon
                 return;
             }
 
+            if (dt.Rows.Count == 0)
+            {
+                stdio.ErrorFormat("no rows found");
+                return;
+            }
+
             var builder = new DataClassBuilder(cmd, dt);
             builder.ExportCSharpData();
         }
