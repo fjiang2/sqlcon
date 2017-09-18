@@ -1033,9 +1033,19 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("   /c#      : generate C# data from last result");
                 stdio.WriteLine("      [/ns:name] default name space is defined on the .cfg");
                 stdio.WriteLine("      [/class:name] default class name is defined on the .cfg");
-                stdio.WriteLine("      [/type:dict|list|enum|key] data type, default is list");
+                stdio.WriteLine("      [/type:dict|list|enum] data type, default is list");
                 stdio.WriteLine("      [/out:path] output path");
-                stdio.WriteLine("      [/aggregate] create aggregation keys, used for /type:key only");
+                stdio.WriteLine("   /conf    : generate Config reading class from last result");
+                stdio.WriteLine("      [/ns:name] default name space is defined on the .cfg");
+                stdio.WriteLine("      [/class:name] default class name is defined on the .cfg");
+                stdio.WriteLine("      [/type:const|value|prop|cfg] data type, default is const");
+                stdio.WriteLine("          const: generate const variable");
+                stdio.WriteLine("          value: generate static readonly field to return value");
+                 stdio.WriteLine("          prop: generate static property to return value");
+                stdio.WriteLine("            cfg: generate static property to return value from (.cfg)");
+                stdio.WriteLine("      [/in:path] input path(.cfg)");
+                stdio.WriteLine("      [/out:path] output path");
+                stdio.WriteLine("      [/aggregate] create aggregation keys, used for /type:const only");
                 return;
             }
 
@@ -1088,6 +1098,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 }
                 else if (cmd.ToCSharp)
                     exporter.ExportCSharpData(cmd);
+                else if (cmd.Has("conf"))
+                    exporter.ExportConf(cmd);
                 else
                     stdio.ErrorFormat("invalid command options");
             }

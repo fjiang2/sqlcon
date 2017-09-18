@@ -586,5 +586,24 @@ namespace sqlcon
             var builder = new DataClassBuilder(cmd, dt);
             builder.ExportCSharpData();
         }
+
+        public void ExportConf(Command cmd)
+        {
+            var dt = ShellHistory.LastOrCurrentTable(tname);
+            if (dt == null)
+            {
+                stdio.ErrorFormat("display data table first by sql clause or command [type]");
+                return;
+            }
+
+            if (dt.Rows.Count == 0)
+            {
+                stdio.ErrorFormat("no rows found");
+                return;
+            }
+
+            var builder = new ConfClassBuilder(cmd, dt);
+            builder.ExportCSharpData();
+        }
     }
 }

@@ -14,7 +14,9 @@ namespace sqlcon
     {
         private Memory DS = new Memory();
 
-        public static string ToConstKey(string key) => key.Replace(".", "_").ToUpper();
+        public static string ToKey(string key) => key.Replace(".", "_").ToUpper();
+        public static string ToConstKey(string key) => "_" + ToKey(key);
+        public static string ToDefaultKey(string key) => "__" + ToKey(key);
 
         public ConfigScript(string code)
         {
@@ -67,9 +69,12 @@ namespace sqlcon
             TypeInfo ty = new TypeInfo(type);
             Property prop = new Property(ty, key) { modifier = Modifier.Public | Modifier.Static };
 
-            string var = $"{prefix }.{key}";
-            string constKey = "_" + ToConstKey(var);
-            string defaultKey = "__" + ToConstKey(var);
+            string var = $"{prefix}.{key}";
+            if (prefix == string.Empty)
+                var = key;
+
+            string constKey = ToConstKey(var);
+            string defaultKey = ToDefaultKey(var);
             prop.Expression = $"tw.Common.Config.GetValue<{ty}>({constKey}, {defaultKey})";
 
 
