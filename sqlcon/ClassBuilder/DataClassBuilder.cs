@@ -97,14 +97,14 @@ namespace sqlcon
         }
 
 
-
+        #region Config Key
         class KeyLine
         {
             public string Key { get; set; }
-            public string Value { get; set; }
             public string DefaultValue { get; set; }
-            public string ConstKey => Key.Replace(".", "_").ToUpper();
+            public string ConstKey => ToConstKey(Key);
 
+            public static string ToConstKey(string key) => key.Replace(".", "_").ToUpper();
         }
 
         public void ExportConfigKey(DataTable dt)
@@ -115,10 +115,7 @@ namespace sqlcon
 
             string cname = ClassName;
 
-
-
             string columnKey = cmd.GetValue("key");
-            string columnValue = cmd.GetValue("value");
             string defaultValue = cmd.GetValue("default");
 
             List<KeyLine> lines = new List<KeyLine>();
@@ -132,9 +129,6 @@ namespace sqlcon
                 else
                     line.Key = row[0].ToString();
 
-                if (columnValue != null)
-                    line.Value = row[columnValue].ToString();
-
                 if (defaultValue != null)
                     line.DefaultValue = row[defaultValue].ToString();
 
@@ -143,17 +137,26 @@ namespace sqlcon
 
 
 
-            if (columnValue == null)
+            if (cname == "ConfigKey")
             {
                 var clss = new Class(cname) { modifier = Modifier.Public };
                 builder.AddClass(clss);
                 CreateConfigKeyClass(clss, lines, aggregationKey);
             }
-            else if (columnKey != null && columnValue != null)
+            else if (columnKey != null && defaultValue != null)
             {
-                var clss = new Class(cname) { modifier = Modifier.Public | Modifier.Static };
-                builder.AddClass(clss);
-                CreateConfigValueClass(clss, lines);
+                if (cname == "ConfigValue")
+                {
+                    var clss = new Class(cname) { modifier = Modifier.Public | Modifier.Static };
+                    builder.AddClass(clss);
+                    CreateConfigValueClass(clss, lines);
+                }
+                else
+                {
+                    var clss = new Class(cname) { modifier = Modifier.Public | Modifier.Static };
+                    builder.AddClass(clss);
+                    CreateConfigSettingClass(clss, lines);
+                }
             }
 
             PrintOutput(builder, cname);
@@ -190,7 +193,7 @@ namespace sqlcon
             {
                 TypeInfo ty = new TypeInfo(typeof(string));
 
-                string fieldName = key.Replace(".", "_").ToUpper();
+                string fieldName = KeyLine.ToConstKey(key);
                 var field = new Field(ty, fieldName, new Value(key)) { modifier = Modifier.Public | Modifier.Const };
                 clss.Add(field);
 
@@ -207,7 +210,7 @@ namespace sqlcon
             char lastCh = lines.First().ConstKey[0];
             foreach (var line in lines)
             {
-                VAL val = Script.Evaluate(line.Value);
+                VAL val = Script.Evaluate(line.DefaultValue);
                 Type type = typeof(string);
                 if (val.Value != null)
                     type = val.Value.GetType();
@@ -220,9 +223,6 @@ namespace sqlcon
                 else
                     expr = $"GetValue<{ty}>(ConfigKey.{line.ConstKey})";
 
-                //    Property prop = new Property(ty, line.ConstKey) { modifier = Modifier.Public | Modifier.Static };
-                //   prop.Expression = 
-
                 Field field = new Field(ty, line.ConstKey) { modifier = Modifier.Public | Modifier.Static | Modifier.Readonly, userValue = expr };
                 clss.Add(field);
 
@@ -232,6 +232,61 @@ namespace sqlcon
                 lastCh = line.ConstKey[0];
             }
         }
+
+        /// <summary>
+        /// create static class Setting 
+        /// </summary>
+        /// <param name="clss"></param>
+        /// <param name="lines"></param>
+        private void CreateConfigSettingClass(Class clss, List<KeyLine> lines)
+        {
+            Memory DS = new Memory();
+            foreach (var line in lines)
+            {
+                VAL val = Script.Execute($"{line.Key}={line.DefaultValue};", DS);
+            }
+
+            foreach (VAR var in DS.Names)
+            {
+                VAL val = DS[var];
+                createConfigKeyMap(clss, string.Empty, (string)var, val);
+            }
+        }
+
+        private void createConfigKeyMap(Class clss, string prefix, string key, VAL val)
+        {
+            if (val.IsAssociativeArray())
+            {
+                var clss1 = new Class(key) { modifier = Modifier.Public | Modifier.Static };
+                clss.Add(clss1);
+
+                if (prefix != string.Empty)
+                    prefix = $"{prefix}.{key}";
+                else
+                    prefix = key;
+
+                foreach (var member in val.Members)
+                {
+                    createConfigKeyMap(clss1, prefix, member.Name, member.Value);
+                    continue;
+                }
+
+                return;
+            }
+
+            Type type = typeof(string);
+            if (val.Value != null)
+                type = val.Value.GetType();
+
+            TypeInfo ty = new TypeInfo(type);
+            Property prop = new Property(ty, key) { modifier = Modifier.Public | Modifier.Static };
+            string constKey = KeyLine.ToConstKey($"{prefix }.{key}");
+            prop.Expression = $"GetValue<{ty}>(ConfigKey.{constKey}, {val})"; ;
+
+            clss.Add(prop);
+        }
+
+        #endregion
 
 
         /// <summary>
