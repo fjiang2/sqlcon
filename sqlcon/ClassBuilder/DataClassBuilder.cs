@@ -212,14 +212,14 @@ namespace sqlcon
             {
                 VAL val = Script.Evaluate(line.DefaultValue);
                 Type type = typeof(string);
-                if (val.Value != null)
-                    type = val.Value.GetType();
+                if (val.HostValue != null)
+                    type = val.HostValue.GetType();
 
                 TypeInfo ty = new TypeInfo(type);
 
                 string expr;
                 if (line.DefaultValue != null)
-                    expr = $"Config.GetValue<{ty}>(_{line.ConstKey}, {line.DefaultValue})";
+                    expr = $"Config.GetValue<{ty}>(_{line.ConstKey}, __{line.ConstKey})";
                 else
                     expr = $"Config.GetValue<{ty}>(_{line.ConstKey})";
 
@@ -238,9 +238,29 @@ namespace sqlcon
             {
                 TypeInfo ty = new TypeInfo(typeof(string));
                 string fieldName = "_" + KeyLine.ToConstKey(line.Key);
-                var field = new Field(ty, fieldName, new Value(line.Key)) { modifier = Modifier.Private | Modifier.Const };
+                var field = new Field(ty, fieldName, new Value(line.Key)) { modifier = Modifier.Public | Modifier.Const };
                 clss.Add(field);
             }
+
+            clss.AppendLine();
+            foreach (var line in lines)
+            {
+                VAL val = Script.Evaluate(line.DefaultValue);
+                Type type = typeof(string);
+                if (val.HostValue != null)
+                    type = val.HostValue.GetType();
+
+                TypeInfo ty = new TypeInfo(type);
+                string fieldName = "__" + KeyLine.ToConstKey(line.Key);
+                var field = new Field(ty, fieldName)
+                {
+                    modifier = Modifier.Private | Modifier.Static | Modifier.Readonly,
+                    userValue = line.DefaultValue,
+                    comment = new Comment(line.Key) { Orientation = Orientation.Vertical }
+                };
+                clss.Add(field);
+            }
+
         }
 
         /// <summary>
@@ -267,7 +287,10 @@ namespace sqlcon
                 createConfigKeyMap(clss, string.Empty, (string)var, val, fields);
             }
 
-            foreach (Field field in fields.OrderBy(x => x.name))
+            foreach (Field field in fields.Where(x => !x.name.StartsWith("__")))
+                clss.Add(field);
+
+            foreach (Field field in fields.Where(x => x.name.StartsWith("__")))
                 clss.Add(field);
         }
 
