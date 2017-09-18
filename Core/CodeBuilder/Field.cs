@@ -44,6 +44,8 @@ namespace Sys.CodeBuilder
         protected override void BuildBlock(CodeBlock block)
         {
             base.BuildBlock(block);
+            if (comment != null)
+                block.Append(comment.ToString());
 
             if (userValue != null)
             {

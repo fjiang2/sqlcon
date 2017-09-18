@@ -135,7 +135,7 @@ namespace sqlcon
                 lines.Add(line);
             }
 
-
+            lines = lines.OrderBy(x => x.Key).ToList();
 
             if (cname == "ConfigKey")
             {
@@ -206,7 +206,6 @@ namespace sqlcon
 
         private void CreateConfigValueClass(Class clss, List<KeyLine> lines)
         {
-
             char lastCh = lines.First().ConstKey[0];
             foreach (var line in lines)
             {
@@ -219,9 +218,9 @@ namespace sqlcon
 
                 string expr;
                 if (line.DefaultValue != null)
-                    expr = $"GetValue<{ty}>(ConfigKey.{line.ConstKey}, {line.DefaultValue})";
+                    expr = $"Config.GetValue<{ty}>(_{line.ConstKey}, {line.DefaultValue})";
                 else
-                    expr = $"GetValue<{ty}>(ConfigKey.{line.ConstKey})";
+                    expr = $"Config.GetValue<{ty}>(_{line.ConstKey})";
 
                 Field field = new Field(ty, line.ConstKey) { modifier = Modifier.Public | Modifier.Static | Modifier.Readonly, userValue = expr };
                 clss.Add(field);
@@ -230,6 +229,16 @@ namespace sqlcon
                     clss.AppendLine();
 
                 lastCh = line.ConstKey[0];
+            }
+
+            clss.AppendLine();
+
+            foreach (var line in lines)
+            {
+                TypeInfo ty = new TypeInfo(typeof(string));
+                string fieldName = "_" + KeyLine.ToConstKey(line.Key);
+                var field = new Field(ty, fieldName, new Value(line.Key)) { modifier = Modifier.Private | Modifier.Const };
+                clss.Add(field);
             }
         }
 
@@ -240,12 +249,32 @@ namespace sqlcon
         /// <param name="lines"></param>
         private void CreateConfigSettingClass(Class clss, List<KeyLine> lines)
         {
+            foreach (var line in lines)
+            {
+                VAL val = Script.Evaluate(line.DefaultValue);
+
+                Type type = typeof(string);
+                if (val.Value != null)
+                    type = val.Value.GetType();
+
+                TypeInfo ty = new TypeInfo(type);
+                string fieldName = "_" + KeyLine.ToConstKey(line.Key);
+                var field = new Field(ty, fieldName)
+                {
+                    modifier = Modifier.Private | Modifier.Readonly | Modifier.Static,
+                    userValue = line.DefaultValue,
+                    comment = new Comment(line.Key)
+                };
+
+                clss.Add(field);
+            }
+
+
             Memory DS = new Memory();
             foreach (var line in lines)
             {
                 VAL val = Script.Execute($"{line.Key}={line.DefaultValue};", DS);
             }
-
             foreach (VAR var in DS.Names)
             {
                 VAL val = DS[var];
@@ -260,10 +289,10 @@ namespace sqlcon
                 var clss1 = new Class(key) { modifier = Modifier.Public | Modifier.Static };
                 clss.Add(clss1);
 
-                if (prefix != string.Empty)
-                    prefix = $"{prefix}.{key}";
-                else
+                if (prefix == string.Empty)
                     prefix = key;
+                else
+                    prefix = $"{prefix}.{key}";
 
                 foreach (var member in val.Members)
                 {
@@ -280,8 +309,10 @@ namespace sqlcon
 
             TypeInfo ty = new TypeInfo(type);
             Property prop = new Property(ty, key) { modifier = Modifier.Public | Modifier.Static };
-            string constKey = KeyLine.ToConstKey($"{prefix }.{key}");
-            prop.Expression = $"GetValue<{ty}>(ConfigKey.{constKey}, {val})"; ;
+
+            string var = $"{prefix }.{key}";
+            string constKey = "_" + KeyLine.ToConstKey(var);
+            prop.Expression = $"Config.GetValue<{ty}>(\"{var}\", {constKey})";
 
             clss.Add(prop);
         }
