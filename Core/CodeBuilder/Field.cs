@@ -44,12 +44,22 @@ namespace Sys.CodeBuilder
         protected override void BuildBlock(CodeBlock block)
         {
             base.BuildBlock(block);
+
+            string _comment = string.Empty;
             if (comment != null)
-                block.Append(comment.ToString());
+            {
+                _comment = comment.ToString();
+
+                if (comment.Orientation == Orientation.Vertical)
+                {
+                    block.Append(_comment);
+                    _comment = string.Empty;
+                }
+            }
 
             if (userValue != null)
             {
-                block.AppendFormat("{0} = {1};", Signature, userValue);
+                block.AppendLine($"{Signature} = {userValue};{_comment}");
             }
             else if (value != null)
             {
@@ -60,7 +70,7 @@ namespace Sys.CodeBuilder
             }
             else
             {
-                block.AppendLine(Signature + ";");
+                block.AppendLine($"{Signature};{_comment}");
             }
 
         }

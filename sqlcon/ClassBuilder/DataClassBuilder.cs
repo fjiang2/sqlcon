@@ -111,6 +111,7 @@ namespace sqlcon
         {
             bool aggregationKey = cmd.Has("aggregate");
             var builder = new CSharpBuilder { nameSpace = NameSpace };
+            builder.AddUsing("System");
             builder.AddUsing("System.Collections.Generic");
 
             string cname = ClassName;
@@ -249,40 +250,28 @@ namespace sqlcon
         /// <param name="lines"></param>
         private void CreateConfigSettingClass(Class clss, List<KeyLine> lines)
         {
-            foreach (var line in lines)
-            {
-                VAL val = Script.Evaluate(line.DefaultValue);
-
-                Type type = typeof(string);
-                if (val.Value != null)
-                    type = val.Value.GetType();
-
-                TypeInfo ty = new TypeInfo(type);
-                string fieldName = "_" + KeyLine.ToConstKey(line.Key);
-                var field = new Field(ty, fieldName)
-                {
-                    modifier = Modifier.Private | Modifier.Readonly | Modifier.Static,
-                    userValue = line.DefaultValue,
-                    comment = new Comment(line.Key)
-                };
-
-                clss.Add(field);
-            }
-
-
             Memory DS = new Memory();
             foreach (var line in lines)
             {
                 VAL val = Script.Execute($"{line.Key}={line.DefaultValue};", DS);
             }
+            CreateVALKey(clss, DS);
+        }
+
+        private void CreateVALKey(Class clss, Memory DS)
+        {
+            List<Field> fields = new List<Field>();
             foreach (VAR var in DS.Names)
             {
                 VAL val = DS[var];
-                createConfigKeyMap(clss, string.Empty, (string)var, val);
+                createConfigKeyMap(clss, string.Empty, (string)var, val, fields);
             }
+
+            foreach (Field field in fields.OrderBy(x => x.name))
+                clss.Add(field);
         }
 
-        private void createConfigKeyMap(Class clss, string prefix, string key, VAL val)
+        private void createConfigKeyMap(Class clss, string prefix, string key, VAL val, List<Field> fields)
         {
             if (val.IsAssociativeArray())
             {
@@ -296,7 +285,7 @@ namespace sqlcon
 
                 foreach (var member in val.Members)
                 {
-                    createConfigKeyMap(clss1, prefix, member.Name, member.Value);
+                    createConfigKeyMap(clss1, prefix, member.Name, member.Value, fields);
                     continue;
                 }
 
@@ -304,16 +293,36 @@ namespace sqlcon
             }
 
             Type type = typeof(string);
-            if (val.Value != null)
-                type = val.Value.GetType();
+            if (val.HostValue != null)
+            {
+                type = val.HostValue.GetType();
+            }
 
             TypeInfo ty = new TypeInfo(type);
             Property prop = new Property(ty, key) { modifier = Modifier.Public | Modifier.Static };
 
             string var = $"{prefix }.{key}";
             string constKey = "_" + KeyLine.ToConstKey(var);
-            prop.Expression = $"Config.GetValue<{ty}>(\"{var}\", {constKey})";
+            string defaultKey = "__" + KeyLine.ToConstKey(var);
+            prop.Expression = $"tw.Common.Config.GetValue<{ty}>({constKey}, {defaultKey})";
 
+
+            //const key
+            Field field = new Field(new TypeInfo(typeof(string)), constKey, new Value(var))
+            {
+                modifier = Modifier.Public | Modifier.Const,
+            };
+            fields.Add(field);
+
+            //default value
+            field = new Field(ty, defaultKey)
+            {
+                modifier = Modifier.Private | Modifier.Readonly | Modifier.Static,
+                userValue = val.ToString(),
+                comment = new Comment(var) { Orientation = Orientation.Vertical }
+            };
+
+            fields.Add(field);
             clss.Add(prop);
         }
 
