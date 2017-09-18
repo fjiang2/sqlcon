@@ -102,9 +102,8 @@ namespace sqlcon
         {
             public string Key { get; set; }
             public string DefaultValue { get; set; }
-            public string ConstKey => ToConstKey(Key);
+            public string ConstKey => ConfigScript.ToConstKey(Key);
 
-            public static string ToConstKey(string key) => key.Replace(".", "_").ToUpper();
         }
 
         public void ExportConfigKey(DataTable dt)
@@ -194,7 +193,7 @@ namespace sqlcon
             {
                 TypeInfo ty = new TypeInfo(typeof(string));
 
-                string fieldName = KeyLine.ToConstKey(key);
+                string fieldName = ConfigScript.ToConstKey(key);
                 var field = new Field(ty, fieldName, new Value(key)) { modifier = Modifier.Public | Modifier.Const };
                 clss.Add(field);
 
@@ -207,6 +206,8 @@ namespace sqlcon
 
         private void CreateConfigValueClass(Class clss, List<KeyLine> lines)
         {
+
+            //generate static variable = GetValue<T>(...)
             char lastCh = lines.First().ConstKey[0];
             foreach (var line in lines)
             {
@@ -232,16 +233,18 @@ namespace sqlcon
                 lastCh = line.ConstKey[0];
             }
 
-            clss.AppendLine();
 
+            //generate const key
+            clss.AppendLine();
             foreach (var line in lines)
             {
                 TypeInfo ty = new TypeInfo(typeof(string));
-                string fieldName = "_" + KeyLine.ToConstKey(line.Key);
+                string fieldName = "_" + ConfigScript.ToConstKey(line.Key);
                 var field = new Field(ty, fieldName, new Value(line.Key)) { modifier = Modifier.Public | Modifier.Const };
                 clss.Add(field);
             }
 
+            //generate default value
             clss.AppendLine();
             foreach (var line in lines)
             {
@@ -251,7 +254,7 @@ namespace sqlcon
                     type = val.HostValue.GetType();
 
                 TypeInfo ty = new TypeInfo(type);
-                string fieldName = "__" + KeyLine.ToConstKey(line.Key);
+                string fieldName = "__" + ConfigScript.ToConstKey(line.Key);
                 var field = new Field(ty, fieldName)
                 {
                     modifier = Modifier.Private | Modifier.Static | Modifier.Readonly,
@@ -270,83 +273,13 @@ namespace sqlcon
         /// <param name="lines"></param>
         private void CreateConfigSettingClass(Class clss, List<KeyLine> lines)
         {
-            Memory DS = new Memory();
+            StringBuilder builder = new StringBuilder();
             foreach (var line in lines)
             {
-                VAL val = Script.Execute($"{line.Key}={line.DefaultValue};", DS);
+                builder.AppendLine($"{line.Key}={line.DefaultValue};");
             }
-            CreateVALKey(clss, DS);
-        }
-
-        private void CreateVALKey(Class clss, Memory DS)
-        {
-            List<Field> fields = new List<Field>();
-            foreach (VAR var in DS.Names)
-            {
-                VAL val = DS[var];
-                createConfigKeyMap(clss, string.Empty, (string)var, val, fields);
-            }
-
-            foreach (Field field in fields.Where(x => !x.name.StartsWith("__")))
-                clss.Add(field);
-
-            foreach (Field field in fields.Where(x => x.name.StartsWith("__")))
-                clss.Add(field);
-        }
-
-        private void createConfigKeyMap(Class clss, string prefix, string key, VAL val, List<Field> fields)
-        {
-            if (val.IsAssociativeArray())
-            {
-                var clss1 = new Class(key) { modifier = Modifier.Public | Modifier.Static };
-                clss.Add(clss1);
-
-                if (prefix == string.Empty)
-                    prefix = key;
-                else
-                    prefix = $"{prefix}.{key}";
-
-                foreach (var member in val.Members)
-                {
-                    createConfigKeyMap(clss1, prefix, member.Name, member.Value, fields);
-                    continue;
-                }
-
-                return;
-            }
-
-            Type type = typeof(string);
-            if (val.HostValue != null)
-            {
-                type = val.HostValue.GetType();
-            }
-
-            TypeInfo ty = new TypeInfo(type);
-            Property prop = new Property(ty, key) { modifier = Modifier.Public | Modifier.Static };
-
-            string var = $"{prefix }.{key}";
-            string constKey = "_" + KeyLine.ToConstKey(var);
-            string defaultKey = "__" + KeyLine.ToConstKey(var);
-            prop.Expression = $"tw.Common.Config.GetValue<{ty}>({constKey}, {defaultKey})";
-
-
-            //const key
-            Field field = new Field(new TypeInfo(typeof(string)), constKey, new Value(var))
-            {
-                modifier = Modifier.Public | Modifier.Const,
-            };
-            fields.Add(field);
-
-            //default value
-            field = new Field(ty, defaultKey)
-            {
-                modifier = Modifier.Private | Modifier.Readonly | Modifier.Static,
-                userValue = val.ToString(),
-                comment = new Comment(var) { Orientation = Orientation.Vertical }
-            };
-
-            fields.Add(field);
-            clss.Add(prop);
+            var maker = new ConfigScript(builder.ToString());
+            maker.Generate(clss);
         }
 
         #endregion
@@ -587,4 +520,6 @@ namespace sqlcon
         }
 
     }
+
+
 }

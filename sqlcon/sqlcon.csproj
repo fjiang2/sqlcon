@@ -105,6 +105,7 @@
     <Compile Include="CancelableWork.cs" />
     <Compile Include="ClassBuilder\ClassMaker.cs" />
     <Compile Include="ClassBuilder\DataClassBuilder.cs" />
+    <Compile Include="ClassBuilder\ConfigScript.cs" />
     <Compile Include="Data\CsvFile.cs" />
     <Compile Include="Data\DuplicatedTable.cs" />
     <Compile Include="ClassBuilder\EntityClassBuilder.cs" />
