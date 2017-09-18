@@ -58,32 +58,6 @@ namespace sqlcon
 
 
 
-
-        protected override string ClassName
-        {
-            get
-            {
-                string tableName = dt.TableName;
-                string _cname = base.ClassName;
-                if (_cname != nameof(DataTable))
-                    return _cname;
-
-                if (!string.IsNullOrEmpty(tableName))
-                {
-                    //use table name as class name
-                    string name = new string(tableName.Trim().Where(ch => char.IsLetterOrDigit(ch) || ch == '_').ToArray());
-                    if (name.Length > 0 && char.IsDigit(name[0]))
-                        name = $"_{name}";
-
-                    if (name != string.Empty)
-                        _cname = name;
-                }
-
-                return _cname;
-            }
-        }
-
-
         class KeyLine
         {
             public string Key { get; set; }
@@ -132,13 +106,13 @@ namespace sqlcon
             {
                 if (dataType == ConfClassType.Value)
                 {
-                    var clss = new Class(cname) { modifier = Modifier.Public | Modifier.Static };
+                    var clss = new Class(cname) { modifier = Modifier.Public | Modifier.Static | Modifier.Partial };
                     builder.AddClass(clss);
                     CreateConfigValueClass(clss, lines);
                 }
                 else if (dataType == ConfClassType.Prop)
                 {
-                    var clss = new Class(cname) { modifier = Modifier.Public | Modifier.Static };
+                    var clss = new Class(cname) { modifier = Modifier.Public | Modifier.Static | Modifier.Partial };
                     builder.AddClass(clss);
                     CreateConfigSettingClass(clss, lines);
                 }
@@ -152,7 +126,7 @@ namespace sqlcon
                     return;
                 }
 
-                var clss = new Class(cname) { modifier = Modifier.Public | Modifier.Static };
+                var clss = new Class(cname) { modifier = Modifier.Public | Modifier.Static | Modifier.Partial };
                 builder.AddClass(clss);
                 string code = File.ReadAllText(path);
                 var maker = new ConfigScript(code);
@@ -220,9 +194,9 @@ namespace sqlcon
 
                 string expr;
                 if (line.DefaultValue != null)
-                    expr = $"Config.GetValue<{ty}>({ConfigScript.ToConstKey(line.Key)}, {ConfigScript.ToDefaultKey(line.Key)})";
+                    expr = $"GetValue<{ty}>({ConfigScript.ToConstKey(line.Key)}, {ConfigScript.ToDefaultKey(line.Key)})";
                 else
-                    expr = $"Config.GetValue<{ty}>({ConfigScript.ToConstKey(line.Key)})";
+                    expr = $"GetValue<{ty}>({ConfigScript.ToConstKey(line.Key)})";
 
                 Field field = new Field(ty, ConfigScript.ToKey(line.Key)) { modifier = Modifier.Public | Modifier.Static | Modifier.Readonly, userValue = expr };
                 clss.Add(field);

@@ -46,7 +46,7 @@ namespace Sys.CodeBuilder
 
             if ((modifier & Modifier.Static) == Modifier.Static)
                 s.Append("static ");
-            else if ((modifier & Modifier.Partial) == Modifier.Partial)
+            if ((modifier & Modifier.Partial) == Modifier.Partial)
                 s.Append("partial ");
 
 

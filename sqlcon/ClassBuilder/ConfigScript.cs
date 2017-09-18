@@ -75,7 +75,7 @@ namespace sqlcon
 
             string constKey = ToConstKey(var);
             string defaultKey = ToDefaultKey(var);
-            prop.Expression = $"tw.Common.Config.GetValue<{ty}>({constKey}, {defaultKey})";
+            prop.Expression = $"GetValue<{ty}>({constKey}, {defaultKey})";
 
 
             //const key
