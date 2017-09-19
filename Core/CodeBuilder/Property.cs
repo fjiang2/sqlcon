@@ -90,6 +90,12 @@ namespace Sys.CodeBuilder
         {
             base.BuildBlock(block);
 
+            if (comment?.alignment == Alignment.Top)
+            {
+                block.AppendFormat(comment.ToString());
+                comment.Clear();
+            }
+
             if (Expression != null)
             {
                 block.AppendFormat("{0}{1}", $"{Signature} => {Expression};", comment);

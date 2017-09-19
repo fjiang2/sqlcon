@@ -13,13 +13,17 @@ using Tie;
 
 namespace sqlcon
 {
+
+    [Flags]
     enum ConfClassType
     {
-        Undefined,
-        Const,
-        Value,
-        Prop,
-        Cfg
+        Undefined = 0x00,
+
+        ConstKey = 0x01,        //  public const string _MATH_PI = "Math.PI";
+        DefaultValue = 0x02,    //  public static double __MATH_PI = 3.14;
+        StaticField = 0x04,     //  public static double MATH_PI = GetValue<double>(_MATH_PI, __MATH_PI);
+        StaticPropery = 0x08,   //  public static double MATH_PI => GetValue<double>(_MATH_PI, __MATH_PI);
+        Hierarchy = 0x10,     //  public static Math { public static class Pi => GetValue<double>(_MATH_PI, __MATH_PI); }
     }
 
     class ConfClassBuilder : ClassMaker
@@ -35,7 +39,47 @@ namespace sqlcon
 
         public void ExportCSharpData()
         {
-            ExportConfigKey(dt, dataType);
+            string code;
+            if (cmd.GetValue("in") != null)
+                code = ReadCode();
+            else
+                code = ReadCode(dt);
+
+            if (code == null)
+                return;
+
+            var builder = new CSharpBuilder { nameSpace = NameSpace };
+            builder.AddUsing("System");
+            builder.AddUsing("System.Collections.Generic");
+            string cname = ClassName;
+
+            var maker = new ConfigScript(cname, code);
+            var clss = maker.Generate();
+            builder.AddClass(clss);
+
+            switch (dataType)
+            {
+                case ConfClassType.ConstKey:
+                    builder = CreateClass(maker.ConstKeyFields);
+                    break;
+
+                case ConfClassType.DefaultValue:
+                    builder = CreateClass(maker.DefaultValueFields);
+                    break;
+
+                case ConfClassType.StaticField:
+                    builder = CreateClass(maker.StaticFields);
+                    break;
+
+                case ConfClassType.StaticPropery:
+                    builder = CreateClass(maker.StaticProperties);
+                    break;
+
+                case ConfClassType.Hierarchy:
+                    break;
+            }
+
+            PrintOutput(builder, cname);
         }
 
 
@@ -46,226 +90,82 @@ namespace sqlcon
                 string _dataType = cmd.GetValue("type") ?? "const";
                 switch (_dataType)
                 {
-                    case "const": return ConfClassType.Const;
-                    case "value": return ConfClassType.Value;
-                    case "prop": return ConfClassType.Prop;
-                    case "cfg": return ConfClassType.Cfg;
+                    case "const":
+                        return ConfClassType.ConstKey;
+
+                    case "default":
+                        return ConfClassType.DefaultValue;
+
+                    case "field":
+                        return ConfClassType.StaticField;
+
+                    case "property":
+                        return ConfClassType.StaticPropery;
+
+                    case "hierarchy":
+                        return ConfClassType.Hierarchy;
                 }
 
                 return ConfClassType.Undefined;
             }
         }
 
-
-
-        class KeyLine
+        private CSharpBuilder CreateClass(IEnumerable<Buildable> elements)
         {
-            public string Key { get; set; }
-            public string DefaultValue { get; set; }
+            CSharpBuilder builder = new CSharpBuilder { nameSpace = NameSpace };
+            Class clss = new Class(ClassName)
+            {
+                modifier = Modifier.Public | Modifier.Static | Modifier.Partial
+            };
 
+            foreach (var element in elements)
+                clss.Add(element);
+
+            builder.AddClass(clss);
+            return builder;
         }
 
-        public void ExportConfigKey(DataTable dt, ConfClassType dataType)
+
+        private string ReadCode(DataTable dt)
         {
-            bool aggregationKey = cmd.Has("aggregate");
-            var builder = new CSharpBuilder { nameSpace = NameSpace };
-            builder.AddUsing("System");
-            builder.AddUsing("System.Collections.Generic");
-
-            string cname = ClassName;
-
             string columnKey = cmd.GetValue("key");
-            string defaultValue = cmd.GetValue("default");
+            string columnDefaultValue = cmd.GetValue("default");
 
-            List<KeyLine> lines = new List<KeyLine>();
+            StringBuilder builder = new StringBuilder();
             foreach (DataRow row in dt.Rows)
             {
-
-                KeyLine line = new KeyLine();
+                string key;
+                string val;
 
                 if (columnKey != null)
-                    line.Key = row[columnKey].ToString();
+                    key = row[columnKey].ToString();
                 else
-                    line.Key = row[0].ToString();
+                    key = row[0].ToString();
 
-                if (defaultValue != null)
-                    line.DefaultValue = row[defaultValue].ToString();
-
-                lines.Add(line);
-            }
-
-            lines = lines.OrderBy(x => x.Key).ToList();
-
-            if (dataType == ConfClassType.Const)
-            {
-                var clss = new Class(cname) { modifier = Modifier.Public };
-                builder.AddClass(clss);
-                CreateConfigKeyClass(clss, lines, aggregationKey);
-            }
-            else if (columnKey != null && defaultValue != null)
-            {
-                if (dataType == ConfClassType.Value)
-                {
-                    var clss = new Class(cname) { modifier = Modifier.Public | Modifier.Static | Modifier.Partial };
-                    builder.AddClass(clss);
-                    CreateConfigValueClass(clss, lines);
-                }
-                else if (dataType == ConfClassType.Prop)
-                {
-                    var clss = CreateConfigSettingClass(ClassName, lines);
-                    builder.AddClass(clss);
-                }
-            }
-            else if (dataType == ConfClassType.Cfg)
-            {
-                string path = cmd.GetValue("in");
-                if (!File.Exists(path))
-                {
-                    stdio.Error($"file {path} not found");
-                    return;
-                }
-
-                string code = File.ReadAllText(path);
-                var maker = new ConfigScript(cname, code);
-                var clss = maker.Generate();
-                builder.AddClass(clss);
-
-                var _builder = maker.CreateConstKeyClass();
-                PrintOutput(_builder, $"{cname}~1");
-
-                _builder = maker.CreateDefaultValueClass();
-                PrintOutput(_builder, $"{cname}~2");
-
-                _builder = maker.CreateGetValueClass();
-                PrintOutput(_builder, $"{cname}~3");
-            }
-
-            PrintOutput(builder, cname);
-        }
-
-        private static void CreateConfigKeyClass(Class clss, List<KeyLine> lines, bool aggregationKey)
-        {
-            List<string> keys = new List<string>();
-            foreach (var line in lines)
-            {
-                //Aggregation key, 
-                // key = "a.b.c" will create 3 keys, A, A_B, A_B_C
-                if (aggregationKey)
-                {
-                    string[] items = line.Key.Split('.');
-
-                    if (items.Length > 1)
-                    {
-                        for (int i = 0; i < items.Length - 1; i++)
-                        {
-                            string _key = string.Join(".", items.Take(i + 1));
-                            if (keys.IndexOf(_key) < 0)
-                                keys.Add(_key);
-                        }
-
-                    }
-                }
-
-                keys.Add(line.Key);
-            }
-
-            char lastCh = lines.First().Key[0];
-            foreach (string key in keys)
-            {
-                TypeInfo ty = new TypeInfo(typeof(string));
-
-                string fieldName = ConfigScript.ToKey(key);
-                var field = new Field(ty, fieldName, new Value(key)) { modifier = Modifier.Public | Modifier.Const };
-                clss.Add(field);
-
-                if (lastCh != key[0])
-                    clss.AppendLine();
-
-                lastCh = key[0];
-            }
-        }
-
-        private void CreateConfigValueClass(Class clss, List<KeyLine> lines)
-        {
-
-            //generate static variable = GetValue<T>(...)
-            char lastCh = lines.First().Key[0];
-            foreach (var line in lines)
-            {
-                VAL val = Script.Evaluate(line.DefaultValue);
-                Type type = typeof(string);
-                if (val.HostValue != null)
-                    type = val.HostValue.GetType();
-
-                TypeInfo ty = new TypeInfo(type);
-
-                string expr;
-                if (line.DefaultValue != null)
-                    expr = $"GetValue<{ty}>({ConfigScript.ToConstKey(line.Key)}, {ConfigScript.ToDefaultKey(line.Key)})";
+                if (columnDefaultValue != null)
+                    val = row[columnDefaultValue].ToString();
                 else
-                    expr = $"GetValue<{ty}>({ConfigScript.ToConstKey(line.Key)})";
+                    val = "0";
 
-                Field field = new Field(ty, ConfigScript.ToKey(line.Key)) { modifier = Modifier.Public | Modifier.Static | Modifier.Readonly, userValue = expr };
-                clss.Add(field);
-
-                if (lastCh != line.Key[0])
-                    clss.AppendLine();
-
-                lastCh = line.Key[0];
+                builder.AppendLine($"{key}={val};");
             }
 
-
-            //generate const key
-            clss.AppendLine();
-            foreach (var line in lines)
-            {
-                TypeInfo ty = new TypeInfo(typeof(string));
-                string fieldName = ConfigScript.ToConstKey(line.Key);
-                var field = new Field(ty, fieldName, new Value(line.Key)) { modifier = Modifier.Public | Modifier.Const };
-                clss.Add(field);
-            }
-
-            //generate default value
-            clss.AppendLine();
-            foreach (var line in lines)
-            {
-                VAL val = Script.Evaluate(line.DefaultValue);
-                Type type = typeof(string);
-                if (val.HostValue != null)
-                    type = val.HostValue.GetType();
-
-                TypeInfo ty = new TypeInfo(type);
-                string fieldName = ConfigScript.ToDefaultKey(line.Key);
-                var field = new Field(ty, fieldName)
-                {
-                    modifier = Modifier.Private | Modifier.Static | Modifier.Readonly,
-                    userValue = line.DefaultValue,
-                    comment = new Comment(line.Key) { Orientation = Orientation.Vertical }
-                };
-                clss.Add(field);
-            }
-
+            return builder.ToString();
         }
 
-        /// <summary>
-        /// create static class Setting 
-        /// </summary>
-        /// <param name="clss"></param>
-        /// <param name="lines"></param>
-        private Class CreateConfigSettingClass(string cname, List<KeyLine> lines)
+        private string ReadCode()
         {
-            StringBuilder builder = new StringBuilder();
-            foreach (var line in lines)
+            string path = cmd.GetValue("in");
+            if (path == null)
+                return null;
+
+            if (!File.Exists(path))
             {
-                builder.AppendLine($"{line.Key}={line.DefaultValue};");
+                stdio.Error($"file {path} not found");
+                return null;
             }
-            var maker = new ConfigScript(cname, builder.ToString());
-            return maker.Generate();
+
+            return File.ReadAllText(path);
         }
-
-
-
     }
-
-
 }

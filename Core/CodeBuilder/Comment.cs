@@ -6,21 +6,27 @@ using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
-    public enum Orientation
+    public enum Alignment
     {
-        Horizontal,
-        Vertical
+        Top,
+        Center,
+        Right,
     }
 
     public class Comment
     {
         private string comment;
 
-        public Orientation Orientation { get; set; } = Orientation.Horizontal;
+        public Alignment alignment { get; set; } = Alignment.Right;
 
         public Comment(string text)
         {
             this.comment = text;
+        }
+
+        public void Clear()
+        {
+            comment = null;
         }
 
         public override string ToString()
@@ -28,7 +34,7 @@ namespace Sys.CodeBuilder
             if (comment == null)
                 return string.Empty;
 
-            if (Orientation == Orientation.Horizontal)
+            if (alignment == Alignment.Right)
                 return $"\t\t//{comment}";
             else
                 return $"//{comment}";

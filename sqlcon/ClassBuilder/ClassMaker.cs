@@ -44,19 +44,23 @@ namespace sqlcon
             }
         }
 
-
         protected void PrintOutput(CSharpBuilder builder, string cname)
         {
-            string code = $"{builder}";
-
             string path = cmd.GetValue("out");
+
+            string code = $"{builder}";
             if (path == null)
             {
                 stdio.WriteLine(code);
             }
             else
             {
-                string file = Path.ChangeExtension(Path.Combine(path, cname), "cs");
+                string file;
+                if (Path.GetExtension(path) == ".cs")
+                    file = path;
+                else
+                    file = Path.ChangeExtension(Path.Combine(path, cname), "cs");
+
                 try
                 {
                     code.WriteIntoFile(file);

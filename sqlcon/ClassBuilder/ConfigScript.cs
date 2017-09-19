@@ -31,7 +31,8 @@ namespace sqlcon
 
             this.ConstKeyFields.Clear();
             this.DefaultValueFields.Clear();
-            this.ValueProperties.Clear();
+            this.StaticProperties.Clear();
+            this.StaticFields.Clear();
 
             foreach (VAR var in DS.Names)
             {
@@ -42,41 +43,10 @@ namespace sqlcon
             return clss;
         }
 
-        public CSharpBuilder CreateConstKeyClass()
-        {
-            CSharpBuilder builder = new CSharpBuilder();
-            Class clss = new Class(cname) { modifier = Modifier.Public | Modifier.Static | Modifier.Partial };
-            foreach (Field field in ConstKeyFields)
-                clss.Add(field);
-
-            builder.AddClass(clss);
-            return builder;
-        }
-        public CSharpBuilder CreateDefaultValueClass()
-        {
-            CSharpBuilder builder = new CSharpBuilder();
-            Class clss = new Class(cname) { modifier = Modifier.Public | Modifier.Static | Modifier.Partial };
-            foreach (Field field in DefaultValueFields)
-                clss.Add(field);
-
-            builder.AddClass(clss);
-            return builder;
-        }
-
-        public CSharpBuilder CreateGetValueClass()
-        {
-            CSharpBuilder builder = new CSharpBuilder();
-            Class clss = new Class(cname) { modifier = Modifier.Public | Modifier.Static | Modifier.Partial };
-            foreach (Property prop in ValueProperties)
-                clss.Add(prop);
-
-            builder.AddClass(clss);
-            return builder;
-        }
-
         public List<Field> ConstKeyFields { get; } = new List<Field>();
         public List<Field> DefaultValueFields { get; } = new List<Field>();
-        public List<Property> ValueProperties { get; } = new List<Property>();
+        public List<Field> StaticFields { get; } = new List<Field>();
+        public List<Property> StaticProperties { get; } = new List<Property>();
 
         private void createConfigKeyMap(Class clss, string prefix, string key, VAL val)
         {
@@ -117,6 +87,13 @@ namespace sqlcon
             string defaultKey = ToDefaultKey(var);
             prop.Expression = $"GetValue<{ty}>({constKey}, {defaultKey})";
 
+            Other(ty, var, val);
+        }
+
+        private void Other(TypeInfo ty, string var, VAL val)
+        {
+            string constKey = ToConstKey(var);
+            string defaultKey = ToDefaultKey(var);
 
             //const key
             Field field = new Field(new TypeInfo(typeof(string)), constKey, new Value(var))
@@ -130,17 +107,26 @@ namespace sqlcon
             {
                 modifier = Modifier.Private | Modifier.Readonly | Modifier.Static,
                 userValue = val.ToString(),
-                comment = new Comment(var) { Orientation = Orientation.Vertical }
+                comment = new Comment(var) { alignment = Alignment.Top }
             };
-
             DefaultValueFields.Add(field);
 
+            field = new Field(ty, ToKey(var))
+            {
+                modifier = Modifier.Public | Modifier.Readonly | Modifier.Static,
+                userValue = $"GetValue<{ty}>({constKey}, {defaultKey})",
+                comment = new Comment(var) { alignment = Alignment.Top }
+            };
+            StaticFields.Add(field);
 
-            prop = new Property(ty, ToKey(var)) { modifier = Modifier.Public | Modifier.Static };
-            prop.Expression = $"GetValue<{ty}>({constKey}, {defaultKey})";
-            ValueProperties.Add(prop);
+            Property prop = new Property(ty, ToKey(var))
+            {
+                modifier = Modifier.Public | Modifier.Static,
+                Expression = $"GetValue<{ty}>({constKey}, {defaultKey})",
+                comment = new Comment(var) { alignment = Alignment.Top }
+            };
 
+            StaticProperties.Add(prop);
         }
-
     }
 }

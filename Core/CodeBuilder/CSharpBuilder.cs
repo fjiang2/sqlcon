@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using System.IO;
 
 namespace Sys.CodeBuilder
 {
@@ -72,5 +73,11 @@ namespace Sys.CodeBuilder
 
         }
 
+        public void Output(string directory, string cname)
+        {
+            string code = this.ToString();
+            string file = Path.ChangeExtension(Path.Combine(directory, cname), "cs");
+            File.WriteAllText(directory, code);
+        }
     }
 }

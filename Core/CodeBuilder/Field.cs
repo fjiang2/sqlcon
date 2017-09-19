@@ -50,7 +50,7 @@ namespace Sys.CodeBuilder
             {
                 _comment = comment.ToString();
 
-                if (comment.Orientation == Orientation.Vertical)
+                if (comment.alignment == Alignment.Top)
                 {
                     block.Append(_comment);
                     _comment = string.Empty;

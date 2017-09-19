@@ -563,7 +563,7 @@ namespace sqlcon
             }
         }
 
-       
+
         /// <summary>
         /// create C# data class from data table
         /// </summary>
