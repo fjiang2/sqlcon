@@ -11,20 +11,22 @@ using Sys.CodeBuilder;
 namespace sqlcon
 {
 
-    [Flags]
-    enum ConfClassType
-    {
-        Undefined = 0x00,
-
-        ConstKey = 0x01,        //  public const string _MATH_PI = "Math.PI";
-        DefaultValue = 0x02,    //  public static double __MATH_PI = 3.14;
-        StaticField = 0x04,     //  public static double MATH_PI = GetValue<double>(_MATH_PI, __MATH_PI);
-        StaticPropery = 0x08,   //  public static double MATH_PI => GetValue<double>(_MATH_PI, __MATH_PI);
-        Hierarchy = 0x10,       //  public static Math { public static class Pi => GetValue<double>(_MATH_PI, __MATH_PI); }
-    }
-
     class ConfClassBuilder : ClassMaker
     {
+        [Flags]
+        enum ClassType
+        {
+            Nothing = 0x00,
+
+            ConstKey = 0x01,        //  public const string _MATH_PI = "Math.PI";
+            DefaultValue = 0x02,    //  public static double __MATH_PI = 3.14;
+            StaticField = 0x04,     //  public static double MATH_PI = GetValue<double>(_MATH_PI, __MATH_PI);
+            StaticPropery = 0x08,   //  public static double MATH_PI => GetValue<double>(_MATH_PI, __MATH_PI);
+            Hierarchy = 0x10,       //  public static Math { public static class Pi => GetValue<double>(_MATH_PI, __MATH_PI); }
+
+            All = ConstKey | DefaultValue | StaticPropery
+        }
+
         private DataTable dt;
 
         public ConfClassBuilder(Command cmd, DataTable dt)
@@ -45,34 +47,45 @@ namespace sqlcon
             if (code == null)
                 return;
 
+            ClassType classType = getClassType();
+            bool hierarchy = (classType & ClassType.Hierarchy) != ClassType.Hierarchy;
+
             var builder = new CSharpBuilder { nameSpace = NameSpace };
             builder.AddUsing("System");
             builder.AddUsing("System.Collections.Generic");
             string cname = ClassName;
 
             var maker = new ConfigScript(cname, code);
+            maker.IsHierarchicalProperty = hierarchy;
             var clss = maker.Generate();
             builder.AddClass(clss);
 
-            switch (dataType)
+            switch (classType)
             {
-                case ConfClassType.ConstKey:
+                case ClassType.All:
+                    clss.AddRange(maker.ConstKeyFields);
+                    clss.AddRange(maker.StaticFields);
+                    clss.AddRange(maker.StaticProperties);
+                    clss.AddRange(maker.DefaultValueFields);
+                    break;
+
+                case ClassType.ConstKey:
                     builder = CreateClass(maker.ConstKeyFields);
                     break;
 
-                case ConfClassType.DefaultValue:
+                case ClassType.DefaultValue:
                     builder = CreateClass(maker.DefaultValueFields);
                     break;
 
-                case ConfClassType.StaticField:
+                case ClassType.StaticField:
                     builder = CreateClass(maker.StaticFields);
                     break;
 
-                case ConfClassType.StaticPropery:
+                case ClassType.StaticPropery:
                     builder = CreateClass(maker.StaticProperties);
                     break;
 
-                case ConfClassType.Hierarchy:
+                case ClassType.Hierarchy:
                     break;
             }
 
@@ -80,31 +93,28 @@ namespace sqlcon
         }
 
 
-        private ConfClassType dataType
+        private ClassType getClassType()
         {
-            get
+            string _dataType = cmd.GetValue("type") ?? "all";
+            switch (_dataType)
             {
-                string _dataType = cmd.GetValue("type") ?? "const";
-                switch (_dataType)
-                {
-                    case "const":
-                        return ConfClassType.ConstKey;
+                case "const":
+                    return ClassType.ConstKey;
 
-                    case "default":
-                        return ConfClassType.DefaultValue;
+                case "default":
+                    return ClassType.DefaultValue;
 
-                    case "field":
-                        return ConfClassType.StaticField;
+                case "field":
+                    return ClassType.StaticField;
 
-                    case "property":
-                        return ConfClassType.StaticPropery;
+                case "property":
+                    return ClassType.StaticPropery;
 
-                    case "hierarchy":
-                        return ConfClassType.Hierarchy;
-                }
-
-                return ConfClassType.Undefined;
+                case "hierarchy":
+                    return ClassType.Hierarchy;
             }
+
+            return ClassType.All;
         }
 
         private CSharpBuilder CreateClass(IEnumerable<Buildable> elements)
@@ -117,8 +127,7 @@ namespace sqlcon
 
             builder.AddUsing("System");
 
-            foreach (var element in elements)
-                clss.Add(element);
+            clss.AddRange(elements);
 
             builder.AddClass(clss);
             return builder;
@@ -168,3 +177,4 @@ namespace sqlcon
         }
     }
 }
+

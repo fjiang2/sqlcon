@@ -51,6 +51,14 @@ namespace Sys.CodeBuilder
             return this;
         }
 
+        public Class AddRange(IEnumerable<Buildable> members)
+        {
+            foreach (var member in members)
+                this.Add(member);
+
+            return this;
+        }
+
         public Constructor AddConstructor()
         {
             var constructor = new Constructor(base.name);

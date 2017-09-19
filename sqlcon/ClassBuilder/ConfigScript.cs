@@ -14,11 +14,22 @@ namespace sqlcon
         private Memory DS = new Memory();
         private string cname;
 
-        static string TOKEY(string key) => key.Replace(".", "_").ToUpper();
-        static string tokey(string key) => key.Replace(".", "_").ToLower();
-        static string toCamel(string key) => key.Split('.').Select(k => char.ToUpper(k[0]) + k.Substring(1).ToLower()).Aggregate((x, y) => $"{x}_{y}");
-        static string ToConstKey(string key) => "_" + TOKEY(key);
-        static string ToDefaultKey(string key) => "__" + TOKEY(key);
+        /// <summary>
+        /// create hierachical property or field?
+        /// </summary>
+        public bool IsHierarchicalProperty { get; set; } = true;
+
+        /// <summary>
+        /// class name of const key 
+        /// </summary>
+        public string ConstKeyClassName { get; set; }
+
+        /// <summary>
+        /// class name of default value
+        /// </summary>
+        public string DefaultValueClassName { get; set; }
+
+        public string GetValueMethodName { get; set; } = "GetValue";
 
         public ConfigScript(string cname, string code)
         {
@@ -30,10 +41,6 @@ namespace sqlcon
         {
             Class clss = new Class(cname) { modifier = Modifier.Public | Modifier.Static | Modifier.Partial };
 
-            this.ConstKeyFields.Clear();
-            this.DefaultValueFields.Clear();
-            this.StaticProperties.Clear();
-            this.StaticFields.Clear();
 
             foreach (VAR var in DS.Names)
             {
@@ -75,59 +82,96 @@ namespace sqlcon
             {
                 type = val.HostValue.GetType();
             }
-
             TypeInfo ty = new TypeInfo(type);
-            Property prop = new Property(ty, key) { modifier = Modifier.Public | Modifier.Static };
-            clss.Add(prop);
 
             string var = $"{prefix}.{key}";
             if (prefix == string.Empty)
                 var = key;
 
-            string constKey = ToConstKey(var);
-            string defaultKey = ToDefaultKey(var);
-            prop.Expression = $"GetValue<{ty}>({constKey}, {defaultKey})";
+            if (IsHierarchicalProperty)
+            {
+                Property prop = createProperty(key, ty, var);
+                clss.Add(prop);
+            }
+            else
+            {
+                Field fld = createField(key, ty, var);
+                clss.Add(fld);
+            }
 
             Other(ty, var, val);
         }
+
+        private Property createProperty(string name, TypeInfo ty, string var)
+        {
+            Comment comment = new Comment(var) { alignment = Alignment.Top };
+            return new Property(ty, name)
+            {
+                modifier = Modifier.Public | Modifier.Static,
+                Expression = expr(ty, var),
+                comment = comment
+            };
+        }
+
+        private Field createField(string name, TypeInfo ty, string var)
+        {
+            Comment comment = new Comment(var) { alignment = Alignment.Top };
+            return new Field(ty, name)
+            {
+                modifier = Modifier.Public | Modifier.Readonly | Modifier.Static,
+                userValue = expr(ty, var),
+                comment = comment
+            };
+        }
+
+
+
+        private string expr(TypeInfo ty, string var)
+        {
+            string constKey = ToConstKey(var);
+            string defaultKey = ToDefaultKey(var);  //default value
+
+            if (!string.IsNullOrEmpty(ConstKeyClassName))
+                constKey = $"{ConstKeyClassName}.{constKey}";
+
+            if (!string.IsNullOrEmpty(DefaultValueClassName))
+                defaultKey = $"{DefaultValueClassName}.{defaultKey}";
+
+            return $"{GetValueMethodName}<{ty}>({constKey}, {defaultKey})";
+        }
+
 
         private void Other(TypeInfo ty, string var, VAL val)
         {
             string constKey = ToConstKey(var);
             string defaultKey = ToDefaultKey(var);
+            Comment comment = new Comment(var) { alignment = Alignment.Top };
 
-            //const key
+            //const key field
             Field field = new Field(new TypeInfo(typeof(string)), constKey, new Value(var))
             {
                 modifier = Modifier.Public | Modifier.Const,
             };
             ConstKeyFields.Add(field);
 
-            //default value
+            //default value field
             field = new Field(ty, defaultKey)
             {
                 modifier = Modifier.Private | Modifier.Readonly | Modifier.Static,
                 userValue = val.ToString(),
-                comment = new Comment(var) { alignment = Alignment.Top }
+                comment = comment
             };
             DefaultValueFields.Add(field);
 
-            field = new Field(ty, TOKEY(var))
-            {
-                modifier = Modifier.Public | Modifier.Readonly | Modifier.Static,
-                userValue = $"GetValue<{ty}>({constKey}, {defaultKey})",
-                comment = new Comment(var) { alignment = Alignment.Top }
-            };
-            StaticFields.Add(field);
-
-            Property prop = new Property(ty, toCamel(var))
-            {
-                modifier = Modifier.Public | Modifier.Static,
-                Expression = $"GetValue<{ty}>({constKey}, {defaultKey})",
-                comment = new Comment(var) { alignment = Alignment.Top }
-            };
-
-            StaticProperties.Add(prop);
+            StaticFields.Add(createField(TOKEY(var), ty, var));
+            StaticProperties.Add(createProperty(toCamel(var), ty, var));
         }
+
+        static string TOKEY(string key) => key.Replace(".", "_").ToUpper();
+        static string tokey(string key) => key.Replace(".", "_").ToLower();
+        static string toCamel(string key) => key.Split('.').Select(k => char.ToUpper(k[0]) + k.Substring(1).ToLower()).Aggregate((x, y) => $"{x}_{y}");
+        static string ToConstKey(string key) => "_" + TOKEY(key);
+        static string ToDefaultKey(string key) => "__" + TOKEY(key);
+
     }
 }
