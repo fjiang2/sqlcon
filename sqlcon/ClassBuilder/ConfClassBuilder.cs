@@ -101,6 +101,7 @@ namespace sqlcon
                     clss.AddRange(maker.DefaultValueFields);
             }
 
+            builder.AddUsingRange(base.Usings);
             PrintOutput(builder, cname);
         }
 

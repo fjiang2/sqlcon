@@ -40,6 +40,13 @@ namespace Sys.CodeBuilder
             this.usings.Add(name);
             return this;
         }
+        public CSharpBuilder AddUsingRange(IEnumerable<string> names)
+        {
+            foreach (var name in names)
+                this.usings.Add(name);
+
+            return this;
+        }
 
         public CSharpBuilder AddClass(Class clss)
         {

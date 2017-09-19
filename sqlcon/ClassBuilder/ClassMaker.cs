@@ -42,6 +42,20 @@ namespace sqlcon
             }
         }
 
+        protected string[] Usings
+        {
+            get
+            {
+                string __using = cmd.GetValue("using");
+                if (__using == null)
+                {
+                    return new string[] { };
+                }
+
+                return __using.Split(';');
+            }
+        }
+
         protected void PrintOutput(CSharpBuilder builder, string cname)
         {
             string path = cmd.GetValue("out");
