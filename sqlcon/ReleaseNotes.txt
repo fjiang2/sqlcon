@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+09/19/2017 v1.8.2.0
+	Improvements/Enhancements:
+	1. create config classes for key=value pairs. command>export /conf /type:const /key:col1 /default:col2
+
 09/11/2017 v1.8.1.0
 	Improvements/Enhancements:
 	1. disable query function on the user.cfg, use command batch file instead.

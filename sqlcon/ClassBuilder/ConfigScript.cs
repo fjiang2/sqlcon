@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
 
 using Tie;
 using Sys.CodeBuilder;
@@ -15,9 +14,10 @@ namespace sqlcon
         private Memory DS = new Memory();
         private string cname;
 
-        public static string ToKey(string key) => key.Replace(".", "_").ToUpper();
-        public static string ToConstKey(string key) => "_" + ToKey(key);
-        public static string ToDefaultKey(string key) => "__" + ToKey(key);
+        static string TOKEY(string key) => key.Replace(".", "_").ToUpper();
+        static string tokey(string key) => key.Replace(".", "_").ToLower();
+        static string ToConstKey(string key) => "_" + TOKEY(key);
+        static string ToDefaultKey(string key) => "__" + TOKEY(key);
 
         public ConfigScript(string cname, string code)
         {
@@ -111,7 +111,7 @@ namespace sqlcon
             };
             DefaultValueFields.Add(field);
 
-            field = new Field(ty, ToKey(var))
+            field = new Field(ty, TOKEY(var))
             {
                 modifier = Modifier.Public | Modifier.Readonly | Modifier.Static,
                 userValue = $"GetValue<{ty}>({constKey}, {defaultKey})",
@@ -119,7 +119,7 @@ namespace sqlcon
             };
             StaticFields.Add(field);
 
-            Property prop = new Property(ty, ToKey(var))
+            Property prop = new Property(ty, tokey(var))
             {
                 modifier = Modifier.Public | Modifier.Static,
                 Expression = $"GetValue<{ty}>({constKey}, {defaultKey})",

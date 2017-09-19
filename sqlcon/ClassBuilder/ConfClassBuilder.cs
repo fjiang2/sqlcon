@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 using System.Data;
 using System.IO;
 
-using Sys.Data;
-using Sys.Data.Manager;
 using Sys.CodeBuilder;
-using Tie;
 
 namespace sqlcon
 {
@@ -23,7 +20,7 @@ namespace sqlcon
         DefaultValue = 0x02,    //  public static double __MATH_PI = 3.14;
         StaticField = 0x04,     //  public static double MATH_PI = GetValue<double>(_MATH_PI, __MATH_PI);
         StaticPropery = 0x08,   //  public static double MATH_PI => GetValue<double>(_MATH_PI, __MATH_PI);
-        Hierarchy = 0x10,     //  public static Math { public static class Pi => GetValue<double>(_MATH_PI, __MATH_PI); }
+        Hierarchy = 0x10,       //  public static Math { public static class Pi => GetValue<double>(_MATH_PI, __MATH_PI); }
     }
 
     class ConfClassBuilder : ClassMaker
@@ -117,6 +114,8 @@ namespace sqlcon
             {
                 modifier = Modifier.Public | Modifier.Static | Modifier.Partial
             };
+
+            builder.AddUsing("System");
 
             foreach (var element in elements)
                 clss.Add(element);

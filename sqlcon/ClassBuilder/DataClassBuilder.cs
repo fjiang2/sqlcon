@@ -8,7 +8,6 @@ using System.Data;
 using Sys.Data;
 using Sys.Data.Manager;
 using Sys.CodeBuilder;
-using Tie;
 
 namespace sqlcon
 {
@@ -17,8 +16,7 @@ namespace sqlcon
         Undefined,
         List,
         Dictionary,
-        Enum,
-        Key
+        Enum
     }
 
     class DataClassBuilder : ClassMaker
@@ -57,7 +55,6 @@ namespace sqlcon
                 {
                     case "list": return DataClassType.List;
                     case "dict": return DataClassType.Dictionary;
-                    case "key": return DataClassType.Key;
                     case "enum": return DataClassType.Enum;
                 }
 
