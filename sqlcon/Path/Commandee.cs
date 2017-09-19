@@ -1044,6 +1044,9 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("          h : generate hierarchial keys to get setting");
                 stdio.WriteLine("      [/in:path] input path(.cfg)");
                 stdio.WriteLine("      [/out:path] output path");
+                stdio.WriteLine("      [/get:name] GetValue method name");
+                stdio.WriteLine("      [/kc:name] class name of const key");
+                stdio.WriteLine("      [/dc:name] class name of default value");
                 return;
             }
 

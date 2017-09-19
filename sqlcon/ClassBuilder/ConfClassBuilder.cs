@@ -18,13 +18,12 @@ namespace sqlcon
         {
             Nothing = 0x00,
 
-            ConstKey = 0x01,        //  public const string _MATH_PI = "Math.PI";
-            DefaultValue = 0x02,    //  public static double __MATH_PI = 3.14;
-            StaticField = 0x04,     //  public static double MATH_PI = GetValue<double>(_MATH_PI, __MATH_PI);
-            StaticPropery = 0x08,   //  public static double MATH_PI => GetValue<double>(_MATH_PI, __MATH_PI);
-            Hierarchy = 0x10,       //  public static Math { public static class Pi => GetValue<double>(_MATH_PI, __MATH_PI); }
-
-            All = ConstKey | DefaultValue | StaticPropery
+            ConstKey = 0x01,                //  public const string _MATH_PI = "Math.PI";
+            DefaultValue = 0x02,            //  public static double __MATH_PI = 3.14;
+            StaticField = 0x04,             //  public static double MATH_PI = GetValue<double>(_MATH_PI, __MATH_PI);
+            StaticPropery = 0x08,           //  public static double MATH_PI => GetValue<double>(_MATH_PI, __MATH_PI);
+            HierarchicalField = 0x10,       //  public static Math { public static class Pi = GetValue<double>(_MATH_PI, __MATH_PI); }
+            HierarchicalProperty = 0x20,    //  public static Math { public static class Pi => GetValue<double>(_MATH_PI, __MATH_PI); }
         }
 
         private DataTable dt;
@@ -48,7 +47,9 @@ namespace sqlcon
                 return;
 
             ClassType ctype = getClassType();
-            bool hierarchy = (ctype & ClassType.Hierarchy) != ClassType.Hierarchy;
+            string _GetValueMethodName = cmd.GetValue("get");
+            string _ConstKeyClassName = cmd.GetValue("kc");
+            string _DefaultValueClassName = cmd.GetValue("dc");
 
             var builder = new CSharpBuilder { nameSpace = NameSpace };
             builder.AddUsing("System");
@@ -56,21 +57,49 @@ namespace sqlcon
             string cname = ClassName;
 
             var maker = new ConfigScript(cname, code);
-            maker.IsHierarchicalProperty = hierarchy;
+            maker.IsHierarchicalProperty = (ctype & ClassType.HierarchicalProperty) == ClassType.HierarchicalProperty;
+
+            if (_GetValueMethodName != null)
+                maker.GetValueMethodName = _GetValueMethodName;
+
+            if (_ConstKeyClassName !=null)
+                maker.ConstKeyClassName = _ConstKeyClassName;
+
+            if (_DefaultValueClassName != null)
+                maker.DefaultValueClassName = _DefaultValueClassName;
+
             var clss = maker.Generate();
             builder.AddClass(clss);
 
-            if ((ctype & ClassType.ConstKey) == ClassType.ConstKey)
+            if (ctype == ClassType.ConstKey)
                 builder = CreateClass(maker.ConstKeyFields);
-
-            if ((ctype & ClassType.DefaultValue) == ClassType.DefaultValue)
+            else if (ctype == ClassType.DefaultValue)
                 builder = CreateClass(maker.DefaultValueFields);
-
-            if ((ctype & ClassType.StaticField) == ClassType.StaticField)
+            else if (ctype == ClassType.StaticField)
                 builder = CreateClass(maker.StaticFields);
-
-            if ((ctype & ClassType.StaticPropery) == ClassType.StaticPropery)
+            else if (ctype == ClassType.StaticPropery)
                 builder = CreateClass(maker.StaticProperties);
+            else if (ctype == ClassType.HierarchicalField || ctype == ClassType.HierarchicalProperty)
+            {
+                //skip, because clss has created class already
+            }
+            else
+            {
+                if ((ctype & ClassType.HierarchicalField) != ClassType.HierarchicalField && (ctype & ClassType.HierarchicalProperty) != ClassType.HierarchicalProperty)
+                    clss.Clear();
+
+                if ((ctype & ClassType.StaticField) == ClassType.StaticField)
+                    clss.AddRange(maker.StaticFields);
+
+                if ((ctype & ClassType.StaticPropery) == ClassType.StaticPropery)
+                    clss.AddRange(maker.StaticProperties);
+
+                if ((ctype & ClassType.ConstKey) == ClassType.ConstKey)
+                    clss.AddRange(maker.ConstKeyFields);
+
+                if ((ctype & ClassType.DefaultValue) == ClassType.DefaultValue)
+                    clss.AddRange(maker.DefaultValueFields);
+            }
 
             PrintOutput(builder, cname);
         }
@@ -78,7 +107,7 @@ namespace sqlcon
 
         private ClassType getClassType()
         {
-            string _type = cmd.GetValue("type") ?? "a";
+            string _type = cmd.GetValue("type") ?? "kdP";
 
             ClassType ctype = ClassType.Nothing;
 
@@ -96,20 +125,20 @@ namespace sqlcon
                         ctype |= ClassType.DefaultValue;
                         break;
 
-                    case 'f':
+                    case 'F':
                         ctype |= ClassType.StaticField;
                         break;
 
-                    case 'p':
+                    case 'P':
                         ctype |= ClassType.StaticPropery;
                         break;
 
-                    case 'h':
-                        ctype |= ClassType.Hierarchy;
+                    case 'f':
+                        ctype |= ClassType.HierarchicalField;
                         break;
 
-                    default:
-                        ctype = ClassType.ConstKey | ClassType.DefaultValue | ClassType.StaticPropery;
+                    case 'p':
+                        ctype |= ClassType.HierarchicalProperty;
                         break;
                 }
             }

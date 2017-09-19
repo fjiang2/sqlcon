@@ -164,12 +164,12 @@ namespace sqlcon
             DefaultValueFields.Add(field);
 
             StaticFields.Add(createField(TOKEY(var), ty, var));
-            StaticProperties.Add(createProperty(toCamel(var), ty, var));
+            StaticProperties.Add(createProperty(toPascal(var), ty, var));
         }
 
         static string TOKEY(string key) => key.Replace(".", "_").ToUpper();
         static string tokey(string key) => key.Replace(".", "_").ToLower();
-        static string toCamel(string key) => key.Split('.').Select(k => char.ToUpper(k[0]) + k.Substring(1).ToLower()).Aggregate((x, y) => $"{x}_{y}");
+        static string toPascal(string key) => key.Split('.').Select(k => char.ToUpper(k[0]) + k.Substring(1).ToLower()).Aggregate((x, y) => $"{x}_{y}");
         static string ToConstKey(string key) => "_" + TOKEY(key);
         static string ToDefaultKey(string key) => "__" + TOKEY(key);
 

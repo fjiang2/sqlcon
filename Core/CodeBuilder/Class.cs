@@ -45,6 +45,11 @@ namespace Sys.CodeBuilder
         }
 
 
+        public void Clear()
+        {
+            list.Clear();
+        }
+
         public Class Add(Buildable code)
         {
             this.list.Add(code);
