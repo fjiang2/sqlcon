@@ -47,8 +47,8 @@ namespace sqlcon
             if (code == null)
                 return;
 
-            ClassType classType = getClassType();
-            bool hierarchy = (classType & ClassType.Hierarchy) != ClassType.Hierarchy;
+            ClassType ctype = getClassType();
+            bool hierarchy = (ctype & ClassType.Hierarchy) != ClassType.Hierarchy;
 
             var builder = new CSharpBuilder { nameSpace = NameSpace };
             builder.AddUsing("System");
@@ -60,34 +60,17 @@ namespace sqlcon
             var clss = maker.Generate();
             builder.AddClass(clss);
 
-            switch (classType)
-            {
-                case ClassType.All:
-                    clss.AddRange(maker.ConstKeyFields);
-                    clss.AddRange(maker.StaticFields);
-                    clss.AddRange(maker.StaticProperties);
-                    clss.AddRange(maker.DefaultValueFields);
-                    break;
+            if ((ctype & ClassType.ConstKey) == ClassType.ConstKey)
+                builder = CreateClass(maker.ConstKeyFields);
 
-                case ClassType.ConstKey:
-                    builder = CreateClass(maker.ConstKeyFields);
-                    break;
+            if ((ctype & ClassType.DefaultValue) == ClassType.DefaultValue)
+                builder = CreateClass(maker.DefaultValueFields);
 
-                case ClassType.DefaultValue:
-                    builder = CreateClass(maker.DefaultValueFields);
-                    break;
+            if ((ctype & ClassType.StaticField) == ClassType.StaticField)
+                builder = CreateClass(maker.StaticFields);
 
-                case ClassType.StaticField:
-                    builder = CreateClass(maker.StaticFields);
-                    break;
-
-                case ClassType.StaticPropery:
-                    builder = CreateClass(maker.StaticProperties);
-                    break;
-
-                case ClassType.Hierarchy:
-                    break;
-            }
+            if ((ctype & ClassType.StaticPropery) == ClassType.StaticPropery)
+                builder = CreateClass(maker.StaticProperties);
 
             PrintOutput(builder, cname);
         }
@@ -95,26 +78,42 @@ namespace sqlcon
 
         private ClassType getClassType()
         {
-            string _dataType = cmd.GetValue("type") ?? "all";
-            switch (_dataType)
+            string _type = cmd.GetValue("type") ?? "a";
+
+            ClassType ctype = ClassType.Nothing;
+
+            for (int i = 0; i < _type.Length; i++)
             {
-                case "const":
-                    return ClassType.ConstKey;
+                char ty = _type[i];
 
-                case "default":
-                    return ClassType.DefaultValue;
+                switch (ty)
+                {
+                    case 'k':
+                        ctype |= ClassType.ConstKey;
+                        break;
 
-                case "field":
-                    return ClassType.StaticField;
+                    case 'd':
+                        ctype |= ClassType.DefaultValue;
+                        break;
 
-                case "property":
-                    return ClassType.StaticPropery;
+                    case 'f':
+                        ctype |= ClassType.StaticField;
+                        break;
 
-                case "hierarchy":
-                    return ClassType.Hierarchy;
+                    case 'p':
+                        ctype |= ClassType.StaticPropery;
+                        break;
+
+                    case 'h':
+                        ctype |= ClassType.Hierarchy;
+                        break;
+
+                    default:
+                        ctype = ClassType.ConstKey | ClassType.DefaultValue | ClassType.StaticPropery;
+                        break;
+                }
             }
-
-            return ClassType.All;
+            return ctype;
         }
 
         private CSharpBuilder CreateClass(IEnumerable<Buildable> elements)
