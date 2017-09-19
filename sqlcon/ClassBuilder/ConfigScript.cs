@@ -16,6 +16,7 @@ namespace sqlcon
 
         static string TOKEY(string key) => key.Replace(".", "_").ToUpper();
         static string tokey(string key) => key.Replace(".", "_").ToLower();
+        static string toCamel(string key) => key.Split('.').Select(k => char.ToUpper(k[0]) + k.Substring(1).ToLower()).Aggregate((x, y) => $"{x}_{y}");
         static string ToConstKey(string key) => "_" + TOKEY(key);
         static string ToDefaultKey(string key) => "__" + TOKEY(key);
 
@@ -119,7 +120,7 @@ namespace sqlcon
             };
             StaticFields.Add(field);
 
-            Property prop = new Property(ty, tokey(var))
+            Property prop = new Property(ty, toCamel(var))
             {
                 modifier = Modifier.Public | Modifier.Static,
                 Expression = $"GetValue<{ty}>({constKey}, {defaultKey})",
