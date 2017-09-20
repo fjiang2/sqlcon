@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
+
+using Tie;
 
 namespace sqlcon
 {
@@ -287,8 +288,8 @@ namespace sqlcon
             List<string> L = new List<string>();
 
             char[] buf = new char[5000];
-            int k = 0;
-            int i = 0;
+            int k = 0;  //index of args[]
+            int i = 0;  //index of buf[]
 
             while (k < args.Length)
             {
@@ -300,7 +301,7 @@ namespace sqlcon
                         i = 0;
                     }
                 }
-                else if (args[k] == '"')
+                else if (args[k] == '"')    //quotation mark argument
                 {
                     k++;
                     while (k < args.Length && args[k] != '"')
@@ -318,6 +319,40 @@ namespace sqlcon
 
                     L.Add(new string(buf, 0, i));
                     i = 0;
+                }
+                else if (args[k] == '{')    //evaluate expression
+                {
+                    int index = 0; //index of expr[]
+                    char[] expr = new char[4000];
+                    k++;
+                    while (k < args.Length && args[k] != '}')
+                    {
+                        expr[index++] = args[k];
+                        k++;
+                    }
+
+                    if (k == args.Length)
+                    {
+                        stdio.ErrorFormat("Unclosed expression character }");
+                        result = new string[] { };
+                        return false;
+                    }
+
+                    string code = new string(expr, 0, index);
+                    string text = string.Empty;
+                    try
+                    {
+                        VAL val = Script.Evaluate(code, Context.DS);
+                        text = val.ToSimpleString();
+                    }
+                    catch (Exception ex)
+                    {
+                        stdio.Error($"error in {code}, {ex.Message}");
+                    }
+                    foreach (char ch in text)
+                    {
+                        buf[i++] = ch;
+                    }
                 }
                 else
                     buf[i++] = args[k];
