@@ -139,8 +139,8 @@ namespace sqlcon
 
                 try
                 {
-                    var result = DoMultipleLineCommand(text);
                     multipleLineMode = false;
+                    var result = DoMultipleLineCommand(text);
                     stdio.WriteLine();
                     return result;
                 }
@@ -149,6 +149,7 @@ namespace sqlcon
                     stdio.WriteLine(ex.Message);
                     return NextStep.ERROR;
                 }
+
             }
             else if (multipleLineBuilder.ToString() != "")
             {
@@ -520,7 +521,7 @@ namespace sqlcon
 
                 default:
                     stdio.ErrorFormat("invalid command");
-                    return NextStep.ERROR;
+                    break;
             }
 
             return NextStep.COMPLETED;
