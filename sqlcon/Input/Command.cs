@@ -57,9 +57,14 @@ namespace sqlcon
             if (string.IsNullOrEmpty(line))
                 return;
 
+            if (!eval(line, out string _line))
+            {
+                badcommand = true;
+                return;
+            }
 
-            int k = parseAction(line, out Action);
-            this.args = line.Substring(k);
+            int k = parseAction(_line, out Action);
+            this.args = _line.Substring(k);
 
             string[] L;
             this.badcommand = !parseArgument(this.args, out L);
@@ -163,7 +168,7 @@ namespace sqlcon
                 }
                 else
                 {
-                    if (paths.Count > 1)
+                    if (paths.Count > 2)    //allow 1 or 2 path, such as command compare path1 path2
                         this.badcommand = true;
 
                     paths.Add(a);
@@ -320,11 +325,43 @@ namespace sqlcon
                     L.Add(new string(buf, 0, i));
                     i = 0;
                 }
-                else if (args[k] == '{')    //evaluate expression
+
+                else
+                    buf[i++] = args[k];
+
+                k++;
+            }
+
+            if (i > 0)
+                L.Add(new string(buf, 0, i));
+
+            result = L.ToArray();
+            return true;
+        }
+
+
+        /// <summary>
+        /// evaluate expression
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        private bool eval(string args, out string result)
+        {
+            int i = 0;
+            int k = 0;
+            char[] buf = new char[5000];
+            while (k < args.Length)
+            {
+                if (k < args.Length - 1 && ((args[k] == '{' && args[k + 1] == '{') || (args[k] == '}' && args[k + 1] == '}')))
                 {
+                    buf[i++] = args[k++];
+                }
+                else if (args[k] == '{')
+                {
+                    k++;
                     int index = 0; //index of expr[]
                     char[] expr = new char[4000];
-                    k++;
                     while (k < args.Length && args[k] != '}')
                     {
                         expr[index++] = args[k];
@@ -334,7 +371,7 @@ namespace sqlcon
                     if (k == args.Length)
                     {
                         stdio.ErrorFormat("Unclosed expression character }");
-                        result = new string[] { };
+                        result = string.Empty;
                         return false;
                     }
 
@@ -354,19 +391,21 @@ namespace sqlcon
                         buf[i++] = ch;
                     }
                 }
+                else if (args[k] == '}')
+                {
+                    stdio.ErrorFormat("Unclosed expression character }");
+                    result = string.Empty;
+                    return false;
+                }
                 else
                     buf[i++] = args[k];
 
                 k++;
             }
 
-            if (i > 0)
-                L.Add(new string(buf, 0, i));
-
-            result = L.ToArray();
+            result = new string(buf, 0, i);
             return true;
         }
-
 
     }
 }

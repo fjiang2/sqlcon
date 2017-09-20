@@ -193,6 +193,9 @@ namespace sqlcon
 
 
             Command cmd = new Command(text, cfg);
+            if (cmd.badcommand)
+                return NextStep.ERROR;
+
             switch (cmd.Action)
             {
                 case "set":
