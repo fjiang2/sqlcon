@@ -168,9 +168,6 @@ namespace sqlcon
                 }
                 else
                 {
-                    if (paths.Count > 2)    //allow 1 or 2 path, such as command compare path1 path2
-                        this.badcommand = true;
-
                     paths.Add(a);
                 }
             }
