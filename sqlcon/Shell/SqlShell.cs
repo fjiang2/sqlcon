@@ -349,6 +349,30 @@ namespace sqlcon
                     }
                     return NextStep.COMPLETED;
 
+                case "call":
+                    if (cmd.arg1 != null)
+                    {
+                        string path = cfg.WorkingDirectory.GetFullPath(cmd.arg1, ".sqt");
+                        if (!System.IO.File.Exists(path))
+                        {
+                            stdio.Error($"cannot find the file: {path}");
+                        }
+                        else
+                        {
+                            try
+                            {
+                                string code = System.IO.File.ReadAllText(path);
+                                Script.Execute(code, Context.DS);
+                            }
+                            catch (Exception ex)
+                            {
+                                stdio.ErrorFormat("execute error: {0}", ex.Message);
+                                return NextStep.ERROR;
+                            }
+                        }
+                    }
+                    return NextStep.COMPLETED;
+
                 case "export":
                     commandee.export(cmd, cfg, this);
                     return NextStep.COMPLETED;
@@ -506,7 +530,6 @@ namespace sqlcon
             return NextStep.COMPLETED;
         }
 
-
         private void Show(string arg1, string arg2)
         {
             var dname = theSide.DatabaseName;
@@ -626,6 +649,7 @@ namespace sqlcon
             stdio.WriteLine("xcopy /?                : see more info");
             stdio.WriteLine("echo /?                 : see more info");
             stdio.WriteLine("run [drive:][path]file  : run a batch program (.sqc)");
+            stdio.WriteLine("call [drive:][path]file : call Tie program (.sqt)");
             stdio.WriteLine("rem                     : records comments/remarks");
             stdio.WriteLine("ver                     : display version");
             stdio.WriteLine("compare path1 [path2]   : compare table scheam or data");

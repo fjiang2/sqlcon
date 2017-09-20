@@ -41,7 +41,7 @@ namespace sqlcon
             const string notepad = "notepad.exe";
             if (!File.Exists(fileName))
             {
-                stdio.ErrorFormat("file not found: {0}", fileName);
+                stdio.Error($"cannot find the file: {fileName}");
                 return;
             }
 

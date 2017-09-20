@@ -40,7 +40,7 @@ namespace sqlcon
             }
             else
             {
-                stdio.Error($"file not found: {path}");
+                stdio.Error($"cannot find the file: {path}");
                 return false;
             }
         }
