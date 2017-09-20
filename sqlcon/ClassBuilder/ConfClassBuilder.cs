@@ -170,11 +170,13 @@ namespace sqlcon
 
             if (columnKey != null && !dt.Columns.Contains(columnKey))
             {
+                stdio.Error($"column [{columnKey}] not found in [{dt.TableName}]");
                 return string.Empty;
             }
 
             if (columnDefaultValue != null && !dt.Columns.Contains(columnDefaultValue))
             {
+                stdio.Error($"column [{columnDefaultValue}] not found in [{dt.TableName}]");
                 return string.Empty;
             }
 
