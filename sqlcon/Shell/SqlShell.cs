@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
-using System.Data.SqlClient;
 using Sys.Data;
 using Sys.Data.Comparison;
 using Sys;
@@ -91,7 +90,7 @@ namespace sqlcon
         private bool multipleLineMode = false;
         private StringBuilder multipleLineBuilder = new StringBuilder();
 
-        private NextStep Run(string line)
+        public NextStep Run(string line)
         {
 
             if (!multipleLineMode)

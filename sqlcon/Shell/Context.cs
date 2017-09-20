@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
 using Tie;
-using Sys.Data;
-using Sys.Data.Comparison;
 
 namespace sqlcon
 {
@@ -73,54 +70,32 @@ namespace sqlcon
 
             switch (func)
             {
-                //export("tablename", "where", "script.sql");
-                //export("tablename", "script.sql");
-                case "export":
+                //run("command");
+                case "run":
                     {
-                        string tableName = null;
-                        string where = null;
-                        string fileName = (string)DS["output"];
-
+                        string line = null;
                         if (size == 1 && L0.VALTYPE == VALTYPE.stringcon)
                         {
-                            tableName = L0.Str;
+                            line = L0.Str;
                         }
-                        if (size == 2 && L0.VALTYPE == VALTYPE.stringcon && L1.VALTYPE == VALTYPE.stringcon)
+                        else
                         {
-                            tableName = L0.Str;
-                            where = L1.Str;
+                            stdio.Error("invalid arguments on function void run(string)");
                         }
 
-                        if (tableName != null)
+                        if (line != null)
                         {
-                            Side theSide = (Side)DS[THESIDE].HostValue;
-                            string schema = TableName.dbo;
-                            if (tableName.IndexOf(".") > 0)
+                            SqlShell shell = DS["$SHELL"].Value as SqlShell;
+                            if (shell != null)
                             {
-                                string[] L = tableName.Split('.');
-                                schema = L[0];
-                                tableName = L[1];
+                                int result = (int)shell.Run(line);
+                                return new VAL(result);
                             }
-                            TableName tname = new TableName(theSide.DatabaseName, schema, tableName);
-
-                            int count = 0;
-                            using (var writer = fileName.NewStreamWriter())
+                            else
                             {
-                                if (where != null)
-                                {
-                                    //count = theSide.GenerateRows(writer, tname, new Locator(where), false);
-                                    count = Compare.GenerateRows(writer, new TableSchema(tname), new Locator(where), false);
-                                    stdio.WriteLine("insert clauses (SELECT * FROM {0} WHERE {1}) generated to {2}", tname, where, fileName);
-                                }
-                                else
-                                {
-                                    //count = theSide.GenerateRows(writer, tname, null, false);
-                                    count = Compare.GenerateRows(writer, new TableSchema(tname), null, false);
-                                    stdio.WriteLine("insert clauses (SELECT * FROM {0}) generated to {1}", tname, fileName);
-                                }
+                                stdio.Error("shell not found");
+                                return new VAL();
                             }
-
-                            return new VAL(count);
                         }
                     }
                     break;
@@ -150,7 +125,7 @@ namespace sqlcon
                     }
                     break;
             }
-            
+
             return null;
 
         }

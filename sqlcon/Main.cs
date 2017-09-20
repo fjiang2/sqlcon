@@ -12,6 +12,7 @@ namespace sqlcon
         private const string _USER_CFG = "user.cfg";
 
         private Configuration cfg;
+        public SqlShell Shell { get; private set; }
 
         public Main(Configuration cfg)
         {
@@ -63,7 +64,7 @@ namespace sqlcon
 
                     default:
                         if (!string.IsNullOrEmpty(arg))
-                            RunBatch(arg, args);  
+                            RunBatch(arg, args);
                         else
                             ShowHelp();
 
@@ -72,8 +73,9 @@ namespace sqlcon
             }
 
 
-            new SqlShell(cfg).DoConsole();
-
+            Shell = new SqlShell(cfg);
+            Context.DS.AddHostObject("$SHELL", Shell);
+            Shell.DoConsole();
         }
 
 
