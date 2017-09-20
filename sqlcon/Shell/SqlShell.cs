@@ -15,7 +15,6 @@ namespace sqlcon
 
     class SqlShell : ShellContext
     {
-        static readonly string[] _SQL = new string[] { "use", "select", "update", "delete", "insert", "exec", "create", "alter", "drop" };
         public SqlShell(Configuration cfg)
             : base(cfg)
         {
@@ -409,7 +408,7 @@ namespace sqlcon
                     return NextStep.COMPLETED;
 
                 default:
-                    if (!_SQL.Contains(cmd.Action.ToLower()))
+                    if (!_SQL.Contains(cmd.Action.ToUpper()))
                     {
                         stdio.Error("invalid command");
                         return NextStep.COMPLETED;
@@ -420,7 +419,7 @@ namespace sqlcon
             return NextStep.NEXT;
         }
 
-
+        static readonly string[] _SQL = new string[] { "ALTER", "CREATE", "DELETE", "DROP", "EXEC", "INSERT", "SELECT", "UPDATE", "USE" };
 
 
         private void chdir(Command cmd)
@@ -638,6 +637,7 @@ namespace sqlcon
             stdio.WriteLine("rd,rmdir /?             : see more info");
             stdio.WriteLine("type /?                 : see more info");
             stdio.WriteLine("set /?                  : see more info");
+            stdio.WriteLine("let /?                  : see more info");
             stdio.WriteLine("del,erase /?            : see more info");
             stdio.WriteLine("ren,rename /?           : see more info");
             stdio.WriteLine("attrib /?               : see more info");
@@ -689,11 +689,7 @@ namespace sqlcon
             stdio.WriteLine("  maxrows               : max number of row shown on select query");
             stdio.WriteLine("  DataReader            : true: use SqlDataReader; false: use Fill DataSet");
             stdio.WriteLine();
-            stdio.WriteLine("evalute expression or execuate statement if none of above ");
-            stdio.WriteLine("10+3; results 13");
-            stdio.WriteLine();
         }
-
 
     }
 }
