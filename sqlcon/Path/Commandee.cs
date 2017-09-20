@@ -756,8 +756,35 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             return -1;
         }
 
-
         public void let(Command cmd)
+        {
+            if (cmd.HasHelp)
+            {
+                stdio.WriteLine("let assignment              : variable assign statement ");
+                stdio.WriteLine("let key=value               : update column by current table or locator");
+                stdio.WriteLine("example:");
+                stdio.WriteLine("let Host=\"127.0.0.1\"      : value of variable Host is '\"127.0.0.1\"'");
+                stdio.WriteLine("let a=12                    : value of variable Host is '\"127.0.0.1\"'");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(cmd.args))
+            {
+                stdio.ErrorFormat("assignment cannot be empty");
+                return;
+            }
+
+            try
+            {
+                Script.Execute($"{cmd.args};", Context.DS);
+            }
+            catch (Exception ex)
+            {
+                stdio.ErrorFormat("execute error: {0}", ex.Message);
+            }
+        }
+
+        public void let1(Command cmd)
         {
             if (cmd.HasHelp)
             {

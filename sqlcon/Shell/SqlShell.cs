@@ -15,7 +15,7 @@ namespace sqlcon
 
     class SqlShell : ShellContext
     {
-
+        static readonly string[] _SQL = new string[] { "use", "select", "update", "delete", "insert", "exec", "create", "alter", "drop" };
         public SqlShell(Configuration cfg)
             : base(cfg)
         {
@@ -121,6 +121,7 @@ namespace sqlcon
                             }
                             else if (_result == NextStep.ERROR)
                                 return NextStep.ERROR;
+
                         }
                         break;
                 }
@@ -408,6 +409,11 @@ namespace sqlcon
                     return NextStep.COMPLETED;
 
                 default:
+                    if (!_SQL.Contains(cmd.Action.ToLower()))
+                    {
+                        stdio.Error("invalid command");
+                        return NextStep.COMPLETED;
+                    }
                     break;
             }
 
@@ -514,17 +520,8 @@ namespace sqlcon
                     break;
 
                 default:
-                    try
-                    {
-                        Script.Execute($"{text};", Context.DS);
-                    }
-                    catch (Exception ex)
-                    {
-                        stdio.ErrorFormat("execute error: {0}", ex.Message);
-                        return NextStep.ERROR;
-                    }
-
-                    break;
+                    stdio.ErrorFormat("invalid command");
+                    return NextStep.ERROR;
             }
 
             return NextStep.COMPLETED;
