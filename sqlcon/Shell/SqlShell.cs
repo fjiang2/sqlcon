@@ -76,7 +76,7 @@ namespace sqlcon
                 }
                 else if (next == NextStep.ERROR)
                 {
-                    if (!stdio.YesOrNo($"are you sure to continue to {line} (y/n)?"))
+                    if (!stdio.YesOrNo($"continue to run \"{line}\" (y/n)?"))
                     {
                         stdio.ErrorFormat("interupted.");
                         return;

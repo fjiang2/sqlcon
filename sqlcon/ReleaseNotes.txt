@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+09/20/2017 v1.8.3.0
+	Improvements/Enhancements:
+	1. support {expression} on the command line. e.g. "export /conf /out:{path}" where "path" is variable  
+
 09/19/2017 v1.8.2.0
 	Improvements/Enhancements:
 	1. create config classes for key=value pairs. command>export /conf /type:const /key:col1 /default:col2

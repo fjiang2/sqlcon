@@ -42,8 +42,8 @@ namespace sqlcon
 
                 list.Add(item);
             }
-            else
-                throw new Exception("bad argument");
+            //else  //Tie code may use + or - in expression
+            //    throw new Exception("bad argument");
         }
 
         public bool Has(string arg)
