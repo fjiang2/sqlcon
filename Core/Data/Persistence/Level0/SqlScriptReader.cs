@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Sys.Data
 {
-    class SqlScriptReader
+    class SqlScriptReader : IDisposable
     {
         private StreamReader reader;
         private int i = 0;
@@ -16,6 +16,11 @@ namespace Sys.Data
         public SqlScriptReader(string file)
         {
             this.reader = new StreamReader(file);
+        }
+
+        public void Dispose()
+        {
+            Close();
         }
 
         private bool ReadLine()

@@ -71,8 +71,11 @@ namespace Sys.Data
                 {
                     if (!ExecuteSql(reader.LineNumber, builder))
                     {
-                        if(stopOnError != null && stopOnError())
+                        if (stopOnError != null && stopOnError())
+                        {
+                            reader.Close();
                             return;
+                        }
                     }
 
                     builder.Clear();
@@ -97,7 +100,10 @@ namespace Sys.Data
                             if (!ExecuteSql(reader.LineNumber, builder))
                             {
                                 if (stopOnError != null && stopOnError())
+                                {
+                                    reader.Close();
                                     return;
+                                }
                             }
 
                             builder.Clear();

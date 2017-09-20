@@ -1517,6 +1517,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("open files");
                 stdio.WriteLine("options:");
                 stdio.WriteLine("   log              : open log file");
+                stdio.WriteLine("   working          : open working directory");
                 stdio.WriteLine("   last             : open GUI viewer to see the last data table retrieved");
                 stdio.WriteLine("   output           : open output file");
                 stdio.WriteLine("   config [/s]      : open user configure file, /s open system configurate");
@@ -1551,9 +1552,14 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     stdio.OpenEditor("ReleaseNotes.txt");
                     break;
 
+                case "working":
+                    path = cfg.WorkingDirectory.CurrentDirectory;
+                    OpenDirectory(path, "working directory");
+                    break;
+
                 case "dpo":
                     path = cfg.GetValue<string>("dpo.path", $"{Configuration.MyDocuments}\\DataModel\\Dpo");
-                    OpenDirectory(path, "table class");
+                    OpenDirectory(path, "dpo class");
                     break;
 
                 case "dc":
