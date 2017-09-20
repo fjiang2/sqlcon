@@ -62,7 +62,7 @@ namespace sqlcon
             if (_GetValueMethodName != null)
                 maker.GetValueMethodName = _GetValueMethodName;
 
-            if (_ConstKeyClassName !=null)
+            if (_ConstKeyClassName != null)
                 maker.ConstKeyClassName = _ConstKeyClassName;
 
             if (_DefaultValueClassName != null)
@@ -167,6 +167,16 @@ namespace sqlcon
         {
             string columnKey = cmd.GetValue("key");
             string columnDefaultValue = cmd.GetValue("default");
+
+            if (columnKey != null && !dt.Columns.Contains(columnKey))
+            {
+                return string.Empty;
+            }
+
+            if (columnDefaultValue != null && !dt.Columns.Contains(columnDefaultValue))
+            {
+                return string.Empty;
+            }
 
             StringBuilder builder = new StringBuilder();
             foreach (DataRow row in dt.Rows)

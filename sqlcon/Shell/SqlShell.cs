@@ -491,30 +491,14 @@ namespace sqlcon
                     break;
 
                 default:
-                    if (text.EndsWith(";"))
+                    try
                     {
-                        try
-                        {
-                            Script.Execute(text, Context.DS);
-                        }
-                        catch (Exception ex)
-                        {
-                            stdio.ErrorFormat("execute error: {0}", ex.Message);
-                            return NextStep.ERROR;
-                        }
+                        Script.Execute($"{text};", Context.DS);
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        try
-                        {
-                            var val = Script.Evaluate(text, Context.DS);
-                            stdio.WriteLine(string.Format("  results {0}", val));
-                        }
-                        catch (Exception ex)
-                        {
-                            stdio.ErrorFormat("evaluate error: {0}", ex.Message);
-                            return NextStep.ERROR;
-                        }
+                        stdio.ErrorFormat("execute error: {0}", ex.Message);
+                        return NextStep.ERROR;
                     }
 
                     break;
