@@ -309,7 +309,20 @@ namespace sqlcon
                             }
 
                             var adapter = new CompareAdapter(both.ps1.side, both.ps2.side);
-                            var sql = adapter.Run(type, both.ps1.MatchedTables, both.ps2.MatchedTables, cfg, cmd.Columns);
+                            var T1 = both.ps1.MatchedTables;
+                            var T2 = both.ps2.MatchedTables;
+
+                            if (cmd.Has("e"))   //find common existing table names
+                            {   
+                                var L1 = T1.Select(t => t.ShortName.ToUpper());
+                                var L2 = T2.Select(t => t.ShortName.ToUpper());
+                                var C = L1.Intersect(L2).ToArray();
+
+                                T1 = T1.Where(t => C.Contains(t.ShortName.ToUpper())).ToArray();
+                                T2 = T2.Where(t => C.Contains(t.ShortName.ToUpper())).ToArray();
+                            }
+
+                            var sql = adapter.Run(type, T1, T2, cfg, cmd.Columns);
                             writer.Write(sql);
                         }
                         stdio.WriteLine("completed");
@@ -652,6 +665,7 @@ namespace sqlcon
             stdio.WriteLine("ver                     : display version");
             stdio.WriteLine("compare path1 [path2]   : compare table scheam or data");
             stdio.WriteLine("          /s            : compare schema otherwise compare data");
+            stdio.WriteLine("          /e            : compare common existing tables only");
             stdio.WriteLine("          /col:c1,c2    : skip columns defined during comparing");
             stdio.WriteLine("export /?               : see more info");
             stdio.WriteLine("import /?               : see more info");
