@@ -255,6 +255,7 @@
     <Compile Include="Log\Transaction.cs" />
     <Compile Include="Log\TransactionLogeeType.cs" />
     <Compile Include="Log\TransactionType.cs" />
+    <Compile Include="Message\ExceptionExtension.cs" />
     <Compile Include="Message\MessageException.cs" />
     <Compile Include="Message\Message.cs" />
     <Compile Include="Message\MessageBuilder.cs" />

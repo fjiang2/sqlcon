@@ -144,6 +144,10 @@ namespace sqlcon
                     stdio.WriteLine();
                     return result;
                 }
+                catch (System.Data.SqlClient.SqlException ex1)
+                {
+                    stdio.ErrorFormat("{0}:{1}", "SQL", ex1.AllMessage());
+                }
                 catch (Exception ex)
                 {
                     stdio.WriteLine(ex.Message);
@@ -171,9 +175,9 @@ namespace sqlcon
             {
                 return DoSingleLineCommand(text);
             }
-            catch (SqlException ex1)
+            catch (System.Data.SqlClient.SqlException ex1)
             {
-                stdio.ErrorFormat("{0}:{1}", "SQL", ex1.Message);
+                stdio.ErrorFormat("{0}:{1}", "SQL", ex1.AllMessage());
             }
             catch (Exception ex2)
             {
@@ -313,7 +317,7 @@ namespace sqlcon
                             var T2 = both.ps2.MatchedTables;
 
                             if (cmd.Has("e"))   //find common existing table names
-                            {   
+                            {
                                 var L1 = T1.Select(t => t.ShortName.ToUpper());
                                 var L2 = T2.Select(t => t.ShortName.ToUpper());
                                 var C = L1.Intersect(L2).ToArray();

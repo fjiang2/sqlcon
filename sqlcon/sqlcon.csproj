@@ -31,8 +31,8 @@
     <MinimumRequiredVersion>1.3.1.5</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>index.html</WebPage>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.8.1.%2a</ApplicationVersion>
+    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationVersion>1.8.3.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -67,7 +67,7 @@
     <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>D79CCEAECA3E96474B0B1A6AD557792985FC2DDB</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>FB3773F0843E4491183F03544A0F5775AA99D568</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>sqlcon_TemporaryKey.pfx</ManifestKeyFile>
@@ -215,6 +215,12 @@
       <Visible>False</Visible>
       <Description>sqlcon command file</Description>
       <Progid>{3E5082AA-93C8-419E-A04C-200196AC90C0}</Progid>
+      <DefaultIcon>Tie.ico</DefaultIcon>
+    </FileAssociation>
+    <FileAssociation Include=".sqt">
+      <Visible>False</Visible>
+      <Description>sqlcon Tie script file</Description>
+      <Progid>{2D9AE7BE-1F3D-4823-88B3-1604FF3BEDC0}</Progid>
       <DefaultIcon>Tie.ico</DefaultIcon>
     </FileAssociation>
   </ItemGroup>
