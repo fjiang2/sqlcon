@@ -162,6 +162,7 @@
     <Compile Include="Data\Conversion.cs" />
     <Compile Include="Data\DbType.cs" />
     <Compile Include="Data\DefaultRowValue.cs" />
+    <Compile Include="Data\ExceptionExtension.cs" />
     <Compile Include="Data\IDataPath.cs" />
     <Compile Include="Data\ILockable.cs" />
     <Compile Include="Data\Metadata\ColumnCollection.cs" />

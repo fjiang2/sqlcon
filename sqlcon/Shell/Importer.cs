@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.IO;
+using Sys;
 using Sys.Data;
 
 namespace sqlcon
@@ -24,6 +25,13 @@ namespace sqlcon
                 {
                     string line = reader.ReadLine();
                     string[] items = line.Split(',');
+
+                    if (columns.Length > 0 && items.Length != columns.Length)
+                    {
+                        stdio.Error($"number of columns doesn't match {items.Length}!={columns.Length}");
+                        return count;
+                    }
+
                     for (int i = 0; i < items.Length; i++)
                     {
                         if (DateTime.TryParse(items[i], out var _))
@@ -39,7 +47,16 @@ namespace sqlcon
                         sql = $"INSERT INTO {tname} ({L}) VALUES({line})";
                     }
 
-                    new SqlCmd(tname.Provider, sql).ExecuteNonQuery();
+                    try
+                    {
+                        new SqlCmd(tname.Provider, sql).ExecuteNonQuery();
+                    }
+                    catch (System.Data.SqlClient.SqlException ex)
+                    {
+                        stdio.Error(ex.AllMessage(sql));
+                        return count;
+                    }
+
                     count++;
                 }
             }
