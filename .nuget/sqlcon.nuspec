@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>sqlcon</id>
-    <version>1.7.10.0</version>
+    <version>1.8.3.0</version>
     <title>sqlcon</title>
     <authors>datconn</authors>
     <licenseUrl>http://tie.codeplex.com/license</licenseUrl>
@@ -28,9 +28,48 @@
     </description>
     <summary> SQL Console Tools for DevOps</summary>
     <releaseNotes>
+      09/20/2017 v1.8.3.0
+      Improvements/Enhancements:
+      1. support {expression} on the command line. e.g. "export /conf /out:{path}" where "path" is variable
+
+      09/19/2017 v1.8.2.0
+      Improvements/Enhancements:
+      1. create config classes for key=value pairs. command>export /conf /type:const /key:col1 /default:col2
+
+      09/11/2017 v1.8.1.0
+      Improvements/Enhancements:
+      1. disable query function on the user.cfg, use command batch file instead.
+      2. run batch file by arguments %1, %2, ....
+
+      09/11/2017 v1.8.0.0
+      Improvements/Enhancements:
+      1. sqlcon support command batch file (.sqc).
+      2. support command echo [on|off]
+
+      09/06/2017 v1.7.13.0
+      Improvements/Enhancements:
+      1. command export /c# uses current table name as class name
+      2. remove /c# option on the command> type, use export /c# instead.
+      3. add new command> last to display last query result.
+      Bugs Fixes:
+      1. command export /c# doesn't export UniqueIdentifier type column correctly.
+
+      06/27/2017 v1.7.12.0
+      Improvements/Enhancements:
+      1. command dir can match table name without dbo schema, for example, command>dir cust* can match dbo.cust*
+      Bugs Fixes:
+      1. code builder doesn't generate attributes
+      2. output of sqlcon cannot redirect when table displays.
+
+      05/19/2016 v1.7.11.0
+      New Features:
+      1. command>export /c# /ns:xxx /class:name /type:dict|[list] /out:path generate C# class of List
+        or Dictionary data from last table result
+      
       03/29/2017 v1.7.10.0
       Bug fixes:
       1. fixed namespace of some classes in syscore.dll
+      
       03/15/2017 v1.7.9.0
       New Features:
       1. first release to nuget
