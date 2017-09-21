@@ -55,12 +55,12 @@ namespace sqlcon
 
         }
 
-        private TableName[] getTableNames(Command cmd, string[] excludedTables = null)
+        private TableName[] getTableNames(Command cmd)
         {
             TableName[] tnames;
             if (cmd.wildcard != null)
             {
-                var md = new MatchedDatabase(dname, cmd.wildcard, excludedTables);
+                var md = new MatchedDatabase(dname, cmd.wildcard, null);
                 tnames = md.MatchedTableNames;
                 if (tnames.Length == 0)
                 {
@@ -113,7 +113,7 @@ namespace sqlcon
             {
                 if (cmd.wildcard != null)
                 {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportExcludedTables);
+                    var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportIncludedTables);
                     TableName[] tnames = md.MatchedTableNames;
                     if (tnames.Length > 0)
                     {
@@ -188,7 +188,7 @@ namespace sqlcon
                 stdio.WriteLine("start to generate {0} script to file: {1}", dname, fileName);
                 using (var writer = fileName.NewStreamWriter())
                 {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportExcludedTables);
+                    var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportIncludedTables);
                     TableName[] tnames = md.MatchedTableNames;
                     CancelableWork.CanCancel(cts =>
                     {
@@ -197,7 +197,7 @@ namespace sqlcon
                             if (cts.IsCancellationRequested)
                                 return;
 
-                            if (!cfg.exportExcludedTables.IsMatch(tn.ShortName))
+                            if (!cfg.exportIncludedTables.IsMatch(tn.ShortName))
                             {
                                 int count = new SqlCmd(tn.Provider, string.Format("SELECT COUNT(*) FROM {0}", tn)).FillObject<int>();
                                 if (count > cfg.Export_Max_Count)
@@ -258,7 +258,7 @@ namespace sqlcon
             else if (dname != null)
             {
                 stdio.WriteLine("start to generate {0}", dname);
-                var mt = new MatchedDatabase(dname, cmd.wildcard, cfg.exportExcludedTables);
+                var mt = new MatchedDatabase(dname, cmd.wildcard, cfg.exportIncludedTables);
                 CancelableWork.CanCancel(cts =>
                 {
                     foreach (var tname in mt.MatchedTableNames)
@@ -315,7 +315,7 @@ namespace sqlcon
                 stdio.WriteLine("start to generate database {0} class to directory: {1}", dname, option.OutputPath);
                 CancelableWork.CanCancel(cts =>
                 {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportExcludedTables);
+                    var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportIncludedTables);
                     TableName[] tnames = md.MatchedTableNames;
                     foreach (var tn in tnames)
                     {
@@ -369,7 +369,7 @@ namespace sqlcon
                 stdio.WriteLine("start to generate {0} csv to directory: {1}", dname, path);
                 CancelableWork.CanCancel(cts =>
                 {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportExcludedTables);
+                    var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportIncludedTables);
                     TableName[] tnames = md.MatchedTableNames;
                     foreach (var tn in tnames)
                     {

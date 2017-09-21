@@ -9,24 +9,24 @@ using Sys.Data;
 
 namespace sqlcon
 {
-    class MatchedDatabase  
+    class MatchedDatabase
     {
         private string namePattern;
 
         public readonly DatabaseName DatabaseName;
-        public readonly string[] Excludedtables;
+        public readonly string[] includedtables;
 
-        public MatchedDatabase(DatabaseName databaseName, string namePattern, string[] excludedtables)
+        public MatchedDatabase(DatabaseName databaseName, string namePattern, string[] includedtables)
         {
             this.namePattern = namePattern;
             this.DatabaseName = databaseName;
-            
-            if(excludedtables != null)
-                this.Excludedtables = excludedtables;
+
+            if (includedtables != null)
+                this.includedtables = includedtables;
         }
 
 
-  
+
 
         public TableName[] MatchedTableNames
         {
@@ -62,10 +62,15 @@ namespace sqlcon
 
         public bool Includes(TableName tableName)
         {
-            if (Excludedtables == null)
+            return Includes(includedtables, tableName);
+        }
+
+        public static bool Includes(string[] includedtables, TableName tableName)
+        {
+            if (includedtables == null || includedtables.Length == 0)
                 return true;
 
-            return !Excludedtables.IsMatch(tableName.ShortName);
+            return includedtables.IsMatch(tableName.ShortName);
         }
 
         public static TableName[] Search(string pattern, TableName[] tableNames)
@@ -77,6 +82,6 @@ namespace sqlcon
         }
 
 
-   
+
     }
 }

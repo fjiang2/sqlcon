@@ -12,7 +12,7 @@ namespace sqlcon
         private const string _USER_CFG = "user.cfg";
 
         private Configuration cfg;
-        public SqlShell Shell { get; private set; }
+        public Shell Shell { get; private set; }
 
         public Main(Configuration cfg)
         {
@@ -73,7 +73,7 @@ namespace sqlcon
             }
 
 
-            Shell = new SqlShell(cfg);
+            Shell = new Shell(cfg);
             Context.DS.AddHostObject("$SHELL", Shell);
             Shell.DoConsole();
         }

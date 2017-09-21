@@ -68,7 +68,7 @@ namespace sqlcon
                 L.Add(cmd);
             }
 
-            new SqlShell(cfg).DoBatch(L);
+            new Shell(cfg).DoBatch(L);
         }
 
         public bool Exists => File.Exists(path);

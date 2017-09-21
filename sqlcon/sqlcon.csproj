@@ -113,6 +113,7 @@
     <Compile Include="ClassBuilder\TheClassBuilder.cs" />
     <Compile Include="Path\CommandState.cs" />
     <Compile Include="Path\NextStep.cs" />
+    <Compile Include="Shell\ShellHelp.cs" />
     <Compile Include="Shell\ShellHistory.cs" />
     <Compile Include="Windows\DbTreeUI.cs" />
     <Compile Include="Windows\SqlEditor.cs" />
@@ -152,7 +153,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataSource\Side.cs" />
     <Compile Include="Shell\ShellContext.cs" />
-    <Compile Include="Shell\SqlShell.cs" />
+    <Compile Include="Shell\Shell.cs" />
     <Compile Include="Data\Tools.cs" />
     <Compile Include="Windows\WpfExtension.cs" />
     <Compile Include="Windows\WpfUtils.cs" />

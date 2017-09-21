@@ -72,7 +72,7 @@ namespace sqlcon
 
             if (path.wildcard != null)
             {
-                var m1 = new MatchedDatabase(dname, path.wildcard, mgr.Configuration.compareExcludedTables);
+                var m1 = new MatchedDatabase(dname, path.wildcard, mgr.Configuration.compareIncludedTables);
                 T = m1.MatchedTableNames;
             }
             else

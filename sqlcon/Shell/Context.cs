@@ -85,7 +85,7 @@ namespace sqlcon
 
                         if (line != null)
                         {
-                            SqlShell shell = DS["$SHELL"].Value as SqlShell;
+                            Shell shell = DS["$SHELL"].Value as Shell;
                             if (shell != null)
                             {
                                 int result = (int)shell.Run(line);

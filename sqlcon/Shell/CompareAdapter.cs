@@ -3,28 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data;
+
+using Sys;
 using Sys.Data;
 using Sys.Data.Comparison;
-using System.Data;
-using System.Data.SqlClient;
-using System.IO;
-using System.Text.RegularExpressions;
 
 namespace sqlcon
 {
 
-    class CompareAdapter  
+    class CompareAdapter
     {
 
-        public Side Side1 {get; private set;}
-        public Side Side2 {get; private set;}
+        public Side Side1 { get; private set; }
+        public Side Side2 { get; private set; }
 
         public CompareAdapter(Side side1, Side side2)
         {
             this.Side1 = side1;
             this.Side2 = side2;
         }
-     
+
         private static bool Exists(TableName tname)
         {
             if (!tname.Exists())
@@ -77,7 +76,7 @@ namespace sqlcon
                         tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
                     }
 
-                    if (compareType == ActionType.CompareData && cfg.compareExcludedTables.FirstOrDefault(t => t == tname1.Name) != null)
+                    if (compareType == ActionType.CompareData && !MatchedDatabase.Includes(cfg.compareIncludedTables, tname1))
                     {
                         stdio.WriteLine("{0} is excluded", tname1);
                         continue;
@@ -99,7 +98,7 @@ namespace sqlcon
                         }
                     }
                 }
-                
+
             });
 
             return builder.ToString();
@@ -119,7 +118,7 @@ namespace sqlcon
             return Compare.DatabaseDifference(sideType, db1, db2, excludedtables);
         }
 
-  
+
         public string CompareTable(ActionType actiontype, CompareSideType sidetype, TableName tname1, TableName tname2, Dictionary<string, string[]> pk, string[] exceptColumns)
         {
             TableSchema schema1 = new TableSchema(tname1);
