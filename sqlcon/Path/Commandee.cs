@@ -962,9 +962,11 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             {
                 stdio.WriteLine("import file");
                 stdio.WriteLine("option:");
-                stdio.WriteLine("   /fmt:xml,ds  : load System.Data.DataSet xml file");
-                stdio.WriteLine("   /fmt:xml,dt  : load System.Data.DataTable xml file");
-                stdio.WriteLine("   /fmt:txt     : load text/csv file");
+                stdio.WriteLine("   /fmt:xml,ds   : load System.Data.DataSet xml file as last result");
+                stdio.WriteLine("   /fmt:xml,dt   : load System.Data.DataTable xml file as last result");
+                stdio.WriteLine("   /fmt:txt      : load text file and import into current table");
+                stdio.WriteLine("   /fmt:csv      : import .csv data into current table");
+                stdio.WriteLine("   /col:col1,... : .csv columns mapping");
             }
 
             string file = cmd.arg1;
@@ -976,14 +978,20 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             if (!File.Exists(file))
             {
-                stdio.ErrorFormat($"file \"{file}\" not exist");
+                stdio.ErrorFormat($"cannot find the file \"{file}\"");
                 return;
             }
 
-            string fmt = cmd.GetValue("fmt") ?? Path.GetExtension(file).ToLower();
+            string fmt = cmd.GetValue("fmt");
+            if (fmt == null)
+            {
+                string ext = Path.GetExtension(file);
+                if (ext.StartsWith("."))
+                    fmt = ext.Substring(1).ToLower();
+            }
+
             switch (fmt)
             {
-                case ".xml":
                 case "xml":
                 case "xml,ds":
                     var ds = new DataSet();
@@ -1016,6 +1024,17 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     break;
 
                 case "txt":
+                    break;
+
+                case "csv":
+                    TableName tname = mgr.GetCurrentPath<TableName>();
+                    if (tname == null)
+                    {
+                        stdio.Error("cannot find the table to import data");
+                        return;
+                    }
+                    int count = Importer.ImportCsv(file, tname, cmd.Columns);
+                    stdio.WriteLine($"{count} row(s) imported");
                     break;
 
                 default:

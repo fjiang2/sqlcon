@@ -113,6 +113,7 @@
     <Compile Include="ClassBuilder\TheClassBuilder.cs" />
     <Compile Include="Path\CommandState.cs" />
     <Compile Include="Path\NextStep.cs" />
+    <Compile Include="Shell\Importer.cs" />
     <Compile Include="Shell\ShellHelp.cs" />
     <Compile Include="Shell\ShellHistory.cs" />
     <Compile Include="Windows\DbTreeUI.cs" />
