@@ -413,11 +413,18 @@ namespace sqlcon
 
             if (ds != null)
             {
+                string[] items = new string[] { };
+                if (clss != null)
+                    items = clss.Split(',');
+
+                int i = 0;
                 foreach (DataTable dt in ds.Tables)
                 {
                     list.Add(dt);
-                    if (clss != null)
-                        dt.TableName = clss;
+                    if (i < items.Length)
+                        dt.TableName = items[i];
+
+                    i++;
                 }
             }
             else if (tname != null)
@@ -441,9 +448,6 @@ namespace sqlcon
                 stdio.ErrorFormat("data table cannot find, use command type or select first");
                 return;
             }
-
-            if (list.Count == 1 && clss != null)
-                list[0].TableName = clss;
 
             foreach (DataTable dt in list)
             {
