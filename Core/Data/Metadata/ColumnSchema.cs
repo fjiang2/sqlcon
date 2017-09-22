@@ -385,9 +385,9 @@ namespace Sys.Data
         #endregion
 
 
-        public object ToObject(string val)
+        public object Parse(string val)
         {
-            if (this.Nullable && val == "")
+            if (this.Nullable && (val == "" || val.ToUpper() == "NULL"))
                 return null;
 
             switch (ctype)

@@ -89,7 +89,7 @@ namespace Sys.Data
             int i = 0;
             foreach (ColumnSchema column in this)
             {
-                object obj = column.ToObject(items[i]);
+                object obj = column.Parse(items[i]);
                 if (obj == null)
                     values[i] = "NULL";
                 else if (obj is DateTime)

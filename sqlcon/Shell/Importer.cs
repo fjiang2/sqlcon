@@ -14,46 +14,41 @@ namespace sqlcon
     {
         public static int ImportCsv(string path, TableName tname, string[] columns)
         {
-            string L = string.Empty;
-            if (columns.Length > 0)
-                L = columns.Select(x => $"[{x}]").Aggregate((x, y) => $"{x},{y}");
-
             int count = 0;
+
+            //create column schema list
+            TableSchema schema = new TableSchema(tname);
+            List<IColumn> list = new List<IColumn>();
+            foreach (string column in columns)
+            {
+                var c = schema.Columns.FirstOrDefault(x => x.ColumnName.ToUpper() == column.ToUpper());
+                if (c == null)
+                {
+                    stdio.Error($"cannot find the column [{column}]");
+                    return count;
+                }
+
+                list.Add(c);
+            }
+
+            var _columns = list.ToArray();
+
+            //read .csv file
             using (var reader = new StreamReader(path))
             {
                 while (!reader.EndOfStream)
                 {
                     string line = reader.ReadLine();
-                    string[] items = line.Split(',');
+                    object[] values = parseLine(_columns, line);
 
-                    if (columns.Length > 0 && items.Length != columns.Length)
-                    {
-                        stdio.Error($"number of columns doesn't match {items.Length}!={columns.Length}");
-                        return count;
-                    }
-
-                    for (int i = 0; i < items.Length; i++)
-                    {
-                        if (DateTime.TryParse(items[i], out var _))
-                            items[i] = $"'{items[i]}'";
-                    }
-
-                    line = string.Join(",", items);
-                    string sql;
-                    if (columns.Length == 0)
-                        sql = $"INSERT INTO {tname} VALUES({line})";
-                    else
-                    {
-                        sql = $"INSERT INTO {tname} ({L}) VALUES({line})";
-                    }
-
+                    var builder = new SqlBuilder().INSERT(tname, columns).VALUES(values);
                     try
                     {
-                        new SqlCmd(tname.Provider, sql).ExecuteNonQuery();
+                        new SqlCmd(builder).ExecuteNonQuery();
                     }
                     catch (System.Data.SqlClient.SqlException ex)
                     {
-                        stdio.Error(ex.AllMessage(sql));
+                        stdio.Error(ex.AllMessage(builder.ToString()));
                         return count;
                     }
 
@@ -62,6 +57,18 @@ namespace sqlcon
             }
 
             return count;
+        }
+
+        private static object[] parseLine(IColumn[] columns, string line)
+        {
+            string[] items = line.Split(',');
+            object[] values = new object[columns.Length];
+            for (int i = 0; i < items.Length; i++)
+            {
+                values[i] = (columns[i] as ColumnSchema).Parse(items[i]);
+            }
+
+            return values;
         }
     }
 }
