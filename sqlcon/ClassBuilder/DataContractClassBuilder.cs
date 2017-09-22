@@ -140,11 +140,15 @@ namespace sqlcon
 
                 count = dt.Columns.Count;
                 i = 0;
+                string _GetField = "Field";
+                if (mtd != null)
+                    _GetField = mtd;
+
                 foreach (DataColumn column in dt.Columns)
                 {
                     var type = dict[column];
                     var name = COLUMN(column);
-                    var line = $"{column.ColumnName} = row.Field<{type}>({name})";
+                    var line = $"{column.ColumnName} = row.{_GetField}<{type}>({name})";
                     if (++i < count)
                         line += ",";
 
@@ -174,7 +178,7 @@ namespace sqlcon
                 {
                     var type = dict[column];
                     var name = COLUMN(column);
-                    var line = $"item.{column.ColumnName} = row.Field<{type}>({name});";
+                    var line = $"item.{column.ColumnName} = row.{_GetField}<{type}>({name});";
                     if (++i < count)
                         line += ",";
 

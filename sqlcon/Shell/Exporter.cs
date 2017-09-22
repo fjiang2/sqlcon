@@ -404,43 +404,53 @@ namespace sqlcon
 
         public void ExportDataContract(Command cmd, int version)
         {
-            DataTable dt = ShellHistory.LastTable();
-            string ns = cmd.GetValue("ns");
-            string clss = cmd.GetValue("class");
             string path = cmd.GetValue("out") ?? cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
+            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("dc.ns", "Sys.DataModel.DataContract");
+            string clss = cmd.GetValue("class");
 
-            if (dt != null)
+            DataSet ds = ShellHistory.LastDataSet();
+            List<DataTable> list = new List<DataTable>();
+
+            if (ds != null)
             {
-                ns = ns ?? cfg.GetValue<string>("dc.ns", "Sys.DataModel.DataContract");
-                clss = clss ?? cfg.GetValue<string>("dc.class", "DataContract");
-                ExportDataContractClass(cmd, path, version, dt, ns, clss);
+                foreach (DataTable dt in ds.Tables)
+                {
+                    list.Add(dt);
+                    if (clss != null)
+                        dt.TableName = clss;
+                }
+            }
+            else if (tname != null)
+            {
+                var dt = new SqlCmd(tname.Provider, $"SELECT TOP 1 * FROM {tname.FormalName}").FillDataTable();
+                dt.TableName = tname.Name;
+            }
+            else if (dname != null)
+            {
+                path = path + "\\" + dname.Name;
+                TableName[] tnames = getTableNames(cmd);
+                foreach (var tn in tnames)
+                {
+                    var dt = new SqlCmd(tn.Provider, $"SELECT TOP 1 * FROM {tn.FormalName}").FillDataTable();
+                    dt.TableName = tn.Name;
+                    list.Add(dt);
+                }
             }
             else
             {
-                if (tname != null)
-                {
-                    dt = new SqlCmd(tname.Provider, $"SELECT TOP 1 * FROM {tname.FormalName}").FillDataTable();
-                    dt.TableName = tname.Name;
-                    ExportDataContractClass(cmd, path, version, dt, ns ?? $"Sys.DataModel.{tname.DatabaseName.Name}", clss ?? tname.ShortName);
-                }
-                else if (dname != null)
-                {
-                    path = path + "\\" + dname.Name;
-                    TableName[] tnames = getTableNames(cmd);
-                    foreach (var tn in tnames)
-                    {
-                        dt = new SqlCmd(tn.Provider, $"SELECT TOP 1 * FROM {tn.FormalName}").FillDataTable();
-                        dt.TableName = tn.Name;
-                        ExportDataContractClass(cmd, path, version, dt, ns ?? $"Sys.DataModel.{dname.Name}", tn.ShortName);
-                    }
-                }
-                else
-                {
-                    stdio.ErrorFormat("data table cannot find, use command type or select first");
-                    return;
-                }
+                stdio.ErrorFormat("data table cannot find, use command type or select first");
+                return;
+            }
+
+            if (list.Count == 1 && clss != null)
+                list[0].TableName = clss;
+
+            foreach (DataTable dt in list)
+            {
+                ExportDataContractClass(cmd, path, version, dt, ns, className: dt.TableName);
             }
         }
+
 
         private void ExportDataContractClass(Command cmd, string path, int version, DataTable dt, string ns, string className)
         {
