@@ -47,7 +47,7 @@ namespace sqlcon
                 return;
 
             ClassType ctype = getClassType();
-            string _GetValueMethodName = cmd.GetValue("get");
+            string _GetValueMethodName = cmd.GetValue("method");
             string _ConstKeyClassName = cmd.GetValue("kc");
             string _DefaultValueClassName = cmd.GetValue("dc");
 

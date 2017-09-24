@@ -431,6 +431,7 @@ namespace sqlcon
             {
                 var dt = new SqlCmd(tname.Provider, $"SELECT TOP 1 * FROM {tname.FormalName}").FillDataTable();
                 dt.TableName = tname.Name;
+                list.Add(dt);
             }
             else if (dname != null)
             {
