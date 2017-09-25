@@ -39,7 +39,7 @@ namespace sqlcon
         {
             string code;
             if (cmd.GetValue("in") != null)
-                code = ReadCode();
+                code = ReadTieCode();
             else
                 code = ReadCode(dt);
 
@@ -202,20 +202,6 @@ namespace sqlcon
             return builder.ToString();
         }
 
-        private string ReadCode()
-        {
-            string path = cmd.GetValue("in");
-            if (path == null)
-                return null;
-
-            if (!File.Exists(path))
-            {
-                stdio.Error($"file {path} not found");
-                return null;
-            }
-
-            return File.ReadAllText(path);
-        }
     }
 }
 

@@ -13,7 +13,11 @@ namespace sqlcon
 {
     class ClassMaker
     {
+        protected const string LP = "{";
+        protected const string RP = "}";
+
         protected Command cmd;
+        
         public ClassMaker(Command cmd)
         {
             this.cmd = cmd;
@@ -84,5 +88,21 @@ namespace sqlcon
                 }
             }
         }
+
+        protected string ReadTieCode()
+        {
+            string path = cmd.GetValue("in");
+            if (path == null)
+                return null;
+
+            if (!File.Exists(path))
+            {
+                stdio.Error($"file {path} not found");
+                return null;
+            }
+
+            return File.ReadAllText(path);
+        }
+
     }
 }

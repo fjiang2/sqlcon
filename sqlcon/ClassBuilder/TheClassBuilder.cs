@@ -8,45 +8,27 @@ using Sys.CodeBuilder;
 
 namespace sqlcon
 {
-    abstract class TheClassBuilder
+    abstract class TheClassBuilder : ClassMaker
     {
-        protected const string LP = "{";
-        protected const string RP = "}";
-
-        public string ns { get; }
         public string cname { get; set; }
-
-        public string _using { get; set; }
-        public string _base { get; set; }
-
         protected CSharpBuilder builder;
-        private Command cmd;
 
         public TheClassBuilder(string ns, Command cmd)
+            : base(cmd)
         {
-            this.cmd = cmd;
-            this._using = cmd.GetValue("using");
-            this._base = cmd.GetValue("base");
-
             builder = new CSharpBuilder { nameSpace = ns };
         }
 
         public void AddOptionalUsing()
         {
-            if (_using != null)
-            {
-                string[] items = _using.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var item in items)
-                {
-                    builder.AddUsing(item);
-                }
-            }
+            builder.AddUsingRange(base.Usings);
         }
 
         public TypeInfo[] OptionalBaseType(params TypeInfo[] inherits)
         {
             List<TypeInfo> bases = new List<TypeInfo>(inherits);
 
+            string _base = cmd.GetValue("base");
             if (_base != null)
             {
                 string[] items = _base.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
@@ -66,6 +48,7 @@ namespace sqlcon
         {
             CreateClass();
 
+            base.PrintOutput(builder, cname);
             string code = $"{ builder}";
             string file = Path.ChangeExtension(Path.Combine(path, cname), "cs");
             code.WriteIntoFile(file);
