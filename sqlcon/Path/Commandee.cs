@@ -1099,12 +1099,12 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             if (pt.Item is TableName || pt.Item is Locator || pt.Item is DatabaseName || pt.Item is ServerName)
             {
-                var exporter = new Exporter(mgr, pt, cfg);
+                var exporter = new Exporter(mgr, pt, cmd);
 
                 if (cmd.Has("insert"))
-                    exporter.ExportInsert(cmd);
+                    exporter.ExportInsert();
                 else if (cmd.Has("create"))
-                    exporter.ExportCreate(cmd);
+                    exporter.ExportCreate();
                 else if (cmd.Has("select"))
                     exporter.ExportScud(SqlScriptType.SELECT);
                 else if (cmd.Has("delete"))
@@ -1116,19 +1116,19 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 else if (cmd.Has("schema"))
                     exporter.ExportSchema();
                 else if (cmd.Has("data"))
-                    exporter.ExportData(cmd);
+                    exporter.ExportData();
                 else if (cmd.Has("dpo"))
-                    exporter.ExportClass(cmd);
+                    exporter.ExportClass();
                 else if (cmd.Has("csv"))
-                    exporter.ExportCsvFile(cmd);
+                    exporter.ExportCsvFile();
                 else if (cmd.Has("dc1"))
-                    exporter.ExportDataContract(cmd, 1);
+                    exporter.ExportDataContract(1);
                 else if (cmd.Has("dc2"))
-                    exporter.ExportDataContract(cmd, 2);
+                    exporter.ExportDataContract(2);
                 else if (cmd.Has("entity"))
-                    exporter.ExportEntityClass(cmd);
+                    exporter.ExportEntityClass();
                 else if (cmd.Has("l2s"))
-                    exporter.ExportLinq2SQLClass(cmd);
+                    exporter.ExportLinq2SQLClass();
                 else if (cmd.ToJson)
                 {
                     DataTable dt = ShellHistory.LastTable();
@@ -1142,9 +1142,9 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     }
                 }
                 else if (cmd.ToCSharp)
-                    exporter.ExportCSharpData(cmd);
+                    exporter.ExportCSharpData();
                 else if (cmd.Has("conf"))
-                    exporter.ExportConf(cmd);
+                    exporter.ExportConf();
                 else
                     stdio.ErrorFormat("invalid command options");
             }

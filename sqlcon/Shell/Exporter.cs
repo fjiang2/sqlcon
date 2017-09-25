@@ -15,19 +15,23 @@ namespace sqlcon
     class Exporter
     {
         private PathManager mgr;
+        private Command cmd;
         private Configuration cfg;
-        private string fileName;
+
+
         private TableName tname;
         private DatabaseName dname;
         private ServerName sname;
 
         XmlDbFile xml;
-        public Exporter(PathManager mgr, TreeNode<IDataPath> pt, Configuration cfg)
+        public Exporter(PathManager mgr, TreeNode<IDataPath> pt, Command cmd)
         {
             this.mgr = mgr;
-            this.cfg = cfg;
+            this.cmd = cmd;
+            this.cfg = cmd.Configuration;
+
             this.xml = new XmlDbFile { XmlDbFolder = cfg.XmlDbDirectory };
-            this.fileName = cfg.OutputFile;
+
             if (pt.Item is Locator)
             {
                 this.tname = mgr.GetPathFrom<TableName>(pt);
@@ -53,6 +57,23 @@ namespace sqlcon
                 this.sname = (ServerName)pt.Item;
             }
 
+        }
+        private string fileName
+        {
+            get
+            {
+                string output = cmd.GetValue("out");
+                if (!string.IsNullOrEmpty(output))
+                {
+                    string directory = Path.GetDirectoryName(output);
+                    if (!Directory.Exists(directory))
+                        Directory.CreateDirectory(directory);
+
+                    return output;
+                }
+
+                return cfg.OutputFile;
+            }
         }
 
         private TableName[] getTableNames(Command cmd)
@@ -95,7 +116,7 @@ namespace sqlcon
         }
 
 
-        public void ExportCreate(Command cmd)
+        public void ExportCreate()
         {
             if (tname != null)
             {
@@ -148,7 +169,7 @@ namespace sqlcon
             stdio.ErrorFormat("warning: table or database is not seleted");
         }
 
-        public void ExportInsert(Command cmd)
+        public void ExportInsert()
         {
             if (tname != null)
             {
@@ -245,7 +266,7 @@ namespace sqlcon
             }
         }
 
-        public void ExportData(Command cmd)
+        public void ExportData()
         {
             if (tname != null)
             {
@@ -287,7 +308,7 @@ namespace sqlcon
             }
         }
 
-        public void ExportClass(Command cmd)
+        public void ExportClass()
         {
             DpoOption option = new DpoOption();
 
@@ -346,7 +367,7 @@ namespace sqlcon
 
         }
 
-        public void ExportCsvFile(Command cmd)
+        public void ExportCsvFile()
         {
             string path = cfg.GetValue<string>("csv.path", $"{Configuration.MyDocuments}\\csv");
 
@@ -402,7 +423,7 @@ namespace sqlcon
             }
         }
 
-        public void ExportDataContract(Command cmd, int version)
+        public void ExportDataContract(int version)
         {
             string path = cmd.GetValue("out") ?? cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
             string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("dc.ns", "Sys.DataModel.DataContract");
@@ -452,12 +473,12 @@ namespace sqlcon
 
             foreach (DataTable dt in list)
             {
-                ExportDataContractClass(cmd, path, version, dt, ns, className: dt.TableName);
+                ExportDataContractClass(path, version, dt, ns, className: dt.TableName);
             }
         }
 
 
-        private void ExportDataContractClass(Command cmd, string path, int version, DataTable dt, string ns, string className)
+        private void ExportDataContractClass(string path, int version, DataTable dt, string ns, string className)
         {
 
             string mtd = cmd.GetValue("method");
@@ -488,7 +509,7 @@ namespace sqlcon
             }
         }
 
-        public void ExportEntityClass(Command cmd)
+        public void ExportEntityClass()
         {
             if (dname == null)
             {
@@ -545,7 +566,7 @@ namespace sqlcon
 
 
 
-        public void ExportLinq2SQLClass(Command cmd)
+        public void ExportLinq2SQLClass()
         {
             string path = cfg.GetValue<string>("l2s.path", $"{Configuration.MyDocuments}\\dc");
             string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("l2s.ns", "Sys.DataModel.L2s");
@@ -581,7 +602,7 @@ namespace sqlcon
         /// create C# data class from data table
         /// </summary>
         /// <param name="cmd"></param>
-        public void ExportCSharpData(Command cmd)
+        public void ExportCSharpData()
         {
             var dt = ShellHistory.LastOrCurrentTable(tname);
             if (dt == null)
@@ -600,7 +621,7 @@ namespace sqlcon
             builder.ExportCSharpData();
         }
 
-        public void ExportConf(Command cmd)
+        public void ExportConf()
         {
             var dt = ShellHistory.LastOrCurrentTable(tname);
 
