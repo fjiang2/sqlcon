@@ -235,38 +235,42 @@ namespace Sys.CodeBuilder
             clss.AddWithBeginEnd(body);
         }
 
-        public void AddCopyCloneEqualsFunc()
+        public void AddUtilsMethod(UtilsMethodType type)
         {
             var rw = properties
                 .Where(p => (p.modifier & Modifier.Public) == Modifier.Public && p.CanRead && p.CanWrite)
                 .Select(p => p.name);
 
-            var x = new UtilsMethod(this.name, rw);
-
-            Add(x.CopyFrom())
-            .Add(x.Clone())
-            .Add(x.Compare());
+            AddUtilsMethod(this.name, rw, type);
         }
 
-        public void AddCopyCloneEqualsFunc(string className, IEnumerable<string> propertyNames)
+        public void AddUtilsMethod(string className, IEnumerable<string> propertyNames, UtilsMethodType type)
         {
             var x = new UtilsMethod(className, propertyNames);
 
-            Add(x.CopyFrom())
-            .Add(x.Clone())
-            .Add(x.Compare());
-        }
+            if ((type & UtilsMethodType.Clone) == UtilsMethodType.Clone)
+                Add(x.Clone());
 
+            if ((type & UtilsMethodType.CloneFrom) == UtilsMethodType.CloneFrom)
+                Add(x.CloneFrom());
 
-        public void AddCopyCloneCompareExtension(string className, IEnumerable<string> propertyNames)
-        {
+            if ((type & UtilsMethodType.Compare) == UtilsMethodType.Compare)
+                Add(x.Compare());
 
-            var x = new UtilsMethod(className, propertyNames);
+            if ((type & UtilsMethodType.ComparTo) == UtilsMethodType.ComparTo)
+                Add(x.ComparTo());
 
-            Add(x.CopyTo())
-            .Add(x.CloneFrom())
-            .Add(x.ComparTo())
-            .Add(x.ToSimpleString());
+            if ((type & UtilsMethodType.CopyFrom) == UtilsMethodType.CopyFrom)
+                Add(x.CopyFrom());
+
+            if ((type & UtilsMethodType.CopyTo) == UtilsMethodType.CopyTo)
+                Add(x.CopyTo());
+
+            if ((type & UtilsMethodType.Equals) == UtilsMethodType.Equals)
+                Add(x.Equals());
+
+            if ((type & UtilsMethodType.ToSimpleString) == UtilsMethodType.ToSimpleString)
+                Add(x.ToSimpleString());
         }
 
 

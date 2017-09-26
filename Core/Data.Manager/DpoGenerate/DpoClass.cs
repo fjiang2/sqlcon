@@ -332,12 +332,8 @@ namespace Sys.Data.Manager
 
             ConstStringColumnNames();
 
-            clss.AddCopyCloneEqualsFunc();
-            //var utils = new Utils(clss.name, metaTable.Columns.Select(column => column.ColumnName.FieldName()));
-            //clss.Add(utils.Copy());
-            //clss.Add(utils.Clone());
-            //clss.Add(utils.Equals());
-
+            clss.AddUtilsMethod(UtilsMethodType.CopyTo | UtilsMethodType.Clone | UtilsMethodType.Compare);
+            
             return code.ToString();
         }
 

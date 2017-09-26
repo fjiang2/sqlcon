@@ -110,7 +110,7 @@ namespace Sys.CodeBuilder
 
         public Method Equals()
         {
-            Method mtd = new Method(new TypeInfo { type = typeof(bool)}, "Equals")
+            Method mtd = new Method(new TypeInfo { type = typeof(bool) }, "Equals")
             {
                 modifier = Modifier.Public | Modifier.Override,
             };
@@ -210,5 +210,18 @@ namespace Sys.CodeBuilder
             return mtd;
         }
 
+    }
+
+    [Flags]
+    public enum UtilsMethodType
+    {
+        CopyFrom = 0x01,
+        CopyTo = 0x02,
+        Clone = 0x04,
+        CloneFrom = 0x08,
+        Equals = 0x10,
+        Compare = 0x20,
+        ComparTo = 0x40,
+        ToSimpleString = 0x80
     }
 }
