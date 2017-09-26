@@ -20,8 +20,8 @@ namespace sqlcon
         private const string _ToDataTable = "ToDataTable";
         private bool isReadOnly = false;
 
-        public DataContractClassBuilder(string ns, Command cmd, DataTable dt)
-            : base(ns, cmd)
+        public DataContractClassBuilder(Command cmd, DataTable dt)
+            : base(cmd)
         {
             this.dt = dt;
             if (cmd.Has("readonly"))
@@ -77,14 +77,7 @@ namespace sqlcon
 
             //Const Field
             Field field;
-            foreach (DataColumn column in dt.Columns)
-            {
-                field = new Field(new TypeInfo { type = typeof(string) }, COLUMN(column), new Value(column.ColumnName))
-                {
-                    modifier = Modifier.Public | Modifier.Const
-                };
-                clss.Add(field);
-            }
+           
 
             if (dt.TableName != null)
             {
@@ -292,41 +285,18 @@ namespace sqlcon
             }
             sent.End(";");
 
-            //method = new Method("ForEach")
-            //{
-            //    modifier = Modifier.Public | Modifier.Static,
-            //    args = new Arguments().Add(typeof(DataTable), "dt").Add($"Action<{cname}>", "action"),
-            //    IsExtensionMethod = true
-            //};
-            //clss.Add(method);
-            //sent = method.statements;
-            //sent.AppendLine("foreach (DataRow row in dt.Rows)");
-            //sent.Begin();
-            //sent.AppendLine("var item = NewObject(row);");
-            //sent.AppendLine("action(item);");
-            //sent.AppendLine("UpdateRow(item, row);");
-            //sent.End();
-
-            //method = new Method("ForEach<T>")
-            //{
-            //    modifier = Modifier.Public | Modifier.Static,
-            //    type = new TypeInfo { userType = "IEnumerable<T>" },
-            //    args = new Arguments().Add(typeof(DataTable), "dt").Add($"Func<{cname},T>", "func"),
-            //    IsExtensionMethod = true
-            //};
-            //clss.Add(method);
-            //sent = method.statements;
-            //sent.AppendLine("List<T> list = new List<T>();");
-            //sent.AppendLine("foreach (DataRow row in dt.Rows)");
-            //sent.Begin();
-            //sent.AppendLine("var item = NewObject(row);");
-            //sent.AppendLine(" T t = func(item);");
-            //sent.AppendLine("list.Add(t);");
-            //sent.End();
-            //sent.AppendLine("return list;");
-
 
             clss.AddCopyCloneCompareExtension(cname, dict.Keys.Select(column => column.ColumnName));
+            clss.AppendLine();
+
+            foreach (DataColumn column in dt.Columns)
+            {
+                field = new Field(new TypeInfo { type = typeof(string) }, COLUMN(column), new Value(column.ColumnName))
+                {
+                    modifier = Modifier.Public | Modifier.Const
+                };
+                clss.Add(field);
+            }
         }
     }
 }

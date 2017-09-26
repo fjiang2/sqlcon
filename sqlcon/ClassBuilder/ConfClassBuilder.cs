@@ -39,7 +39,7 @@ namespace sqlcon
         {
             string code;
             if (cmd.GetValue("in") != null)
-                code = ReadTieCode();
+                code = ReadAllText();
             else
                 code = ReadCode(dt);
 

@@ -18,8 +18,8 @@ namespace sqlcon
         private TableName tname;
         private Dictionary<TableName, TableSchema> schemas;
 
-        public Linq2SQLClassBuilder(string ns, Command cmd, TableName tname, Dictionary<TableName, TableSchema> schemas)
-            : base(ns, cmd)
+        public Linq2SQLClassBuilder(Command cmd, TableName tname, Dictionary<TableName, TableSchema> schemas)
+            : base(cmd)
         {
             this.tname = tname;
             this.cname = tname.ToClassName(null);

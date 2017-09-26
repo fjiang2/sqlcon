@@ -16,8 +16,11 @@ namespace sqlcon
         protected const string LP = "{";
         protected const string RP = "}";
 
+        public string ns { get; set; }
+        public string cname { get; set; }
+
         protected Command cmd;
-        
+
         public ClassMaker(Command cmd)
         {
             this.cmd = cmd;
@@ -27,6 +30,9 @@ namespace sqlcon
         {
             get
             {
+                if (ns != null)
+                    return ns;
+
                 string _ns = cmd.GetValue("ns") ?? "Sys.DataModel.Db";
                 return _ns;
             }
@@ -36,6 +42,9 @@ namespace sqlcon
         {
             get
             {
+                if (cname != null)
+                    return cname;
+
                 string _cname = cmd.GetValue("class");
                 if (_cname != null)
                 {
@@ -89,12 +98,17 @@ namespace sqlcon
             }
         }
 
-        protected string ReadTieCode()
+        protected string ReadAllText()
         {
             string path = cmd.GetValue("in");
             if (path == null)
                 return null;
 
+            return ReadAllText(path);
+        }
+
+        protected string ReadAllText(string path)
+        {
             if (!File.Exists(path))
             {
                 stdio.Error($"file {path} not found");
@@ -103,6 +117,5 @@ namespace sqlcon
 
             return File.ReadAllText(path);
         }
-
     }
 }

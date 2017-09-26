@@ -18,8 +18,8 @@ namespace sqlcon
         public string mtd { get; set; }
 
 
-        public DataContract2ClassBuilder(string ns, Command cmd, DataTable dt)
-            : base(ns, cmd)
+        public DataContract2ClassBuilder(Command cmd, DataTable dt)
+            : base(cmd)
         {
             this.dt = dt;
 
@@ -205,6 +205,7 @@ namespace sqlcon
                 );
 
             sent.AppendFormat("return string.Format({0});", sb);
+            clss.AppendLine();
 
             //Const Field
             foreach (DataColumn column in dt.Columns)

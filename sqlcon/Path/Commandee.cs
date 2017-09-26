@@ -967,6 +967,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("   /fmt:txt      : load text file and import into current table");
                 stdio.WriteLine("   /fmt:csv      : import .csv data into current table");
                 stdio.WriteLine("   /col:col1,... : .csv columns mapping");
+                return;
             }
 
             string file = cmd.arg1;
@@ -1035,6 +1036,10 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     }
                     int count = Importer.ImportCsv(file, tname, cmd.Columns);
                     stdio.WriteLine($"{count} row(s) imported");
+                    break;
+
+                case "tie":
+                    new TieClassBuilder(cmd).Done();
                     break;
 
                 default:

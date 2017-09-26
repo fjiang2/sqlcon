@@ -109,6 +109,16 @@ namespace Sys.CodeBuilder
             return member;
         }
 
+        private IEnumerable<Class> classes
+        {
+            get
+            {
+                return list
+                    .Where(item => item is Class)
+                    .Select(item => (Class)item);
+            }
+        }
+
         private IEnumerable<Constructor> constructors
         {
             get
@@ -199,6 +209,11 @@ namespace Sys.CodeBuilder
                     }
                 }
 
+                foreach (Class _class in classes)
+                {
+                    body.Add(_class);
+                    body.AppendLine();
+                }
             }
             else
             {

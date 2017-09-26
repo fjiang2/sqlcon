@@ -486,8 +486,9 @@ namespace sqlcon
 
             if (version == 1)
             {
-                var builder = new DataContractClassBuilder(ns, cmd, dt)
+                var builder = new DataContractClassBuilder(cmd, dt)
                 {
+                    ns = ns,
                     cname = className,
                     mtd = mtd,
                     keys = keys
@@ -498,8 +499,9 @@ namespace sqlcon
             }
             else
             {
-                var builder = new DataContract2ClassBuilder(ns, cmd, dt)
+                var builder = new DataContract2ClassBuilder(cmd, dt)
                 {
+                    ns = ns,
                     cname = className,
                     mtd = mtd
                 };
@@ -523,7 +525,10 @@ namespace sqlcon
             if (tname != null)
             {
                 stdio.WriteLine("start to generate {0} entity framework class file", tname);
-                var builder = new EntityClassBuilder(ns, cmd, tname);
+                var builder = new EntityClassBuilder(cmd, tname)
+                {
+                    ns = ns
+                };
 
                 string file = builder.WriteFile(path);
                 stdio.WriteLine("completed {0} => {1}", tname.ShortName, file);
@@ -542,7 +547,10 @@ namespace sqlcon
 
                         try
                         {
-                            var builder = new EntityClassBuilder(ns, cmd, tn);
+                            var builder = new EntityClassBuilder(cmd, tn)
+                            {
+                                ns = ns
+                            };
 
                             string file = builder.WriteFile(path);
                             stdio.WriteLine("generated for {0} at {1}", tn.ShortName, path);
@@ -574,7 +582,10 @@ namespace sqlcon
 
             if (tname != null)
             {
-                var builder = new Linq2SQLClassBuilder(ns, cmd, tname, schemas);
+                var builder = new Linq2SQLClassBuilder(cmd, tname, schemas)
+                {
+                    ns = ns
+                };
                 string file = builder.WriteFile(path);
                 stdio.WriteLine("code generated on {0}", file);
             }
@@ -584,7 +595,11 @@ namespace sqlcon
                 TableName[] tnames = getTableNames(cmd);
                 foreach (var tname in tnames)
                 {
-                    var builder = new Linq2SQLClassBuilder(ns, cmd, tname, schemas);
+                    var builder = new Linq2SQLClassBuilder(cmd, tname, schemas)
+                    {
+                        ns = ns
+                    };
+
                     string file = builder.WriteFile(path);
                     stdio.WriteLine("code generated on {0}", file);
                 }
