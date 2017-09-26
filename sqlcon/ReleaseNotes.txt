@@ -3,6 +3,10 @@
 09/21/2017 v1.8.4.0
 	Improvements/Enhancements:
 	1. configuration excluded table is replaced by included table names for data comparison and data export. 
+	2. create multiple C# classes from DataSet.xml
+	3. export data contract class for read only purpose
+	4. export SCUD SQL script to indicating directory
+	5. import .csv file to current table
 
 09/20/2017 v1.8.3.0
 	Improvements/Enhancements:
