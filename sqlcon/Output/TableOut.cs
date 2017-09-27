@@ -77,7 +77,7 @@ namespace sqlcon
             if (table == null)
                 return;
 
-            if (cmd.ToJson)
+            if (cmd.Has("json"))
             {
                 stdio.WriteLine(ToJson(table));
                 return;

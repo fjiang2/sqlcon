@@ -613,51 +613,130 @@ namespace sqlcon
         }
 
 
+        private DataTable LastOrCurrentTable()
+        {
+            var dt = ShellHistory.LastOrCurrentTable(tname);
+            if (dt == null)
+            {
+                stdio.ErrorFormat("display data table first by sql clause or command [type]");
+                return null;
+            }
+
+            if (dt.Rows.Count == 0)
+            {
+                stdio.ErrorFormat("no rows found");
+                return null;
+            }
+
+            return dt;
+        }
+
+        public void ExportJson()
+        {
+            var dt = LastOrCurrentTable();
+            if (dt == null)
+                return;
+
+            stdio.WriteLine(TableOut.ToJson(dt));
+        }
+
         /// <summary>
         /// create C# data class from data table
         /// </summary>
         /// <param name="cmd"></param>
         public void ExportCSharpData()
         {
-            var dt = ShellHistory.LastOrCurrentTable(tname);
+            var dt = LastOrCurrentTable();
             if (dt == null)
-            {
-                stdio.ErrorFormat("display data table first by sql clause or command [type]");
                 return;
-            }
-
-            if (dt.Rows.Count == 0)
-            {
-                stdio.ErrorFormat("no rows found");
-                return;
-            }
 
             var builder = new DataClassBuilder(cmd, dt);
             builder.ExportCSharpData();
         }
 
-        public void ExportConf()
+        public void ExportConfigurationClass()
         {
-            var dt = ShellHistory.LastOrCurrentTable(tname);
+            var dt = LastOrCurrentTable();
 
             //not .cfg file
             if (cmd.GetValue("in") == null)
             {
                 if (dt == null)
-                {
-                    stdio.ErrorFormat("display data table first by sql clause or command [type]");
                     return;
-                }
-
-                if (dt.Rows.Count == 0)
-                {
-                    stdio.ErrorFormat("no rows found");
-                    return;
-                }
             }
 
             var builder = new ConfClassBuilder(cmd, dt);
             builder.ExportCSharpData();
+        }
+
+        public void ExportConfigurationFile()
+        {
+            var dt = LastOrCurrentTable();
+
+            //not .cfg file
+            if (cmd.GetValue("in") == null)
+            {
+                if (dt == null)
+                    return;
+            }
+
+            var builder = new ConfClassBuilder(cmd, dt);
+            string _type = cmd.GetValue("type") ?? "f";     //f:flat, h:hierarchial
+            builder.ExportTie(_type == "f");
+        }
+
+        public static void Help()
+        {
+            stdio.WriteLine("export data, schema, class, and template on current selected server/db/table");
+            stdio.WriteLine("option of SQL generation:");
+            stdio.WriteLine("   /insert  : export INSERT INTO script on current table/database");
+            stdio.WriteLine("   [/if]    : option /if generate if exists row then UPDATE else INSERT");
+            stdio.WriteLine("   /create  : generate CREATE TABLE script on current table/database");
+            stdio.WriteLine("   /select  : generate SELECT FROM WHERE template");
+            stdio.WriteLine("   /update  : generate UPDATE SET WHERE template");
+            stdio.WriteLine("   /save    : generate IF EXISTS UPDATE ELSE INSERT template");
+            stdio.WriteLine("   /delete  : generate DELETE FROM WHERE template, delete rows with foreign keys constraints");
+            stdio.WriteLine("option of data generation:");
+            stdio.WriteLine("   /schema  : generate database schema xml file");
+            stdio.WriteLine("   /data    : generate database/table data xml file");
+            stdio.WriteLine("   /csv     : generate table csv file");
+            stdio.WriteLine("   /json    : generate json from last result");
+            stdio.WriteLine("option of code generation:");
+            stdio.WriteLine("   /dpo     : generate C# table class");
+            stdio.WriteLine("   /l2s     : generate C# Linq to SQL class");
+            stdio.WriteLine("   /dc1     : generate C# data contract class and extension class from last result");
+            stdio.WriteLine("      [/readonly]: contract class for reading only");
+            stdio.WriteLine("   /dc2     : generate C# data contract class from last result");
+            stdio.WriteLine("      [/method:name] default convert method is defined on the .cfg");
+            stdio.WriteLine("      [/col:pk1,pk2] default primary key is the first column");
+            stdio.WriteLine("   /entity  : generate C# method copy/compare/clone for Entity framework");
+            stdio.WriteLine("      [/base:type] define base class or interface, use ~ to represent generic class itself, delimited by ;");
+            stdio.WriteLine("   /c#      : generate C# data from last result");
+            stdio.WriteLine("      [/type:dict|list|enum] data type, default is list");
+            stdio.WriteLine("   /conf    : generate Config C# class");
+            stdio.WriteLine("      [/type:k|d|f|p|F|P] C# class type, default is kdP");
+            stdio.WriteLine("          k : generate class of const key");
+            stdio.WriteLine("          d : generate class of default value");
+            stdio.WriteLine("          P : generate class of static property");
+            stdio.WriteLine("          F : generate class of static field");
+            stdio.WriteLine("          p : generate class of hierarchial property");
+            stdio.WriteLine("          f : generate class of hierarchial field");
+            stdio.WriteLine("      [/method:name] GetValue method name, default is \"GetValue<>\"");
+            stdio.WriteLine("      [/kc:name] class name of const key");
+            stdio.WriteLine("      [/dc:name] class name of default value");
+            stdio.WriteLine("   /cfg    : generate config file");
+            stdio.WriteLine("      [/type:f|h] script type");
+            stdio.WriteLine("          h : generate TIE hierarchial config script file");
+            stdio.WriteLine("          f : generate TIE config script file");
+            stdio.WriteLine("common options /conf and /cfg");
+            stdio.WriteLine("      [/in:path] input path(.cfg)");
+            stdio.WriteLine("      [/key:column] column of key on config table");
+            stdio.WriteLine("      [/default:column] column of default value config table");
+            stdio.WriteLine("common options for code generation");
+            stdio.WriteLine("      [/ns:name] default name space is defined on the .cfg");
+            stdio.WriteLine("      [/class:name] default class name is defined on the .cfg");
+            stdio.WriteLine("      [/using:assembly] allow the use of types in a namespace, delimited by ;");
+            stdio.WriteLine("      [/out:path] output directory or file name (.cs)");
         }
     }
 }

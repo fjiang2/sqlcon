@@ -1052,50 +1052,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("export data, schema, class, and template on current selected server/db/table");
-                stdio.WriteLine("option of SQL generation:");
-                stdio.WriteLine("   /insert  : export INSERT INTO script on current table/database");
-                stdio.WriteLine("   [/if]    : option /if generate if exists row then UPDATE else INSERT");
-                stdio.WriteLine("   /create  : generate CREATE TABLE script on current table/database");
-                stdio.WriteLine("   /select  : generate SELECT FROM WHERE template");
-                stdio.WriteLine("   /update  : generate UPDATE SET WHERE template");
-                stdio.WriteLine("   /save    : generate IF EXISTS UPDATE ELSE INSERT template");
-                stdio.WriteLine("   /delete  : generate DELETE FROM WHERE template, delete rows with foreign keys constraints");
-                stdio.WriteLine("option of data generation:");
-                stdio.WriteLine("   /schema  : generate database schema xml file");
-                stdio.WriteLine("   /data    : generate database/table data xml file");
-                stdio.WriteLine("   /csv     : generate table csv file");
-                stdio.WriteLine("   /json    : generate json from last result");
-                stdio.WriteLine("option of code generation:");
-                stdio.WriteLine("   /dpo     : generate C# table class");
-                stdio.WriteLine("   /l2s     : generate C# Linq to SQL class");
-                stdio.WriteLine("   /dc1     : generate C# data contract class and extension class from last result");
-                stdio.WriteLine("      [/readonly]: contract class for reading only");
-                stdio.WriteLine("   /dc2     : generate C# data contract class from last result");
-                stdio.WriteLine("      [/method:name] default convert method is defined on the .cfg");
-                stdio.WriteLine("      [/col:pk1,pk2] default primary key is the first column");
-                stdio.WriteLine("   /entity  : generate C# method copy/compare/clone for Entity framework");
-                stdio.WriteLine("      [/base:type] define base class or interface, use ~ to represent generic class itself, delimited by ;");
-                stdio.WriteLine("   /c#      : generate C# data from last result");
-                stdio.WriteLine("      [/type:dict|list|enum] data type, default is list");
-                stdio.WriteLine("   /conf    : generate C# Config class from last result or .cfg");
-                stdio.WriteLine("      [/type:k|d|f|p|F|P] class type, default is kdP");
-                stdio.WriteLine("          k : generate const key");
-                stdio.WriteLine("          d : generate default value");
-                stdio.WriteLine("          P : generate static property to get setting");
-                stdio.WriteLine("          F : generate static field to get setting");
-                stdio.WriteLine("          p : generate hierarchial property to get setting");
-                stdio.WriteLine("          f : generate hierarchial field to get setting");
-                stdio.WriteLine("      [/in:path] input path(.cfg)");
-                stdio.WriteLine("      [/method:name] GetValue method name, default is \"GetValue<>\"");
-                stdio.WriteLine("      [/kc:name] class name of const key");
-                stdio.WriteLine("      [/dc:name] class name of default value");
-                stdio.WriteLine("common options for code generation");
-                stdio.WriteLine("      [/ns:name] default name space is defined on the .cfg");
-                stdio.WriteLine("      [/class:name] default class name is defined on the .cfg");
-                stdio.WriteLine("      [/using:assembly] allow the use of types in a namespace, delimited by ;");
-                stdio.WriteLine("      [/out:path] output directory or file name (.cs)");
-
+                Exporter.Help();
                 return;
             }
 
@@ -1134,22 +1091,14 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     exporter.ExportEntityClass();
                 else if (cmd.Has("l2s"))
                     exporter.ExportLinq2SQLClass();
-                else if (cmd.ToJson)
-                {
-                    DataTable dt = ShellHistory.LastTable();
-                    if (dt != null)
-                    {
-                        stdio.WriteLine(TableOut.ToJson(dt));
-                    }
-                    else
-                    {
-                        stdio.ErrorFormat("display data table first by sql clause or command [type]");
-                    }
-                }
+                else if (cmd.Has("json"))
+                    exporter.ExportJson();
                 else if (cmd.ToCSharp)
                     exporter.ExportCSharpData();
                 else if (cmd.Has("conf"))
-                    exporter.ExportConf();
+                    exporter.ExportConfigurationClass();
+                else if (cmd.Has("cfg"))
+                    exporter.ExportConfigurationFile();
                 else
                     stdio.ErrorFormat("invalid command options");
             }

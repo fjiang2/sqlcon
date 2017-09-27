@@ -71,25 +71,29 @@ namespace sqlcon
 
         protected void PrintOutput(CSharpBuilder builder, string cname)
         {
-            string path = cmd.GetValue("out");
-
             string code = $"{builder}";
+            PrintOutput(code, cname, ".cs");
+        }
+
+        protected void PrintOutput(string text, string name, string ext)
+        {
+            string path = cmd.GetValue("out");
             if (path == null)
             {
-                stdio.WriteLine(code);
+                stdio.WriteLine(text);
             }
             else
             {
                 string file;
-                if (Path.GetExtension(path) == ".cs")
+                if (Path.GetExtension(path) == ext)
                     file = path;
                 else
-                    file = Path.ChangeExtension(Path.Combine(path, cname), "cs");
+                    file = Path.ChangeExtension(Path.Combine(path, name), ext);
 
                 try
                 {
-                    code.WriteIntoFile(file);
-                    stdio.WriteLine("code generated on {0}", Path.GetFullPath(file));
+                    text.WriteIntoFile(file);
+                    stdio.WriteLine("created on {0}", Path.GetFullPath(file));
                 }
                 catch (Exception ex)
                 {

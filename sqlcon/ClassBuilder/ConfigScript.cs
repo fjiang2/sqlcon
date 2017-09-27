@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 using Tie;
 using Sys.CodeBuilder;
@@ -12,7 +12,6 @@ namespace sqlcon
     class ConfigScript
     {
         private Memory DS = new Memory();
-        private string cname;
 
         /// <summary>
         /// create hierachical property or field?
@@ -31,13 +30,12 @@ namespace sqlcon
 
         public string GetValueMethodName { get; set; } = "GetValue";
 
-        public ConfigScript(string cname, string code)
+        public ConfigScript(string code)
         {
-            this.cname = cname;
             Script.Execute(code, DS);
         }
 
-        public Class Generate()
+        public Class Generate(string cname)
         {
             Class clss = new Class(cname) { modifier = Modifier.Public | Modifier.Static | Modifier.Partial };
 
@@ -172,6 +170,61 @@ namespace sqlcon
         static string toPascal(string key) => key.Split('.').Select(k => char.ToUpper(k[0]) + k.Substring(1).ToLower()).Aggregate((x, y) => $"{x}_{y}");
         static string ToConstKey(string key) => "_" + TOKEY(key);
         static string ToDefaultKey(string key) => "__" + TOKEY(key);
+
+
+        public string GenerateTieScript(bool flat)
+        {
+            List<string> statements = new List<string>();
+            if (flat)
+            {
+                foreach (VAR var in DS.Names)
+                {
+                    VAL val = DS[var];
+                    createConfigFile(statements, string.Empty, (string)var, val);
+                    statements.Add(string.Empty);
+                }
+
+            }
+            else
+            {
+                foreach (VAR var in DS.Names)
+                {
+                    VAL val = DS[var];
+                    string text = $"{var} = {val.ToExJson()};";
+                    statements.Add(text);
+                    statements.Add(string.Empty);
+                }
+            }
+
+            return string.Join(Environment.NewLine, statements);
+
+        }
+
+        private void createConfigFile(List<string> statements, string prefix, string key, VAL val)
+        {
+            if (val.IsAssociativeArray())
+            {
+                if (prefix == string.Empty)
+                    prefix = key;
+                else
+                    prefix = $"{prefix}.{key}";
+
+                foreach (var member in val.Members)
+                {
+                    createConfigFile(statements, prefix, member.Name, member.Value);
+                    continue;
+                }
+
+                return;
+            }
+
+            string var = $"{prefix}.{key}";
+            if (prefix == string.Empty)
+                var = key;
+
+            string code = $"{var} = {val.ToString()};";
+            statements.Add(code);
+        }
 
     }
 }

@@ -18,12 +18,12 @@ namespace sqlcon
         {
             Nothing = 0x00,
 
-            ConstKey = 0x01,                //  public const string _MATH_PI = "Math.PI";
-            DefaultValue = 0x02,            //  public static double __MATH_PI = 3.14;
-            StaticField = 0x04,             //  public static double MATH_PI = GetValue<double>(_MATH_PI, __MATH_PI);
-            StaticPropery = 0x08,           //  public static double MATH_PI => GetValue<double>(_MATH_PI, __MATH_PI);
-            HierarchicalField = 0x10,       //  public static Math { public static class Pi = GetValue<double>(_MATH_PI, __MATH_PI); }
-            HierarchicalProperty = 0x20,    //  public static Math { public static class Pi => GetValue<double>(_MATH_PI, __MATH_PI); }
+            ConstKey = 0x01,                // public const string _MATH_PI = "Math.PI";
+            DefaultValue = 0x02,            // public static double __MATH_PI = 3.14;
+            StaticField = 0x04,             // public static double MATH_PI = GetValue<double>(_MATH_PI, __MATH_PI);
+            StaticPropery = 0x08,           // public static double MATH_PI => GetValue<double>(_MATH_PI, __MATH_PI);
+            HierarchicalField = 0x10,       // public static Math { public static class Pi = GetValue<double>(_MATH_PI, __MATH_PI); }
+            HierarchicalProperty = 0x20,    // public static Math { public static class Pi => GetValue<double>(_MATH_PI, __MATH_PI); }
         }
 
         private DataTable dt;
@@ -35,18 +35,27 @@ namespace sqlcon
             this.dt = dt;
         }
 
+        public void ExportTie(bool flat)
+        {
+            string code = LoadCode();
+            if (code == null)
+                return;
+
+            var maker = new ConfigScript(code);
+            string _code = maker.GenerateTieScript(flat);
+            base.PrintOutput(_code, "untitled", ".cfg");
+            return;
+        }
+
         public void ExportCSharpData()
         {
-            string code;
-            if (cmd.GetValue("in") != null)
-                code = ReadAllText();
-            else
-                code = ReadCode(dt);
-
+            string code = LoadCode();
             if (code == null)
                 return;
 
             ClassType ctype = getClassType();
+
+            var maker = new ConfigScript(code);
             string _GetValueMethodName = cmd.GetValue("method");
             string _ConstKeyClassName = cmd.GetValue("kc");
             string _DefaultValueClassName = cmd.GetValue("dc");
@@ -56,7 +65,6 @@ namespace sqlcon
             builder.AddUsing("System.Collections.Generic");
             string cname = ClassName;
 
-            var maker = new ConfigScript(cname, code);
             maker.IsHierarchicalProperty = (ctype & ClassType.HierarchicalProperty) == ClassType.HierarchicalProperty;
 
             if (_GetValueMethodName != null)
@@ -68,7 +76,7 @@ namespace sqlcon
             if (_DefaultValueClassName != null)
                 maker.DefaultValueClassName = _DefaultValueClassName;
 
-            var clss = maker.Generate();
+            var clss = maker.Generate(cname);
             builder.AddClass(clss);
 
             if (ctype == ClassType.ConstKey)
@@ -160,6 +168,16 @@ namespace sqlcon
 
             builder.AddClass(clss);
             return builder;
+        }
+
+        private string LoadCode()
+        {
+            string code;
+            if (cmd.GetValue("in") != null)
+                code = ReadAllText();
+            else
+                code = ReadCode(dt);
+            return code;
         }
 
 
