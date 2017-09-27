@@ -738,5 +738,47 @@ namespace sqlcon
             stdio.WriteLine("      [/using:assembly] allow the use of types in a namespace, delimited by ;");
             stdio.WriteLine("      [/out:path] output directory or file name (.cs)");
         }
+
+        public void Run()
+        {
+            if (cmd.Has("insert"))
+                ExportInsert();
+            else if (cmd.Has("create"))
+                ExportCreate();
+            else if (cmd.Has("select"))
+                ExportScud(SqlScriptType.SELECT);
+            else if (cmd.Has("delete"))
+                ExportScud(SqlScriptType.DELETE);
+            else if (cmd.Has("update"))
+                ExportScud(SqlScriptType.UPDATE);
+            else if (cmd.Has("save"))
+                ExportScud(SqlScriptType.INSERT_OR_UPDATE);
+            else if (cmd.Has("schema"))
+                ExportSchema();
+            else if (cmd.Has("data"))
+                ExportData();
+            else if (cmd.Has("dpo"))
+                ExportClass();
+            else if (cmd.Has("csv"))
+                ExportCsvFile();
+            else if (cmd.Has("dc1"))
+                ExportDataContract(1);
+            else if (cmd.Has("dc2"))
+                ExportDataContract(2);
+            else if (cmd.Has("entity"))
+                ExportEntityClass();
+            else if (cmd.Has("l2s"))
+                ExportLinq2SQLClass();
+            else if (cmd.Has("json"))
+                ExportJson();
+            else if (cmd.ToCSharp)
+                ExportCSharpData();
+            else if (cmd.Has("conf"))
+                ExportConfigurationClass();
+            else if (cmd.Has("cfg"))
+                ExportConfigurationFile();
+            else
+                stdio.ErrorFormat("invalid command options");
+        }
     }
 }

@@ -966,7 +966,10 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("   /fmt:xml,dt   : load System.Data.DataTable xml file as last result");
                 stdio.WriteLine("   /fmt:txt      : load text file and import into current table");
                 stdio.WriteLine("   /fmt:csv      : import .csv data into current table");
-                stdio.WriteLine("   /col:col1,... : .csv columns mapping");
+                stdio.WriteLine("      [/col:c1,c2,...] csv columns mapping");
+                stdio.WriteLine("   /fmt:cfg      : import .cfg data into current config table");
+                stdio.WriteLine("      [/key:column] column of key on config table");
+                stdio.WriteLine("      [/value:column] column of value config table");
                 return;
             }
 
@@ -1027,6 +1030,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 case "txt":
                     break;
 
+                case "cfg":
                 case "csv":
                     TableName tname = mgr.GetCurrentPath<TableName>();
                     if (tname == null)
@@ -1034,7 +1038,14 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                         stdio.Error("cannot find the table to import data");
                         return;
                     }
-                    int count = Importer.ImportCsv(file, tname, cmd.Columns);
+
+                    int count = 0;
+                    var importer = new Importer(cmd);
+                    if (fmt == "csv")
+                        count = importer.ImportCsv(file, tname, cmd.Columns);
+                    else if (fmt == "cfg")
+                        count = importer.ImportCfg(file, tname);
+
                     stdio.WriteLine($"{count} row(s) imported");
                     break;
 
@@ -1062,45 +1073,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             if (pt.Item is TableName || pt.Item is Locator || pt.Item is DatabaseName || pt.Item is ServerName)
             {
                 var exporter = new Exporter(mgr, pt, cmd);
-
-                if (cmd.Has("insert"))
-                    exporter.ExportInsert();
-                else if (cmd.Has("create"))
-                    exporter.ExportCreate();
-                else if (cmd.Has("select"))
-                    exporter.ExportScud(SqlScriptType.SELECT);
-                else if (cmd.Has("delete"))
-                    exporter.ExportScud(SqlScriptType.DELETE);
-                else if (cmd.Has("update"))
-                    exporter.ExportScud(SqlScriptType.UPDATE);
-                else if (cmd.Has("save"))
-                    exporter.ExportScud(SqlScriptType.INSERT_OR_UPDATE);
-                else if (cmd.Has("schema"))
-                    exporter.ExportSchema();
-                else if (cmd.Has("data"))
-                    exporter.ExportData();
-                else if (cmd.Has("dpo"))
-                    exporter.ExportClass();
-                else if (cmd.Has("csv"))
-                    exporter.ExportCsvFile();
-                else if (cmd.Has("dc1"))
-                    exporter.ExportDataContract(1);
-                else if (cmd.Has("dc2"))
-                    exporter.ExportDataContract(2);
-                else if (cmd.Has("entity"))
-                    exporter.ExportEntityClass();
-                else if (cmd.Has("l2s"))
-                    exporter.ExportLinq2SQLClass();
-                else if (cmd.Has("json"))
-                    exporter.ExportJson();
-                else if (cmd.ToCSharp)
-                    exporter.ExportCSharpData();
-                else if (cmd.Has("conf"))
-                    exporter.ExportConfigurationClass();
-                else if (cmd.Has("cfg"))
-                    exporter.ExportConfigurationFile();
-                else
-                    stdio.ErrorFormat("invalid command options");
+                exporter.Run();
             }
             else
                 stdio.ErrorFormat("select server, database or table first");

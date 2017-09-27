@@ -1,8 +1,9 @@
 ﻿sqlcon release notes
 
-09/26/2017 v1.8.4.0
+09/26/2017 v1.8.5.0
 	Improvements/Enhancements:
 	1. export to .cfg file from dbo.config 
+	2. import .cfg file to dbo.config 
 
 09/21/2017 v1.8.4.0
 	Improvements/Enhancements:

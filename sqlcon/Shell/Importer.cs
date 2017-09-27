@@ -7,12 +7,19 @@ using System.Threading.Tasks;
 using System.IO;
 using Sys;
 using Sys.Data;
+using Tie;
 
 namespace sqlcon
 {
     class Importer
     {
-        public static int ImportCsv(string path, TableName tname, string[] columns)
+        private Command cmd;
+        public Importer(Command cmd)
+        {
+            this.cmd = cmd;
+        }
+
+        public int ImportCsv(string path, TableName tname, string[] columns)
         {
             int count = 0;
 
@@ -69,6 +76,80 @@ namespace sqlcon
             }
 
             return values;
+        }
+
+
+        public int ImportCfg(string path, TableName tname)
+        {
+            int count = 0;
+            if (!File.Exists(path))
+            {
+                stdio.Error($"file {path} not found");
+                return 0;
+            }
+
+            string code = File.ReadAllText(path);
+            Memory DS = new Memory();
+            Script.Execute(code, DS);
+
+            List<string> statements = new List<string>();
+            foreach (VAR var in DS.Names)
+            {
+                VAL val = DS[var];
+                createSQL(statements, tname, string.Empty, (string)var, val);
+            }
+
+            //string _sql = string.Join(Environment.NewLine, statements);
+
+            foreach (string sql in statements)
+            {
+                new SqlCmd(tname.Provider, sql).ExecuteNonQuery();
+                count++;
+            }
+
+            return count;
+        }
+
+        private string createSQL(TableName tname, string var, string val)
+        {
+            string colKey = cmd.GetValue("key") ?? "Key";
+            string colValue = cmd.GetValue("value") ?? "Value";
+
+            string _tname = tname.ShortName;
+            string sql =
+$@"IF EXISTS(SELECT * FROM {_tname} WHERE [{colKey}] = '{var}') 
+  UPDATE {_tname}  SET [{colValue}] = '{val}' WHERE [Key]='{var}' 
+ELSE 
+  INSERT {_tname} ([{colKey}],[{colValue}]) VALUES('{var}','{val}')
+";
+
+            return sql;
+        }
+
+        private void createSQL(List<string> statements, TableName tname, string prefix, string key, VAL val)
+        {
+            if (val.IsAssociativeArray())
+            {
+                if (prefix == string.Empty)
+                    prefix = key;
+                else
+                    prefix = $"{prefix}.{key}";
+
+                foreach (var member in val.Members)
+                {
+                    createSQL(statements, tname, prefix, member.Name, member.Value);
+                    continue;
+                }
+
+                return;
+            }
+
+            string var = $"{prefix}.{key}";
+            if (prefix == string.Empty)
+                var = key;
+
+            string code = createSQL(tname, var, val.ToString());
+            statements.Add(code);
         }
     }
 }
