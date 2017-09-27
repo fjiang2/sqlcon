@@ -970,6 +970,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 stdio.WriteLine("   /fmt:cfg      : import .cfg data into current config table");
                 stdio.WriteLine("      [/key:column] column of key on config table");
                 stdio.WriteLine("      [/value:column] column of value config table");
+                stdio.WriteLine("      [/col:c1=v1,c2=v2,...] default values for not null columns");
+                stdio.WriteLine("e.g. import c:\\conf.cfg /fmt:cfg /key:Key /value:Value /col:[Inactive]=0");
                 return;
             }
 

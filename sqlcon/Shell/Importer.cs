@@ -92,41 +92,70 @@ namespace sqlcon
             Memory DS = new Memory();
             Script.Execute(code, DS);
 
-            List<string> statements = new List<string>();
+            //create key-value pairs
+            Dictionary<string, VAL> dict = new Dictionary<string, VAL>();
             foreach (VAR var in DS.Names)
             {
                 VAL val = DS[var];
-                createSQL(statements, tname, string.Empty, (string)var, val);
+                createKeyValues(dict, tname, string.Empty, (string)var, val);
             }
 
-            //string _sql = string.Join(Environment.NewLine, statements);
 
-            foreach (string sql in statements)
+            //prepare default values of NOT NULL columns when record inserted
+            string[] columns = cmd.Columns;
+            string _not_null_keys = string.Empty;
+            string _not_null_values = string.Empty;
+            if (columns.Length > 0)
             {
-                new SqlCmd(tname.Provider, sql).ExecuteNonQuery();
-                count++;
+                var pairs = columns
+                    .Select(c => c.Split('='))
+                    .Select(c => new { Key = c[0], Value = c[1] });
+                _not_null_keys = "," + string.Join(",", pairs.Select(p => p.Key));
+                _not_null_values = "," + string.Join(",", pairs.Select(p => p.Value));
+            }
+
+            //execute IF EXISTS UPDATE ELSE INSERT
+            foreach (var kvp in dict)
+            {
+                string sql = createSQL(tname, kvp.Key, kvp.Value, _not_null_keys, _not_null_values);
+                try
+                {
+                    new SqlCmd(tname.Provider, sql).ExecuteNonQuery();
+                    count++;
+                }
+                catch (Exception ex)
+                {
+                    stdio.Error(ex.Message);
+                    break;
+                }
             }
 
             return count;
         }
 
-        private string createSQL(TableName tname, string var, string val)
+        private string createSQL(TableName tname, string var, VAL val, string keys, string values)
         {
             string colKey = cmd.GetValue("key") ?? "Key";
             string colValue = cmd.GetValue("value") ?? "Value";
 
+            string _colKey = $"[{colKey}]";
+            string _colValue = $"[{colValue}]";
+
             string _tname = tname.ShortName;
+            string _var = $"'{var}'";
+            string _val = $"'{val.ToString()}'";
+
             string sql =
-$@"IF EXISTS(SELECT * FROM {_tname} WHERE [{colKey}] = '{var}') 
-  UPDATE {_tname}  SET [{colValue}] = '{val}' WHERE [Key]='{var}' 
+$@"IF EXISTS(SELECT * FROM {_tname} WHERE {_colKey} = {_var}) 
+  UPDATE {_tname}  SET {_colValue} = {_val} WHERE {_colKey}={_var} 
 ELSE 
-  INSERT {_tname} ([{colKey}],[{colValue}]) VALUES('{var}','{val}')
+  INSERT {_tname} ({_colKey},{_colValue}{keys}) VALUES({_var},{_val}{values})
 ";
 
             return sql;
         }
 
-        private void createSQL(List<string> statements, TableName tname, string prefix, string key, VAL val)
+        private void createKeyValues(Dictionary<string, VAL> dict, TableName tname, string prefix, string key, VAL val)
         {
             if (val.IsAssociativeArray())
             {
@@ -137,7 +166,7 @@ ELSE
 
                 foreach (var member in val.Members)
                 {
-                    createSQL(statements, tname, prefix, member.Name, member.Value);
+                    createKeyValues(dict, tname, prefix, member.Name, member.Value);
                     continue;
                 }
 
@@ -148,8 +177,7 @@ ELSE
             if (prefix == string.Empty)
                 var = key;
 
-            string code = createSQL(tname, var, val.ToString());
-            statements.Add(code);
+            dict.Add(var, val);
         }
     }
 }
