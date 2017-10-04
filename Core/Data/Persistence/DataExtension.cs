@@ -25,17 +25,6 @@ namespace Sys.Data
     public static class DataExtension
     {
 
-
-        #region IsNull
-
-        public static T IsNull<T>(this DataRow dataRow, string columnName, T defaultValue)
-        {
-            if (dataRow == null)
-                return defaultValue;
-
-            return IsNull<T>(dataRow[columnName], defaultValue);
-        }
-
         public static T IsNull<T>(this object value, T defaultValue)
         {
             if (value is T)
@@ -47,23 +36,8 @@ namespace Sys.Data
             throw new Exception($"{value} is not type of {typeof(T)}");
         }
 
-        #endregion
-
-
-        public static T Cell<T>(this DataTable dataTable, int row, int column, T defaultValue)
-        {
-            return IsNull<T>(dataTable.Rows[row][column], defaultValue);
-        }
-
-        public static T Cell<T>(this DataTable dataTable, int row, int column)
-        {
-            return (T)dataTable.Rows[row][column];
-        }
-
-
 
         #region  DataTable.Rows[][x] -> Array[x]
-
 
         public static T[] ToArray<T>(this DataTable dataTable, string columnName)
         {
@@ -89,17 +63,22 @@ namespace Sys.Data
         }
 
 
-        //public static Dictionary<T1, T2> ToDictionary<T1, T2>(this DataTable dataTable, Func<DataRow, T1> keySelector, Func<DataRow, T2> elementSelector)
-        //{
-        //    Dictionary<T1, T2> dict = new Dictionary<T1, T2>();
+        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this DataTable dataTable, Func<DataRow, TKey> keySelector, Func<DataRow, TValue> valueSelector)
+        {
+            Dictionary<TKey, TValue> dict = new Dictionary<TKey, TValue>();
 
-        //    foreach (DataRow row in dataTable.Rows)
-        //    {
-        //        dict.Add(keySelector(row), elementSelector(row));
-        //    }
+            foreach (DataRow row in dataTable.Rows)
+            {
+                TKey key = keySelector(row);
+                TValue value = valueSelector(row);
+                if (dict.ContainsKey(key))
+                    dict[key] = value;
+                else
+                    dict.Add(key, value);
+            }
 
-        //    return dict;
-        //}
+            return dict;
+        }
 
 
 
@@ -172,7 +151,7 @@ namespace Sys.Data
 
 
 
-       
+
     }
 
 
