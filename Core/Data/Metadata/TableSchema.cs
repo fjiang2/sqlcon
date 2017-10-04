@@ -142,7 +142,7 @@ namespace Sys.Data
             {
                 if (_thisDataTable == null)
                 {
-                    _thisDataTable = DataExtension.FillDataTable(tableName.Provider, "SELECT TOP 1 * FROM {0}", tableName);
+                    _thisDataTable = tableName.FillDataTable($"SELECT TOP 1 * FROM {tableName}");
                     _thisDataTable.Rows.Clear();
                 }
 

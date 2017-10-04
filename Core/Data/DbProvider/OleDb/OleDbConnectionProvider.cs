@@ -75,7 +75,7 @@ namespace Sys.Data
 
         internal override string CurrentDatabaseName()
         {
-            return (string)DataExtension.ExecuteScalar(this, "SELECT DB_NAME()");
+            return (string)this.ExecuteScalar("SELECT DB_NAME()");
         }
 
         internal override DbProvider CreateDbProvider(string script)

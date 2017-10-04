@@ -21,7 +21,7 @@ namespace Sys.Data
             try
             {
                 string SQL = sp_databases(provider);
-                var dnames = DataExtension.FillDataTable(provider, SQL).ToArray<string>("DATABASE_NAME");
+                var dnames = provider.FillDataTable(SQL).ToArray<string>("DATABASE_NAME");
                 return dnames.FirstOrDefault(row => row.ToLower().Equals(dname.Name.ToLower())) != null;
             }
             catch (Exception)
@@ -54,14 +54,14 @@ namespace Sys.Data
             string SQL;
             if (provider.Version >= 2005)
                 //Used for SQL Server 2008+, state==6 means offline database
-                SQL = "SELECT Name as DATABASE_NAME FROM sys.databases WHERE State<>6 ORDER BY Name"; 
+                SQL = "SELECT Name as DATABASE_NAME FROM sys.databases WHERE State<>6 ORDER BY Name";
             else
                 SQL = "EXEC sp_databases";
 
             return SQL;
         }
 
-        public override DatabaseName[] GetDatabaseNames() 
+        public override DatabaseName[] GetDatabaseNames()
         {
             string SQL = sp_databases(provider);
 
@@ -70,7 +70,7 @@ namespace Sys.Data
             {
                 case DbProviderType.SqlDb:
                 case DbProviderType.RiaDb:
-                    dnames = DataExtension.FillDataTable(provider, SQL).ToArray<string>("DATABASE_NAME");
+                    dnames = provider.FillDataTable(SQL).ToArray<string>("DATABASE_NAME");
                     List<string> L = new List<string>();
                     foreach (var dname in dnames)
                     {
@@ -96,9 +96,7 @@ namespace Sys.Data
         {
             if (dname.Provider.Version >= 2005)
             {
-                var table = DataExtension.FillDataTable(dname.Provider,
-                         "USE [{0}] ; SELECT SCHEMA_NAME(schema_id) AS SchemaName, name as TableName FROM sys.Tables ORDER BY SchemaName,Name",
-                             dname.Name);
+                var table = dname.FillDataTable($"USE [{dname.Name}] ; SELECT SCHEMA_NAME(schema_id) AS SchemaName, name as TableName FROM sys.Tables ORDER BY SchemaName,Name");
                 if (table != null)
                 {
                     return table
@@ -110,7 +108,7 @@ namespace Sys.Data
             else
             {
 
-                var table = DataExtension.FillDataTable(dname.Provider, "USE [{0}] ; EXEC sp_tables", dname.Name);
+                var table = dname.FillDataTable($"USE [{dname.Name}] ; EXEC sp_tables");
                 if (table != null)
                 {
                     return table
@@ -128,10 +126,7 @@ namespace Sys.Data
         {
             if (dname.Provider.Version >= 2005)
             {
-                var table = DataExtension
-                .FillDataTable(dname.Provider,
-                    "USE [{0}] ; SELECT  SCHEMA_NAME(schema_id) SchemaName, name FROM sys.views ORDER BY name",
-                    dname.Name);
+                var table = dname.FillDataTable($"USE [{dname.Name}] ; SELECT  SCHEMA_NAME(schema_id) SchemaName, name FROM sys.views ORDER BY name");
 
                 if (table != null)
                     return table.AsEnumerable()
@@ -140,7 +135,7 @@ namespace Sys.Data
             }
             else
             {
-                var table = DataExtension.FillDataTable(dname.Provider, "USE [{0}] ; EXEC sp_tables", dname.Name);
+                var table = dname.FillDataTable($"USE [{dname.Name}] ; EXEC sp_tables");
                 if (table != null)
                 {
                     return table

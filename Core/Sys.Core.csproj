@@ -178,6 +178,7 @@
     <Compile Include="Data\Metadata\TableSchema.cs" />
     <Compile Include="Data\Metadata\TableClause.cs" />
     <Compile Include="Data\Persistence\DataExtension.cs" />
+    <Compile Include="Data\Persistence\InternalDataExtension.cs" />
     <Compile Include="Data\Persistence\Level0\DbCmd.cs" />
     <Compile Include="Data\DbProvider\DbProvider.cs" />
     <Compile Include="Data\DbProvider\DbProviderType.cs" />

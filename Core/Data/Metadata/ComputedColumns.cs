@@ -43,14 +43,14 @@ namespace Sys.Data
 
         internal ComputedColumns(TableName tname)
         { 
-            string SQL = @"
-            USE [{0}]
+            string SQL = $@"
+            USE [{tname.DatabaseName.Name}]
             SELECT c.name
             FROM sys.tables t 
 	            JOIN sys.columns c ON t.object_id = c.object_id 
-            WHERE t.name = '{1}' AND c.is_computed = 1";
+            WHERE t.name = '{tname.Name}' AND c.is_computed = 1";
 
-            this.columnNames = DataExtension.FillDataTable(tname.Provider, SQL, tname.DatabaseName.Name, tname.Name).ToArray<string>(0);
+            this.columnNames = tname.FillDataTable(SQL).ToArray<string>(0);
         
         }
 
