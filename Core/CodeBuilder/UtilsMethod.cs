@@ -210,6 +210,34 @@ namespace Sys.CodeBuilder
             return mtd;
         }
 
+        public Method _ToString()
+        {
+            Method mtd = new Method(new TypeInfo { type = typeof(string) }, "ToString")
+            {
+                modifier = Modifier.Public | Modifier.Override,
+            };
+
+            var sent = mtd.statements;
+
+
+            StringBuilder builder = new StringBuilder("\"{{");
+            int index = 0;
+            variables.ForEach(
+                variable => builder.Append($"{variable}:{{{index++}}}"),
+                variable => builder.Append(", ")
+                );
+
+            builder.AppendLine("}}\", ");
+
+            variables.ForEach(
+                variable => builder.Append($"this.{variable}"),
+                variable => builder.AppendLine(", ")
+                );
+
+            sent.AppendFormat("return string.Format({0});", builder);
+            return mtd;
+        }
+
     }
 
     [Flags]
@@ -218,7 +246,8 @@ namespace Sys.CodeBuilder
         Copy = 0x01,
         Clone = 0x02,
         Compare = 0x04,
-        Equals = 0x08,
+        ToString = 0x08,
+        Equals = 0x10,
     }
 
     [Flags]

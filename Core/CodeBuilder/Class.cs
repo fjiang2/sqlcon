@@ -248,20 +248,20 @@ namespace Sys.CodeBuilder
         {
             var x = new UtilsMethod(className, propertyNames);
 
+            if ((type & UtilsThisMethod.Equals) == UtilsThisMethod.Equals)
+                Add(x.Equals());
+
             if ((type & UtilsThisMethod.Clone) == UtilsThisMethod.Clone)
                 Add(x.Clone());
-
 
             if ((type & UtilsThisMethod.Compare) == UtilsThisMethod.Compare)
                 Add(x.Compare());
 
-
             if ((type & UtilsThisMethod.Copy) == UtilsThisMethod.Copy)
                 Add(x.Copy());
 
-
-            if ((type & UtilsThisMethod.Equals) == UtilsThisMethod.Equals)
-                Add(x.Equals());
+            if ((type & UtilsThisMethod.ToString) == UtilsThisMethod.ToString)
+                Add(x._ToString());
 
         }
 
