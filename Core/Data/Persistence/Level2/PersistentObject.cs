@@ -88,7 +88,7 @@ namespace Sys.Data
         /// <param name="where"></param>
         public void UpdateObject(SqlExpr where)
         {
-            DataRow row = DataExtension.FillDataRow(this.TableName.Provider, new SqlBuilder().SELECT.COLUMNS().FROM(TableName).WHERE(where).Clause);
+            DataRow row = new SqlCmd(this.TableName.Provider, new SqlBuilder().SELECT.COLUMNS().FROM(TableName).WHERE(where).Clause).FillDataRow();
             this.exists = row != null;
             
             if(exists)
@@ -814,8 +814,7 @@ namespace Sys.Data
                 return false;
 
             string SQL = string.Format("USE [{0}];", TableName.DatabaseName.Name) + string.Format(this.CreateTableString, TableName.FormalName);
-            DataExtension.ExecuteNonQuery(this.TableName.Provider, SQL);
-
+            new SqlCmd(this.TableName.Provider, SQL).ExecuteNonQuery();
             return true;
         }
         

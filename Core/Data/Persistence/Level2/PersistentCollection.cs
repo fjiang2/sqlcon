@@ -28,16 +28,16 @@ namespace Sys.Data
         AllowUpdateObject,
         DenyUpdateObject
     }
-   
-    public abstract class PersistentCollection<T> : IDPCollection, IEnumerable<T>, IEnumerable 
-        where T : class,  IDPObject, new()
+
+    public abstract class PersistentCollection<T> : IDPCollection, IEnumerable<T>, IEnumerable
+        where T : class, IDPObject, new()
     {
 
         public event PersistentHandler ObjectChanged;
-    
+
         protected DataTable dataTable;
         protected ObjectPermission objectPermission = ObjectPermission.AllowUpdateObject;
-    
+
         private object sender;      //who changed datatable?
         private Dictionary<IDPObject, DataRow> mapping;
 
@@ -51,7 +51,7 @@ namespace Sys.Data
             DataTable dataTable;
             if (TableName.Exists())
             {
-                dataTable = DataExtension.FillDataTable("SELECT TOP 1 * FROM {0}", TableName);
+                dataTable = new SqlCmd(ConnectionProviderManager.DefaultProvider, $"SELECT TOP 1 * FROM {TableName}").FillDataTable();
                 dataTable.TableName = TableName.Name;
                 dataTable.Clear();
             }
@@ -63,7 +63,7 @@ namespace Sys.Data
 
         public override string ToString()
         {
-            return string.Format("{0} #{1}",typeof(T).FullName, dataTable.Rows.Count);
+            return string.Format("{0} #{1}", typeof(T).FullName, dataTable.Rows.Count);
         }
 
 
@@ -93,7 +93,7 @@ namespace Sys.Data
             objectPermission = ObjectPermission.AllowUpdateObject;
             return true;
         }
-        
+
         public bool InsertAt(T t, int pos)
         {
             objectPermission = ObjectPermission.DenyUpdateObject;
@@ -108,7 +108,7 @@ namespace Sys.Data
             objectPermission = ObjectPermission.AllowUpdateObject;
             return true;
         }
-        
+
         public bool InsertAfter(T t1, T t2)
         {
             if (t2 == null)
@@ -119,18 +119,18 @@ namespace Sys.Data
 
             DataRow dataRow2 = mapping[t2];
             int pos = dataTable.Rows.IndexOf(dataRow2);
-            InsertAt(t1, pos+1);
+            InsertAt(t1, pos + 1);
 
             objectPermission = ObjectPermission.AllowUpdateObject;
             return true;
         }
 
- 
+
         public bool Remove(T t)
         {
             return remove(t, true);
         }
-        
+
         private bool remove(T t, bool fired)
         {
             if (mapping.ContainsKey(t))
@@ -139,10 +139,10 @@ namespace Sys.Data
 
                 mapping[t].AcceptChanges();
                 mapping[t].Delete();
-                
-                if(fired)
+
+                if (fired)
                     OnEvent(sender, t, mapping[t]);
-                
+
                 mapping.Remove(t);
 
                 objectPermission = ObjectPermission.AllowUpdateObject;
@@ -159,17 +159,17 @@ namespace Sys.Data
 
             DataRow dataRow1 = mapping[t1];
             DataRow dataRow2 = mapping[t2];
-         
+
             t1.UpdateRow(dataRow2);
             t2.UpdateRow(dataRow1);
 
             mapping[t1] = dataRow2;
             mapping[t2] = dataRow1;
 
-            OnEvent(sender, t1, dataRow2 ,t2, dataRow1);
+            OnEvent(sender, t1, dataRow2, t2, dataRow1);
             objectPermission = ObjectPermission.AllowUpdateObject;
         }
-        
+
         #endregion
 
 
@@ -196,28 +196,28 @@ namespace Sys.Data
         public IPersistentObject GetObject(int index) { return this[index]; }
         public IPersistentObject GetObject(DataRow dataRow) { return this[dataRow]; }
         public void Add(IPersistentObject p) { Add((T)p); }
-        public bool InsertAfter(IPersistentObject p1, IPersistentObject p2) { return InsertAfter((T)p1, (T)p2);}
+        public bool InsertAfter(IPersistentObject p1, IPersistentObject p2) { return InsertAfter((T)p1, (T)p2); }
         public void Remove(IPersistentObject p) { Remove((T)p); }
         public void UpdateDataRow(IPersistentObject p) { UpdateDataRow((T)p); }
-        public void Swap(IPersistentObject p1, IPersistentObject p2) { Swap((T)p1, (T)p2);}
+        public void Swap(IPersistentObject p1, IPersistentObject p2) { Swap((T)p1, (T)p2); }
         public IPersistentObject NewInstance()
         {
             T t = new T();
             t.SetCollection(this);
-            return t; 
+            return t;
         }
 
 
         #region Properties
 
-        public object Sender 
-        { 
-          set 
-            { 
-                this.sender = value; 
-            } 
+        public object Sender
+        {
+            set
+            {
+                this.sender = value;
+            }
         }
-        
+
         public DataTable Table
         {
             get
@@ -236,7 +236,7 @@ namespace Sys.Data
 
         }
 
-      
+
 
         public TableName TableName
         {
@@ -283,11 +283,11 @@ namespace Sys.Data
 
 
 
-        
+
         //On-demand Loading.....
         public T this[DataRow dataRow]
         {
-            get 
+            get
             {
                 if (dataRow.RowState == DataRowState.Deleted)
                     return null;
@@ -321,12 +321,12 @@ namespace Sys.Data
             }
         }
 
-  
+
 
         #endregion
 
 
-      
+
 
 
         #region Saving
@@ -341,9 +341,9 @@ namespace Sys.Data
 
         public virtual bool Save()
         {
-            return Save(new Selector(), null,null);
+            return Save(new Selector(), null, null);
         }
-        
+
         public virtual bool Save(string[] columnNames)
         {
             return Save(new Selector(columnNames), null, null);
@@ -355,7 +355,7 @@ namespace Sys.Data
                 return false;
 
             //update this.dataTable
-           // this.AcceptChanges();
+            // this.AcceptChanges();
 
             objectPermission = ObjectPermission.DenyUpdateObject;
             RowAdapter d = this.NewSqlRow(columnNames);
@@ -375,7 +375,7 @@ namespace Sys.Data
             {
                 BeforeSave(dataRow);
 
-                if (dataRow.RowState != DataRowState.Deleted) 
+                if (dataRow.RowState != DataRowState.Deleted)
                 {
                     if (dataRow.RowState != DataRowState.Unchanged)
                     {
@@ -400,7 +400,7 @@ namespace Sys.Data
                     d.CopyFrom(dataRow);
                     d.Fill();
                     d.Delete();
-                    
+
                     //slow version
                     //T t = this[dataRow];
                     //t.Delete();
@@ -469,7 +469,7 @@ namespace Sys.Data
 
         private void UpdateObject(DataRow dataRow)
         {
-           // objectPermission = ObjectPermission.DenyUpdateObject;
+            // objectPermission = ObjectPermission.DenyUpdateObject;
             T t;
             switch (dataRow.RowState)
             {
@@ -482,7 +482,7 @@ namespace Sys.Data
                 case DataRowState.Deleted:
                     dataRow.RejectChanges();
                     t = this[dataRow];
-                    this.remove(t,false);
+                    this.remove(t, false);
                     OnEvent(dataTable, t, dataRow);  //event fired in function Remove() 
                     break;
             }
@@ -495,7 +495,7 @@ namespace Sys.Data
             if (e.Action != DataRowAction.Change && e.Action != DataRowAction.Add && e.Action != DataRowAction.Delete)
                 return;
 
-            if (this.objectPermission != ObjectPermission.AllowUpdateObject)   
+            if (this.objectPermission != ObjectPermission.AllowUpdateObject)
                 return;
 
             this.UpdateObject(e.Row);
@@ -518,7 +518,7 @@ namespace Sys.Data
         }
 
         private class DpcEnumerator : IDisposable, IEnumerator<T>, IEnumerator
-            //where T : class, IDataPersistentObject, new()
+        //where T : class, IDataPersistentObject, new()
         {
             PersistentCollection<T> dpc;
             int cursor = -1;
@@ -546,7 +546,7 @@ namespace Sys.Data
             {
                 get
                 {
-                   return Current;
+                    return Current;
                 }
             }
 
@@ -554,7 +554,7 @@ namespace Sys.Data
             {
                 cursor++;
 
-                if (cursor > dpc.Count-1)
+                if (cursor > dpc.Count - 1)
                     return false;
                 else
                     return true;
@@ -573,7 +573,7 @@ namespace Sys.Data
         }
 
 
-        
+
         #endregion
     }
 
@@ -587,7 +587,7 @@ namespace Sys.Data
 
 
 
-   
+
 
 
     //public class DataPersistentCollectionSaveWork : Callback
@@ -650,7 +650,7 @@ namespace Sys.Data
 
 
 
-  
-//    }
+
+    //    }
 
 }

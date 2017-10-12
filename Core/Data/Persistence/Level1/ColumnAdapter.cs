@@ -175,7 +175,7 @@ namespace Sys.Data
 
         protected object Convert(object obj)
         {
-            return DataExtension.Convert(obj, dataType);
+            return InternalDataExtension.Convert(obj, dataType);
         }
 
         public void OnVauleChanged()
