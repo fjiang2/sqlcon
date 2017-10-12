@@ -20,9 +20,9 @@ namespace Sys.CodeBuilder
 
         }
 
-        public Method CopyFrom()
+        public Method Copy()
         {
-            Method mtd = new Method("CopyFrom")
+            Method mtd = new Method("Copy")
             {
                 modifier = Modifier.Public,
             };
@@ -155,7 +155,7 @@ namespace Sys.CodeBuilder
         }
 
 
-        public Method ComparTo()
+        public Method CompareTo()
         {
             Method mtd = new Method(new TypeInfo { type = typeof(bool) }, "CompareTo")
             {
@@ -213,15 +213,20 @@ namespace Sys.CodeBuilder
     }
 
     [Flags]
-    public enum UtilsMethodType
+    public enum UtilsThisMethod
     {
-        CopyFrom = 0x01,
-        CopyTo = 0x02,
-        Clone = 0x04,
-        CloneFrom = 0x08,
-        Equals = 0x10,
-        Compare = 0x20,
-        ComparTo = 0x40,
-        ToSimpleString = 0x80
+        Copy = 0x01,
+        Clone = 0x02,
+        Compare = 0x04,
+        Equals = 0x08,
+    }
+
+    [Flags]
+    public enum UtilsStaticMethod
+    {
+        CopyTo = 0x01,
+        CloneFrom = 0x02,
+        CompareTo = 0x04,
+        ToSimpleString = 0x08
     }
 }

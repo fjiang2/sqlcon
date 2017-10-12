@@ -286,7 +286,7 @@ namespace sqlcon
             sent.End(";");
 
 
-            clss.AddUtilsMethod(cname, dict.Keys.Select(column => column.ColumnName), UtilsMethodType.CopyTo | UtilsMethodType.Clone | UtilsMethodType.Compare | UtilsMethodType.ToSimpleString);
+            clss.AddUtilsMethod(cname, dict.Keys.Select(column => column.ColumnName), UtilsStaticMethod.CopyTo  | UtilsStaticMethod.CompareTo | UtilsStaticMethod.ToSimpleString);
             clss.AppendLine();
 
             foreach (DataColumn column in dt.Columns)

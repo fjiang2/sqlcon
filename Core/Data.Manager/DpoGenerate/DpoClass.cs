@@ -332,7 +332,7 @@ namespace Sys.Data.Manager
 
             ConstStringColumnNames();
 
-            clss.AddUtilsMethod(UtilsMethodType.CopyTo | UtilsMethodType.Clone | UtilsMethodType.Compare);
+            clss.AddUtilsMethod(UtilsThisMethod.Copy | UtilsThisMethod.Clone | UtilsThisMethod.Compare);
             
             return code.ToString();
         }

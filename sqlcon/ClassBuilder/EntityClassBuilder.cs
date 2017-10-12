@@ -52,7 +52,7 @@ namespace sqlcon
             }
 
 
-            clss.AddUtilsMethod(cname, schema.Columns.Select(column => column.ColumnName), UtilsMethodType.CopyFrom | UtilsMethodType.Clone | UtilsMethodType.Compare | UtilsMethodType.ToSimpleString);
+            clss.AddUtilsMethod(cname, schema.Columns.Select(column => column.ColumnName), UtilsThisMethod.Copy | UtilsThisMethod.Clone | UtilsThisMethod.Compare);
         }
 
 

@@ -235,7 +235,7 @@ namespace Sys.CodeBuilder
             clss.AddWithBeginEnd(body);
         }
 
-        public void AddUtilsMethod(UtilsMethodType type)
+        public void AddUtilsMethod(UtilsThisMethod type)
         {
             var rw = properties
                 .Where(p => (p.modifier & Modifier.Public) == Modifier.Public && p.CanRead && p.CanWrite)
@@ -244,32 +244,44 @@ namespace Sys.CodeBuilder
             AddUtilsMethod(this.name, rw, type);
         }
 
-        public void AddUtilsMethod(string className, IEnumerable<string> propertyNames, UtilsMethodType type)
+        public void AddUtilsMethod(string className, IEnumerable<string> propertyNames, UtilsThisMethod type)
         {
             var x = new UtilsMethod(className, propertyNames);
 
-            if ((type & UtilsMethodType.Clone) == UtilsMethodType.Clone)
+            if ((type & UtilsThisMethod.Clone) == UtilsThisMethod.Clone)
                 Add(x.Clone());
 
-            if ((type & UtilsMethodType.CloneFrom) == UtilsMethodType.CloneFrom)
-                Add(x.CloneFrom());
 
-            if ((type & UtilsMethodType.Compare) == UtilsMethodType.Compare)
+            if ((type & UtilsThisMethod.Compare) == UtilsThisMethod.Compare)
                 Add(x.Compare());
 
-            if ((type & UtilsMethodType.ComparTo) == UtilsMethodType.ComparTo)
-                Add(x.ComparTo());
 
-            if ((type & UtilsMethodType.CopyFrom) == UtilsMethodType.CopyFrom)
-                Add(x.CopyFrom());
+            if ((type & UtilsThisMethod.Copy) == UtilsThisMethod.Copy)
+                Add(x.Copy());
 
-            if ((type & UtilsMethodType.CopyTo) == UtilsMethodType.CopyTo)
-                Add(x.CopyTo());
 
-            if ((type & UtilsMethodType.Equals) == UtilsMethodType.Equals)
+            if ((type & UtilsThisMethod.Equals) == UtilsThisMethod.Equals)
                 Add(x.Equals());
 
-            if ((type & UtilsMethodType.ToSimpleString) == UtilsMethodType.ToSimpleString)
+        }
+
+        public void AddUtilsMethod(string className, IEnumerable<string> propertyNames, UtilsStaticMethod type)
+        {
+            var x = new UtilsMethod(className, propertyNames);
+
+
+            if ((type & UtilsStaticMethod.CloneFrom) == UtilsStaticMethod.CloneFrom)
+                Add(x.CloneFrom());
+
+           
+            if ((type & UtilsStaticMethod.CompareTo) == UtilsStaticMethod.CompareTo)
+                Add(x.CompareTo());
+
+           
+            if ((type & UtilsStaticMethod.CopyTo) == UtilsStaticMethod.CopyTo)
+                Add(x.CopyTo());
+
+            if ((type & UtilsStaticMethod.ToSimpleString) == UtilsStaticMethod.ToSimpleString)
                 Add(x.ToSimpleString());
         }
 
