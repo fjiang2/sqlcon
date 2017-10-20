@@ -39,7 +39,7 @@ namespace Sys.Data
         }
 
         public Locator(IPrimaryKeys primary)
-            :this(primary.Keys)
+            : this(primary.Keys)
         {
         }
 
@@ -54,7 +54,7 @@ namespace Sys.Data
         }
 
         public Locator(TableName tname)
-            :this(tname.GetTableSchema().PrimaryKeys)
+            : this(tname.GetTableSchema().PrimaryKeys)
         {
         }
 
@@ -63,20 +63,37 @@ namespace Sys.Data
             this.where = expression.ToString();
         }
 
+        public Locator(string wildcard, string[] columns)
+        {
+            wildcard = wildcard.Replace("*", "%").Replace("?", "_");
+
+            string _where = "";
+            foreach (string column in columns)
+            {
+                if (_where != "")
+                    _where += " OR ";
+                _where += string.Format("[{0}] LIKE '{1}'", column, wildcard);
+            }
+
+            this.where = _where;
+        }
 
         /// <summary>
         /// name of locator
         /// </summary>
         public string Name { get; set; }
 
-        public void And(Locator locator)
+        public Locator And(Locator locator)
         {
             this.where = string.Format("({0}) AND ({1})", this.where, locator.where);
+
+            return this;
         }
 
-        public void Or(Locator locator)
+        public Locator Or(Locator locator)
         {
             this.where = string.Format("({0}) OR ({1})", this.where, locator.where);
+            return this;
         }
 
         /// <summary>
@@ -88,7 +105,7 @@ namespace Sys.Data
             internal set { this.unique = value; }
         }
 
-        public static bool operator!(Locator locator)
+        public static bool operator !(Locator locator)
         {
             return string.IsNullOrEmpty(locator.where);
         }

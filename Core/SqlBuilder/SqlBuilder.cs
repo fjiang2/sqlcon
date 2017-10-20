@@ -668,9 +668,16 @@ namespace Sys.Data
                 result = true;
             };
 
-            SqlCmd.ExecuteScalar();
+            try
+            {
+                SqlCmd.ExecuteScalar();
 
-            return result;
+                return result;
+            }
+            catch(Exception)
+            {
+                return true;
+            }
         }
 
         public SqlCmd SqlCmd

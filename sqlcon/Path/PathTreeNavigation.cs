@@ -164,21 +164,21 @@ namespace sqlcon
         }
 
 
-        public TreeNode<IDataPath> TryAddWhereOrColumns(TreeNode<IDataPath> pt, string segment)
+        public TreeNode<IDataPath> TryAddWhereOrColumns(TreeNode<IDataPath> pt, Command cmd)
         {
             if (!(pt.Item is Locator) && !(pt.Item is TableName))
             {
                 return pt;
             }
 
-            if (string.IsNullOrEmpty(segment))
+            if (string.IsNullOrEmpty(cmd.arg1))
             {
                 stdio.ErrorFormat("argument cannot be empty");
             }
 
             TableName tname = GetCurrentPath<TableName>();
 
-            var locator = new Locator(segment);
+            var locator = new Locator(cmd.arg1) { Name = cmd.GetValue("name") };
             var builder = new SqlBuilder().SELECT.TOP(1).COLUMNS().FROM(tname).WHERE(locator);
             if (builder.Invalid())
             {

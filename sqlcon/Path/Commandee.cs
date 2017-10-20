@@ -107,7 +107,7 @@ namespace sqlcon
             {
                 stdio.WriteLine("command dir or ls");
                 stdio.WriteLine("dir [path]     : display current directory");
-                stdio.WriteLine("options: ");
+                stdio.WriteLine("options:");
                 stdio.WriteLine("   /def        : display table structure");
                 stdio.WriteLine("   /pk         : display table primary keys");
                 stdio.WriteLine("   /fk         : display table foreign keys");
@@ -366,9 +366,13 @@ namespace sqlcon
             if (cmd.HasHelp)
             {
                 stdio.WriteLine("command md or mkdir");
-                stdio.WriteLine("md [sql where clause]  : filter current table rows");
+                stdio.WriteLine("md [sql where clause]           : filter current table rows");
+                stdio.WriteLine("options:");
+                stdio.WriteLine("   /name:directory              : filter name");
                 stdio.WriteLine("example:");
-                stdio.WriteLine("md col1=1 and col2='match' : filter rows matched on columns:c1 or c2");
+                stdio.WriteLine("md col1=1                       : filter rows matched on columns:c1");
+                stdio.WriteLine("md \"col1=1 and col2='match'\"  : filter rows matched on columns:c1 or c2");
+                stdio.WriteLine("md \"age > 60\" /name:senior    : filter rows matched age>60 and display as senior");
                 return;
             }
 
@@ -383,7 +387,7 @@ namespace sqlcon
             if (string.IsNullOrEmpty(cmd.args))
                 return;
 
-            var xnode = mgr.TryAddWhereOrColumns(pt, cmd.args);
+            var xnode = mgr.TryAddWhereOrColumns(pt, cmd);
             //if (xnode != pt)
             //{
             //    //jump to the node just created

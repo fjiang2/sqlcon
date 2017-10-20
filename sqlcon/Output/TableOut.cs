@@ -43,10 +43,8 @@ namespace sqlcon
         }
 
 
-        private string LikeExpr(string wildcard, string[] columns)
+        private Locator LikeExpr(string wildcard, string[] columns)
         {
-            wildcard = wildcard.Replace("*", "%").Replace("?", "_");
-
             if (columns.Length == 0)
             {
                 var schema = new TableSchema(tname);
@@ -59,15 +57,7 @@ namespace sqlcon
                 columns = L.ToArray();
             }
 
-            string where = "";
-            foreach (string column in columns)
-            {
-                if (where != "")
-                    where += " OR ";
-                where += string.Format("[{0}] LIKE '{1}'", column, wildcard);
-            }
-
-            return where;
+            return new Locator(wildcard, columns);
         }
 
         private static void _DisplayTable(UniqueTable udt, bool more, Command cmd)
@@ -176,7 +166,7 @@ namespace sqlcon
 
             if (cmd.wildcard != null)
             {
-                string where = LikeExpr(cmd.wildcard, cmd.Columns);
+                Locator where = LikeExpr(cmd.wildcard, cmd.Columns);
                 builder = new SqlBuilder().SELECT.ROWID(cmd.HasRowId).COLUMNS().FROM(tname).WHERE(where);
             }
             else if (cmd.where != null)
@@ -222,9 +212,9 @@ namespace sqlcon
             }
             else
             {
-                string where = LikeExpr(cmd.wildcard, cmd.Columns);
+                Locator where = LikeExpr(cmd.wildcard, cmd.Columns);
                 if (locator != null)
-                    where = string.Format("({0}) AND ({1})", locator.Path, where);
+                    where = locator.And(where);
 
                 builder = new SqlBuilder().SELECT.COLUMNS(columns).FROM(tname).WHERE(where);
             }
