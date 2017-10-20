@@ -401,8 +401,8 @@ namespace sqlcon
             if (cmd.HasHelp)
             {
                 stdio.WriteLine("command rd or rmdir");
-                stdio.WriteLine("rm [sql where clause] : remove locators");
-                stdio.WriteLine("rm #1 : remove the locator node");
+                stdio.WriteLine("rm [filter name] : remove locators/filters");
+                stdio.WriteLine("rm #1 : remove the locator node#");
                 return;
             }
 
@@ -418,7 +418,7 @@ namespace sqlcon
             }
 
 
-            var nodes = pt.Nodes.Where(node => node.Item is Locator && (node.Item as Locator).Path == cmd.Path1.name);
+            var nodes = pt.Nodes.Where(node => node.Item is Locator && (node.Item as Locator).Path == cmd.Path1.name).ToArray();
             if (nodes.Count() > 0)
             {
                 if (!stdio.YesOrNo("are you sure to delete (y/n)?"))
