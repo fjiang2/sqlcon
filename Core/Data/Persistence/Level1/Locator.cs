@@ -105,19 +105,23 @@ namespace Sys.Data
             internal set { this.unique = value; }
         }
 
-        public static bool operator !(Locator locator)
-        {
-            return string.IsNullOrEmpty(locator.where);
-        }
+      
+        public string Where => this.where;
 
         public string Path
         {
-            get { return where; }
+            get
+            {
+                if (string.IsNullOrEmpty(Name))
+                    return where;
+                else
+                    return Name;
+            }
         }
 
         public override string ToString()
         {
-            return this.where;
+            return this.Path;
         }
 
     }

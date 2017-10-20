@@ -371,8 +371,8 @@ namespace sqlcon
                 stdio.WriteLine("   /name:directory              : filter name");
                 stdio.WriteLine("example:");
                 stdio.WriteLine("md col1=1                       : filter rows matched on columns:c1");
-                stdio.WriteLine("md \"col1=1 and col2='match'\"  : filter rows matched on columns:c1 or c2");
-                stdio.WriteLine("md \"age > 60\" /name:senior    : filter rows matched age>60 and display as senior");
+                stdio.WriteLine("md \"col1=1 and col2='match'\"    : filter rows matched on columns:c1 or c2");
+                stdio.WriteLine("md \"age > 60\" /name:senior      : filter rows matched age>60 and display as senior");
                 return;
             }
 

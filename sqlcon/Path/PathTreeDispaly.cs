@@ -283,6 +283,17 @@ namespace sqlcon
                 if (IsMatch(cmd.wildcard, item.Path))
                 {
                     count++;
+
+                    if (item is Locator)
+                    {
+                        Locator locator = (Locator)item;
+                        if (!string.IsNullOrEmpty(locator.Name))
+                        {
+                            stdio.WriteLine("{0,5} {1,-20} {2}", sub(i), locator.Name, locator.Where);
+                            continue;
+                        }
+                    }
+
                     stdio.WriteLine("{0,5} {1}", sub(i), item);
                 }
             }

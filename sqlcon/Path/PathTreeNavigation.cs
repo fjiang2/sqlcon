@@ -22,7 +22,7 @@ namespace sqlcon
         {
             get { return tree.RootNode; }
         }
- 
+
         public T GetCurrentPath<T>() where T : IDataPath
         {
             return GetPathFrom<T>(this.current);
@@ -89,7 +89,7 @@ namespace sqlcon
         public TreeNode<IDataPath> Navigate(PathName pathName)
         {
             string[] segments = pathName.FullSegments;
-      
+
             if (segments.Length == 0)
                 return current;
 
@@ -179,10 +179,15 @@ namespace sqlcon
             TableName tname = GetCurrentPath<TableName>();
 
             var locator = new Locator(cmd.arg1) { Name = cmd.GetValue("name") };
+            if (locator.Name == null)
+            {
+                locator.Name = $"filter{pt.Nodes.Count+1}";
+            }
+
             var builder = new SqlBuilder().SELECT.TOP(1).COLUMNS().FROM(tname).WHERE(locator);
             if (builder.Invalid())
             {
-                stdio.ErrorFormat("invalid path");
+                stdio.ErrorFormat($"invalid path: {cmd.arg1}");
                 return pt;
             }
 
@@ -192,7 +197,7 @@ namespace sqlcon
             return xnode;
         }
 
-        
+
 
     }
 }

@@ -378,7 +378,7 @@ namespace Sys.Data
 
         public SqlBuilder WHERE(Locator locator)
         {
-            script.Append("WHERE ").Append(locator).Append(" ");
+            script.Append("WHERE ").Append(locator.Where).Append(" ");
             return this.CRLF;
         }
 
