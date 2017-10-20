@@ -170,7 +170,7 @@ namespace Sys.Data
             if (pvd != null)
                 Register(pvd);
             else
-                throw new Exception($"invlaid connection string {connectionString}");
+                throw new Exception($"invalid connection string: {connectionString}");
 
             return pvd;
         }

@@ -199,8 +199,15 @@ namespace sqlcon
 
                 string serverName = pair[0].Str;
                 string connectionString = PeelOleDb(pair[1].Str);
-                ConnectionProvider provider = ConnectionProviderManager.Register(serverName, connectionString);
-                pvds.Add(provider);
+                try
+                {
+                    ConnectionProvider provider = ConnectionProviderManager.Register(serverName, connectionString);
+                    pvds.Add(provider);
+                }
+                catch(Exception ex)
+                {
+                    stdio.Error(ex.Message);
+                }
             }
 
             return pvds;
