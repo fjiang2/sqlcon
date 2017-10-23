@@ -164,6 +164,11 @@ namespace Sys.CodeBuilder
         protected override void BuildBlock(CodeBlock clss)
         {
             base.BuildBlock(clss);
+            if (comment != null)
+            {
+                comment.alignment = Alignment.Top;
+                clss.AppendFormat($"{comment}");
+            }
 
             clss.AppendFormat("{0} class {1}", new ModifierString(modifier), base.name);
             if (inherits.Length > 0)

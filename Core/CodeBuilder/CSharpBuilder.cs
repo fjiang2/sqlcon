@@ -82,6 +82,11 @@ namespace Sys.CodeBuilder
 
         public void Output(string directory, string cname)
         {
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
             string code = this.ToString();
             string file = Path.ChangeExtension(Path.Combine(directory, cname), "cs");
             File.WriteAllText(directory, code);

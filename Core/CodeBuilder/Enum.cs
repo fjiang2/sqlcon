@@ -23,7 +23,7 @@ namespace Sys.CodeBuilder
 {
     public class Enum : Declare, ICodeBlock
     {
-        public Statement statements { get; } = new Statement();
+        public List<Feature> features { get; } = new List<Feature>();
 
 
         public Enum(string enumName)
@@ -34,21 +34,28 @@ namespace Sys.CodeBuilder
 
         public void Add(string feature)
         {
-            statements.AppendLine($"{feature},");
+            features.Add(new Feature(feature));
         }
 
         public void Add(string feature, int value)
         {
-            statements.AppendLine($"{feature} = {value},");
+            features.Add(new Feature(feature) { value = value });
+        }
+
+        public void Add(Feature feature)
+        {
+            features.Add(feature);
         }
 
         public void Add(string feature, int value, string label)
         {
+            var _feature = new Feature(feature) { value = value };
             if (label != null)
-                statements.AppendLine($"[DataEnum(\"{label}\")]");
+            {
+                _feature.AddAttribute(new AttributeInfo("DataEnum") { args = new string[] { label } });
+            }
 
-            statements.AppendLine($"{feature} = {value},");
-            statements.AppendLine();
+            features.Add(_feature);
         }
 
         protected override void BuildBlock(CodeBlock block)
@@ -56,7 +63,15 @@ namespace Sys.CodeBuilder
             base.BuildBlock(block);
 
             block.AppendLine(Signature);
-            block.AddWithBeginEnd(statements);
+            var body = new CodeBlock();
+            foreach (var feature in features)
+            {
+                body.Add(feature);
+            }
+
+            block.AddWithBeginEnd(body);
         }
     }
+
+
 }

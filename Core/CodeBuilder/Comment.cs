@@ -35,7 +35,7 @@ namespace Sys.CodeBuilder
                 return string.Empty;
 
             if (alignment == Alignment.Right)
-                return $"\t\t//{comment}";
+                return $"{CodeLine.Tab(2)}//{comment}";
             else
                 return $"//{comment}";
         }

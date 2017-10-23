@@ -28,7 +28,11 @@ namespace Sys.CodeBuilder
                 List<string> list = new List<string>();
                 foreach (var arg in args)
                 {
-                    if (arg is AttributeInfoArg)
+                    if (arg is string)
+                    {
+                        list.Add(arg as string);
+                    }
+                    else if (arg is AttributeInfoArg)
                     {
                         list.Add((arg as AttributeInfoArg).ToString());
                         continue;
