@@ -40,6 +40,7 @@ namespace Sys.CodeBuilder
             this.usings.Add(name);
             return this;
         }
+
         public CSharpBuilder AddUsingRange(IEnumerable<string> names)
         {
             foreach (var name in names)
@@ -78,6 +79,11 @@ namespace Sys.CodeBuilder
 
             block.AddWithBeginEnd(c);
 
+        }
+
+        public void Output(TextWriter writer)
+        {
+            writer.Write(this.ToString());
         }
 
         public void Output(string directory, string cname)

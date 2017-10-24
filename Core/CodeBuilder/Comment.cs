@@ -17,7 +17,7 @@ namespace Sys.CodeBuilder
     {
         private string comment;
 
-        public Alignment alignment { get; set; } = Alignment.Right;
+        public Alignment alignment { get; set; } = Alignment.Top;
 
         public Comment(string text)
         {
