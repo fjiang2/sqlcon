@@ -1,5 +1,12 @@
 ﻿sqlcon release notes
 
+10/23/2017 v1.8.6.0
+	Improvements/Enhancements:
+	1. display error message when connection string is not supported
+	2. upgrade command "md" which supports alias name of filter/locator
+	Bugs Fixes:
+	1. crash on command "rd" to delete locators.
+
 09/26/2017 v1.8.5.0
 	Improvements/Enhancements:
 	1. export to .cfg file from dbo.config 
