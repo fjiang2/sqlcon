@@ -8,7 +8,7 @@ namespace Sys.CodeBuilder
 {
     public class Declare : Buildable
     {
-        private List<AttributeInfo> attributes { get; set; } = new List<AttributeInfo>();
+        protected List<AttributeInfo> attributes { get; } = new List<AttributeInfo>();
 
         public Modifier modifier { get; set; } = Modifier.Public;
         public TypeInfo type { get; set; } = new TypeInfo();

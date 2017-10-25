@@ -64,11 +64,17 @@ namespace Sys.CodeBuilder
 
             block.AppendLine(Signature);
             var body = new CodeBlock();
-            foreach (var feature in features)
-            {
-                body.Add(feature);
-                body.AppendLine();
-            }
+
+            features.ForEach(
+                    item => body.Add(item),
+                    item =>
+                    {
+                        if (item.Count == 1)
+                            return;
+
+                        body.AppendLine();
+                    }
+                    );
 
             block.AddWithBeginEnd(body);
         }
