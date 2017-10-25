@@ -67,6 +67,7 @@ namespace Sys.CodeBuilder
             foreach (var feature in features)
             {
                 body.Add(feature);
+                body.AppendLine();
             }
 
             block.AddWithBeginEnd(body);
