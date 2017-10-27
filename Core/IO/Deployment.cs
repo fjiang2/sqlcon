@@ -50,12 +50,12 @@ namespace Sys.IO
         /// <summary>
         /// if true, copy directory and all sub-directories, default is false
         /// </summary>
-        public bool AllDirectory { get; set; } = false;
+        public bool AllDirectories { get; set; } = false;
 
         /// <summary>
-        /// file extension names
+        /// inclusive file patterns
         /// </summary>
-        public List<string> Extensions { get; set; } = new List<string>();
+        public List<string> InclusiveFilePatterns { get; set; } = new List<string>();
 
         /// <summary>
         /// exclusive file patterns, such as *.vshost.exe
@@ -78,12 +78,12 @@ namespace Sys.IO
 
             var installation = new Installation(Out)
             {
-                Extensions = Extensions.ToArray(),
+                InclusiveFilePatterns = InclusiveFilePatterns.ToArray(),
                 ExclusiveFilePatterns = ExclusiveFilePatterns.ToArray(),
                 ExclusiveDirectories = ExclusiveDirectories.ToArray()
             };
 
-            if (AllDirectory)
+            if (AllDirectories)
                 installation.CopyAllDirectory(src, dest);
             else
                 installation.CopyDirectory(src, dest);
@@ -98,8 +98,8 @@ namespace Sys.IO
         public void InstallCode(string projectDirectory, string applicationName)
         {
             //C# source code files
-            this.AllDirectory = true;
-            this.Extensions = new List<string> { "*.cs", "*.config", "*.png", "*.ico", "*.xaml", "*.cfg", "*.sln", "*.csproj", "*.dll" };
+            this.AllDirectories = true;
+            this.InclusiveFilePatterns = new List<string> { "*.cs", "*.config", "*.png", "*.ico", "*.xaml", "*.cfg", "*.sln", "*.csproj", "*.dll" };
             this.ExclusiveFilePatterns = new List<string> { "packages.config" };
             this.ExclusiveDirectories = new List<string> { "bin", "obj" };
 
@@ -117,13 +117,13 @@ namespace Sys.IO
         /// </summary>
         /// <param name="publishDirectory"></param>
         /// <param name="applicationName"></param>
-        /// <param name="allDirectory">install current directory and sub-directories</param>
-        public void InstallApplication(string publishDirectory, string applicationName = null, bool allDirectory = false)
+        /// <param name="allDirectories">install current directory and sub-directories</param>
+        public void InstallApplication(string publishDirectory, string applicationName = null, bool allDirectories = false)
         {
-            this.AllDirectory = allDirectory;
-            this.Extensions = new List<string> { "*.dll", "*.exe", "*.config", "*.cfg", "*.sql" };
+            this.AllDirectories = allDirectories;
+            this.InclusiveFilePatterns = new List<string> { "*.dll", "*.exe", "*.config", "*.cfg", "*.sql" };
             this.ExclusiveFilePatterns = new List<string> { "*.vshost.exe" };
-            this.ExclusiveDirectories = new List<string> { "bin", "obj" };
+            this.ExclusiveDirectories = new List<string> { "obj" };
 
             string src = $@"{SRC}\{publishDirectory}";
             string dest = DEST;

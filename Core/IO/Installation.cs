@@ -10,8 +10,8 @@ namespace Sys.IO
 {
     public class Installation
     {
-        //the files being copied with extension names 
-        public string[] Extensions { get; set; } = new string[] { };
+        //the files being copied with search patterns
+        public string[] InclusiveFilePatterns { get; set; } = new string[] { };
 
         //the files or file patterns are not copied
         public string[] ExclusiveFilePatterns { get; set; } = new string[] { };
@@ -26,6 +26,20 @@ namespace Sys.IO
             this.Out = Out;
         }
 
+      
+        private static string[] GetFiles(string directory, string[] searchPatterns)
+        {
+
+            if (searchPatterns.Length == 0)
+                return Directory.GetFiles(directory);
+
+            List<string> files = new List<string>();
+            foreach (var ext in searchPatterns)
+                files.AddRange(Directory.GetFiles(directory, ext));
+
+            return files.ToArray();
+        }
+
         /// <summary>
         /// get files in the directory
         /// </summary>
@@ -33,16 +47,19 @@ namespace Sys.IO
         /// <returns></returns>
         private string[] GetFiles(string directory)
         {
-            if (Extensions.Length == 0)
-                return Directory.GetFiles(directory);
+            string[] files = GetFiles(directory, InclusiveFilePatterns);
 
-            List<string> files = new List<string>();
-            foreach (var ext in Extensions)
+            List<string> L = new List<string>();
+            foreach (string file in files)
             {
-                files.AddRange(Directory.GetFiles(directory, ext));
+                string name = Path.GetFileName(file);
+                if (ExclusiveFilePatterns.Any(pattern => pattern.IsMatch(name)))
+                    continue;
+
+                L.Add(file);
             }
 
-            return files.ToArray();
+            return L.ToArray();
         }
 
         /// <summary>
@@ -103,9 +120,6 @@ namespace Sys.IO
             foreach (var file in files)
             {
                 string name = Path.GetFileName(file);
-
-                if (ExclusiveFilePatterns.Any(pattern => pattern.IsMatch(name)))
-                    continue;
 
                 Out.WriteLine($"copying {name}");
                 File.Copy(file, $"{dest}\\{name}", true);
