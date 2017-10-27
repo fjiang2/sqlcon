@@ -9,25 +9,50 @@ namespace Sys.IO
 {
     public class Deployment
     {
-        private string version;
         protected string SRC;
-        protected string GA;
+        protected string DEST;
 
         public TextWriter Out { get; set; } = Console.Out;
 
-
-        public Deployment(string product, string version, string SRC, string GA)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="BUILDSRC">build directory</param>
+        /// <param name="DEST">install directory</param>
+        /// <param name="suite">product name or software suite name</param>
+        /// <param name="version"></param>
+        public Deployment(string BUILDSRC, string DEST, string suite, string version)
         {
-            this.version = version;
-            this.SRC = SRC;
-            this.GA = $@"{GA}\{product}\{version}";
+            this.SRC = BUILDSRC;
+            this.DEST = $@"{DEST}\{suite}\{version}";
         }
 
+        /// <summary>
+        /// if true, copy directory and all sub-directories
+        /// </summary>
         public bool AllDirectory { get; set; } = true;
+
+        /// <summary>
+        /// file extension names
+        /// </summary>
         public string[] Extensions { get; set; } = new string[] { };
+
+        /// <summary>
+        /// exclusive file patterns, such as *.vshost.exe
+        /// </summary>
         public string[] ExclusiveFilePatterns { get; set; } = new string[] { };
+
+        /// <summary>
+        /// directories not included to copy
+        /// </summary>
         public string[] ExclusiveDirectories { get; set; } = new string[] { };
 
+
+        /// <summary>
+        /// copy files from one directory to another
+        /// </summary>
+        /// <param name="src">source directory</param>
+        /// <param name="dest">destination directory</param>
         public void CopyDirectory(string src, string dest)
         {
 
@@ -46,7 +71,7 @@ namespace Sys.IO
         }
 
         /// <summary>
-        /// 
+        /// default installation for source code
         /// </summary>
         /// <param name="projectDirectory"></param>
         /// <param name="applicationName"></param>
@@ -54,23 +79,23 @@ namespace Sys.IO
         {
             //C# source code files
             AllDirectory = true;
-            Extensions = new string[] { "*.cs", "*.config", "*.png", "*.ico", "*.xaml", "*.cfg", "*.sln", "*.csproj" };
+            Extensions = new string[] { "*.cs", "*.config", "*.png", "*.ico", "*.xaml", "*.cfg", "*.sln", "*.csproj", "*.dll" };
             ExclusiveFilePatterns = new string[] { "packages.config" };
             ExclusiveDirectories = new string[] { "bin", "obj" };
 
             string src = $@"{SRC}\{projectDirectory}";
-            string dest = $@"{GA}\{applicationName}";
+            string dest = $@"{DEST}\{applicationName}";
             CopyDirectory(src, dest);
         }
 
 
         /// <summary>
-        /// 
+        /// default installation for application
         /// </summary>
         /// <param name="projectDirectory"></param>
         /// <param name="applicationName"></param>
         /// <param name="configuration"></param>
-        public void InstallApplication(string projectDirectory, string applicationName, string configuration = "Debug")
+        public void InstallApplication(string projectDirectory, string applicationName, string configuration = "Release")
         {
             AllDirectory = false;
             Extensions = new string[] { "*.dll", "*.exe", "*.config", "*.cfg", "*.sql" };
@@ -78,7 +103,7 @@ namespace Sys.IO
             ExclusiveDirectories = new string[] { "bin", "obj" };
 
             string src = $@"{SRC}\{projectDirectory}\bin\{configuration}";
-            string dest = $@"{GA}\{applicationName}";
+            string dest = $@"{DEST}\{applicationName}";
             CopyDirectory(src, dest);
         }
     }
