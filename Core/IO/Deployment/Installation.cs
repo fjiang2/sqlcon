@@ -11,7 +11,7 @@ namespace Sys.IO
     public class Installation
     {
         //the files being copied with search patterns
-        public string[] InclusiveFilePatterns { get; set; } = new string[] { };
+        public string[] FileSearchPatterns { get; set; } = new string[] { };
 
         //the files or file patterns are not copied
         public string[] ExclusiveFilePatterns { get; set; } = new string[] { };
@@ -24,7 +24,7 @@ namespace Sys.IO
         {
         }
 
-      
+
         private static string[] GetFiles(string directory, string[] searchPatterns)
         {
 
@@ -32,8 +32,8 @@ namespace Sys.IO
                 return Directory.GetFiles(directory);
 
             List<string> files = new List<string>();
-            foreach (var ext in searchPatterns)
-                files.AddRange(Directory.GetFiles(directory, ext));
+            foreach (var searchPattern in searchPatterns)
+                files.AddRange(Directory.GetFiles(directory, searchPattern));
 
             return files.ToArray();
         }
@@ -45,7 +45,7 @@ namespace Sys.IO
         /// <returns></returns>
         private string[] GetFiles(string directory)
         {
-            string[] files = GetFiles(directory, InclusiveFilePatterns);
+            string[] files = GetFiles(directory, FileSearchPatterns);
 
             List<string> L = new List<string>();
             foreach (string file in files)
@@ -66,7 +66,7 @@ namespace Sys.IO
         /// <param name="directory"></param>
         private void DeleteFiles(string directory)
         {
-            string[] files = GetFiles(directory);
+            string[] files = Directory.GetFiles(directory);
             foreach (string file in files)
                 File.Delete(file);
         }
@@ -77,7 +77,7 @@ namespace Sys.IO
         /// </summary>
         /// <param name="src"></param>
         /// <param name="dest"></param>
-        public void CopyAllDirectory(string src, string dest, IProgress<string> progress)
+        public void CopyAllDirectories(string src, string dest, IProgress<string> progress)
         {
             int count = 0;
             CopyDirectory(src, dest, progress);
@@ -90,7 +90,7 @@ namespace Sys.IO
                 if (ExclusiveDirectories.Contains(folder))
                     continue;
 
-                CopyAllDirectory($"{src}\\{folder}", $"{dest}\\{folder}", progress);
+                CopyAllDirectories($"{src}\\{folder}", $"{dest}\\{folder}", progress);
                 count++;
             }
 
