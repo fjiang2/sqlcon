@@ -19,11 +19,9 @@ namespace Sys.IO
         //the directories are not copied
         public string[] ExclusiveDirectories { get; set; } = new string[] { };
 
-        public TextWriter Out { get; }
 
-        public Installation(TextWriter Out)
+        public Installation()
         {
-            this.Out = Out;
         }
 
       
@@ -79,10 +77,10 @@ namespace Sys.IO
         /// </summary>
         /// <param name="src"></param>
         /// <param name="dest"></param>
-        public void CopyAllDirectory(string src, string dest)
+        public void CopyAllDirectory(string src, string dest, IProgress<string> progress)
         {
             int count = 0;
-            CopyDirectory(src, dest);
+            CopyDirectory(src, dest, progress);
             count++;
 
             string[] directories = Directory.GetDirectories(src);
@@ -92,12 +90,11 @@ namespace Sys.IO
                 if (ExclusiveDirectories.Contains(folder))
                     continue;
 
-                CopyAllDirectory($"{src}\\{folder}", $"{dest}\\{folder}");
+                CopyAllDirectory($"{src}\\{folder}", $"{dest}\\{folder}", progress);
                 count++;
             }
 
-            Out.WriteLine($"{count} directories copied");
-            Out.WriteLine();
+            progress.Report($"{count} directories copied");
         }
 
 
@@ -106,14 +103,14 @@ namespace Sys.IO
         /// </summary>
         /// <param name="src"></param>
         /// <param name="dest"></param>
-        public void CopyDirectory(string src, string dest)
+        public void CopyDirectory(string src, string dest, IProgress<string> progress)
         {
             if (!Directory.Exists(dest))
                 Directory.CreateDirectory(dest);
             else
                 DeleteFiles(dest);
 
-            Out.WriteLine($"{src} -> {dest}");
+            progress.Report($"{src} -> {dest}");
 
             int count = 0;
             string[] files = GetFiles(src);
@@ -121,12 +118,12 @@ namespace Sys.IO
             {
                 string name = Path.GetFileName(file);
 
-                Out.WriteLine($"copying {name}");
+                progress.Report($"copying {name}");
                 File.Copy(file, $"{dest}\\{name}", true);
                 count++;
             }
 
-            Out.WriteLine($"{count} file(s) copied");
+            progress.Report($"{count} file(s) copied");
         }
 
         //dest could be file name or directory name

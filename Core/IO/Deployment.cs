@@ -76,17 +76,19 @@ namespace Sys.IO
         public void CopyDirectory(string src, string dest)
         {
 
-            var installation = new Installation(Out)
+            var installation = new Installation()
             {
                 InclusiveFilePatterns = InclusiveFilePatterns.ToArray(),
                 ExclusiveFilePatterns = ExclusiveFilePatterns.ToArray(),
                 ExclusiveDirectories = ExclusiveDirectories.ToArray()
             };
 
+            Progress<string> report = new Progress<string>(s => Out.WriteLine(s));
+
             if (AllDirectories)
-                installation.CopyAllDirectory(src, dest);
+                installation.CopyAllDirectory(src, dest, report);
             else
-                installation.CopyDirectory(src, dest);
+                installation.CopyDirectory(src, dest, report);
 
         }
 
