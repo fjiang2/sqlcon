@@ -80,7 +80,7 @@ namespace sqlcon
                         }
                         else
                         {
-                            cout.Error("invalid arguments on function void run(string)");
+                            cerr.WriteLine("invalid arguments on function void run(string)");
                         }
 
                         if (line != null)
@@ -93,7 +93,7 @@ namespace sqlcon
                             }
                             else
                             {
-                                cout.Error("shell not found");
+                                cerr.WriteLine("shell not found");
                                 return new VAL();
                             }
                         }

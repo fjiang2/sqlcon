@@ -26,7 +26,7 @@ namespace sqlcon
                 path = Path.Combine(CurrentDirectory, path);
 
             if (!Directory.Exists(path))
-                cout.Error($"path not exists {path}");
+                cerr.WriteLine($"path not exists {path}");
             else
                 CurrentDirectory = Path.GetFullPath(path);
         }
@@ -78,7 +78,7 @@ namespace sqlcon
             }
             else
             {
-                cout.Error("directory not exists");
+                cerr.WriteLine("directory not exists");
             }
         }
     }

@@ -70,7 +70,7 @@ namespace sqlcon
                 }
                 catch(Exception ex)
                 {
-                    cout.ErrorFormat("failed to retrieve table names from {0}, {1}", dname, ex.Message);
+                    cerr.WriteLine($"failed to retrieve table names from {dname}, {ex.Message}");
                     return false;
                 }
             }

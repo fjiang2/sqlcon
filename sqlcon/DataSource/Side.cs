@@ -62,7 +62,7 @@ namespace sqlcon
         {
             if (!File.Exists(scriptFile))
             {
-                cout.ErrorFormat("no input file found : {0}", scriptFile);
+                cerr.WriteLine($"no input file found : {scriptFile}");
                 return false;
             }
 
@@ -77,7 +77,7 @@ namespace sqlcon
             script.Error += (sender, e) =>
             {
                 hasError = true;
-                cout.ErrorFormat("line:{0}, {1}, SQL:{2}", e.Line, e.Exception.Message, e.Command);
+                cerr.WriteLine($"line:{e.Line}, {e.Exception.Message}, SQL:{e.Command}");
             };
 
             Func<bool> stopOnError = () =>

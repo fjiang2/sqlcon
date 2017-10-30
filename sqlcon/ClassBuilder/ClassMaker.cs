@@ -115,7 +115,7 @@ namespace sqlcon
         {
             if (!File.Exists(path))
             {
-                cout.Error($"file {path} not found");
+                cerr.WriteLine($"file {path} not found");
                 return null;
             }
 

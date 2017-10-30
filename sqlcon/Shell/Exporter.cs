@@ -85,7 +85,7 @@ namespace sqlcon
                 tnames = md.MatchedTableNames;
                 if (tnames.Length == 0)
                 {
-                    cout.ErrorFormat("warning: no table is matched");
+                    cerr.WriteLine("warning: no table is matched");
                     return new TableName[] { };
                 }
             }
@@ -111,7 +111,7 @@ namespace sqlcon
             }
             else
             {
-                cout.ErrorFormat("warning: table is not selected");
+                cerr.WriteLine("warning: table is not selected");
             }
         }
 
@@ -149,7 +149,7 @@ namespace sqlcon
                     }
                     else
                     {
-                        cout.ErrorFormat("warning: no table is matched");
+                        cerr.WriteLine("warning: no table is matched");
                         return;
                     }
                 }
@@ -166,7 +166,7 @@ namespace sqlcon
                 return;
             }
 
-            cout.ErrorFormat("warning: table or database is not seleted");
+            cerr.WriteLine("warning: table or database is not seleted");
         }
 
         public void ExportInsert()
@@ -242,7 +242,7 @@ namespace sqlcon
                 }
             }
             else
-                cout.ErrorFormat("warning: table or database is not selected");
+                cerr.WriteLine("warning: table or database is not selected");
         }
 
         public void ExportSchema()
@@ -262,7 +262,7 @@ namespace sqlcon
                     cout.WriteLine("completed {0}", file);
                 }
                 else
-                    cout.ErrorFormat("warning: server or database is not selected");
+                    cerr.WriteLine("warning: server or database is not selected");
             }
         }
 
@@ -304,7 +304,7 @@ namespace sqlcon
             }
             else
             {
-                cout.ErrorFormat("warning: table or database is not seleted");
+                cerr.WriteLine("warning: table or database is not seleted");
             }
         }
 
@@ -352,7 +352,7 @@ namespace sqlcon
                         }
                         catch (Exception ex)
                         {
-                            cout.ErrorFormat("failed to generate class {0}, {1}", tn.ShortName, ex.Message);
+                            cerr.WriteLine($"failed to generate class {tn.ShortName}, {ex.Message}");
                         }
                     }
 
@@ -362,7 +362,7 @@ namespace sqlcon
             }
             else
             {
-                cout.ErrorFormat("warning: database is not selected");
+                cerr.WriteLine("warning: database is not selected");
             }
 
         }
@@ -409,7 +409,7 @@ namespace sqlcon
                         }
                         catch (Exception ex)
                         {
-                            cout.ErrorFormat("failed to generate {0}, {1}", tn.ShortName, ex.Message);
+                            cerr.WriteLine($"failed to generate {tn.ShortName}, {ex.Message}");
                         }
                     }
 
@@ -419,7 +419,7 @@ namespace sqlcon
             }
             else
             {
-                cout.ErrorFormat("warning: table or database is not seleted");
+                cerr.WriteLine("warning: table or database is not seleted");
             }
         }
 
@@ -467,7 +467,7 @@ namespace sqlcon
             }
             else
             {
-                cout.ErrorFormat("data table cannot find, use command type or select first");
+                cerr.WriteLine("data table cannot find, use command type or select first");
                 return;
             }
 
@@ -515,7 +515,7 @@ namespace sqlcon
         {
             if (dname == null)
             {
-                cout.ErrorFormat("select a database first");
+                cerr.WriteLine("select a database first");
                 return;
             }
 
@@ -557,7 +557,7 @@ namespace sqlcon
                         }
                         catch (Exception ex)
                         {
-                            cout.ErrorFormat("failed to generate {0}, {1}", tn.ShortName, ex.Message);
+                            cerr.WriteLine($"failed to generate {tn.ShortName}, {ex.Message}");
                         }
                     }
 
@@ -567,7 +567,7 @@ namespace sqlcon
             }
             else
             {
-                cout.ErrorFormat("warning: table or database is not seleted");
+                cerr.WriteLine("warning: table or database is not seleted");
             }
 
         }
@@ -608,7 +608,7 @@ namespace sqlcon
             }
             else
             {
-                cout.ErrorFormat("warning: table or database is not seleted");
+                cerr.WriteLine("warning: table or database is not seleted");
             }
         }
 
@@ -618,13 +618,13 @@ namespace sqlcon
             var dt = ShellHistory.LastOrCurrentTable(tname);
             if (dt == null)
             {
-                cout.ErrorFormat("display data table first by sql clause or command [type]");
+                cerr.WriteLine("display data table first by sql clause or command [type]");
                 return null;
             }
 
             if (dt.Rows.Count == 0)
             {
-                cout.ErrorFormat("no rows found");
+                cerr.WriteLine("no rows found");
                 return null;
             }
 
@@ -778,7 +778,7 @@ namespace sqlcon
             else if (cmd.Has("cfg"))
                 ExportConfigurationFile();
             else
-                cout.ErrorFormat("invalid command options");
+                cerr.WriteLine("invalid command options");
         }
     }
 }

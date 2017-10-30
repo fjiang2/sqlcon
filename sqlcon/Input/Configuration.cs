@@ -193,7 +193,8 @@ namespace sqlcon
             {
                 if (pair[0].IsNull || pair[1].IsNull)
                 {
-                    cout.ErrorFormat("warning: undefined connection string at servers.{0}", pair[0].ToSimpleString());
+                    string text = pair[0].ToSimpleString();
+                    cerr.WriteLine($"warning: undefined connection string at servers.{text}");
                     continue;
                 }
 
@@ -206,7 +207,7 @@ namespace sqlcon
                 }
                 catch(Exception ex)
                 {
-                    cout.Error(ex.Message);
+                    cerr.WriteLine(ex.Message);
                 }
             }
 
@@ -231,7 +232,7 @@ namespace sqlcon
             string[] x = path.Split('\\');
             if (x.Length != 3)
             {
-                cout.ErrorFormat("invalid server path: {0}, correct format is server\\database", path);
+                cerr.WriteLine($"invalid server path: {path}, correct format is server\\database");
                 return null;
             }
 
@@ -251,7 +252,7 @@ namespace sqlcon
             }
             else
             {
-                cout.ErrorFormat("invalid server path: \\{0}\\{1}", serverName, databaseName);
+                cerr.WriteLine($"invalid server path: \\{serverName}\\{databaseName}");
                 return null;
             }
         }

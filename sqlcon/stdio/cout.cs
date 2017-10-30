@@ -59,25 +59,7 @@ namespace sqlcon
             Console.ForegroundColor = keep;
         }
 
-        public static void ErrorFormat(string format, params object[] args)
-        {
-            if (args.Length == 0)
-                Error(format);
-            else
-            {
-                string text = string.Format(format, args);
-                Error(text);
-            }
-        }
-
-        public static void Error(string text)
-        {
-            var keep = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            WriteLine(text);
-            Console.ForegroundColor = keep;
-        }
-
+     
         public static void TrimWriteLine(string text)
         {
             if (echo)

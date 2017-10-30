@@ -17,14 +17,14 @@ namespace sqlcon
             cout.WriteLine("exit application...");
         }
 
-      
+
 
         public static void OpenEditor(string fileName)
         {
             const string notepad = "notepad.exe";
             if (!File.Exists(fileName))
             {
-                cout.Error($"cannot find the file: {fileName}");
+                cerr.WriteLine($"cannot find the file: {fileName}");
                 return;
             }
 
@@ -56,14 +56,14 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                cout.ErrorFormat("failed to lauch application: {0} {1}, {2}", editor, fileName, ex.Message);
+                cerr.WriteLine($"failed to lauch application: {editor} {fileName}, {ex.Message}");
                 return false;
             }
 
             return true;
         }
 
-     
+
 
     }
 }

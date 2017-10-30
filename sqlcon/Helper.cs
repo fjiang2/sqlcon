@@ -101,7 +101,7 @@ namespace sqlcon
                     }
                     catch (Exception)
                     {
-                        cout.ErrorFormat("color setting {0} = {1} not supported", key, colorString);
+                        cerr.WriteLine($"color setting {key} = {colorString} not supported");
                     }
                 }
             }

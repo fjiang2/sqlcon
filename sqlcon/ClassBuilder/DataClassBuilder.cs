@@ -142,7 +142,7 @@ namespace sqlcon
             {
                 if (dt.Columns.Count < 2)
                 {
-                    cout.ErrorFormat("cannot generate dictionary class, column# > 2");
+                    cerr.WriteLine("cannot generate dictionary class, column# > 2");
                     return;
                 }
 
@@ -246,7 +246,7 @@ namespace sqlcon
             int count = dt.Columns.Count;
             if (count < 2)
             {
-                cout.Error("cannot generate enum class because table is < 2 columns");
+                cerr.WriteLine("cannot generate enum class because table is < 2 columns");
                 return;
             }
 
@@ -281,13 +281,13 @@ namespace sqlcon
 
             if (_feature == null)
             {
-                cout.Error("invalid enum property name");
+                cerr.WriteLine("invalid enum property name");
                 return;
             }
 
             if (_value == null)
             {
-                cout.Error("invalid enum property value");
+                cerr.WriteLine("invalid enum property value");
                 return;
             }
 

@@ -45,7 +45,7 @@ namespace sqlcon
         {
             if (source == null)
             {
-                cout.ErrorFormat("invalid argument");
+                cerr.WriteLine("invalid argument");
                 return false;
             }
 
@@ -54,14 +54,14 @@ namespace sqlcon
             node = mgr.Navigate(path);
             if (node == null)
             {
-                cout.ErrorFormat("invalid path:" + path);
+                cerr.WriteLine("invalid path:" + path);
                 return false;
             }
 
             dname = mgr.GetPathFrom<DatabaseName>(node);
             if (dname == null)
             {
-                cout.ErrorFormat("warning: {0} database is unavailable", sourceText);
+                cerr.WriteLine($"warning: {sourceText} database is unavailable");
                 return false;
             }
 
@@ -103,7 +103,7 @@ namespace sqlcon
             dname = mgr.GetPathFrom<DatabaseName>(node);
             if (dname == null)
             {
-                cout.ErrorFormat("warning: destination database is unavailable");
+                cerr.WriteLine("warning: destination database is unavailable");
                 return false;
             }
 

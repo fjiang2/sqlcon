@@ -137,7 +137,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                cout.ErrorFormat("failed to initialize {0}, {1}", file, ex.Message);
+                cerr.WriteLine($"failed to initialize {file}, {ex.Message}");
             }
 
             return file;

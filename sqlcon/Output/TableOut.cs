@@ -137,7 +137,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                cout.ErrorFormat(ex.Message);
+                cerr.WriteLine(ex.Message);
                 return false;
             }
         }
@@ -151,7 +151,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                cout.ErrorFormat(ex.Message);
+                cerr.WriteLine(ex.Message);
                 return false;
             }
 

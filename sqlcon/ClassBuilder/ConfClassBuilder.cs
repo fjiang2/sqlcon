@@ -188,13 +188,13 @@ namespace sqlcon
 
             if (columnKey != null && !dt.Columns.Contains(columnKey))
             {
-                cout.Error($"column [{columnKey}] not found in [{dt.TableName}]");
+                cerr.WriteLine($"column [{columnKey}] not found in [{dt.TableName}]");
                 return string.Empty;
             }
 
             if (columnDefaultValue != null && !dt.Columns.Contains(columnDefaultValue))
             {
-                cout.Error($"column [{columnDefaultValue}] not found in [{dt.TableName}]");
+                cerr.WriteLine($"column [{columnDefaultValue}] not found in [{dt.TableName}]");
                 return string.Empty;
             }
 

@@ -74,7 +74,7 @@ namespace sqlcon
                 {
                     if (!cin.YesOrNo($"continue to run \"{line}\" (y/n)?"))
                     {
-                        cout.ErrorFormat("interupted.");
+                        cerr.WriteLine("interupted.");
                         return;
                     }
                 }
@@ -144,7 +144,7 @@ namespace sqlcon
                 }
                 catch (System.Data.SqlClient.SqlException ex1)
                 {
-                    cout.ErrorFormat("{0}:{1}", "SQL", ex1.AllMessage());
+                    cerr.WriteLine($"SQL:{ex1.AllMessage()}");
                 }
                 catch (Exception ex)
                 {
@@ -268,14 +268,14 @@ namespace sqlcon
                     if (cmd.arg1 != null)
                         Show(cmd.arg1.ToLower(), cmd.arg2);
                     else
-                        cout.ErrorFormat("invalid argument");
+                        cerr.WriteLine("invalid argument");
                     return NextStep.COMPLETED;
 
                 case "find":
                     if (cmd.arg1 != null)
                         theSide.FindName(cmd.arg1);
                     else
-                        cout.ErrorFormat("find object undefined");
+                        cerr.WriteLine("find object undefined");
                     return NextStep.COMPLETED;
 
                 case "save":
@@ -371,7 +371,7 @@ namespace sqlcon
                         string path = cfg.WorkingDirectory.GetFullPath(cmd.arg1, ".sqt");
                         if (!System.IO.File.Exists(path))
                         {
-                            cout.Error($"cannot find the file: {path}");
+                            cerr.WriteLine($"cannot find the file: {path}");
                         }
                         else
                         {
@@ -382,7 +382,7 @@ namespace sqlcon
                             }
                             catch (Exception ex)
                             {
-                                cout.ErrorFormat("execute error: {0}", ex.Message);
+                                cerr.WriteLine($"execute error: {ex.Message}");
                                 return NextStep.ERROR;
                             }
                         }
@@ -426,7 +426,7 @@ namespace sqlcon
                 default:
                     if (!_SQL.Contains(cmd.Action.ToUpper()))
                     {
-                        cout.Error("invalid command");
+                        cerr.WriteLine("invalid command");
                         return NextStep.COMPLETED;
                     }
                     break;
@@ -529,13 +529,13 @@ namespace sqlcon
                     }
                     catch (Exception ex)
                     {
-                        cout.ErrorFormat(ex.Message);
+                        cerr.WriteLine(ex.Message);
                         return NextStep.ERROR;
                     }
                     break;
 
                 default:
-                    cout.ErrorFormat("invalid command");
+                    cerr.WriteLine("invalid command");
                     break;
             }
 
@@ -618,7 +618,7 @@ namespace sqlcon
                             .ToConsole();
                         }
                         else
-                            cout.ErrorFormat("connection string not found");
+                            cerr.WriteLine("connection string not found");
                     }
                     break;
 
@@ -630,7 +630,7 @@ namespace sqlcon
                     Context.ToConsole();
                     break;
                 default:
-                    cout.ErrorFormat("invalid argument");
+                    cerr.WriteLine("invalid argument");
                     break;
             }
         }

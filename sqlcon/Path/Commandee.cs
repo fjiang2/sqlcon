@@ -49,7 +49,7 @@ namespace sqlcon
                 pt = mgr.Navigate(path);
                 if (pt == null)
                 {
-                    cout.ErrorFormat("invalid path");
+                    cerr.WriteLine("invalid path");
                     return false;
                 }
             }
@@ -67,7 +67,7 @@ namespace sqlcon
                 mgr.current = node;
             }
             else
-                cout.ErrorFormat("invalid path:" + path);
+                cerr.WriteLine($"invalid path: {path}");
         }
 
         public bool chdir(Command cmd)
@@ -86,7 +86,7 @@ namespace sqlcon
 
             if (cmd.wildcard != null)
             {
-                cout.ErrorFormat("invalid path");
+                cerr.WriteLine("invalid path");
                 return false;
             }
 
@@ -145,14 +145,14 @@ namespace sqlcon
 
             if (string.IsNullOrEmpty(cmd.args))
             {
-                cout.ErrorFormat("argument cannot be empty");
+                cerr.WriteLine("argument cannot be empty");
                 return;
             }
 
             var pt = mgr.current;
             if (!(pt.Item is Locator) && !(pt.Item is TableName))
             {
-                cout.ErrorFormat("table is not selected");
+                cerr.WriteLine("table is not selected");
                 return;
             }
 
@@ -174,12 +174,12 @@ namespace sqlcon
                 }
                 catch (TieException)
                 {
-                    cout.ErrorFormat("invalid set assigment");
+                    cerr.WriteLine("invalid set assigment");
                     return;
                 }
                 catch (Exception ex2)
                 {
-                    cout.ErrorFormat(ex2.Message);
+                    cerr.WriteLine(ex2.Message);
                     return;
                 }
             }
@@ -191,7 +191,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                cout.ErrorFormat(ex.Message);
+                cerr.WriteLine(ex.Message);
             }
         }
 
@@ -276,20 +276,20 @@ namespace sqlcon
                                     T = new TableName[] { _tname };
                                 else
                                 {
-                                    cout.ErrorFormat("invalid path");
+                                    cerr.WriteLine("invalid path");
                                     return;
                                 }
                             }
                         }
                         else
                         {
-                            cout.ErrorFormat("database is unavailable");
+                            cerr.WriteLine("database is unavailable");
                             return;
                         }
                     }
                     else
                     {
-                        cout.ErrorFormat("invalid path");
+                        cerr.WriteLine("invalid path");
                         return;
                     }
                 }
@@ -303,15 +303,16 @@ namespace sqlcon
                     {
                         var sqlcmd = new SqlCmd(T[0].Provider, string.Empty);
                         sqlcmd.ExecuteNonQueryTransaction(T.Select(row => string.Format("DROP TABLE {0}", row)));
-                        cout.ErrorFormat("completed to drop table(s):\n{0}", string.Join<TableName>("\n", T));
+                        string text = string.Join<TableName>("\n", T);
+                        cerr.WriteLine($"completed to drop table(s):\n{text}");
                     }
                     catch (Exception ex)
                     {
-                        cout.ErrorFormat(ex.Message);
+                        cerr.WriteLine(ex.Message);
                     }
                 }
                 else
-                    cout.ErrorFormat("table is not selected");
+                    cerr.WriteLine("table is not selected");
 
                 return;
             }
@@ -356,7 +357,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                cout.ErrorFormat(ex.Message);
+                cerr.WriteLine(ex.Message);
             }
         }
 
@@ -380,7 +381,7 @@ namespace sqlcon
 
             if (!(pt.Item is TableName) && !(pt.Item is Locator))
             {
-                cout.ErrorFormat("must add filter underneath table or locator");
+                cerr.WriteLine("must add filter underneath table or locator");
                 return;
             }
 
@@ -413,7 +414,7 @@ namespace sqlcon
 
             if (!(pt.Item is TableName))
             {
-                cout.ErrorFormat("cannot remove filter underneath non-Table");
+                cerr.WriteLine("cannot remove filter underneath non-Table");
                 return;
             }
 
@@ -474,7 +475,7 @@ namespace sqlcon
                 return;
 
             if (!mgr.TypeFile(pt, cmd))
-                cout.ErrorFormat("invalid arguments");
+                cerr.WriteLine("invalid arguments");
         }
 
 
@@ -559,7 +560,7 @@ namespace sqlcon
                         }
                         catch (Exception ex)
                         {
-                            cout.ErrorFormat(ex.Message);
+                            cerr.WriteLine(ex.Message);
                             return;
                         }
                     }
@@ -584,7 +585,7 @@ namespace sqlcon
 
             if (cmd.arg1 == null)
             {
-                cout.ErrorFormat("invalid argument");
+                cerr.WriteLine("invalid argument");
                 return;
             }
         }
@@ -617,7 +618,7 @@ namespace sqlcon
 
             if (!(pt.Item is TableName))
             {
-                cout.ErrorFormat("table is not selected");
+                cerr.WriteLine("table is not selected");
                 return;
             }
 
@@ -629,7 +630,7 @@ namespace sqlcon
                 string[] items = expr.Split(new string[] { "=", "+" }, StringSplitOptions.RemoveEmptyEntries);
                 if (items.Length != 2 && items.Length != 3)
                 {
-                    cout.ErrorFormat("invalid expression:{0}, correct is col1=type or col1=type+null", expr);
+                    cerr.WriteLine($"invalid expression:{expr}, correct is col1=type or col1=type+null");
                     return;
                 }
                 string column = items[0];
@@ -667,7 +668,7 @@ namespace sqlcon
 
                 if (items.Length != 2)
                 {
-                    cout.ErrorFormat("invalid foreign key expression:{0}, correct is col1=pktable.col2", expr);
+                    cerr.WriteLine($"invalid foreign key expression:{expr}, correct is col1=pktable.col2");
                     return;
                 }
 
@@ -689,7 +690,7 @@ namespace sqlcon
                 }
                 else
                 {
-                    cout.ErrorFormat("invalid foreign key expression:{0}, correct is col1=pktable.col2", expr);
+                    cerr.WriteLine($"invalid foreign key expression:{expr}, correct is col1=pktable.col2");
                     return;
                 }
 
@@ -712,7 +713,7 @@ namespace sqlcon
                 }
                 catch (Exception ex)
                 {
-                    cout.ErrorFormat($"fails in generating foreign key constraint name, {ex.Message}");
+                    cerr.WriteLine($"fails in generating foreign key constraint name, {ex.Message}");
                     return;
                 }
 
@@ -754,7 +755,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
             catch (Exception ex)
             {
-                cout.ErrorFormat("{0}", ex.Message);
+                cerr.WriteLine(ex.Message);
             }
 
             return -1;
@@ -774,7 +775,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             if (string.IsNullOrEmpty(cmd.args))
             {
-                cout.ErrorFormat("assignment cannot be empty");
+                cerr.WriteLine("assignment cannot be empty");
                 return;
             }
 
@@ -784,7 +785,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
             catch (Exception ex)
             {
-                cout.ErrorFormat("execute error: {0}", ex.Message);
+                cerr.WriteLine($"execute error: {ex.Message}");
             }
         }
 
@@ -801,20 +802,20 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             if (string.IsNullOrEmpty(cmd.args))
             {
-                cout.ErrorFormat("argument cannot be empty");
+                cerr.WriteLine("argument cannot be empty");
                 return;
             }
 
             var pt = mgr.current;
             if (!(pt.Item is Locator) && !(pt.Item is TableName))
             {
-                cout.ErrorFormat("table is not selected");
+                cerr.WriteLine("table is not selected");
                 return;
             }
 
             if (this.mgr.Configuration.dictionarytables.Count == 0)
             {
-                cout.ErrorFormat("key-value tables is undefined");
+                cerr.WriteLine("key-value tables is undefined");
                 return;
             }
 
@@ -822,7 +823,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             var setting = this.mgr.Configuration.dictionarytables.FirstOrDefault(row => row.TableName.ToUpper() == tname.Name.ToUpper());
             if (setting == null)
             {
-                cout.ErrorFormat("current table is not key-value tables");
+                cerr.WriteLine("current table is not key-value tables");
                 return;
             }
 
@@ -843,7 +844,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             if (string.IsNullOrEmpty(key))
             {
-                cout.ErrorFormat("invalid assignment");
+                cerr.WriteLine("invalid assignment");
                 return;
             }
 
@@ -852,13 +853,13 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             var L = new SqlCmd(builder).FillDataColumn<string>(0);
             if (L.Count() == 0)
             {
-                cout.ErrorFormat("undefined key: {0}", key);
+                cerr.WriteLine($"undefined key: {key}");
                 return;
             }
 
             if (kvp.Length == 1)
             {
-                cout.ErrorFormat("{0} = {1}", key, L.First());
+                cerr.WriteLine($"{key} = {L.First()}");
                 return;
             }
 
@@ -874,7 +875,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
             catch (Exception ex)
             {
-                cout.ErrorFormat(ex.Message);
+                cerr.WriteLine(ex.Message);
             }
         }
 
@@ -957,7 +958,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            cout.ErrorFormat("select database or table first");
+            cerr.WriteLine("select database or table first");
         }
 
         public void import(Command cmd, Configuration cfg, ShellContext context)
@@ -982,13 +983,13 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             string file = cmd.arg1;
             if (file == null)
             {
-                cout.ErrorFormat("file name not specified");
+                cerr.WriteLine("file name not specified");
                 return;
             }
 
             if (!File.Exists(file))
             {
-                cout.ErrorFormat($"cannot find the file \"{file}\"");
+                cerr.WriteLine($"cannot find the file \"{file}\"");
                 return;
             }
 
@@ -1013,7 +1014,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     }
                     catch (Exception ex)
                     {
-                        cout.ErrorFormat($"invalid {typeof(DataSet).FullName} xml file, {ex.Message}");
+                        cerr.WriteLine($"invalid {typeof(DataSet).FullName} xml file, {ex.Message}");
                         return;
                     }
                     break;
@@ -1027,7 +1028,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     }
                     catch (Exception ex)
                     {
-                        cout.ErrorFormat($"invalid {typeof(DataTable).FullName} xml file, {ex.Message}");
+                        cerr.WriteLine($"invalid {typeof(DataTable).FullName} xml file, {ex.Message}");
                         return;
                     }
                     cout.WriteLine($"{typeof(DataTable).FullName} xml file \"{file}\" has been loaded");
@@ -1041,7 +1042,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     TableName tname = mgr.GetCurrentPath<TableName>();
                     if (tname == null)
                     {
-                        cout.Error("cannot find the table to import data");
+                        cerr.WriteLine("cannot find the table to import data");
                         return;
                     }
 
@@ -1060,7 +1061,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     break;
 
                 default:
-                    cout.ErrorFormat("invalid command");
+                    cerr.WriteLine("invalid command");
                     break;
             }
         }
@@ -1082,7 +1083,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 exporter.Run();
             }
             else
-                cout.ErrorFormat("select server, database or table first");
+                cerr.WriteLine("select server, database or table first");
         }
 
         public void mount(Command cmd, Configuration cfg)
@@ -1105,14 +1106,14 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             if (cmd.arg1 == null)
             {
-                cout.ErrorFormat("invalid arguments");
+                cerr.WriteLine("invalid arguments");
                 return;
             }
 
             var items = cmd.arg1.Split('=');
             if (items.Length != 2)
             {
-                cout.ErrorFormat("invalid arguments, correct format is alias=server_name");
+                cerr.WriteLine("invalid arguments, correct format is alias=server_name");
                 return;
             }
             string serverName = items[0].Trim();
@@ -1124,7 +1125,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             {
                 if (pvd != "sqloledb" && pvd != "xmlfile")
                 {
-                    cout.ErrorFormat("provider={0} is not supported", pvd);
+                    cerr.WriteLine($"provider={pvd} is not supported");
                     return;
                 }
                 builder.AppendFormat("provider={0};", pvd);
@@ -1169,7 +1170,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             ConnectionProvider provider = ConnectionProviderManager.Register(serverName, connectionString);
             if (!provider.CheckConnection())
             {
-                cout.ErrorFormat("database is offline or wrong parameter");
+                cerr.WriteLine("database is offline or wrong parameter");
                 return;
             }
             var snode = new TreeNode<IDataPath>(provider.ServerName);
@@ -1208,7 +1209,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             if (cmd.arg1 == null)
             {
-                cout.ErrorFormat("invalid arguments");
+                cerr.WriteLine("invalid arguments");
                 return;
             }
 
@@ -1246,7 +1247,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             if (dt == null)
             {
-                cout.ErrorFormat("select table first");
+                cerr.WriteLine("select table first");
                 return;
             }
 
@@ -1265,7 +1266,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 process.Start();
             }
             else
-                cout.ErrorFormat("{0} path not exist: {1}", message, path);
+                cerr.WriteLine($"{message} path not exist: {path}");
         }
 
         public void xcopy(Command cmd)
@@ -1305,7 +1306,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                         string result = Compare.TableSchemaDifference(CompareSideType.compare, tname1, tname2);
                         if (!string.IsNullOrEmpty(result))
                         {
-                            cout.ErrorFormat("destination table is not compatible or doesn't exist");
+                            cerr.WriteLine("destination table is not compatible or doesn't exist");
                             continue;
                         }
                     }
@@ -1343,7 +1344,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     else
                     {
                         count = int.MaxValue;
-                        cout.Error($"total count={_cnt}, too many rows, progress bar may not be accurate");
+                        cerr.WriteLine($"total count={_cnt}, too many rows, progress bar may not be accurate");
                     }
                     cout.Write($"copying {tname1.Name} ");
                     using (var progress = new ProgressBar { Count = count })
@@ -1355,7 +1356,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                         }
                         catch (Exception ex)
                         {
-                            cout.Error(ex.Message);
+                            cerr.WriteLine(ex.Message);
                         }
 
                         if (cts.IsCancellationRequested)
@@ -1384,7 +1385,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 inputfile = cmd.Configuration.WorkingDirectory.GetFullPath(cmd.arg1, ".sql");
             else
             {
-                cout.ErrorFormat("input undefined");
+                cerr.WriteLine("input undefined");
                 return;
             }
 
@@ -1434,7 +1435,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     {
                         if (!fileLink.IsLocalLink)
                         {
-                            cout.ErrorFormat("file {0} doesn't exist", fileLink);
+                            cerr.WriteLine($"file {fileLink} doesn't exist");
                             return;
                         }
                         else
@@ -1446,7 +1447,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 }
                 catch (Exception ex)
                 {
-                    cout.Error(ex.Message);
+                    cerr.WriteLine(ex.Message);
                     return;
                 }
 
@@ -1459,7 +1460,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
             catch (Exception ex)
             {
-                cout.Error(ex.Message);
+                cerr.WriteLine(ex.Message);
                 return;
             }
         }
@@ -1532,7 +1533,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     break;
 
                 default:
-                    cout.ErrorFormat("invalid arguments");
+                    cerr.WriteLine("invalid arguments");
                     return;
             }
 
@@ -1557,7 +1558,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             {
                 if (!File.Exists(cfg.OutputFile))
                 {
-                    cout.ErrorFormat("no output file found : {0}", cfg.OutputFile);
+                    cerr.WriteLine($"no output file found : {cfg.OutputFile}");
                     return;
                 }
                 using (var reader = new StreamReader(cfg.OutputFile))
@@ -1572,14 +1573,14 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 var ds = ShellHistory.LastDataSet();
                 if (ds == null)
                 {
-                    cout.ErrorFormat("last result is null");
+                    cerr.WriteLine("last result is null");
                     return;
                 }
 
                 string file = cmd.arg1;
                 if (file == null)
                 {
-                    cout.ErrorFormat("file name missing");
+                    cerr.WriteLine("file name missing");
                     return;
                 }
 
@@ -1594,12 +1595,12 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 }
                 catch (Exception ex)
                 {
-                    cout.Error(ex.Message);
+                    cerr.WriteLine(ex.Message);
                 }
             }
             else
             {
-                cout.ErrorFormat("invalid arguments");
+                cerr.WriteLine("invalid arguments");
             }
 
             return;

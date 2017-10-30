@@ -29,7 +29,7 @@ namespace sqlcon
         {
             if (!IsBatch)
             {
-                cout.Error($"must be {EXT} file: {path}");
+                cerr.WriteLine($"must be {EXT} file: {path}");
                 return false;
             }
 
@@ -40,7 +40,7 @@ namespace sqlcon
             }
             else
             {
-                cout.Error($"cannot find the file: {path}");
+                cerr.WriteLine($"cannot find the file: {path}");
                 return false;
             }
         }

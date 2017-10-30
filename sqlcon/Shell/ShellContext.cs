@@ -36,7 +36,7 @@ namespace sqlcon
             }
             else
             {
-                cout.ErrorFormat("database server not defined");
+                cerr.WriteLine("database server not defined");
             }
         }
 
@@ -44,7 +44,7 @@ namespace sqlcon
         {
             if (side == null)
             {
-                cout.ErrorFormat("undefined side");
+                cerr.WriteLine("undefined side");
                 return;
             }
 

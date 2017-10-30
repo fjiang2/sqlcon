@@ -112,6 +112,7 @@
     <Compile Include="Data\DuplicatedTable.cs" />
     <Compile Include="ClassBuilder\EntityClassBuilder.cs" />
     <Compile Include="ClassBuilder\TheClassBuilder.cs" />
+    <Compile Include="stdio\cerr.cs" />
     <Compile Include="stdio\cin.cs" />
     <Compile Include="stdio\clog.cs" />
     <Compile Include="stdio\cout.cs" />
