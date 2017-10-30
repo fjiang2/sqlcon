@@ -361,7 +361,7 @@ namespace sqlcon
                 case "run":
                     if (cmd.arg1 != null)
                     {
-                        new Batch(cfg, cmd.arg1).Call(cmd.arguments);
+                        new Batch(cfg, cmd.arg1).Call(this, cmd.arguments);
                     }
                     return NextStep.COMPLETED;
 

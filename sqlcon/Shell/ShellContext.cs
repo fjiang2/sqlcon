@@ -40,7 +40,7 @@ namespace sqlcon
             }
         }
 
-        protected void ChangeSide(Side side)
+        public void ChangeSide(Side side)
         {
             if (side == null)
             {

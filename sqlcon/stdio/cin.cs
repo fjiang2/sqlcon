@@ -13,7 +13,7 @@ namespace sqlcon
         {
             ConsoleKeyInfo keyInfo = Console.ReadKey();
 
-            cout.Write(keyInfo.Key.ToString());
+            clog.Write(keyInfo.KeyChar.ToString());
 
             return keyInfo.Key;
         }

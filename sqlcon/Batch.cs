@@ -25,7 +25,7 @@ namespace sqlcon
 
 
 
-        public bool Call(string[] args)
+        public bool Call(Shell shell, string[] args)
         {
             if (!IsBatch)
             {
@@ -35,7 +35,16 @@ namespace sqlcon
 
             if (Exists)
             {
-                CallWithParameters(args);
+                var lines = ReadLines(args);
+
+                var _shell = new Shell(cfg);
+
+                //go to current theSide
+                if (shell != null)
+                    _shell.ChangeSide(shell.theSide);
+
+                _shell.DoBatch(lines);
+
                 return true;
             }
             else
@@ -49,7 +58,7 @@ namespace sqlcon
         /// parameters: %1 %2 %3 ...
         /// </summary>
         /// <param name="args"></param>
-        private void CallWithParameters(string[] args)
+        private List<string> ReadLines(string[] args)
         {
             string[] lines = File.ReadAllLines(path);
 
@@ -68,7 +77,7 @@ namespace sqlcon
                 L.Add(cmd);
             }
 
-            new Shell(cfg).DoBatch(L);
+            return L;
         }
 
         public bool Exists => File.Exists(path);
