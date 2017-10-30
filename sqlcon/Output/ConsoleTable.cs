@@ -58,7 +58,7 @@ namespace sqlcon
 
             string text = builder.ToString();
 
-            stdio.TrimWriteLine(text);
+            cout.TrimWriteLine(text);
         }
 
         public void MeasureWidth(Type[] types)

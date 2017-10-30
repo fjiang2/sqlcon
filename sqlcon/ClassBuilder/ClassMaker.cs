@@ -80,7 +80,7 @@ namespace sqlcon
             string path = cmd.GetValue("out");
             if (path == null)
             {
-                stdio.WriteLine(text);
+                cout.WriteLine(text);
             }
             else
             {
@@ -93,11 +93,11 @@ namespace sqlcon
                 try
                 {
                     text.WriteIntoFile(file);
-                    stdio.WriteLine("created on {0}", Path.GetFullPath(file));
+                    cout.WriteLine("created on {0}", Path.GetFullPath(file));
                 }
                 catch (Exception ex)
                 {
-                    stdio.WriteLine(ex.Message);
+                    cout.WriteLine(ex.Message);
                 }
             }
         }
@@ -115,7 +115,7 @@ namespace sqlcon
         {
             if (!File.Exists(path))
             {
-                stdio.Error($"file {path} not found");
+                cout.Error($"file {path} not found");
                 return null;
             }
 

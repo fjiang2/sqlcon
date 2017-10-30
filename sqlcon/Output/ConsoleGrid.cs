@@ -84,7 +84,7 @@ namespace sqlcon
 
                 if (!reader.HasRows)
                 {
-                    stdio.WriteLine("<0 row>");
+                    cout.WriteLine("<0 row>");
                     return;
                 }
 
@@ -105,7 +105,7 @@ namespace sqlcon
                 }
 
                 D.DisplayLine();
-                stdio.WriteLine("<{0} row{1}> {2}",
+                cout.WriteLine("<{0} row{1}> {2}",
                     count,
                     count > 1 ? "s" : "",
                     limited ? "limit reached" : ""
@@ -149,7 +149,7 @@ namespace sqlcon
 
             D.DisplayLine();
 
-            stdio.WriteLine("<{0}{1} row{2}>", more ? "top " : "", table.Rows.Count,  table.Rows.Count > 1 ? "s" : "");
+            cout.WriteLine("<{0}{1} row{2}>", more ? "top " : "", table.Rows.Count,  table.Rows.Count > 1 ? "s" : "");
         }
 
 
@@ -250,7 +250,7 @@ namespace sqlcon
             }
 
             D.DisplayLine();
-            stdio.WriteLine("<{0}{1} row{2}>", more ? "top " : "", table.Rows.Count, table.Rows.Count > 1 ? "s" : "");
+            cout.WriteLine("<{0}{1} row{2}>", more ? "top " : "", table.Rows.Count, table.Rows.Count > 1 ? "s" : "");
         }
 
     }

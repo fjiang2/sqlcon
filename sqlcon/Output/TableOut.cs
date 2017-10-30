@@ -69,7 +69,7 @@ namespace sqlcon
 
             if (cmd.Has("json"))
             {
-                stdio.WriteLine(ToJson(table));
+                cout.WriteLine(ToJson(table));
                 return;
             }
 
@@ -137,7 +137,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                stdio.ErrorFormat(ex.Message);
+                cout.ErrorFormat(ex.Message);
                 return false;
             }
         }
@@ -151,7 +151,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                stdio.ErrorFormat(ex.Message);
+                cout.ErrorFormat(ex.Message);
                 return false;
             }
 
@@ -179,7 +179,7 @@ namespace sqlcon
                 DuplicatedTable dup = new DuplicatedTable(tname, columns);
                 if (dup.group.Rows.Count == 0)
                 {
-                    stdio.WriteLine("no duplicated record found");
+                    cout.WriteLine("no duplicated record found");
                     return true;
                 }
 

@@ -18,7 +18,7 @@ namespace sqlcon
                 {
                     e.Cancel = true;
                     cts.Cancel();
-                    stdio.WriteLine("command interrupting...");
+                    cout.WriteLine("command interrupting...");
                 };
 
             Console.CancelKeyPress += cancelKeyPress;
@@ -37,8 +37,8 @@ namespace sqlcon
             {
                 if (message == null)
                     message = "command interrupted";
-                stdio.WriteLine();
-                stdio.WriteLine(message);
+                cout.WriteLine();
+                cout.WriteLine(message);
             }
 
             cts.Dispose();

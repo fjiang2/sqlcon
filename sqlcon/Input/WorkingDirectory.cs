@@ -26,7 +26,7 @@ namespace sqlcon
                 path = Path.Combine(CurrentDirectory, path);
 
             if (!Directory.Exists(path))
-                stdio.Error($"path not exists {path}");
+                cout.Error($"path not exists {path}");
             else
                 CurrentDirectory = Path.GetFullPath(path);
         }
@@ -61,24 +61,24 @@ namespace sqlcon
 
             if (Directory.Exists(path))
             {
-                stdio.WriteLine($"Directory of {path}\n");
+                cout.WriteLine($"Directory of {path}\n");
                 var directories = Directory.GetDirectories(path).OrderBy(x => x);
                 foreach (string directory in directories)
                 {
                     var directoryInfo = new DirectoryInfo(directory);
-                    stdio.WriteLine($"{directoryInfo.LastWriteTime,24}{DIR,20} {directoryInfo.Name,-30}");
+                    cout.WriteLine($"{directoryInfo.LastWriteTime,24}{DIR,20} {directoryInfo.Name,-30}");
                 }
 
                 var files = Directory.GetFiles(path).OrderBy(x => x);
                 foreach (string file in files)
                 {
                     var fileInfo = new FileInfo(file);
-                    stdio.WriteLine($"{fileInfo.LastWriteTime,24}{fileInfo.Length,20} {fileInfo.Name,-30}");
+                    cout.WriteLine($"{fileInfo.LastWriteTime,24}{fileInfo.Length,20} {fileInfo.Name,-30}");
                 }
             }
             else
             {
-                stdio.Error("directory not exists");
+                cout.Error("directory not exists");
             }
         }
     }

@@ -309,7 +309,7 @@ namespace sqlcon
 
                     if (k == args.Length)
                     {
-                        stdio.ErrorFormat("Unclosed quotation mark after the character string \"");
+                        cout.ErrorFormat("Unclosed quotation mark after the character string \"");
                         result = new string[] { };
                         return false;
                     }
@@ -362,7 +362,7 @@ namespace sqlcon
 
                     if (k == args.Length)
                     {
-                        stdio.ErrorFormat("Unclosed expression character }");
+                        cout.ErrorFormat("Unclosed expression character }");
                         result = string.Empty;
                         return false;
                     }
@@ -376,7 +376,7 @@ namespace sqlcon
                     }
                     catch (Exception ex)
                     {
-                        stdio.Error($"error in {code}, {ex.Message}");
+                        cout.Error($"error in {code}, {ex.Message}");
                     }
                     foreach (char ch in text)
                     {
@@ -385,7 +385,7 @@ namespace sqlcon
                 }
                 else if (args[k] == '}')
                 {
-                    stdio.ErrorFormat("Unclosed expression character }");
+                    cout.ErrorFormat("Unclosed expression character }");
                     result = string.Empty;
                     return false;
                 }

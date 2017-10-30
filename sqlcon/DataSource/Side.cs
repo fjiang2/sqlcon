@@ -62,11 +62,11 @@ namespace sqlcon
         {
             if (!File.Exists(scriptFile))
             {
-                stdio.ErrorFormat("no input file found : {0}", scriptFile);
+                cout.ErrorFormat("no input file found : {0}", scriptFile);
                 return false;
             }
 
-            stdio.WriteLine("executing {0}", scriptFile);
+            cout.WriteLine("executing {0}", scriptFile);
             var script = new SqlScript(provider, scriptFile);
             script.Reported += (sender, e) =>
             {
@@ -77,16 +77,16 @@ namespace sqlcon
             script.Error += (sender, e) =>
             {
                 hasError = true;
-                stdio.ErrorFormat("line:{0}, {1}, SQL:{2}", e.Line, e.Exception.Message, e.Command);
+                cout.ErrorFormat("line:{0}, {1}, SQL:{2}", e.Line, e.Exception.Message, e.Command);
             };
 
             Func<bool> stopOnError = () =>
             {
-                return !stdio.YesOrNo("are you sure to contune (yes/no)?");
+                return !cin.YesOrNo("are you sure to contune (yes/no)?");
             };
 
             script.Execute(stopOnError);
-            stdio.WriteLine("completed.");
+            cout.WriteLine("completed.");
 
             return !hasError;
         }

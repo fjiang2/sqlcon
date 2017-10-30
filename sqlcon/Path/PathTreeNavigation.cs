@@ -173,7 +173,7 @@ namespace sqlcon
 
             if (string.IsNullOrEmpty(cmd.arg1))
             {
-                stdio.ErrorFormat("argument cannot be empty");
+                cout.ErrorFormat("argument cannot be empty");
             }
 
             TableName tname = GetCurrentPath<TableName>();
@@ -187,7 +187,7 @@ namespace sqlcon
             var builder = new SqlBuilder().SELECT.TOP(1).COLUMNS().FROM(tname).WHERE(locator);
             if (builder.Invalid())
             {
-                stdio.ErrorFormat($"invalid path: {cmd.arg1}");
+                cout.ErrorFormat($"invalid path: {cmd.arg1}");
                 return pt;
             }
 

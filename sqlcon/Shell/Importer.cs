@@ -31,7 +31,7 @@ namespace sqlcon
                 var c = schema.Columns.FirstOrDefault(x => x.ColumnName.ToUpper() == column.ToUpper());
                 if (c == null)
                 {
-                    stdio.Error($"cannot find the column [{column}]");
+                    cout.Error($"cannot find the column [{column}]");
                     return count;
                 }
 
@@ -55,7 +55,7 @@ namespace sqlcon
                     }
                     catch (System.Data.SqlClient.SqlException ex)
                     {
-                        stdio.Error(ex.AllMessage(builder.ToString()));
+                        cout.Error(ex.AllMessage(builder.ToString()));
                         return count;
                     }
 
@@ -84,7 +84,7 @@ namespace sqlcon
             int count = 0;
             if (!File.Exists(path))
             {
-                stdio.Error($"file {path} not found");
+                cout.Error($"file {path} not found");
                 return 0;
             }
 
@@ -125,7 +125,7 @@ namespace sqlcon
                 }
                 catch (Exception ex)
                 {
-                    stdio.Error(ex.Message);
+                    cout.Error(ex.Message);
                     break;
                 }
             }

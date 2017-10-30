@@ -49,7 +49,7 @@ namespace sqlcon
                 pt = mgr.Navigate(path);
                 if (pt == null)
                 {
-                    stdio.ErrorFormat("invalid path");
+                    cout.ErrorFormat("invalid path");
                     return false;
                 }
             }
@@ -67,26 +67,26 @@ namespace sqlcon
                 mgr.current = node;
             }
             else
-                stdio.ErrorFormat("invalid path:" + path);
+                cout.ErrorFormat("invalid path:" + path);
         }
 
         public bool chdir(Command cmd)
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("Change current database directory");
-                stdio.WriteLine("command cd or chdir");
-                stdio.WriteLine("cd [path]              : change database directory");
-                stdio.WriteLine("cd \\                  : change to root directory");
-                stdio.WriteLine("cd ..                  : change to the parent directory");
-                stdio.WriteLine("cd ...                 : change to the grand parent directory");
-                stdio.WriteLine("cd ~                   : change to default database defined on the connection string, or change to default server");
+                cout.WriteLine("Change current database directory");
+                cout.WriteLine("command cd or chdir");
+                cout.WriteLine("cd [path]              : change database directory");
+                cout.WriteLine("cd \\                  : change to root directory");
+                cout.WriteLine("cd ..                  : change to the parent directory");
+                cout.WriteLine("cd ...                 : change to the grand parent directory");
+                cout.WriteLine("cd ~                   : change to default database defined on the connection string, or change to default server");
                 return true;
             }
 
             if (cmd.wildcard != null)
             {
-                stdio.ErrorFormat("invalid path");
+                cout.ErrorFormat("invalid path");
                 return false;
             }
 
@@ -105,17 +105,17 @@ namespace sqlcon
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("command dir or ls");
-                stdio.WriteLine("dir [path]     : display current directory");
-                stdio.WriteLine("options:");
-                stdio.WriteLine("   /def        : display table structure");
-                stdio.WriteLine("   /pk         : display table primary keys");
-                stdio.WriteLine("   /fk         : display table foreign keys");
-                stdio.WriteLine("   /ik         : display table identity keys");
-                stdio.WriteLine("   /dep        : display table dependencies");
-                stdio.WriteLine("   /ind        : display table index/indices");
-                stdio.WriteLine("   /sto        : display table storage");
-                stdio.WriteLine("   /refresh    : refresh table structure");
+                cout.WriteLine("command dir or ls");
+                cout.WriteLine("dir [path]     : display current directory");
+                cout.WriteLine("options:");
+                cout.WriteLine("   /def        : display table structure");
+                cout.WriteLine("   /pk         : display table primary keys");
+                cout.WriteLine("   /fk         : display table foreign keys");
+                cout.WriteLine("   /ik         : display table identity keys");
+                cout.WriteLine("   /dep        : display table dependencies");
+                cout.WriteLine("   /ind        : display table index/indices");
+                cout.WriteLine("   /sto        : display table storage");
+                cout.WriteLine("   /refresh    : refresh table structure");
                 return;
             }
 
@@ -136,23 +136,23 @@ namespace sqlcon
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("set assignment                      : update value by current table or locator");
-                stdio.WriteLine("set col1=val1, col2= val2           : update column by current table or locator");
-                stdio.WriteLine("set col[n1]=val1, col[n2]=val2      : update by row-id, n1,n2 is row-id");
-                stdio.WriteLine("    --use command type /r to display row-id");
+                cout.WriteLine("set assignment                      : update value by current table or locator");
+                cout.WriteLine("set col1=val1, col2= val2           : update column by current table or locator");
+                cout.WriteLine("set col[n1]=val1, col[n2]=val2      : update by row-id, n1,n2 is row-id");
+                cout.WriteLine("    --use command type /r to display row-id");
                 return;
             }
 
             if (string.IsNullOrEmpty(cmd.args))
             {
-                stdio.ErrorFormat("argument cannot be empty");
+                cout.ErrorFormat("argument cannot be empty");
                 return;
             }
 
             var pt = mgr.current;
             if (!(pt.Item is Locator) && !(pt.Item is TableName))
             {
-                stdio.ErrorFormat("table is not selected");
+                cout.ErrorFormat("table is not selected");
                 return;
             }
 
@@ -174,12 +174,12 @@ namespace sqlcon
                 }
                 catch (TieException)
                 {
-                    stdio.ErrorFormat("invalid set assigment");
+                    cout.ErrorFormat("invalid set assigment");
                     return;
                 }
                 catch (Exception ex2)
                 {
-                    stdio.ErrorFormat(ex2.Message);
+                    cout.ErrorFormat(ex2.Message);
                     return;
                 }
             }
@@ -187,11 +187,11 @@ namespace sqlcon
             try
             {
                 int count = builder.SqlCmd.ExecuteNonQuery();
-                stdio.WriteLine("{0} of row(s) affected", count);
+                cout.WriteLine("{0} of row(s) affected", count);
             }
             catch (Exception ex)
             {
-                stdio.ErrorFormat(ex.Message);
+                cout.ErrorFormat(ex.Message);
             }
         }
 
@@ -241,13 +241,13 @@ namespace sqlcon
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("command del or erase: drop tables or delete data rows");
-                stdio.WriteLine("del tablename               : drop table");
-                stdio.WriteLine("del [sql where clause]      : delete current table filtered rows");
-                stdio.WriteLine("example:");
-                stdio.WriteLine(@"local> del Northwind\Products       : drop table [Products]");
-                stdio.WriteLine(@"local\Northwind\Products> del       : delete all rows of table [Products]");
-                stdio.WriteLine(@"local\Northwind\Products> del col1=1 and col2='match' : del rows matched on columns:c1 or c2");
+                cout.WriteLine("command del or erase: drop tables or delete data rows");
+                cout.WriteLine("del tablename               : drop table");
+                cout.WriteLine("del [sql where clause]      : delete current table filtered rows");
+                cout.WriteLine("example:");
+                cout.WriteLine(@"local> del Northwind\Products       : drop table [Products]");
+                cout.WriteLine(@"local\Northwind\Products> del       : delete all rows of table [Products]");
+                cout.WriteLine(@"local\Northwind\Products> del col1=1 and col2='match' : del rows matched on columns:c1 or c2");
                 return;
             }
 
@@ -276,42 +276,42 @@ namespace sqlcon
                                     T = new TableName[] { _tname };
                                 else
                                 {
-                                    stdio.ErrorFormat("invalid path");
+                                    cout.ErrorFormat("invalid path");
                                     return;
                                 }
                             }
                         }
                         else
                         {
-                            stdio.ErrorFormat("database is unavailable");
+                            cout.ErrorFormat("database is unavailable");
                             return;
                         }
                     }
                     else
                     {
-                        stdio.ErrorFormat("invalid path");
+                        cout.ErrorFormat("invalid path");
                         return;
                     }
                 }
 
                 if (T != null && T.Length > 0)
                 {
-                    if (!stdio.YesOrNo("are you sure to drop {0} tables (y/n)?", T.Length))
+                    if (!cin.YesOrNo($"are you sure to drop {T.Length} tables (y/n)?"))
                         return;
 
                     try
                     {
                         var sqlcmd = new SqlCmd(T[0].Provider, string.Empty);
                         sqlcmd.ExecuteNonQueryTransaction(T.Select(row => string.Format("DROP TABLE {0}", row)));
-                        stdio.ErrorFormat("completed to drop table(s):\n{0}", string.Join<TableName>("\n", T));
+                        cout.ErrorFormat("completed to drop table(s):\n{0}", string.Join<TableName>("\n", T));
                     }
                     catch (Exception ex)
                     {
-                        stdio.ErrorFormat(ex.Message);
+                        cout.ErrorFormat(ex.Message);
                     }
                 }
                 else
-                    stdio.ErrorFormat("table is not selected");
+                    cout.ErrorFormat("table is not selected");
 
                 return;
             }
@@ -335,14 +335,14 @@ namespace sqlcon
             }
 
             if (locator == null)
-                stdio.Write("are you sure to delete all rows (y/n)?");
+                cout.Write("are you sure to delete all rows (y/n)?");
             else
-                stdio.Write("are you sure to delete (y/n)?");
+                cout.Write("are you sure to delete (y/n)?");
 
-            if (stdio.ReadKey() != ConsoleKey.Y)
+            if (cin.ReadKey() != ConsoleKey.Y)
                 return;
 
-            stdio.WriteLine();
+            cout.WriteLine();
 
             try
             {
@@ -352,11 +352,11 @@ namespace sqlcon
                 else
                     count = new SqlBuilder().DELETE(tname).WHERE(locator).SqlCmd.ExecuteNonQuery();
 
-                stdio.WriteLine("{0} of row(s) affected", count);
+                cout.WriteLine("{0} of row(s) affected", count);
             }
             catch (Exception ex)
             {
-                stdio.ErrorFormat(ex.Message);
+                cout.ErrorFormat(ex.Message);
             }
         }
 
@@ -365,14 +365,14 @@ namespace sqlcon
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("command md or mkdir");
-                stdio.WriteLine("md [sql where clause]           : filter current table rows");
-                stdio.WriteLine("options:");
-                stdio.WriteLine("   /name:directory              : filter name");
-                stdio.WriteLine("example:");
-                stdio.WriteLine("md col1=1                       : filter rows matched on columns:c1");
-                stdio.WriteLine("md \"col1=1 and col2='match'\"    : filter rows matched on columns:c1 or c2");
-                stdio.WriteLine("md \"age > 60\" /name:senior      : filter rows matched age>60 and display as senior");
+                cout.WriteLine("command md or mkdir");
+                cout.WriteLine("md [sql where clause]           : filter current table rows");
+                cout.WriteLine("options:");
+                cout.WriteLine("   /name:directory              : filter name");
+                cout.WriteLine("example:");
+                cout.WriteLine("md col1=1                       : filter rows matched on columns:c1");
+                cout.WriteLine("md \"col1=1 and col2='match'\"    : filter rows matched on columns:c1 or c2");
+                cout.WriteLine("md \"age > 60\" /name:senior      : filter rows matched age>60 and display as senior");
                 return;
             }
 
@@ -380,7 +380,7 @@ namespace sqlcon
 
             if (!(pt.Item is TableName) && !(pt.Item is Locator))
             {
-                stdio.ErrorFormat("must add filter underneath table or locator");
+                cout.ErrorFormat("must add filter underneath table or locator");
                 return;
             }
 
@@ -400,9 +400,9 @@ namespace sqlcon
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("command rd or rmdir");
-                stdio.WriteLine("rm [filter name] : remove locators/filters");
-                stdio.WriteLine("rm #1 : remove the locator node#");
+                cout.WriteLine("command rd or rmdir");
+                cout.WriteLine("rm [filter name] : remove locators/filters");
+                cout.WriteLine("rm #1 : remove the locator node#");
                 return;
             }
 
@@ -413,7 +413,7 @@ namespace sqlcon
 
             if (!(pt.Item is TableName))
             {
-                stdio.ErrorFormat("cannot remove filter underneath non-Table");
+                cout.ErrorFormat("cannot remove filter underneath non-Table");
                 return;
             }
 
@@ -421,7 +421,7 @@ namespace sqlcon
             var nodes = pt.Nodes.Where(node => node.Item is Locator && (node.Item as Locator).Path == cmd.Path1.name).ToArray();
             if (nodes.Count() > 0)
             {
-                if (!stdio.YesOrNo("are you sure to delete (y/n)?"))
+                if (!cin.YesOrNo("are you sure to delete (y/n)?"))
                     return;
 
                 foreach (var node in nodes)
@@ -439,7 +439,7 @@ namespace sqlcon
 
                     if (result >= 0 && result < pt.Nodes.Count)
                     {
-                        if (!stdio.YesOrNo("are you sure to delete (y/n)?"))
+                        if (!cin.YesOrNo("are you sure to delete (y/n)?"))
                             return;
 
                         var node = pt.Nodes[result];
@@ -453,20 +453,20 @@ namespace sqlcon
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("display current data, or search pattern");
-                stdio.WriteLine("type [path]|[pattern]|[where]  : display current data, or search pattern");
-                stdio.WriteLine("options:");
-                stdio.WriteLine("   /top:n              : display top n records");
-                stdio.WriteLine("   /all                : display all records");
-                stdio.WriteLine("   /t                  : display table in vertical grid");
-                stdio.WriteLine("   /r                  : display row-id");
-                stdio.WriteLine("   /json               : generate json data");
-                stdio.WriteLine("   /dup                : list duplicated rows, e.g. type /dup /col:c1,c2");
-                stdio.WriteLine("   /col:c1,c2,..       : display columns, or search on columns");
-                stdio.WriteLine("   /edit               : edit mode");
-                stdio.WriteLine("example:");
-                stdio.WriteLine("type match*s /col:c1,c2 : display rows matched on columns:c1 or c2");
-                stdio.WriteLine("type id=20             : display rows where id=20");
+                cout.WriteLine("display current data, or search pattern");
+                cout.WriteLine("type [path]|[pattern]|[where]  : display current data, or search pattern");
+                cout.WriteLine("options:");
+                cout.WriteLine("   /top:n              : display top n records");
+                cout.WriteLine("   /all                : display all records");
+                cout.WriteLine("   /t                  : display table in vertical grid");
+                cout.WriteLine("   /r                  : display row-id");
+                cout.WriteLine("   /json               : generate json data");
+                cout.WriteLine("   /dup                : list duplicated rows, e.g. type /dup /col:c1,c2");
+                cout.WriteLine("   /col:c1,c2,..       : display columns, or search on columns");
+                cout.WriteLine("   /edit               : edit mode");
+                cout.WriteLine("example:");
+                cout.WriteLine("type match*s /col:c1,c2 : display rows matched on columns:c1 or c2");
+                cout.WriteLine("type id=20             : display rows where id=20");
                 return;
             }
 
@@ -474,7 +474,7 @@ namespace sqlcon
                 return;
 
             if (!mgr.TypeFile(pt, cmd))
-                stdio.ErrorFormat("invalid arguments");
+                cout.ErrorFormat("invalid arguments");
         }
 
 
@@ -486,21 +486,21 @@ namespace sqlcon
             {
                 if (sideType == CompareSideType.copy)
                 {
-                    stdio.WriteLine("copy schema or records from table1 to table2, support table name wildcards");
-                    stdio.WriteLine("copy table1 [table2] [/s]");
+                    cout.WriteLine("copy schema or records from table1 to table2, support table name wildcards");
+                    cout.WriteLine("copy table1 [table2] [/s]");
                 }
                 else if (sideType == CompareSideType.sync)
                 {
-                    stdio.WriteLine("synchronize schema or records from table1 to table2");
-                    stdio.WriteLine("sync table1 [table2] [/s] : sync table1' records to table2");
+                    cout.WriteLine("synchronize schema or records from table1 to table2");
+                    cout.WriteLine("sync table1 [table2] [/s] : sync table1' records to table2");
                 }
                 else if (sideType == CompareSideType.compare)
                 {
-                    stdio.WriteLine("compare schema or records from table1 to table2");
-                    stdio.WriteLine("comp table1 [table2] [/s] : sync table1' records to table2");
+                    cout.WriteLine("compare schema or records from table1 to table2");
+                    cout.WriteLine("comp table1 [table2] [/s] : sync table1' records to table2");
                 }
-                stdio.WriteLine("support table name wildcards");
-                stdio.WriteLine("[/s]                       : table schema, default table records");
+                cout.WriteLine("support table name wildcards");
+                cout.WriteLine("[/s]                       : table schema, default table records");
                 return;
             }
 
@@ -531,14 +531,14 @@ namespace sqlcon
                     {
                         if (sql == string.Empty)
                         {
-                            stdio.WriteLine("source {0} and destination {1} are identical", tname1, tname2);
+                            cout.WriteLine("source {0} and destination {1} are identical", tname1, tname2);
                         }
                         continue;
                     }
 
                     if (sql == string.Empty)
                     {
-                        stdio.WriteLine("nothing changes made on destination {0}", tname2);
+                        cout.WriteLine("nothing changes made on destination {0}", tname2);
                     }
                     else
                     {
@@ -550,16 +550,16 @@ namespace sqlcon
                             if (exists)
                             {
                                 if (count >= 0)
-                                    stdio.WriteLine("{0} row(s) changed at destination {1}", count, tname2);
+                                    cout.WriteLine("{0} row(s) changed at destination {1}", count, tname2);
                                 else
-                                    stdio.WriteLine("command(s) completed successfully at destination {1}", count, tname2);
+                                    cout.WriteLine("command(s) completed successfully at destination {1}", count, tname2);
                             }
                             else
-                                stdio.WriteLine("table {0} created at destination", tname2);
+                                cout.WriteLine("table {0} created at destination", tname2);
                         }
                         catch (Exception ex)
                         {
-                            stdio.ErrorFormat(ex.Message);
+                            cout.ErrorFormat(ex.Message);
                             return;
                         }
                     }
@@ -573,18 +573,18 @@ namespace sqlcon
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("rename column name, table name, modify column");
-                stdio.WriteLine();
-                stdio.WriteLine("ren [database] newdatasbase   : rename database or current database to newdatabase");
-                stdio.WriteLine("ren [table] newtable          : rename table or current table to newtable");
-                stdio.WriteLine("ren column newcolumn          : rename column on current table to newcolumn");
-                stdio.WriteLine();
+                cout.WriteLine("rename column name, table name, modify column");
+                cout.WriteLine();
+                cout.WriteLine("ren [database] newdatasbase   : rename database or current database to newdatabase");
+                cout.WriteLine("ren [table] newtable          : rename table or current table to newtable");
+                cout.WriteLine("ren column newcolumn          : rename column on current table to newcolumn");
+                cout.WriteLine();
                 return;
             }
 
             if (cmd.arg1 == null)
             {
-                stdio.ErrorFormat("invalid argument");
+                cout.ErrorFormat("invalid argument");
                 return;
             }
         }
@@ -593,21 +593,21 @@ namespace sqlcon
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("command attrib: update column property");
-                stdio.WriteLine("add primary key, foreign key or identity key");
-                stdio.WriteLine("columns:");
-                stdio.WriteLine("  attrib [table] +c:col1=varchar(2)+null : add column or alter column");
-                stdio.WriteLine("  attrib [table] +c:col1=varchar(10)     : add column or alter column");
-                stdio.WriteLine("  attrib [table] -c:col1                 : remove column");
-                stdio.WriteLine("primary keys:");
-                stdio.WriteLine("  attrib [table] +p:col1,col2            : add primary key");
-                stdio.WriteLine("  attrib [table] +p:col1,col2            : remove primary key");
-                stdio.WriteLine("foreign keys:");
-                stdio.WriteLine("  attrib [table] +f:col1=table2[.col2]   : add foreign key");
-                stdio.WriteLine("  attrib [table] -f:col1                 : remove foreign key");
-                stdio.WriteLine("identiy key:");
-                stdio.WriteLine("  attrib [table] +i:col1                 : add identity");
-                stdio.WriteLine("  attrib [table] -i:col1                 : remove identity");
+                cout.WriteLine("command attrib: update column property");
+                cout.WriteLine("add primary key, foreign key or identity key");
+                cout.WriteLine("columns:");
+                cout.WriteLine("  attrib [table] +c:col1=varchar(2)+null : add column or alter column");
+                cout.WriteLine("  attrib [table] +c:col1=varchar(10)     : add column or alter column");
+                cout.WriteLine("  attrib [table] -c:col1                 : remove column");
+                cout.WriteLine("primary keys:");
+                cout.WriteLine("  attrib [table] +p:col1,col2            : add primary key");
+                cout.WriteLine("  attrib [table] +p:col1,col2            : remove primary key");
+                cout.WriteLine("foreign keys:");
+                cout.WriteLine("  attrib [table] +f:col1=table2[.col2]   : add foreign key");
+                cout.WriteLine("  attrib [table] -f:col1                 : remove foreign key");
+                cout.WriteLine("identiy key:");
+                cout.WriteLine("  attrib [table] +i:col1                 : add identity");
+                cout.WriteLine("  attrib [table] -i:col1                 : remove identity");
                 return;
             }
 
@@ -617,7 +617,7 @@ namespace sqlcon
 
             if (!(pt.Item is TableName))
             {
-                stdio.ErrorFormat("table is not selected");
+                cout.ErrorFormat("table is not selected");
                 return;
             }
 
@@ -629,7 +629,7 @@ namespace sqlcon
                 string[] items = expr.Split(new string[] { "=", "+" }, StringSplitOptions.RemoveEmptyEntries);
                 if (items.Length != 2 && items.Length != 3)
                 {
-                    stdio.ErrorFormat("invalid expression:{0}, correct is col1=type or col1=type+null", expr);
+                    cout.ErrorFormat("invalid expression:{0}, correct is col1=type or col1=type+null", expr);
                     return;
                 }
                 string column = items[0];
@@ -667,7 +667,7 @@ namespace sqlcon
 
                 if (items.Length != 2)
                 {
-                    stdio.ErrorFormat("invalid foreign key expression:{0}, correct is col1=pktable.col2", expr);
+                    cout.ErrorFormat("invalid foreign key expression:{0}, correct is col1=pktable.col2", expr);
                     return;
                 }
 
@@ -689,7 +689,7 @@ namespace sqlcon
                 }
                 else
                 {
-                    stdio.ErrorFormat("invalid foreign key expression:{0}, correct is col1=pktable.col2", expr);
+                    cout.ErrorFormat("invalid foreign key expression:{0}, correct is col1=pktable.col2", expr);
                     return;
                 }
 
@@ -712,7 +712,7 @@ namespace sqlcon
                 }
                 catch (Exception ex)
                 {
-                    stdio.ErrorFormat($"fails in generating foreign key constraint name, {ex.Message}");
+                    cout.ErrorFormat($"fails in generating foreign key constraint name, {ex.Message}");
                     return;
                 }
 
@@ -754,7 +754,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
             catch (Exception ex)
             {
-                stdio.ErrorFormat("{0}", ex.Message);
+                cout.ErrorFormat("{0}", ex.Message);
             }
 
             return -1;
@@ -764,17 +764,17 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("let assignment              : variable assign statement ");
-                stdio.WriteLine("let key=value               : update column by current table or locator");
-                stdio.WriteLine("example:");
-                stdio.WriteLine("let Host=\"127.0.0.1\"      : value of variable Host is '\"127.0.0.1\"'");
-                stdio.WriteLine("let a=12                    : value of variable Host is '\"127.0.0.1\"'");
+                cout.WriteLine("let assignment              : variable assign statement ");
+                cout.WriteLine("let key=value               : update column by current table or locator");
+                cout.WriteLine("example:");
+                cout.WriteLine("let Host=\"127.0.0.1\"      : value of variable Host is '\"127.0.0.1\"'");
+                cout.WriteLine("let a=12                    : value of variable Host is '\"127.0.0.1\"'");
                 return;
             }
 
             if (string.IsNullOrEmpty(cmd.args))
             {
-                stdio.ErrorFormat("assignment cannot be empty");
+                cout.ErrorFormat("assignment cannot be empty");
                 return;
             }
 
@@ -784,7 +784,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
             catch (Exception ex)
             {
-                stdio.ErrorFormat("execute error: {0}", ex.Message);
+                cout.ErrorFormat("execute error: {0}", ex.Message);
             }
         }
 
@@ -792,29 +792,29 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("let assignment              : update key-value table row, key-value table must be defined on the sqlcon.cfg or user.cfg");
-                stdio.WriteLine("let key=value               : update column by current table or locator");
-                stdio.WriteLine("example:");
-                stdio.WriteLine("let Smtp.Host=\"127.0.0.1\" : update key-value row, it's equivalent to UPDATE table SET [Value]='\"127.0.0.1\"' WHERE [Key]='Smtp.Host'");
+                cout.WriteLine("let assignment              : update key-value table row, key-value table must be defined on the sqlcon.cfg or user.cfg");
+                cout.WriteLine("let key=value               : update column by current table or locator");
+                cout.WriteLine("example:");
+                cout.WriteLine("let Smtp.Host=\"127.0.0.1\" : update key-value row, it's equivalent to UPDATE table SET [Value]='\"127.0.0.1\"' WHERE [Key]='Smtp.Host'");
                 return;
             }
 
             if (string.IsNullOrEmpty(cmd.args))
             {
-                stdio.ErrorFormat("argument cannot be empty");
+                cout.ErrorFormat("argument cannot be empty");
                 return;
             }
 
             var pt = mgr.current;
             if (!(pt.Item is Locator) && !(pt.Item is TableName))
             {
-                stdio.ErrorFormat("table is not selected");
+                cout.ErrorFormat("table is not selected");
                 return;
             }
 
             if (this.mgr.Configuration.dictionarytables.Count == 0)
             {
-                stdio.ErrorFormat("key-value tables is undefined");
+                cout.ErrorFormat("key-value tables is undefined");
                 return;
             }
 
@@ -822,7 +822,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             var setting = this.mgr.Configuration.dictionarytables.FirstOrDefault(row => row.TableName.ToUpper() == tname.Name.ToUpper());
             if (setting == null)
             {
-                stdio.ErrorFormat("current table is not key-value tables");
+                cout.ErrorFormat("current table is not key-value tables");
                 return;
             }
 
@@ -843,7 +843,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             if (string.IsNullOrEmpty(key))
             {
-                stdio.ErrorFormat("invalid assignment");
+                cout.ErrorFormat("invalid assignment");
                 return;
             }
 
@@ -852,13 +852,13 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             var L = new SqlCmd(builder).FillDataColumn<string>(0);
             if (L.Count() == 0)
             {
-                stdio.ErrorFormat("undefined key: {0}", key);
+                cout.ErrorFormat("undefined key: {0}", key);
                 return;
             }
 
             if (kvp.Length == 1)
             {
-                stdio.ErrorFormat("{0} = {1}", key, L.First());
+                cout.ErrorFormat("{0} = {1}", key, L.First());
                 return;
             }
 
@@ -870,11 +870,11 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             try
             {
                 int count = builder.SqlCmd.ExecuteNonQuery();
-                stdio.WriteLine("{0} of row(s) affected", count);
+                cout.WriteLine("{0} of row(s) affected", count);
             }
             catch (Exception ex)
             {
-                stdio.ErrorFormat(ex.Message);
+                cout.ErrorFormat(ex.Message);
             }
         }
 
@@ -882,14 +882,14 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("clean duplicated rows");
-                stdio.WriteLine("clean [path]|[pattern]|  : clean current database or table, or search pattern");
-                stdio.WriteLine("options:");
-                stdio.WriteLine("   /col:c1,c2,..         : clean columns, compare column c1, c2, ...");
-                stdio.WriteLine("   /d                    : commit cleaning duplicated rows on database server, otherwise display # of duplicated rows");
-                stdio.WriteLine("example:");
-                stdio.WriteLine("clean match*s /col:c1,c2 : clean duplicated rows by comparing columns:c1 and c2");
-                stdio.WriteLine("clean                    : clean by comparing entire row");
+                cout.WriteLine("clean duplicated rows");
+                cout.WriteLine("clean [path]|[pattern]|  : clean current database or table, or search pattern");
+                cout.WriteLine("options:");
+                cout.WriteLine("   /col:c1,c2,..         : clean columns, compare column c1, c2, ...");
+                cout.WriteLine("   /d                    : commit cleaning duplicated rows on database server, otherwise display # of duplicated rows");
+                cout.WriteLine("example:");
+                cout.WriteLine("clean match*s /col:c1,c2 : clean duplicated rows by comparing columns:c1 and c2");
+                cout.WriteLine("clean                    : clean by comparing entire row");
                 return;
             }
 
@@ -904,15 +904,15 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 if (cmd.Has("d"))
                 {
                     int count = dup.Clean();
-                    stdio.WriteLine("completed to clean {0} #rows at {1}", count, tname);
+                    cout.WriteLine("completed to clean {0} #rows at {1}", count, tname);
                 }
                 else
                 {
                     int count = dup.DuplicatedRowCount();
                     if (count == 0)
-                        stdio.WriteLine("no duplicated rows at {0}", tname);
+                        cout.WriteLine("no duplicated rows at {0}", tname);
                     else
-                        stdio.WriteLine("{0} duplicated row(s) at {1}", count, tname);
+                        cout.WriteLine("{0} duplicated row(s) at {1}", count, tname);
                 }
                 return;
             }
@@ -933,20 +933,20 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
                         if (cmd.Has("d"))
                         {
-                            stdio.WriteLine("start to clean {0}", tn);
+                            cout.WriteLine("start to clean {0}", tn);
                             var dup = new DuplicatedTable(tn, cmd.Columns);
                             int count = dup.Clean();
-                            stdio.WriteLine("cleaned {0} #rows", count);
+                            cout.WriteLine("cleaned {0} #rows", count);
                         }
                         else
                         {
-                            stdio.WriteLine("start to query {0}", tn);
+                            cout.WriteLine("start to query {0}", tn);
                             var dup = new DuplicatedTable(tn, cmd.Columns);
                             int count = dup.DuplicatedRowCount();
                             if (count == 0)
-                                stdio.WriteLine("distinct rows");
+                                cout.WriteLine("distinct rows");
                             else
-                                stdio.WriteLine("{0} duplicated row(s)", count, tn);
+                                cout.WriteLine("{0} duplicated row(s)", count, tn);
                         }
 
                     }
@@ -957,38 +957,38 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            stdio.ErrorFormat("select database or table first");
+            cout.ErrorFormat("select database or table first");
         }
 
         public void import(Command cmd, Configuration cfg, ShellContext context)
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("import file");
-                stdio.WriteLine("option:");
-                stdio.WriteLine("   /fmt:xml,ds   : load System.Data.DataSet xml file as last result");
-                stdio.WriteLine("   /fmt:xml,dt   : load System.Data.DataTable xml file as last result");
-                stdio.WriteLine("   /fmt:txt      : load text file and import into current table");
-                stdio.WriteLine("   /fmt:csv      : import .csv data into current table");
-                stdio.WriteLine("      [/col:c1,c2,...] csv columns mapping");
-                stdio.WriteLine("   /fmt:cfg      : import .cfg data into current config table");
-                stdio.WriteLine("      [/key:column] column of key on config table");
-                stdio.WriteLine("      [/value:column] column of value config table");
-                stdio.WriteLine("      [/col:c1=v1,c2=v2,...] default values for not null columns");
-                stdio.WriteLine("e.g. import c:\\conf.cfg /fmt:cfg /key:Key /value:Value /col:[Inactive]=0");
+                cout.WriteLine("import file");
+                cout.WriteLine("option:");
+                cout.WriteLine("   /fmt:xml,ds   : load System.Data.DataSet xml file as last result");
+                cout.WriteLine("   /fmt:xml,dt   : load System.Data.DataTable xml file as last result");
+                cout.WriteLine("   /fmt:txt      : load text file and import into current table");
+                cout.WriteLine("   /fmt:csv      : import .csv data into current table");
+                cout.WriteLine("      [/col:c1,c2,...] csv columns mapping");
+                cout.WriteLine("   /fmt:cfg      : import .cfg data into current config table");
+                cout.WriteLine("      [/key:column] column of key on config table");
+                cout.WriteLine("      [/value:column] column of value config table");
+                cout.WriteLine("      [/col:c1=v1,c2=v2,...] default values for not null columns");
+                cout.WriteLine("e.g. import c:\\conf.cfg /fmt:cfg /key:Key /value:Value /col:[Inactive]=0");
                 return;
             }
 
             string file = cmd.arg1;
             if (file == null)
             {
-                stdio.ErrorFormat("file name not specified");
+                cout.ErrorFormat("file name not specified");
                 return;
             }
 
             if (!File.Exists(file))
             {
-                stdio.ErrorFormat($"cannot find the file \"{file}\"");
+                cout.ErrorFormat($"cannot find the file \"{file}\"");
                 return;
             }
 
@@ -1009,11 +1009,11 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     {
                         ds.ReadXml(file, XmlReadMode.ReadSchema); ;
                         ShellHistory.SetLastResult(ds);
-                        stdio.WriteLine($"{typeof(DataSet).FullName} xml file \"{file}\" has been loaded");
+                        cout.WriteLine($"{typeof(DataSet).FullName} xml file \"{file}\" has been loaded");
                     }
                     catch (Exception ex)
                     {
-                        stdio.ErrorFormat($"invalid {typeof(DataSet).FullName} xml file, {ex.Message}");
+                        cout.ErrorFormat($"invalid {typeof(DataSet).FullName} xml file, {ex.Message}");
                         return;
                     }
                     break;
@@ -1027,10 +1027,10 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     }
                     catch (Exception ex)
                     {
-                        stdio.ErrorFormat($"invalid {typeof(DataTable).FullName} xml file, {ex.Message}");
+                        cout.ErrorFormat($"invalid {typeof(DataTable).FullName} xml file, {ex.Message}");
                         return;
                     }
-                    stdio.WriteLine($"{typeof(DataTable).FullName} xml file \"{file}\" has been loaded");
+                    cout.WriteLine($"{typeof(DataTable).FullName} xml file \"{file}\" has been loaded");
                     break;
 
                 case "txt":
@@ -1041,7 +1041,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     TableName tname = mgr.GetCurrentPath<TableName>();
                     if (tname == null)
                     {
-                        stdio.Error("cannot find the table to import data");
+                        cout.Error("cannot find the table to import data");
                         return;
                     }
 
@@ -1052,7 +1052,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     else if (fmt == "cfg")
                         count = importer.ImportCfg(file, tname);
 
-                    stdio.WriteLine($"{count} row(s) imported");
+                    cout.WriteLine($"{count} row(s) imported");
                     break;
 
                 case "tie":
@@ -1060,7 +1060,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     break;
 
                 default:
-                    stdio.ErrorFormat("invalid command");
+                    cout.ErrorFormat("invalid command");
                     break;
             }
         }
@@ -1082,37 +1082,37 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 exporter.Run();
             }
             else
-                stdio.ErrorFormat("select server, database or table first");
+                cout.ErrorFormat("select server, database or table first");
         }
 
         public void mount(Command cmd, Configuration cfg)
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("mount database server");
-                stdio.WriteLine("mount alias=server_name   : alias must start with letter");
-                stdio.WriteLine("options:");
-                stdio.WriteLine("   /db:database           : initial catalog, default is 'master'");
-                stdio.WriteLine("   /u:username            : user id, default is 'sa'");
-                stdio.WriteLine("   /p:password            : password, default is empty, use Windows Security when /u /p not setup");
-                stdio.WriteLine("   /pvd:provider          : sqloledb, xmlfile, default is SQL client");
-                stdio.WriteLine("example:");
-                stdio.WriteLine("  mount ip100=192.168.0.100\\sqlexpress /u:sa /p:p@ss");
-                stdio.WriteLine("  mount web=http://192.168.0.100/db/northwind.xml /u:sa /p:p@ss");
-                stdio.WriteLine("  mount xml=file://c:\\db\\northwind.xml");
+                cout.WriteLine("mount database server");
+                cout.WriteLine("mount alias=server_name   : alias must start with letter");
+                cout.WriteLine("options:");
+                cout.WriteLine("   /db:database           : initial catalog, default is 'master'");
+                cout.WriteLine("   /u:username            : user id, default is 'sa'");
+                cout.WriteLine("   /p:password            : password, default is empty, use Windows Security when /u /p not setup");
+                cout.WriteLine("   /pvd:provider          : sqloledb, xmlfile, default is SQL client");
+                cout.WriteLine("example:");
+                cout.WriteLine("  mount ip100=192.168.0.100\\sqlexpress /u:sa /p:p@ss");
+                cout.WriteLine("  mount web=http://192.168.0.100/db/northwind.xml /u:sa /p:p@ss");
+                cout.WriteLine("  mount xml=file://c:\\db\\northwind.xml");
                 return;
             }
 
             if (cmd.arg1 == null)
             {
-                stdio.ErrorFormat("invalid arguments");
+                cout.ErrorFormat("invalid arguments");
                 return;
             }
 
             var items = cmd.arg1.Split('=');
             if (items.Length != 2)
             {
-                stdio.ErrorFormat("invalid arguments, correct format is alias=server_name");
+                cout.ErrorFormat("invalid arguments, correct format is alias=server_name");
                 return;
             }
             string serverName = items[0].Trim();
@@ -1124,7 +1124,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             {
                 if (pvd != "sqloledb" && pvd != "xmlfile")
                 {
-                    stdio.ErrorFormat("provider={0} is not supported", pvd);
+                    cout.ErrorFormat("provider={0} is not supported", pvd);
                     return;
                 }
                 builder.AppendFormat("provider={0};", pvd);
@@ -1169,7 +1169,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             ConnectionProvider provider = ConnectionProviderManager.Register(serverName, connectionString);
             if (!provider.CheckConnection())
             {
-                stdio.ErrorFormat("database is offline or wrong parameter");
+                cout.ErrorFormat("database is offline or wrong parameter");
                 return;
             }
             var snode = new TreeNode<IDataPath>(provider.ServerName);
@@ -1199,16 +1199,16 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("unmount database server");
-                stdio.WriteLine("unmount alias             : alias must start with letter");
-                stdio.WriteLine("example:");
-                stdio.WriteLine("  umount ip100");
+                cout.WriteLine("unmount database server");
+                cout.WriteLine("unmount alias             : alias must start with letter");
+                cout.WriteLine("example:");
+                cout.WriteLine("  umount ip100");
                 return;
             }
 
             if (cmd.arg1 == null)
             {
-                stdio.ErrorFormat("invalid arguments");
+                cout.ErrorFormat("invalid arguments");
                 return;
             }
 
@@ -1246,7 +1246,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             if (dt == null)
             {
-                stdio.ErrorFormat("select table first");
+                cout.ErrorFormat("select table first");
                 return;
             }
 
@@ -1265,22 +1265,22 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 process.Start();
             }
             else
-                stdio.ErrorFormat("{0} path not exist: {1}", message, path);
+                cout.ErrorFormat("{0} path not exist: {1}", message, path);
         }
 
         public void xcopy(Command cmd)
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("xcopy large size records, support table/database name wildcards");
-                stdio.WriteLine("   table must have same structure");
-                stdio.WriteLine("xcopy database1 [database2]");
-                stdio.WriteLine("xcopy table1 [table2]");
-                stdio.WriteLine("       /col:c1[=d1],c2[=d2],...         copy selected columns (mapping)");
-                stdio.WriteLine("       /s                               compare table schema");
-                stdio.WriteLine("note that: to xcopy selected records of table, mkdir locator first, example:");
-                stdio.WriteLine(@"  \local\NorthWind\Products> md ProductId<2000");
-                stdio.WriteLine(@"  \local\NorthWind\Products> xcopy 1 \local\db");
+                cout.WriteLine("xcopy large size records, support table/database name wildcards");
+                cout.WriteLine("   table must have same structure");
+                cout.WriteLine("xcopy database1 [database2]");
+                cout.WriteLine("xcopy table1 [table2]");
+                cout.WriteLine("       /col:c1[=d1],c2[=d2],...         copy selected columns (mapping)");
+                cout.WriteLine("       /s                               compare table schema");
+                cout.WriteLine("note that: to xcopy selected records of table, mkdir locator first, example:");
+                cout.WriteLine(@"  \local\NorthWind\Products> md ProductId<2000");
+                cout.WriteLine(@"  \local\NorthWind\Products> xcopy 1 \local\db");
                 return;
             }
 
@@ -1305,7 +1305,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                         string result = Compare.TableSchemaDifference(CompareSideType.compare, tname1, tname2);
                         if (!string.IsNullOrEmpty(result))
                         {
-                            stdio.ErrorFormat("destination table is not compatible or doesn't exist");
+                            cout.ErrorFormat("destination table is not compatible or doesn't exist");
                             continue;
                         }
                     }
@@ -1343,9 +1343,9 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     else
                     {
                         count = int.MaxValue;
-                        stdio.Error($"total count={_cnt}, too many rows, progress bar may not be accurate");
+                        cout.Error($"total count={_cnt}, too many rows, progress bar may not be accurate");
                     }
-                    stdio.Write("copying {0} ", tname1.Name);
+                    cout.Write($"copying {tname1.Name} ");
                     using (var progress = new ProgressBar { Count = count })
                     {
                         TableBulkCopy bulkCopy = new TableBulkCopy(tableReader);
@@ -1355,7 +1355,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                         }
                         catch (Exception ex)
                         {
-                            stdio.Error(ex.Message);
+                            cout.Error(ex.Message);
                         }
 
                         if (cts.IsCancellationRequested)
@@ -1363,7 +1363,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     }
 
                     if (!cts.IsCancellationRequested)
-                        stdio.WriteLine(", Done.");
+                        cout.WriteLine(", Done.");
                 }
             });
         }
@@ -1372,10 +1372,10 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("execute sql script file");
-                stdio.WriteLine("execute file (.sql)");
-                stdio.WriteLine("examples:");
-                stdio.WriteLine("  execute northwind.sql       : execute single sql script file");
+                cout.WriteLine("execute sql script file");
+                cout.WriteLine("execute file (.sql)");
+                cout.WriteLine("examples:");
+                cout.WriteLine("  execute northwind.sql       : execute single sql script file");
                 return;
             }
 
@@ -1384,7 +1384,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 inputfile = cmd.Configuration.WorkingDirectory.GetFullPath(cmd.arg1, ".sql");
             else
             {
-                stdio.ErrorFormat("input undefined");
+                cout.ErrorFormat("input undefined");
                 return;
             }
 
@@ -1398,17 +1398,17 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("edit, view and execute sql script");
-                stdio.WriteLine("edit                          : create new file and edit");
-                stdio.WriteLine("edit [file]                   : edit file, it is read-only if file is hyperlink");
-                stdio.WriteLine("options:");
-                stdio.WriteLine("   /usr                       : FTP user name");
-                stdio.WriteLine("   /pwd                       : FTP password");
-                stdio.WriteLine("examples:");
-                stdio.WriteLine("  edit c:\\db\\northwind.sql");
-                stdio.WriteLine("  edit file://datconn/northwind.sql");
-                stdio.WriteLine("  edit http://www.datconn.com/demos/northwind.sql");
-                stdio.WriteLine("  edit ftp://www.datconn.com/demos/northwind.sql /usr:user /pwd:password");
+                cout.WriteLine("edit, view and execute sql script");
+                cout.WriteLine("edit                          : create new file and edit");
+                cout.WriteLine("edit [file]                   : edit file, it is read-only if file is hyperlink");
+                cout.WriteLine("options:");
+                cout.WriteLine("   /usr                       : FTP user name");
+                cout.WriteLine("   /pwd                       : FTP password");
+                cout.WriteLine("examples:");
+                cout.WriteLine("  edit c:\\db\\northwind.sql");
+                cout.WriteLine("  edit file://datconn/northwind.sql");
+                cout.WriteLine("  edit http://www.datconn.com/demos/northwind.sql");
+                cout.WriteLine("  edit ftp://www.datconn.com/demos/northwind.sql /usr:user /pwd:password");
                 return;
             }
 
@@ -1434,7 +1434,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     {
                         if (!fileLink.IsLocalLink)
                         {
-                            stdio.ErrorFormat("file {0} doesn't exist", fileLink);
+                            cout.ErrorFormat("file {0} doesn't exist", fileLink);
                             return;
                         }
                         else
@@ -1446,7 +1446,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 }
                 catch (Exception ex)
                 {
-                    stdio.Error(ex.Message);
+                    cout.Error(ex.Message);
                     return;
                 }
 
@@ -1459,7 +1459,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
             catch (Exception ex)
             {
-                stdio.Error(ex.Message);
+                cout.Error(ex.Message);
                 return;
             }
         }
@@ -1468,18 +1468,18 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("open files in the editor");
-                stdio.WriteLine("open files");
-                stdio.WriteLine("options:");
-                stdio.WriteLine("   log              : open log file");
-                stdio.WriteLine("   working          : open working directory");
-                stdio.WriteLine("   last             : open GUI viewer to see the last data table retrieved");
-                stdio.WriteLine("   output           : open output file");
-                stdio.WriteLine("   config [/s]      : open user configure file, /s open system configurate");
-                stdio.WriteLine("   dpo              : open table class output directory");
-                stdio.WriteLine("   dc               : open data contract class output directory");
-                stdio.WriteLine("   l2s              : open Linq to SQL class output directory");
-                stdio.WriteLine("   release          : open release notes");
+                cout.WriteLine("open files in the editor");
+                cout.WriteLine("open files");
+                cout.WriteLine("options:");
+                cout.WriteLine("   log              : open log file");
+                cout.WriteLine("   working          : open working directory");
+                cout.WriteLine("   last             : open GUI viewer to see the last data table retrieved");
+                cout.WriteLine("   output           : open output file");
+                cout.WriteLine("   config [/s]      : open user configure file, /s open system configurate");
+                cout.WriteLine("   dpo              : open table class output directory");
+                cout.WriteLine("   dc               : open data contract class output directory");
+                cout.WriteLine("   l2s              : open Linq to SQL class output directory");
+                cout.WriteLine("   release          : open release notes");
 
                 return;
             }
@@ -1532,7 +1532,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     break;
 
                 default:
-                    stdio.ErrorFormat("invalid arguments");
+                    cout.ErrorFormat("invalid arguments");
                     return;
             }
 
@@ -1543,13 +1543,13 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("save [file]");
-                stdio.WriteLine("options:");
-                stdio.WriteLine("  /output       : copy sql script ouput to clipboard");
-                stdio.WriteLine("  /last         : last dataset to xml file");
-                stdio.WriteLine("example:");
-                stdio.WriteLine("  save /output");
-                stdio.WriteLine("  save products.xml /last");
+                cout.WriteLine("save [file]");
+                cout.WriteLine("options:");
+                cout.WriteLine("  /output       : copy sql script ouput to clipboard");
+                cout.WriteLine("  /last         : last dataset to xml file");
+                cout.WriteLine("example:");
+                cout.WriteLine("  save /output");
+                cout.WriteLine("  save products.xml /last");
                 return;
             }
 
@@ -1557,14 +1557,14 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             {
                 if (!File.Exists(cfg.OutputFile))
                 {
-                    stdio.ErrorFormat("no output file found : {0}", cfg.OutputFile);
+                    cout.ErrorFormat("no output file found : {0}", cfg.OutputFile);
                     return;
                 }
                 using (var reader = new StreamReader(cfg.OutputFile))
                 {
                     string data = reader.ReadToEnd();
                     System.Windows.Clipboard.SetText(data);
-                    stdio.WriteLine("copied to clipboard");
+                    cout.WriteLine("copied to clipboard");
                 }
             }
             else if (cmd.Has("last"))
@@ -1572,14 +1572,14 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 var ds = ShellHistory.LastDataSet();
                 if (ds == null)
                 {
-                    stdio.ErrorFormat("last result is null");
+                    cout.ErrorFormat("last result is null");
                     return;
                 }
 
                 string file = cmd.arg1;
                 if (file == null)
                 {
-                    stdio.ErrorFormat("file name missing");
+                    cout.ErrorFormat("file name missing");
                     return;
                 }
 
@@ -1590,16 +1590,16 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                         Directory.CreateDirectory(path);
 
                     ds.WriteXml(file, XmlWriteMode.WriteSchema);
-                    stdio.WriteLine($"last result saved into {file}");
+                    cout.WriteLine($"last result saved into {file}");
                 }
                 catch (Exception ex)
                 {
-                    stdio.Error(ex.Message);
+                    cout.Error(ex.Message);
                 }
             }
             else
             {
-                stdio.ErrorFormat("invalid arguments");
+                cout.ErrorFormat("invalid arguments");
             }
 
             return;
@@ -1609,10 +1609,10 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         {
             if (cmd.HasHelp)
             {
-                stdio.WriteLine("Displays messages, or turns command-echoing on or off");
-                stdio.WriteLine("  echo [on | off]");
-                stdio.WriteLine("  echo [message]");
-                stdio.WriteLine("Type echo without parameters to display the current echo setting.");
+                cout.WriteLine("Displays messages, or turns command-echoing on or off");
+                cout.WriteLine("  echo [on | off]");
+                cout.WriteLine("  echo [message]");
+                cout.WriteLine("Type echo without parameters to display the current echo setting.");
                 return;
             }
 
@@ -1620,7 +1620,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             if (string.IsNullOrEmpty(text))
             {
                 string status = "on";
-                if (!stdio.echo)
+                if (!cout.echo)
                     status = "off";
 
                 Console.WriteLine($"echo is {status}");
@@ -1630,15 +1630,15 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             switch (text)
             {
                 case "on":
-                    stdio.echo = true;
+                    cout.echo = true;
                     break;
 
                 case "off":
-                    stdio.echo = false;
+                    cout.echo = false;
                     break;
 
                 default:
-                    stdio.WriteLine(text);
+                    cout.WriteLine(text);
                     break;
             }
 

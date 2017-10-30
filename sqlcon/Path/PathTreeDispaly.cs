@@ -55,12 +55,12 @@ namespace sqlcon
                             ExpandServerName(node, Refreshing);
                         }
 
-                        stdio.WriteLine("{0,4} {1,26} <SVR> {2,10} Databases", sub(i), sname.Path, sname.Disconnected ? "?" : node.Nodes.Count.ToString());
+                        cout.WriteLine("{0,4} {1,26} <SVR> {2,10} Databases", sub(i), sname.Path, sname.Disconnected ? "?" : node.Nodes.Count.ToString());
                         h = PagePause(cmd, ++h);
                     }
                 }
 
-                stdio.WriteLine("\t{0} Server(s)", count);
+                cout.WriteLine("\t{0} Server(s)", count);
 
             });
 
@@ -75,7 +75,7 @@ namespace sqlcon
             ServerName sname = (ServerName)pt.Item;
             if (sname.Disconnected)
             {
-                stdio.WriteLine("\t? Database(s)");
+                cout.WriteLine("\t? Database(s)");
             }
             else
             {
@@ -93,12 +93,12 @@ namespace sqlcon
                         if (node.Nodes.Count == 0)
                             ExpandDatabaseName(node, cmd.Refresh);
 
-                        stdio.WriteLine("{0,4} {1,26} <DB> {2,10} Tables/Views", sub(i), dname.Name, node.Nodes.Count);
+                        cout.WriteLine("{0,4} {1,26} <DB> {2,10} Tables/Views", sub(i), dname.Name, node.Nodes.Count);
                         h = PagePause(cmd, ++h);
                     }
                 }
 
-                stdio.WriteLine("\t{0} Database(s)", count);
+                cout.WriteLine("\t{0} Database(s)", count);
             }
 
             return true;
@@ -130,15 +130,15 @@ namespace sqlcon
                     if (!tname.IsViewName) count[0]++;
                     if (tname.IsViewName) count[1]++;
 
-                    stdio.WriteLine("{0,5} {1,15}.{2,-37} <{3}>", sub(i), tname.SchemaName, tname.Name, tname.IsViewName ? "VIEW" : "TABLE");
+                    cout.WriteLine("{0,5} {1,15}.{2,-37} <{3}>", sub(i), tname.SchemaName, tname.Name, tname.IsViewName ? "VIEW" : "TABLE");
 
                     h = PagePause(cmd, ++h);
                 }
             }
 
 
-            stdio.WriteLine("\t{0} Table(s)", count[0]);
-            stdio.WriteLine("\t{0} View(s)", count[1]);
+            cout.WriteLine("\t{0} Table(s)", count[0]);
+            cout.WriteLine("\t{0} View(s)", count[1]);
 
             return true;
         }
@@ -148,9 +148,9 @@ namespace sqlcon
             if (cmd.HasPage && h >= Console.WindowHeight - 1)
             {
                 h = 0;
-                stdio.Write("press any key to continue...");
-                stdio.ReadKey();
-                stdio.WriteLine();
+                cout.Write("press any key to continue...");
+                cin.ReadKey();
+                cout.WriteLine();
             }
             return h;
         }
@@ -170,7 +170,7 @@ namespace sqlcon
             {
                 if (tname.IsViewName)
                 {
-                    stdio.WriteLine("cannot display view structure");
+                    cout.WriteLine("cannot display view structure");
                     return false;
                 }
 
@@ -227,12 +227,12 @@ namespace sqlcon
         {
             if (dt.Rows.Count > 0)
             {
-                stdio.WriteLine("<{0}>", title);
+                cout.WriteLine("<{0}>", title);
                 dt.ToConsole();
             }
             else
             {
-                stdio.WriteLine(title + " not found");
+                cout.WriteLine(title + " not found");
             }
         }
 
@@ -240,7 +240,7 @@ namespace sqlcon
         private static void _DisplayColumnNodes(Command cmd, TableName tname)
         {
             TableSchema schema = new TableSchema(tname);
-            stdio.WriteLine("TABLE: {0}", tname.Path);
+            cout.WriteLine("TABLE: {0}", tname.Path);
 
             int i = 0;
             int count = 0;
@@ -257,7 +257,7 @@ namespace sqlcon
                     if ((column as ColumnSchema).IsForeignKey) L.Add("fk");
                     string keys = string.Join(",", L);
 
-                    stdio.WriteLine("{0,5} {1,26} {2,-16} {3,10} {4,10}",
+                    cout.WriteLine("{0,5} {1,26} {2,-16} {3,10} {4,10}",
                        sub(++i),
                        string.Format("[{0}]", column.ColumnName),
                        ColumnSchema.GetSQLType(column),
@@ -268,7 +268,7 @@ namespace sqlcon
                 }
             }
 
-            stdio.WriteLine("\t{0} Column(s)", count);
+            cout.WriteLine("\t{0} Column(s)", count);
         }
 
         private static bool _DisplayLocatorNodes(TreeNode<IDataPath> pt, Command cmd)
@@ -289,16 +289,16 @@ namespace sqlcon
                         Locator locator = (Locator)item;
                         if (!string.IsNullOrEmpty(locator.Name))
                         {
-                            stdio.WriteLine("{0,5} {1,-20} {2}", sub(i), locator.Name, locator.Where);
+                            cout.WriteLine("{0,5} {1,-20} {2}", sub(i), locator.Name, locator.Where);
                             continue;
                         }
                     }
 
-                    stdio.WriteLine("{0,5} {1}", sub(i), item);
+                    cout.WriteLine("{0,5} {1}", sub(i), item);
                 }
             }
 
-            stdio.WriteLine("\t{0} Item(s)", count);
+            cout.WriteLine("\t{0} Item(s)", count);
             return true;
         }
 
@@ -312,7 +312,7 @@ namespace sqlcon
                 return false;
 
             DataTable schema = vname.ViewSchema();
-            stdio.WriteLine("VIEW: {0}", vname.Path);
+            cout.WriteLine("VIEW: {0}", vname.Path);
 
             int i = 0;
             int count = 0;
@@ -324,7 +324,7 @@ namespace sqlcon
                 {
                     count++;
 
-                    stdio.WriteLine("{0,5} {1,26} {2,-16} {3,10}",
+                    cout.WriteLine("{0,5} {1,26} {2,-16} {3,10}",
                         sub(++i),
                         string.Format("{0}", columnName),
                         row["DATA_TYPE"],
@@ -334,7 +334,7 @@ namespace sqlcon
                 }
 
             }
-            stdio.WriteLine("\t{0} Column(s)", count);
+            cout.WriteLine("\t{0} Column(s)", count);
 
             return true;
         }

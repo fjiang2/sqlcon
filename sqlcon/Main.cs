@@ -46,7 +46,7 @@ namespace sqlcon
                         }
                         else
                         {
-                            stdio.WriteLine("/i undefined sql script file name");
+                            cout.WriteLine("/i undefined sql script file name");
                             return;
                         }
 
@@ -58,7 +58,7 @@ namespace sqlcon
                         }
                         else
                         {
-                            stdio.WriteLine("/o undefined sql script file name");
+                            cout.WriteLine("/o undefined sql script file name");
                             return;
                         }
 
@@ -137,7 +137,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                stdio.ErrorFormat("failed to initialize {0}, {1}", file, ex.Message);
+                cout.ErrorFormat("failed to initialize {0}, {1}", file, ex.Message);
             }
 
             return file;
@@ -145,20 +145,20 @@ namespace sqlcon
 
         public static void ShowHelp()
         {
-            stdio.WriteLine("SQL Server Command Console");
-            stdio.WriteLine("Usage: sqlcon");
-            stdio.WriteLine("     [/cfg configuration file name (.cfg)]");
-            stdio.WriteLine("     [/i sql script file name (.sql)]");
-            stdio.WriteLine("     [file] sqlcon command batch file name (.sqc)");
-            stdio.WriteLine();
-            stdio.WriteLine("/h,/?      : this help");
-            stdio.WriteLine($"/cfg       : congfiguration file default file:{_USER_CFG}]");
-            stdio.WriteLine("/i         : input sql script file name");
-            stdio.WriteLine("/o         : result of sql script");
-            stdio.WriteLine("examples:");
-            stdio.WriteLine("  sqlcon file1.sqc");
-            stdio.WriteLine("  sqlcon /cfg my.cfg");
-            stdio.WriteLine("  sqlcon /i script1.sql /o c:\\temp\\o.txt");
+            cout.WriteLine("SQL Server Command Console");
+            cout.WriteLine("Usage: sqlcon");
+            cout.WriteLine("     [/cfg configuration file name (.cfg)]");
+            cout.WriteLine("     [/i sql script file name (.sql)]");
+            cout.WriteLine("     [file] sqlcon command batch file name (.sqc)");
+            cout.WriteLine();
+            cout.WriteLine("/h,/?      : this help");
+            cout.WriteLine($"/cfg       : congfiguration file default file:{_USER_CFG}]");
+            cout.WriteLine("/i         : input sql script file name");
+            cout.WriteLine("/o         : result of sql script");
+            cout.WriteLine("examples:");
+            cout.WriteLine("  sqlcon file1.sqc");
+            cout.WriteLine("  sqlcon /cfg my.cfg");
+            cout.WriteLine("  sqlcon /i script1.sql /o c:\\temp\\o.txt");
         }
     }
 }

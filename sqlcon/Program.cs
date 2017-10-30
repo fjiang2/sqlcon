@@ -34,7 +34,7 @@ namespace sqlcon
                         }
                         else
                         {
-                            stdio.WriteLine("/cfg configuration file missing");
+                            cout.WriteLine("/cfg configuration file missing");
                             return;
                         }
 
@@ -57,7 +57,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                stdio.WriteLine("error on configuration file {0}, {1}:", cfgFile, ex.Message);
+                cout.WriteLine("error on configuration file {0}, {1}:", cfgFile, ex.Message);
                 return;
             }
 

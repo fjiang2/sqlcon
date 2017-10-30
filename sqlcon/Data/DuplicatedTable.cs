@@ -49,13 +49,13 @@ namespace sqlcon
             {
                 var where = _columns.Select(column => column.Equal(row[column])).AND();
                 if (AllColumnsSelected)
-                    stdio.WriteLine("idential rows");
+                    cout.WriteLine("idential rows");
                 else
-                    stdio.WriteLine("{0}", where);
+                    cout.WriteLine("{0}", where);
 
                 var builder = new SqlBuilder().SELECT.COLUMNS().FROM(tname).WHERE(where);
                 display(builder.SqlCmd.FillDataTable());
-                stdio.WriteLine();
+                cout.WriteLine();
             }
         }
 

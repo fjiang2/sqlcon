@@ -85,7 +85,7 @@ namespace sqlcon
                 tnames = md.MatchedTableNames;
                 if (tnames.Length == 0)
                 {
-                    stdio.ErrorFormat("warning: no table is matched");
+                    cout.ErrorFormat("warning: no table is matched");
                     return new TableName[] { };
                 }
             }
@@ -105,13 +105,13 @@ namespace sqlcon
                 using (var writer = fileName.NewStreamWriter())
                 {
                     string sql = Compare.GenerateTemplate(new TableSchema(tname), type);
-                    stdio.WriteLine(sql);
+                    cout.WriteLine(sql);
                     writer.WriteLine(sql);
                 }
             }
             else
             {
-                stdio.ErrorFormat("warning: table is not selected");
+                cout.ErrorFormat("warning: table is not selected");
             }
         }
 
@@ -120,12 +120,12 @@ namespace sqlcon
         {
             if (tname != null)
             {
-                stdio.WriteLine("start to generate CREATE TABLE script: {0}", dname);
+                cout.WriteLine("start to generate CREATE TABLE script: {0}", dname);
                 using (var writer = fileName.NewStreamWriter())
                 {
                     writer.WriteLine(tname.GenerateCluase(true));
                 }
-                stdio.WriteLine("completed to generate script on file: {0}", fileName);
+                cout.WriteLine("completed to generate script on file: {0}", fileName);
                 return;
             }
 
@@ -142,31 +142,31 @@ namespace sqlcon
                         {
                             foreach (var tname in tnames)
                             {
-                                stdio.WriteLine("start to generate CREATE TABLE script: {0} ", tname);
+                                cout.WriteLine("start to generate CREATE TABLE script: {0} ", tname);
                                 writer.WriteLine(tname.GenerateCluase(true));
                             }
                         }
                     }
                     else
                     {
-                        stdio.ErrorFormat("warning: no table is matched");
+                        cout.ErrorFormat("warning: no table is matched");
                         return;
                     }
                 }
                 else
                 {
-                    stdio.WriteLine("start to generate CREATE TABLE script: {0}", dname);
+                    cout.WriteLine("start to generate CREATE TABLE script: {0}", dname);
                     using (var writer = fileName.NewStreamWriter())
                     {
                         writer.WriteLine(dname.GenerateClause());
                     }
                 }
 
-                stdio.WriteLine("completed to generate script on file: {0}", fileName);
+                cout.WriteLine("completed to generate script on file: {0}", fileName);
                 return;
             }
 
-            stdio.ErrorFormat("warning: table or database is not seleted");
+            cout.ErrorFormat("warning: table or database is not seleted");
         }
 
         public void ExportInsert()
@@ -178,7 +178,7 @@ namespace sqlcon
                     using (var writer = fileName.NewStreamWriter())
                     {
                         string sql = Compare.GenerateTemplate(new TableSchema(tname), SqlScriptType.INSERT);
-                        stdio.WriteLine(sql);
+                        cout.WriteLine(sql);
                         writer.WriteLine(sql);
                     }
                 }
@@ -191,22 +191,22 @@ namespace sqlcon
                     {
                         if (node != null)
                         {
-                            stdio.WriteLine("start to generate {0} INSERT script to file: {1}", tname, fileName);
+                            cout.WriteLine("start to generate {0} INSERT script to file: {1}", tname, fileName);
                             Locator locator = mgr.GetCombinedLocator(node);
                             count = Compare.GenerateRows(writer, new TableSchema(tname), locator, cmd.HasIfExists);
-                            stdio.WriteLine("insert clauses (SELECT * FROM {0} WHERE {1}) generated to {2}", tname, locator, fileName);
+                            cout.WriteLine("insert clauses (SELECT * FROM {0} WHERE {1}) generated to {2}", tname, locator, fileName);
                         }
                         else
                         {
                             count = Compare.GenerateRows(writer, new TableSchema(tname), null, cmd.HasIfExists);
-                            stdio.WriteLine("insert clauses (SELECT * FROM {0}) generated to {1}", tname, fileName);
+                            cout.WriteLine("insert clauses (SELECT * FROM {0}) generated to {1}", tname, fileName);
                         }
                     }
                 }
             }
             else if (dname != null)
             {
-                stdio.WriteLine("start to generate {0} script to file: {1}", dname, fileName);
+                cout.WriteLine("start to generate {0} script to file: {1}", dname, fileName);
                 using (var writer = fileName.NewStreamWriter())
                 {
                     var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportIncludedTables);
@@ -223,46 +223,46 @@ namespace sqlcon
                                 int count = new SqlCmd(tn.Provider, string.Format("SELECT COUNT(*) FROM {0}", tn)).FillObject<int>();
                                 if (count > cfg.Export_Max_Count)
                                 {
-                                    if (!stdio.YesOrNo("are you sure to export {0} rows on {1} (y/n)?", count, tn.ShortName))
+                                    if (!cin.YesOrNo($"are you sure to export {count} rows on {tn.ShortName} (y/n)?"))
                                     {
-                                        stdio.WriteLine("\n{0,10} skipped", tn.ShortName);
+                                        cout.WriteLine("\n{0,10} skipped", tn.ShortName);
                                         continue;
                                     }
                                 }
 
                                 count = Compare.GenerateRows(writer, new TableSchema(tn), null, cmd.HasIfExists);
-                                stdio.WriteLine("{0,10} row(s) generated on {1}", count, tn.ShortName);
+                                cout.WriteLine("{0,10} row(s) generated on {1}", count, tn.ShortName);
                             }
                             else
-                                stdio.WriteLine("{0,10} skipped", tn.ShortName);
+                                cout.WriteLine("{0,10} skipped", tn.ShortName);
                         }
-                        stdio.WriteLine("completed");
+                        cout.WriteLine("completed");
 
                     });
                 }
             }
             else
-                stdio.ErrorFormat("warning: table or database is not selected");
+                cout.ErrorFormat("warning: table or database is not selected");
         }
 
         public void ExportSchema()
         {
             if (dname != null)
             {
-                stdio.WriteLine("start to generate database schema {0}", dname);
+                cout.WriteLine("start to generate database schema {0}", dname);
                 var file = xml.WriteSchema(dname);
-                stdio.WriteLine("completed {0}", file);
+                cout.WriteLine("completed {0}", file);
             }
             else if (sname != null)
             {
                 if (sname != null)
                 {
-                    stdio.WriteLine("start to generate server schema {0}", sname);
+                    cout.WriteLine("start to generate server schema {0}", sname);
                     var file = xml.WriteSchema(sname);
-                    stdio.WriteLine("completed {0}", file);
+                    cout.WriteLine("completed {0}", file);
                 }
                 else
-                    stdio.ErrorFormat("warning: server or database is not selected");
+                    cout.ErrorFormat("warning: server or database is not selected");
             }
         }
 
@@ -270,15 +270,15 @@ namespace sqlcon
         {
             if (tname != null)
             {
-                stdio.WriteLine("start to generate {0} data file", tname);
+                cout.WriteLine("start to generate {0} data file", tname);
                 var dt = new TableReader(tname).Table;
                 var file = xml.Write(tname, dt);
-                stdio.WriteLine("completed {0} =>{1}", tname.ShortName, file);
+                cout.WriteLine("completed {0} =>{1}", tname.ShortName, file);
             }
 
             else if (dname != null)
             {
-                stdio.WriteLine("start to generate {0}", dname);
+                cout.WriteLine("start to generate {0}", dname);
                 var mt = new MatchedDatabase(dname, cmd.wildcard, cfg.exportIncludedTables);
                 CancelableWork.CanCancel(cts =>
                 {
@@ -288,23 +288,23 @@ namespace sqlcon
                             return;
 
 
-                        stdio.WriteLine("start to generate {0}", tname);
+                        cout.WriteLine("start to generate {0}", tname);
                         var dt = new SqlBuilder().SELECT.TOP(cmd.top).COLUMNS().FROM(tname).SqlCmd.FillDataTable();
                         var file = xml.Write(tname, dt);
-                        stdio.WriteLine("completed {0} => {1}", tname.ShortName, file);
+                        cout.WriteLine("completed {0} => {1}", tname.ShortName, file);
                     }
                     return;
                 }
                );
 
                 if (cmd.top == 0)
-                    stdio.WriteLine("completed");
+                    cout.WriteLine("completed");
                 else
-                    stdio.WriteLine("completed to export TOP {0} row(s) for each table", cmd.top);
+                    cout.WriteLine("completed to export TOP {0} row(s) for each table", cmd.top);
             }
             else
             {
-                stdio.ErrorFormat("warning: table or database is not seleted");
+                cout.ErrorFormat("warning: table or database is not seleted");
             }
         }
 
@@ -329,11 +329,11 @@ namespace sqlcon
             {
                 var clss = new DpoGenerator(tname) { Option = option };
                 clss.CreateClass();
-                stdio.WriteLine("generated class {0} at {1}", tname.ShortName, option.OutputPath);
+                cout.WriteLine("generated class {0} at {1}", tname.ShortName, option.OutputPath);
             }
             else if (dname != null)
             {
-                stdio.WriteLine("start to generate database {0} class to directory: {1}", dname, option.OutputPath);
+                cout.WriteLine("start to generate database {0} class to directory: {1}", dname, option.OutputPath);
                 CancelableWork.CanCancel(cts =>
                 {
                     var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportIncludedTables);
@@ -348,21 +348,21 @@ namespace sqlcon
                         {
                             var clss = new DpoGenerator(tn) { Option = option };
                             clss.CreateClass();
-                            stdio.WriteLine("generated class for {0} at {1}", tn.ShortName, option.OutputPath);
+                            cout.WriteLine("generated class for {0} at {1}", tn.ShortName, option.OutputPath);
                         }
                         catch (Exception ex)
                         {
-                            stdio.ErrorFormat("failed to generate class {0}, {1}", tn.ShortName, ex.Message);
+                            cout.ErrorFormat("failed to generate class {0}, {1}", tn.ShortName, ex.Message);
                         }
                     }
 
-                    stdio.WriteLine("completed");
+                    cout.WriteLine("completed");
                     return;
                 });
             }
             else
             {
-                stdio.ErrorFormat("warning: database is not selected");
+                cout.ErrorFormat("warning: database is not selected");
             }
 
         }
@@ -376,18 +376,18 @@ namespace sqlcon
 
             if (tname != null)
             {
-                stdio.WriteLine("start to generate {0} csv file", tname);
+                cout.WriteLine("start to generate {0} csv file", tname);
                 file = fullName(tname);
                 var dt = new SqlBuilder().SELECT.COLUMNS(cmd.Columns).FROM(tname).SqlCmd.FillDataTable();
                 using (var writer = file.NewStreamWriter())
                 {
                     CsvFile.Write(dt, writer, true);
                 }
-                stdio.WriteLine("completed {0} => {1}", tname.ShortName, file);
+                cout.WriteLine("completed {0} => {1}", tname.ShortName, file);
             }
             else if (dname != null)
             {
-                stdio.WriteLine("start to generate {0} csv to directory: {1}", dname, path);
+                cout.WriteLine("start to generate {0} csv to directory: {1}", dname, path);
                 CancelableWork.CanCancel(cts =>
                 {
                     var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportIncludedTables);
@@ -405,21 +405,21 @@ namespace sqlcon
                             {
                                 CsvFile.Write(dt, writer, true);
                             }
-                            stdio.WriteLine("generated for {0} at {1}", tn.ShortName, path);
+                            cout.WriteLine("generated for {0} at {1}", tn.ShortName, path);
                         }
                         catch (Exception ex)
                         {
-                            stdio.ErrorFormat("failed to generate {0}, {1}", tn.ShortName, ex.Message);
+                            cout.ErrorFormat("failed to generate {0}, {1}", tn.ShortName, ex.Message);
                         }
                     }
 
-                    stdio.WriteLine("completed");
+                    cout.WriteLine("completed");
                     return;
                 });
             }
             else
             {
-                stdio.ErrorFormat("warning: table or database is not seleted");
+                cout.ErrorFormat("warning: table or database is not seleted");
             }
         }
 
@@ -467,7 +467,7 @@ namespace sqlcon
             }
             else
             {
-                stdio.ErrorFormat("data table cannot find, use command type or select first");
+                cout.ErrorFormat("data table cannot find, use command type or select first");
                 return;
             }
 
@@ -495,7 +495,7 @@ namespace sqlcon
                 };
 
                 string file = builder.WriteFile(path);
-                stdio.WriteLine("code generated on {0}", file);
+                cout.WriteLine("code generated on {0}", file);
             }
             else
             {
@@ -507,7 +507,7 @@ namespace sqlcon
                 };
 
                 string file = builder.WriteFile(path);
-                stdio.WriteLine("code generated on {0}", file);
+                cout.WriteLine("code generated on {0}", file);
             }
         }
 
@@ -515,7 +515,7 @@ namespace sqlcon
         {
             if (dname == null)
             {
-                stdio.ErrorFormat("select a database first");
+                cout.ErrorFormat("select a database first");
                 return;
             }
 
@@ -524,18 +524,18 @@ namespace sqlcon
 
             if (tname != null)
             {
-                stdio.WriteLine("start to generate {0} entity framework class file", tname);
+                cout.WriteLine("start to generate {0} entity framework class file", tname);
                 var builder = new EntityClassBuilder(cmd, tname)
                 {
                     ns = ns
                 };
 
                 string file = builder.WriteFile(path);
-                stdio.WriteLine("completed {0} => {1}", tname.ShortName, file);
+                cout.WriteLine("completed {0} => {1}", tname.ShortName, file);
             }
             else if (dname != null)
             {
-                stdio.WriteLine("start to generate {0} entity framework class to directory: {1}", dname, path);
+                cout.WriteLine("start to generate {0} entity framework class to directory: {1}", dname, path);
                 CancelableWork.CanCancel(cts =>
                 {
                     var md = new MatchedDatabase(dname, cmd.wildcard, null); //cfg.exportExcludedTables);
@@ -553,21 +553,21 @@ namespace sqlcon
                             };
 
                             string file = builder.WriteFile(path);
-                            stdio.WriteLine("generated for {0} at {1}", tn.ShortName, path);
+                            cout.WriteLine("generated for {0} at {1}", tn.ShortName, path);
                         }
                         catch (Exception ex)
                         {
-                            stdio.ErrorFormat("failed to generate {0}, {1}", tn.ShortName, ex.Message);
+                            cout.ErrorFormat("failed to generate {0}, {1}", tn.ShortName, ex.Message);
                         }
                     }
 
-                    stdio.WriteLine("completed");
+                    cout.WriteLine("completed");
                     return;
                 });
             }
             else
             {
-                stdio.ErrorFormat("warning: table or database is not seleted");
+                cout.ErrorFormat("warning: table or database is not seleted");
             }
 
         }
@@ -587,7 +587,7 @@ namespace sqlcon
                     ns = ns
                 };
                 string file = builder.WriteFile(path);
-                stdio.WriteLine("code generated on {0}", file);
+                cout.WriteLine("code generated on {0}", file);
             }
             else if (dname != null)
             {
@@ -601,14 +601,14 @@ namespace sqlcon
                     };
 
                     string file = builder.WriteFile(path);
-                    stdio.WriteLine("code generated on {0}", file);
+                    cout.WriteLine("code generated on {0}", file);
                 }
 
                 return;
             }
             else
             {
-                stdio.ErrorFormat("warning: table or database is not seleted");
+                cout.ErrorFormat("warning: table or database is not seleted");
             }
         }
 
@@ -618,13 +618,13 @@ namespace sqlcon
             var dt = ShellHistory.LastOrCurrentTable(tname);
             if (dt == null)
             {
-                stdio.ErrorFormat("display data table first by sql clause or command [type]");
+                cout.ErrorFormat("display data table first by sql clause or command [type]");
                 return null;
             }
 
             if (dt.Rows.Count == 0)
             {
-                stdio.ErrorFormat("no rows found");
+                cout.ErrorFormat("no rows found");
                 return null;
             }
 
@@ -637,7 +637,7 @@ namespace sqlcon
             if (dt == null)
                 return;
 
-            stdio.WriteLine(TableOut.ToJson(dt));
+            cout.WriteLine(TableOut.ToJson(dt));
         }
 
         /// <summary>
@@ -687,56 +687,56 @@ namespace sqlcon
 
         public static void Help()
         {
-            stdio.WriteLine("export data, schema, class, and template on current selected server/db/table");
-            stdio.WriteLine("option of SQL generation:");
-            stdio.WriteLine("   /insert  : export INSERT INTO script on current table/database");
-            stdio.WriteLine("   [/if]    : option /if generate if exists row then UPDATE else INSERT");
-            stdio.WriteLine("   /create  : generate CREATE TABLE script on current table/database");
-            stdio.WriteLine("   /select  : generate SELECT FROM WHERE template");
-            stdio.WriteLine("   /update  : generate UPDATE SET WHERE template");
-            stdio.WriteLine("   /save    : generate IF EXISTS UPDATE ELSE INSERT template");
-            stdio.WriteLine("   /delete  : generate DELETE FROM WHERE template, delete rows with foreign keys constraints");
-            stdio.WriteLine("option of data generation:");
-            stdio.WriteLine("   /schema  : generate database schema xml file");
-            stdio.WriteLine("   /data    : generate database/table data xml file");
-            stdio.WriteLine("   /csv     : generate table csv file");
-            stdio.WriteLine("   /json    : generate json from last result");
-            stdio.WriteLine("option of code generation:");
-            stdio.WriteLine("   /dpo     : generate C# table class");
-            stdio.WriteLine("   /l2s     : generate C# Linq to SQL class");
-            stdio.WriteLine("   /dc1     : generate C# data contract class and extension class from last result");
-            stdio.WriteLine("      [/readonly]: contract class for reading only");
-            stdio.WriteLine("   /dc2     : generate C# data contract class from last result");
-            stdio.WriteLine("      [/method:name] default convert method is defined on the .cfg");
-            stdio.WriteLine("      [/col:pk1,pk2] default primary key is the first column");
-            stdio.WriteLine("   /entity  : generate C# method copy/compare/clone for Entity framework");
-            stdio.WriteLine("      [/base:type] define base class or interface, use ~ to represent generic class itself, delimited by ;");
-            stdio.WriteLine("   /c#      : generate C# data from last result");
-            stdio.WriteLine("      [/type:dict|list|enum] data type, default is list");
-            stdio.WriteLine("   /conf    : generate Config C# class");
-            stdio.WriteLine("      [/type:k|d|f|p|F|P] C# class type, default is kdP");
-            stdio.WriteLine("          k : generate class of const key");
-            stdio.WriteLine("          d : generate class of default value");
-            stdio.WriteLine("          P : generate class of static property");
-            stdio.WriteLine("          F : generate class of static field");
-            stdio.WriteLine("          p : generate class of hierarchial property");
-            stdio.WriteLine("          f : generate class of hierarchial field");
-            stdio.WriteLine("      [/method:name] GetValue method name, default is \"GetValue<>\"");
-            stdio.WriteLine("      [/kc:name] class name of const key");
-            stdio.WriteLine("      [/dc:name] class name of default value");
-            stdio.WriteLine("   /cfg    : generate config file");
-            stdio.WriteLine("      [/type:f|h] script type");
-            stdio.WriteLine("          h : generate TIE hierarchial config script file");
-            stdio.WriteLine("          f : generate TIE config script file");
-            stdio.WriteLine("common options /conf and /cfg");
-            stdio.WriteLine("      [/in:path] input path(.cfg)");
-            stdio.WriteLine("      [/key:column] column of key on config table");
-            stdio.WriteLine("      [/default:column] column of default value config table");
-            stdio.WriteLine("common options for code generation");
-            stdio.WriteLine("      [/ns:name] default name space is defined on the .cfg");
-            stdio.WriteLine("      [/class:name] default class name is defined on the .cfg");
-            stdio.WriteLine("      [/using:assembly] allow the use of types in a namespace, delimited by ;");
-            stdio.WriteLine("      [/out:path] output directory or file name (.cs)");
+            cout.WriteLine("export data, schema, class, and template on current selected server/db/table");
+            cout.WriteLine("option of SQL generation:");
+            cout.WriteLine("   /insert  : export INSERT INTO script on current table/database");
+            cout.WriteLine("   [/if]    : option /if generate if exists row then UPDATE else INSERT");
+            cout.WriteLine("   /create  : generate CREATE TABLE script on current table/database");
+            cout.WriteLine("   /select  : generate SELECT FROM WHERE template");
+            cout.WriteLine("   /update  : generate UPDATE SET WHERE template");
+            cout.WriteLine("   /save    : generate IF EXISTS UPDATE ELSE INSERT template");
+            cout.WriteLine("   /delete  : generate DELETE FROM WHERE template, delete rows with foreign keys constraints");
+            cout.WriteLine("option of data generation:");
+            cout.WriteLine("   /schema  : generate database schema xml file");
+            cout.WriteLine("   /data    : generate database/table data xml file");
+            cout.WriteLine("   /csv     : generate table csv file");
+            cout.WriteLine("   /json    : generate json from last result");
+            cout.WriteLine("option of code generation:");
+            cout.WriteLine("   /dpo     : generate C# table class");
+            cout.WriteLine("   /l2s     : generate C# Linq to SQL class");
+            cout.WriteLine("   /dc1     : generate C# data contract class and extension class from last result");
+            cout.WriteLine("      [/readonly]: contract class for reading only");
+            cout.WriteLine("   /dc2     : generate C# data contract class from last result");
+            cout.WriteLine("      [/method:name] default convert method is defined on the .cfg");
+            cout.WriteLine("      [/col:pk1,pk2] default primary key is the first column");
+            cout.WriteLine("   /entity  : generate C# method copy/compare/clone for Entity framework");
+            cout.WriteLine("      [/base:type] define base class or interface, use ~ to represent generic class itself, delimited by ;");
+            cout.WriteLine("   /c#      : generate C# data from last result");
+            cout.WriteLine("      [/type:dict|list|enum] data type, default is list");
+            cout.WriteLine("   /conf    : generate Config C# class");
+            cout.WriteLine("      [/type:k|d|f|p|F|P] C# class type, default is kdP");
+            cout.WriteLine("          k : generate class of const key");
+            cout.WriteLine("          d : generate class of default value");
+            cout.WriteLine("          P : generate class of static property");
+            cout.WriteLine("          F : generate class of static field");
+            cout.WriteLine("          p : generate class of hierarchial property");
+            cout.WriteLine("          f : generate class of hierarchial field");
+            cout.WriteLine("      [/method:name] GetValue method name, default is \"GetValue<>\"");
+            cout.WriteLine("      [/kc:name] class name of const key");
+            cout.WriteLine("      [/dc:name] class name of default value");
+            cout.WriteLine("   /cfg    : generate config file");
+            cout.WriteLine("      [/type:f|h] script type");
+            cout.WriteLine("          h : generate TIE hierarchial config script file");
+            cout.WriteLine("          f : generate TIE config script file");
+            cout.WriteLine("common options /conf and /cfg");
+            cout.WriteLine("      [/in:path] input path(.cfg)");
+            cout.WriteLine("      [/key:column] column of key on config table");
+            cout.WriteLine("      [/default:column] column of default value config table");
+            cout.WriteLine("common options for code generation");
+            cout.WriteLine("      [/ns:name] default name space is defined on the .cfg");
+            cout.WriteLine("      [/class:name] default class name is defined on the .cfg");
+            cout.WriteLine("      [/using:assembly] allow the use of types in a namespace, delimited by ;");
+            cout.WriteLine("      [/out:path] output directory or file name (.cs)");
         }
 
         public void Run()
@@ -778,7 +778,7 @@ namespace sqlcon
             else if (cmd.Has("cfg"))
                 ExportConfigurationFile();
             else
-                stdio.ErrorFormat("invalid command options");
+                cout.ErrorFormat("invalid command options");
         }
     }
 }

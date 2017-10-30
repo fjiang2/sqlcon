@@ -45,7 +45,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                stdio.Error(ex.Message);
+                cout.Error(ex.Message);
                 return;
             }
 

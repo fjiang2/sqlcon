@@ -80,7 +80,7 @@ namespace sqlcon
                         }
                         else
                         {
-                            stdio.Error("invalid arguments on function void run(string)");
+                            cout.Error("invalid arguments on function void run(string)");
                         }
 
                         if (line != null)
@@ -93,7 +93,7 @@ namespace sqlcon
                             }
                             else
                             {
-                                stdio.Error("shell not found");
+                                cout.Error("shell not found");
                                 return new VAL();
                             }
                         }
@@ -112,7 +112,7 @@ namespace sqlcon
 
                             if (name == null)
                             {
-                                stdio.WriteLine("require parameter name at arguments({0}), run func(id=20,x=2);", i + 1);
+                                cout.WriteLine("require parameter name at arguments({0}), run func(id=20,x=2);", i + 1);
                                 return new VAL(2);
                             }
                             val.AddMember(name, parameter);
