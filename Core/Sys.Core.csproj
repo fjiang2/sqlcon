@@ -295,6 +295,9 @@
     <Compile Include="Networking\RemoteOutputBlock.cs" />
     <Compile Include="Networking\RemoteProxy.cs" />
     <Compile Include="Data\Persistence\TableBulkCopy.cs" />
+    <Compile Include="Sys\Log.cs" />
+    <Compile Include="Sys\SeverityLevel.cs" />
+    <Compile Include="Sys\StackInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
