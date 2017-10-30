@@ -278,11 +278,11 @@ namespace Sys.CodeBuilder
             if ((type & UtilsStaticMethod.CloneFrom) == UtilsStaticMethod.CloneFrom)
                 Add(x.CloneFrom());
 
-           
+
             if ((type & UtilsStaticMethod.CompareTo) == UtilsStaticMethod.CompareTo)
                 Add(x.CompareTo());
 
-           
+
             if ((type & UtilsStaticMethod.CopyTo) == UtilsStaticMethod.CopyTo)
                 Add(x.CopyTo());
 
@@ -293,7 +293,7 @@ namespace Sys.CodeBuilder
 
         private Dictionary<string, int> _names = new Dictionary<string, int>();
 
-
+        UniqueNameMaker uniqueNameMaker = new UniqueNameMaker();
         /// <summary>
         /// make unique name in the class
         /// </summary>
@@ -301,16 +301,7 @@ namespace Sys.CodeBuilder
         /// <returns></returns>
         public string MakeUniqueName(string name)
         {
-            if (_names.ContainsKey(name))
-                _names[name] += 1;
-            else
-                _names.Add(name, 0);
-
-            int index = _names[name];
-            if (index == 0)
-                return name;
-            else
-                return $"{name}{index}";
+            return uniqueNameMaker.ToUniqueName(name);
         }
     }
 }

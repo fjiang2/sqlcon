@@ -78,6 +78,7 @@
     <Compile Include="CodeBuilder\Property.cs" />
     <Compile Include="CodeBuilder\Statement.cs" />
     <Compile Include="CodeBuilder\TypeInfo.cs" />
+    <Compile Include="CodeBuilder\UniqueNameMaker.cs" />
     <Compile Include="CodeBuilder\UtilsMethod.cs" />
     <Compile Include="CodeBuilder\Value.cs" />
     <Compile Include="Compare\ColumnPair.cs" />
