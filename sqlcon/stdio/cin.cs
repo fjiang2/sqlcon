@@ -62,7 +62,7 @@ namespace sqlcon
 
 
                 builder.Append(ch);
-                cout.Write(ch);
+                cout.Write(ch.ToString());
 
                 keyInfo = Console.ReadKey();
             };

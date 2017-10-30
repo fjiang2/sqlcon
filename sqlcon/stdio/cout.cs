@@ -9,7 +9,7 @@ namespace sqlcon
     class cout
     {
         /// <summary>
-        /// turn command-echoing on/off
+        /// turn command-echoing on/off on the screen
         /// </summary>
         public static bool echo { get; set; } = true;
 
@@ -22,8 +22,6 @@ namespace sqlcon
             clog.Write(text);
         }
 
-
-
         public static void WriteLine(string text)
         {
             if (echo)
@@ -32,17 +30,9 @@ namespace sqlcon
             clog.WriteLine(text);
         }
 
-
-        public static void Write(char ch)
-        {
-            string text = ch.ToString();
-            Write(text);
-        }
-
-
         public static void WriteLine()
         {
-            WriteLine("");
+            WriteLine(string.Empty);
         }
 
         public static void WriteLine(string format, params object[] args)
@@ -51,10 +41,10 @@ namespace sqlcon
             WriteLine(text);
         }
 
-        public static void DisplayTitle(string text)
+        public static void WriteLine(ConsoleColor color, string text)
         {
             var keep = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.ForegroundColor = color;  
             WriteLine(text);
             Console.ForegroundColor = keep;
         }

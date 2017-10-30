@@ -22,7 +22,7 @@ namespace sqlcon
             if (dt.Rows.Count != 0)
             {
                 found = true;
-                cout.DisplayTitle("Table Names");
+                cout.WriteLine(ConsoleColor.Cyan, "Table Names");
                 dt.ToConsole();
             };
 
@@ -47,7 +47,7 @@ ORDER BY c.name, c.column_id
             if (dt.Rows.Count != 0)
             {
                 found = true;
-                cout.DisplayTitle("Table Columns");
+                cout.WriteLine(ConsoleColor.Cyan, "Table Columns");
                 dt.ToConsole();
             };
 
@@ -58,7 +58,7 @@ ORDER BY c.name, c.column_id
             if (dt.Rows.Count != 0)
             {
                 found = true;
-                cout.DisplayTitle("View Names");
+                cout.WriteLine(ConsoleColor.Cyan, "View Names");
                 dt.ToConsole();
             }
 
@@ -80,7 +80,7 @@ ORDER BY c.name, c.column_id
             if (dt.Rows.Count != 0)
             {
                 found = true;
-                cout.DisplayTitle("View Columns");
+                cout.WriteLine(ConsoleColor.Cyan, "View Columns");
                 dt.ToConsole();
             }
 
