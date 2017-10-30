@@ -19,5 +19,9 @@ namespace sqlcon
             Console.ForegroundColor = keep;
         }
 
+        public static void WriteLine(string text, Exception ex)
+        {
+            WriteLine($"{text}, {ex.Message}");
+        }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
 
@@ -23,24 +24,25 @@ namespace sqlcon
                 writer.Close();
         }
 
-        public static void Write(string value)
+        public static void Write(string text)
         {
             if (writer == null)
                 return;
 
 
-            writer.Write(value);
+            writer.Write(text);
             writer.Flush();
         }
 
-        public static void WriteLine(string value)
+        public static void WriteLine(string text)
         {
             if (writer == null)
                 return;
 
 
-            writer.WriteLine(value);
+            writer.WriteLine(text);
             writer.Flush();
         }
+       
     }
 }
