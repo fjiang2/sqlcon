@@ -9,7 +9,7 @@ namespace Sys
 {
     public static class ExceptionExtension
     {
-        public static string AllMessage(this Exception exception)
+        public static string AllMessages(this Exception exception)
         {
             StringBuilder builder = new StringBuilder(exception.Message);
 

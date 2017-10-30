@@ -10,98 +10,74 @@ namespace Sys
 {
     public class Log
     {
-        private static ReaderWriterLock rwLock = new ReaderWriterLock();
-        private static int lockTimeout = 5 * 1000;
-        private static string path = "sys.log";
+        private static ReaderWriterLockSlim rwLock = new ReaderWriterLockSlim();
+        private static int timeout = 5 * 1000;
+        public static string Path { get; set; } = "sys.log";
 
-        private static void Write(string path, string text)
+        private static bool Append(string path, string text)
         {
-            try
+            if (rwLock.TryEnterWriteLock(timeout))
             {
-                rwLock.AcquireWriterLock(lockTimeout);
-
-                int attempts = 0;
-                StreamWriter writer = null;
-
-                L1:
                 try
                 {
-                    if (attempts < 3)
-                        writer = File.AppendText(path);
-                    else
-                        return;
-                }
-                catch (Exception)
-                {
-                    attempts++;
-                    goto L1;
-                }
-
-
-                if (writer == null)
-                    return;
-
-                try
-                {
-                    writer.WriteLine(text);
+                    File.AppendAllText(path, text);
                 }
                 catch (Exception)
                 {
                 }
                 finally
                 {
-                    writer.Close();
+                    rwLock.ExitWriteLock();
                 }
-
+                return true;
             }
-            catch (Exception)
+            else
             {
-            }
-            finally
-            {
-                rwLock.ReleaseWriterLock();
+                return false;
             }
         }
 
 
         public static void Error(string text)
         {
-            text = History(text);
-            Write(path, text);
+            text = History(SeverityLevel.Error, text);
+            Append(Path, text);
         }
 
         public static void Error(string text, Exception ex)
         {
-
+            text = History(SeverityLevel.Error, text);
+            StringBuilder builder = new StringBuilder(text);
+            builder.AppendLine(ex.AllMessages())
+                .AppendLine(ex.StackTrace);
+            Append(Path, builder.ToString());
         }
 
         public static void Warn(string text)
         {
-
+            text = History(SeverityLevel.Warn, text);
+            Append(Path, text);
         }
 
+        public static void Info(string text)
+        {
+            text = History(SeverityLevel.Information, text);
+            Append(Path, text);
+        }
 
-        private static string History(string text)
+        public static void Debug(string text)
+        {
+            text = History(SeverityLevel.Debug, text);
+            Append(Path, text);
+        }
+
+        private static string History(SeverityLevel level, string text)
         {
             string now = DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss.ffff");
-            return $"{now} {text}";
-        }
 
-
-
-        private string GetStackInfo(SeverityLevel level)
-        {
-            StringBuilder sb = new StringBuilder();
+            int threadId = Thread.CurrentThread.ManagedThreadId;
             var stackInfo = new StackInfo();
-            sb.Append($"\t-{level}-\t")
-            .Append("T[")
-            .Append(Thread.CurrentThread.GetHashCode().ToString())
-            .Append("]\t")
-            .Append($"{stackInfo}")
-            .Append(": ");
-
-
-            return sb.ToString();
+            return $"{now} [{threadId}] {level} {stackInfo} - {text} {Environment.NewLine}";
         }
     }
 }
