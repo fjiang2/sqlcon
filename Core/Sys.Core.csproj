@@ -43,6 +43,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Deployment" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -270,6 +271,8 @@
     <Compile Include="Message\MessageCode.cs" />
     <Compile Include="Message\MessageLevel.cs" />
     <Compile Include="Message\MessageLocation.cs" />
+    <Compile Include="Networking\WebSockets\WebSocketMessage.cs" />
+    <Compile Include="Networking\WebSockets\WebSocketServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extension\SysExtensiton.cs" />
     <Compile Include="Extension\StringExtension.cs" />
