@@ -289,7 +289,7 @@ namespace sqlcon
 
 
                         cout.WriteLine("start to generate {0}", tname);
-                        var dt = new SqlBuilder().SELECT.TOP(cmd.top).COLUMNS().FROM(tname).SqlCmd.FillDataTable();
+                        var dt = new SqlBuilder().SELECT.TOP(cmd.Top).COLUMNS().FROM(tname).SqlCmd.FillDataTable();
                         var file = xml.Write(tname, dt);
                         cout.WriteLine("completed {0} => {1}", tname.ShortName, file);
                     }
@@ -297,10 +297,10 @@ namespace sqlcon
                 }
                );
 
-                if (cmd.top == 0)
+                if (cmd.Top == 0)
                     cout.WriteLine("completed");
                 else
-                    cout.WriteLine("completed to export TOP {0} row(s) for each table", cmd.top);
+                    cout.WriteLine("completed to export TOP {0} row(s) for each table", cmd.Top);
             }
             else
             {

@@ -23,7 +23,7 @@ namespace sqlcon
         {
             string line = Console.ReadLine();
 
-            cout.WriteLine(line);
+            //cout.WriteLine(line);
 
             return line;
         }

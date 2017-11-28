@@ -161,7 +161,7 @@ namespace sqlcon
         public bool Display(Command cmd)
         {
             SqlBuilder builder;
-            int top = cmd.top;
+            int top = cmd.Top;
             string[] columns = cmd.Columns;
 
             if (cmd.wildcard != null)
@@ -206,7 +206,7 @@ namespace sqlcon
             SqlBuilder builder;
             if (cmd.wildcard == null)
             {
-                builder = new SqlBuilder().SELECT.TOP(cmd.top).COLUMNS(columns).FROM(tname);
+                builder = new SqlBuilder().SELECT.TOP(cmd.Top).COLUMNS(columns).FROM(tname);
                 if (locator != null)
                     builder.WHERE(locator);
             }
@@ -219,7 +219,7 @@ namespace sqlcon
                 builder = new SqlBuilder().SELECT.COLUMNS(columns).FROM(tname).WHERE(where);
             }
 
-            return Display(cmd, builder, tname, cmd.top);
+            return Display(cmd, builder, tname, cmd.Top);
         }
 
 

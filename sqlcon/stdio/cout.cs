@@ -12,6 +12,13 @@ namespace sqlcon
         /// turn command-echoing on/off on the screen
         /// </summary>
         public static bool echo { get; set; } = true;
+        private static int WindowWidth { get; } = 80;
+
+        static cout()
+        {
+            if (Environment.UserInteractive && Console.OpenStandardInput(1) != System.IO.Stream.Null)
+                WindowWidth = Console.BufferWidth;
+        }
 
 
         public static void Write(string text)
@@ -56,7 +63,7 @@ namespace sqlcon
             {
                 int w = -1;
                 if (!Console.IsOutputRedirected)
-                    w = Console.BufferWidth;
+                    w = WindowWidth;
 
                 if (w != -1 && text.Length > w)
                     Console.WriteLine(text.Substring(0, w - 1));
