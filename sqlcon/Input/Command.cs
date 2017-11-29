@@ -36,10 +36,9 @@ namespace sqlcon
             : base(line)
         {
             this.cfg = cfg;
-
-            this.HasDefinition = false;
-            this.IsVertical = false;
             this.Top = cfg.Limit_Top;
+
+            base.Init();
         }
 
         protected override bool CustomerizeOption(string a)

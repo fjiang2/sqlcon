@@ -10,7 +10,7 @@ namespace sqlcon
 {
     class BaseCommand
     {
-        public readonly bool badcommand = false;
+        public bool badcommand { get; private set; }
         protected List<string> paths = new List<string>();
 
         public string Action;
@@ -21,9 +21,15 @@ namespace sqlcon
 
         public Options options { get; } = new Options();
 
+        private string line;
+
         public BaseCommand(string line)
         {
+            this.line = line;
+        }
 
+        protected void Init()
+        { 
             if (string.IsNullOrEmpty(line))
                 return;
 
