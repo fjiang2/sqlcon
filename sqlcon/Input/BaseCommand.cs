@@ -21,15 +21,14 @@ namespace sqlcon
 
         public Options options { get; } = new Options();
 
-        private string line;
+        //private string line;
 
-        public BaseCommand(string line)
+        public BaseCommand()
         {
-            this.line = line;
         }
 
-        protected void Init()
-        { 
+        protected void ParseLine(string line)
+        {
             if (string.IsNullOrEmpty(line))
                 return;
 

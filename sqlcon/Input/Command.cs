@@ -32,13 +32,12 @@ namespace sqlcon
         private string columns;
         private Configuration cfg;
 
-        public Command(string line, Configuration cfg)
-            : base(line)
+        public Command(Configuration cfg, string line)
         {
             this.cfg = cfg;
             this.Top = cfg.Limit_Top;
 
-            base.Init();
+            ParseLine(line);
         }
 
         protected override bool CustomerizeOption(string a)

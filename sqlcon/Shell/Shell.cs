@@ -13,6 +13,7 @@ namespace sqlcon
 {
     partial class Shell : ShellContext
     {
+     
         public Shell(Configuration cfg)
             : base(cfg)
         {
@@ -187,14 +188,13 @@ namespace sqlcon
         }
 
 
-        private NextStep DoSingleLineCommand(string text)
+        private NextStep DoSingleLineCommand(string line)
         {
-            text = text.Trim();
-            if (text == string.Empty)
+            line = line.Trim();
+            if (line == string.Empty)
                 return NextStep.CONTINUE;
 
-
-            Command cmd = new Command(text, cfg);
+            Command cmd = new Command(cfg, line);
             if (cmd.badcommand)
                 return NextStep.ERROR;
 
