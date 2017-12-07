@@ -57,7 +57,12 @@ namespace Sys.CodeBuilder
         private string typeText()
         {
             if (userType != null)
-                return userType;
+            {
+                if (isArray)
+                    return userType + "[]";
+                else
+                    return userType;
+            }
 
             if (type == null)
             {

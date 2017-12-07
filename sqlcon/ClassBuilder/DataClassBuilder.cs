@@ -190,7 +190,10 @@ namespace sqlcon
             {
                 var A = group.ToArray();
                 if (A.Length > 1)
+                {
                     valueType.isArray = true;
+                    break;
+                }
             }
 
             foreach (var group in groups)
