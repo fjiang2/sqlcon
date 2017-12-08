@@ -55,7 +55,7 @@ namespace sqlcon
                     }
                     catch (System.Data.SqlClient.SqlException ex)
                     {
-                        cerr.WriteLine(ex.AllMessage(builder.ToString()));
+                        cerr.WriteLine(ex.AllMessages(builder.ToString()));
                         return count;
                     }
 

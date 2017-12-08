@@ -145,7 +145,7 @@ namespace sqlcon
                 }
                 catch (System.Data.SqlClient.SqlException ex1)
                 {
-                    cerr.WriteLine($"SQL:{ex1.AllMessage()}");
+                    cerr.WriteLine($"SQL:{ex1.AllMessages()}");
                 }
                 catch (Exception ex)
                 {
@@ -176,11 +176,11 @@ namespace sqlcon
             }
             catch (System.Data.SqlClient.SqlException ex1)
             {
-                stdio.ErrorFormat("{0}:{1}", "SQL", ex1.AllMessage());
+                cerr.WriteLine($"SQL:{ex1.AllMessages()}");
             }
             catch (Exception ex2)
             {
-                stdio.ErrorFormat(ex2.Message);
+                cerr.WriteLine(ex2.Message);
             }
 
             return NextStep.ERROR;

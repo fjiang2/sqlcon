@@ -9,7 +9,7 @@ namespace Sys.Data
 {
     public static class ExceptionExtension
     {
-        public static string AllMessage(this SqlException ex, string sql = null)
+        public static string AllMessages(this SqlException ex, string sql = null)
         {
             StringBuilder builder = new StringBuilder();
             if (sql != null)
