@@ -13,7 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <TargetFrameworkProfile />
-    <PublishUrl>publish\</PublishUrl>
+    <PublishUrl>ftp://waws-prod-dm1-033.ftp.azurewebsites.windows.net/site/wwwroot/release/sqlcon/</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
@@ -23,7 +23,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>http://www.datconn.com/release/sqlcon/</InstallUrl>
+    <InstallUrl>http://sqlcon.azurewebsites.net/release/sqlcon/</InstallUrl>
     <SupportUrl>http://www.datconn.com/support/sqlcon.html</SupportUrl>
     <ErrorReportUrl>http://www.datconn.com/error/sqlcon.html</ErrorReportUrl>
     <ProductName>sqlcon</ProductName>
