@@ -722,6 +722,8 @@ namespace sqlcon
             cout.WriteLine("          p : generate class of hierarchial property");
             cout.WriteLine("          f : generate class of hierarchial field");
             cout.WriteLine("      [/method:name] GetValue method name, default is \"GetValue<>\"");
+            cout.WriteLine("      [/key:column] column key, required");
+            cout.WriteLine("      [/default:column] column default value, required");
             cout.WriteLine("      [/kc:name] class name of const key");
             cout.WriteLine("      [/dc:name] class name of default value");
             cout.WriteLine("   /cfg    : generate config file");

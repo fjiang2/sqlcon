@@ -21,32 +21,51 @@ namespace sqlcon
 
         public int ImportCsv(string path, TableName tname, string[] columns)
         {
-            int count = 0;
-
             //create column schema list
             TableSchema schema = new TableSchema(tname);
-            List<IColumn> list = new List<IColumn>();
-            foreach (string column in columns)
+            IColumn[] _columns;
+            try
             {
-                var c = schema.Columns.FirstOrDefault(x => x.ColumnName.ToUpper() == column.ToUpper());
-                if (c == null)
-                {
-                    cerr.WriteLine($"cannot find the column [{column}]");
-                    return count;
-                }
-
-                list.Add(c);
+                _columns = GetColumnSchema(schema, columns);
+            }
+            catch (Exception ex)
+            {
+                cerr.WriteLine(ex.Message);
+                return 0;
             }
 
-            var _columns = list.ToArray();
-
             //read .csv file
+            int count = 0;
             using (var reader = new StreamReader(path))
             {
                 while (!reader.EndOfStream)
                 {
                     string line = reader.ReadLine();
+
+                    //Processor header
+                    if (count == 0)
+                    {
+                        string[] __columns = line.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                        try
+                        {
+                            _columns = GetColumnSchema(schema, __columns);
+                            if (_columns.Length != 0)
+                            {
+                                count++;
+                                continue;
+                            }
+                        }
+                        catch (Exception)
+                        {
+                        }
+
+                        if (_columns.Length == 0)
+                            _columns = schema.Columns.ToArray();
+                    }
+
                     object[] values = parseLine(_columns, line);
+                    if (values == null)
+                        return count;
 
                     var builder = new SqlBuilder().INSERT(tname, columns).VALUES(values);
                     try
@@ -66,13 +85,45 @@ namespace sqlcon
             return count;
         }
 
+        private static IColumn[] GetColumnSchema(TableSchema schema, string[] columns)
+        {
+            List<IColumn> list = new List<IColumn>();
+            foreach (string column in columns)
+            {
+                var c = schema.Columns.FirstOrDefault(x => x.ColumnName.ToUpper() == column.ToUpper());
+                if (c == null)
+                {
+                    throw new Exception($"cannot find the column [{column}]");
+                }
+
+                list.Add(c);
+            }
+
+            return list.ToArray();
+
+        }
+
         private static object[] parseLine(IColumn[] columns, string line)
         {
-            string[] items = line.Split(',');
+            string[] items = line.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (items.Length > columns.Length)
+            {
+                cerr.WriteLine($"#columns({items.Length}) on .csv > #column({columns.Length}) on database, {line}");
+                return null;
+            }
+
             object[] values = new object[columns.Length];
             for (int i = 0; i < items.Length; i++)
             {
-                values[i] = (columns[i] as ColumnSchema).Parse(items[i]);
+                try
+                {
+                    values[i] = (columns[i] as ColumnSchema).Parse(items[i]);
+                }
+                catch (Exception ex)
+                {
+                    cerr.WriteLine($"cannot parse {items[i]} on column {columns[i]}, {ex.Message}");
+                }
             }
 
             return values;
