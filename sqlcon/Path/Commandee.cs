@@ -1645,5 +1645,71 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             return;
         }
+
+
+        public void check(Command cmd, Side theSide)
+        {
+            if (cmd.HasHelp)
+            {
+                cout.WriteLine("check data correctness");
+                cout.WriteLine("check [path]                   : check data on current table");
+                cout.WriteLine("options:");
+                cout.WriteLine("   /syntax                       : check key-value pair syntax");
+                cout.WriteLine("   /key:c1                     : column name of key variable");
+                cout.WriteLine("   /value:c2                   : column name of value expression");
+                cout.WriteLine("examples:");
+                cout.WriteLine("  check  dbo.config /syntax /key:Key /value:Value");
+                return;
+            }
+
+            if (!Navigate(cmd.Path1))
+                return;
+
+            if (!(pt.Item is TableName))
+            {
+                cerr.WriteLine("table is not selected");
+                return;
+            }
+
+            TableName tname = pt.Item as TableName;
+
+            if (cmd.Has("syntax"))
+            {
+                string colKey = cmd.GetValue("key") ?? "Key";
+                string colValue = cmd.GetValue("value") ?? "Value";
+
+                SqlBuilder builder = new SqlBuilder().SELECT.COLUMNS(new string[] { colKey, colValue }).FROM(tname);
+                var L = new SqlCmd(builder).ToList(row => new { Key = row.GetField<string>(colKey), Value = row.GetField<string>(colValue) });
+
+                Memory DS = new Memory();
+                foreach (var kvp in L)
+                {
+                    try
+                    {
+                        Script.Execute($"{kvp.Key}=0;", DS);
+                    }
+                    catch (Exception)
+                    {
+                        cerr.WriteLine($"invalid key={kvp.Key}");
+                    }
+
+                    try
+                    {
+                        VAL val = Script.Evaluate(kvp.Value, DS);
+                    }
+                    catch (Exception ex)
+                    {
+                        cerr.WriteLine($"invalid value={kvp.Value} on key={kvp.Key}, {ex.Message}");
+                    }
+                }
+
+                cout.WriteLine($"{L.Count()} items checking completed");
+                return;
+            }
+
+
+            cerr.WriteLine($"invalid command");
+            return;
+        }
     }
 }

@@ -423,6 +423,10 @@ namespace sqlcon
                     }
                     return NextStep.COMPLETED;
 
+                case "check":
+                    commandee.check(cmd, theSide);
+                    return NextStep.COMPLETED;
+
                 default:
                     if (!_SQL.Contains(cmd.Action.ToUpper()))
                     {

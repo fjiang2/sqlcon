@@ -47,6 +47,7 @@ namespace sqlcon
             cout.WriteLine("open /?                 : see more info");
             cout.WriteLine("save /?                 : see more info");
             cout.WriteLine("edit /?                 : see more info");
+            cout.WriteLine("check /?                : see more info");
             cout.WriteLine("last                    : display last result");
             cout.WriteLine();
             cout.WriteLine("<File Command>");
