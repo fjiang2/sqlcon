@@ -49,6 +49,17 @@ namespace sqlcon
             return Path.GetFullPath(path);
         }
 
+        public string[] ReadAllLines(string path)
+        {
+            path = GetFullPath(path, string.Empty);
+            if (File.Exists(path))
+                return File.ReadAllLines(path);
+            else
+                cout.WriteLine($"file not found {path}");
+
+            return null;
+        }
+
         public void ShowCurrentDirectory(string path)
         {
             const string DIR = "<DIR>";

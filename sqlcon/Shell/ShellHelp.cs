@@ -17,7 +17,7 @@ namespace sqlcon
             cout.WriteLine("exit                    : quit application");
             cout.WriteLine("help                    : this help");
             cout.WriteLine("?                       : this help");
-            cout.WriteLine("rem                     : records comments/remarks");
+            cout.WriteLine("rem                     : comments or remarks");
             cout.WriteLine("ver                     : display version");
             cout.WriteLine("cls                     : clears the screen");
             cout.WriteLine("echo /?                 : see more info");
@@ -47,12 +47,13 @@ namespace sqlcon
             cout.WriteLine("open /?                 : see more info");
             cout.WriteLine("save /?                 : see more info");
             cout.WriteLine("edit /?                 : see more info");
-            cout.WriteLine("check /?                : see more info");
+            cout.WriteLine("chk,check /?            : see more info");
             cout.WriteLine("last                    : display last result");
             cout.WriteLine();
             cout.WriteLine("<File Command>");
             cout.WriteLine("lcd [path]              : change or display current directory");
-            cout.WriteLine("ldir [path]             : display files");
+            cout.WriteLine("ldir [path]             : display local files on the directory");
+            cout.WriteLine("ltype [path]            : display local file content");
             cout.WriteLine("run [path]file          : run a batch program (.sqc)");
             cout.WriteLine("call [path]file         : call Tie program (.sqt)");
             cout.WriteLine("execute [path]file      : execute sql script(.sql)");

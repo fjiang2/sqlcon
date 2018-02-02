@@ -13,7 +13,7 @@ namespace sqlcon
 {
     partial class Shell : ShellContext
     {
-     
+
         public Shell(Configuration cfg)
             : base(cfg)
         {
@@ -358,6 +358,20 @@ namespace sqlcon
                     cfg.WorkingDirectory.ShowCurrentDirectory(cmd.arg1);
                     return NextStep.COMPLETED;
 
+                case "ltype":
+                    if (cmd.arg1 != null)
+                    {
+                        string[] lines = cfg.WorkingDirectory.ReadAllLines(cmd.arg1);
+                        if (lines != null)
+                        {
+                            foreach (var _line in lines)
+                                cout.WriteLine(_line);
+                        }
+                    }
+                    else
+                        cout.WriteLine("invalid arguments");
+                    return NextStep.COMPLETED;
+
                 case "run":
                     if (cmd.arg1 != null)
                     {
@@ -423,6 +437,7 @@ namespace sqlcon
                     }
                     return NextStep.COMPLETED;
 
+                case "chk":
                 case "check":
                     commandee.check(cmd, theSide);
                     return NextStep.COMPLETED;

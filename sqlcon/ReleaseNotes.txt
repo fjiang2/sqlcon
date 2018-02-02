@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+2/1/2018 v1.8.10.0
+	Improvements/Enhancements:
+	1. add command "ltype" to display local file content. like windows console command "type" in cmd.exe
+
 1/31/2018 v1.8.9.0
 	Improvements/Enhancements:
 	1. add command "check" to check key-value pair syntax, e.g. check  dbo.config /syntax /key:Key /value:Value
