@@ -62,6 +62,7 @@
     <Compile Include="CodeBuilder\AttributeInfoArg.cs" />
     <Compile Include="CodeBuilder\AttributeInfo.cs" />
     <Compile Include="CodeBuilder\Class.cs" />
+    <Compile Include="CodeBuilder\CodeString.cs" />
     <Compile Include="CodeBuilder\CSharpBuilder.cs" />
     <Compile Include="CodeBuilder\Buildable.cs" />
     <Compile Include="CodeBuilder\CodeLine.cs" />
