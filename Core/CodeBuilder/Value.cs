@@ -43,6 +43,10 @@ namespace Sys.CodeBuilder
             {
                 return $"new Guid(\"{value}\")";
             }
+            else if (value is CodeString)
+            {
+                return value.ToString();
+            }
             else if (value is byte[])
             {
                 var hex = (value as byte[])

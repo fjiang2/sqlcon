@@ -89,8 +89,26 @@ namespace sqlcon
             }
         }
 
+        /// <summary>
+        /// command: export /c# /code-column:Col1=Dictionary<int,string>;Col2=Dictionary<int,string>
+        /// </summary>
+        /// <returns></returns>
+        private Dictionary<string, TypeInfo> CodeColumnDef()
+        {
+            Dictionary<string, TypeInfo> dict = new Dictionary<string, TypeInfo>();
+            var columns = cmd.GetValue("code-column");
+            if (columns == null)
+                return dict;
+            string[] _columns = columns.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var column in _columns)
+            {
+                string[] kvp = column.Split('=');
+                TypeInfo ty = new TypeInfo { userType = kvp[1] };
+                dict.Add(kvp[0], ty);
+            }
 
-       
+            return dict;
+        }
 
 
         /// <summary>
@@ -106,6 +124,7 @@ namespace sqlcon
             builder.AddUsing("System.Collections.Generic");
             string cname = ClassName;
 
+            Dictionary<string, TypeInfo> codeColumns = CodeColumnDef();
             var clss = new Class(cname)
             {
                 modifier = Modifier.Public | Modifier.Partial
@@ -118,6 +137,8 @@ namespace sqlcon
             {
                 bool nullable = dt.AsEnumerable().Any(row => row[column] is DBNull);
                 TypeInfo ty = new TypeInfo(column.DataType) { Nullable = nullable };
+                if (codeColumns.ContainsKey(column.ColumnName))
+                    ty = codeColumns[column.ColumnName];
 
                 prop = new Property(ty, column.ColumnName.ToFieldName()) { modifier = Modifier.Public };
                 clss.Add(prop);
@@ -135,7 +156,7 @@ namespace sqlcon
 
             if (dataType == DataClassType.List)
             {
-                Field field = CreateListField(dt, cname, columns);
+                Field field = CreateListField(dt, cname, columns, codeColumns);
                 clss.Add(field);
             }
             else
@@ -146,7 +167,7 @@ namespace sqlcon
                     return;
                 }
 
-                Field field = CreateDictionaryField(dt, cname, columns);
+                Field field = CreateDictionaryField(dt, cname, columns, codeColumns);
                 clss.Add(field);
             }
 
@@ -154,7 +175,7 @@ namespace sqlcon
         }
 
 
-        private static Field CreateDictionaryField(DataTable dt, string cname, string[] columns)
+        private static Field CreateDictionaryField(DataTable dt, string cname, string[] columns, IDictionary<string, TypeInfo> codeColumns)
         {
             string fieldName = $"{cname}Data";
 
@@ -174,7 +195,11 @@ namespace sqlcon
                     var V = Value.NewPropertyObject(type);
                     for (int i = 0; i < columns.Length; i++)
                     {
-                        V.AddProperty(columns[i], new Value(row[i]));
+                        object obj = row[i];
+                        if (codeColumns.ContainsKey(columns[i]))
+                            obj = new CodeString(obj.ToString());
+
+                        V.AddProperty(columns[i], new Value(obj));
                     }
                     L.Add(new KeyValuePair<object, object>(key, V));
                 }
@@ -218,7 +243,7 @@ namespace sqlcon
             return field;
         }
 
-        private static Field CreateListField(DataTable dt, string cname, string[] columns)
+        private static Field CreateListField(DataTable dt, string cname, string[] columns, IDictionary<string, TypeInfo> codeColumns)
         {
             string fieldName = $"{cname}Data";
 
@@ -229,7 +254,11 @@ namespace sqlcon
                 var V = Value.NewPropertyObject(type);
                 for (int i = 0; i < columns.Length; i++)
                 {
-                    V.AddProperty(columns[i], new Value(row[i]));
+                    object obj = row[i];
+                    if (codeColumns.ContainsKey(columns[i]))
+                        obj = new CodeString(obj.ToString());
+
+                    V.AddProperty(columns[i], new Value(obj));
                 }
                 L.Add(V);
             }
