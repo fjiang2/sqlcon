@@ -16,10 +16,11 @@ namespace sqlcon
 
         static cout()
         {
-            if (Environment.UserInteractive && Console.OpenStandardInput(1) != System.IO.Stream.Null)
+            if (IsConsole)
                 WindowWidth = Console.BufferWidth;
         }
 
+        public static bool IsConsole => Environment.UserInteractive && Console.OpenStandardInput(1) != System.IO.Stream.Null;
 
         public static void Write(string text)
         {
@@ -51,19 +52,19 @@ namespace sqlcon
         public static void WriteLine(ConsoleColor color, string text)
         {
             var keep = Console.ForegroundColor;
-            Console.ForegroundColor = color;  
+            Console.ForegroundColor = color;
             WriteLine(text);
             Console.ForegroundColor = keep;
         }
 
-     
+
         public static void TrimWriteLine(string text)
         {
             if (echo)
             {
                 int w = -1;
-                if (!Console.IsOutputRedirected)
-                    w = WindowWidth;
+                if (!Console.IsOutputRedirected && IsConsole)
+                    w = Console.BufferWidth;
 
                 if (w != -1 && text.Length > w)
                     Console.WriteLine(text.Substring(0, w - 1));
