@@ -205,7 +205,11 @@ namespace sqlcon
                 }
                 else
                 {
-                    L.Add(new KeyValuePair<object, object>(key, new Value(row[1])));
+                    object obj = row[1];
+                    if (codeColumns.ContainsKey(columns[1]))
+                        obj = new CodeString(obj.ToString());
+
+                    L.Add(new KeyValuePair<object, object>(key, new Value(obj)));
                 }
             }
 
