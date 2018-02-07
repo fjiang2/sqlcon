@@ -5,21 +5,22 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data;
 using System.Data.Common;
+using System.IO;
 
 namespace sqlcon
 {
-    static class  ConsoleGrid
+    public static class ConsoleGrid
     {
-	  public static void ToConsole<T>(this IEnumerable<T> source)
+        public static void ToConsole<T>(this IEnumerable<T> source)
         {
             var properties = typeof(T).GetProperties();
             string[] headers = properties.Select(p => p.Name).ToArray();
-            
+
             Func<T, object[]> selector = row =>
                 {
                     var values = new object[headers.Length];
-                    int i=0;
-                    
+                    int i = 0;
+
                     foreach (var propertyInfo in properties)
                     {
                         values[i++] = propertyInfo.GetValue(row);
@@ -64,7 +65,8 @@ namespace sqlcon
 
                 var schema = schemaTable
                     .AsEnumerable()
-                    .Select(row => new {
+                    .Select(row => new
+                    {
                         Name = row.Field<string>("ColumnName"),
                         Size = row.Field<int>("ColumnSize"),
                         Type = row.Field<Type>("DataType")
@@ -115,9 +117,21 @@ namespace sqlcon
             }
 
         }
-
-
         public static void ToConsole(this DataTable table, bool more = false)
+        {
+            ToConsole(table, cout.TrimWriteLine);
+            cout.WriteLine("<{0}{1} row{2}>", more ? "top " : "", table.Rows.Count, table.Rows.Count > 1 ? "s" : "");
+        }
+
+        public static void ToTextWriter(this DataTable table, TextWriter writer, bool vertical = false)
+        {
+            if (!vertical)
+                ToConsole(table, writer.WriteLine);
+            else
+                ToVConsole(table, writer.WriteLine);
+        }
+
+        private static void ToConsole(this DataTable table, Action<string> writeLine)
         {
             ShellHistory.SetLastResult(table);
 
@@ -127,7 +141,7 @@ namespace sqlcon
 
             string[] headers = list.ToArray();
 
-            var D = new ConsoleTable(headers.Length);
+            var D = new ConsoleTable(writeLine, headers.Length);
 
             D.MeasureWidth(headers);
             foreach (DataRow row in table.Rows)
@@ -149,7 +163,6 @@ namespace sqlcon
 
             D.DisplayLine();
 
-            cout.WriteLine("<{0}{1} row{2}>", more ? "top " : "", table.Rows.Count,  table.Rows.Count > 1 ? "s" : "");
         }
 
 
@@ -210,8 +223,14 @@ namespace sqlcon
             D.DisplayLine();
         }
 
-
         public static void ToVConsole(this DataTable table, bool more)
+        {
+            ToVConsole(table, cout.TrimWriteLine);
+            cout.WriteLine("<{0}{1} row{2}>", more ? "top " : "", table.Rows.Count, table.Rows.Count > 1 ? "s" : "");
+        }
+
+
+        private static void ToVConsole(this DataTable table, Action<string> writeLine)
         {
 
             List<string> list = new List<string>();
@@ -223,17 +242,17 @@ namespace sqlcon
             int m = table.Rows.Count;
             int n = table.Columns.Count;
 
-            var D = new ConsoleTable(m + 1);
+            var D = new ConsoleTable(writeLine, m + 1);
 
             object[] L = new object[m + 1];
 
             for (int i = 0; i < n; i++)
             {
-                int k=0;
+                int k = 0;
                 L[k++] = headers[i];
                 foreach (DataRow row in table.Rows)
                     L[k++] = row[i];
-                
+
                 D.MeasureWidth(L);
             }
 
@@ -250,7 +269,7 @@ namespace sqlcon
             }
 
             D.DisplayLine();
-            cout.WriteLine("<{0}{1} row{2}>", more ? "top " : "", table.Rows.Count, table.Rows.Count > 1 ? "s" : "");
+
         }
 
     }

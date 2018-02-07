@@ -16,9 +16,15 @@ namespace sqlcon
         private const char DOT = '.';
 
         private int[] W;
+        private Action<string> writeLine;
 
         public ConsoleTable(int length)
+            :this(cout.TrimWriteLine, length)
         {
+        }
+        public ConsoleTable(Action<string> writeLine, int length)
+        {
+            this.writeLine = writeLine;
             this.W = new int[length];
         }
 
@@ -58,7 +64,7 @@ namespace sqlcon
 
             string text = builder.ToString();
 
-            cout.TrimWriteLine(text);
+            writeLine(text);
         }
 
         public void MeasureWidth(Type[] types)
