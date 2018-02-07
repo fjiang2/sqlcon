@@ -12,6 +12,12 @@ namespace sqlcon
     {
         public static void ToConsole<T>(this IEnumerable<T> source)
         {
+            ToConsole(source, cout.TrimWriteLine);
+        }
+
+
+        public static void ToConsole<T>(this IEnumerable<T> source, Action<string> writeLine)
+        {
             var properties = typeof(T).GetProperties();
             string[] headers = properties.Select(p => p.Name).ToArray();
 
@@ -27,13 +33,13 @@ namespace sqlcon
                     return values;
                 };
 
-            source.ToConsole(headers, selector);
+            source.ToConsole(headers, selector, writeLine);
         }
 
-        public static void ToConsole<T>(this IEnumerable<T> source, string[] headers, Func<T, object[]> selector)
+        public static void ToConsole<T>(this IEnumerable<T> source, string[] headers, Func<T, object[]> selector, Action<string> writeLine)
         {
 
-            var D = new ConsoleTable(headers.Length);
+            var D = new ConsoleTable(writeLine, headers.Length);
 
             D.MeasureWidth(headers);
             foreach (var row in source)
@@ -73,7 +79,7 @@ namespace sqlcon
 
                 string[] headers = schema.Select(row => row.Name).ToArray();
 
-                var D = new ConsoleTable(headers.Length);
+                var D = new ConsoleTable(cout.TrimWriteLine, headers.Length);
 
                 D.MeasureWidth(schema.Select(row => row.Size).ToArray());
                 D.MeasureWidth(headers);
@@ -157,7 +163,7 @@ namespace sqlcon
         }
 
 
-        public static void ToVConsole<T>(this IEnumerable<T> source)
+        public static void ToVConsole<T>(this IEnumerable<T> source, Action<string> writeLine)
         {
             var properties = typeof(T).GetProperties();
             string[] headers = properties.Select(p => p.Name).ToArray();
@@ -174,16 +180,16 @@ namespace sqlcon
                 return values;
             };
 
-            source.ToVConsole(headers, selector);
+            source.ToVConsole(headers, selector, writeLine);
         }
 
 
-        public static void ToVConsole<T>(this IEnumerable<T> source, string[] headers, Func<T, object[]> selector)
+        public static void ToVConsole<T>(this IEnumerable<T> source, string[] headers, Func<T, object[]> selector, Action<string> writeLine)
         {
             int m = 1;
             int n = headers.Length;
 
-            var D = new ConsoleTable(m + 1);
+            var D = new ConsoleTable(writeLine, m + 1);
 
             object[] L = new object[m + 1];
             T[] src = source.ToArray();
@@ -266,5 +272,5 @@ namespace sqlcon
 
     }
 
- 
+
 }

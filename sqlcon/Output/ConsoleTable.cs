@@ -18,10 +18,6 @@ namespace sqlcon
         private int[] W;
         private Action<string> writeLine;
 
-        public ConsoleTable(int length)
-            :this(cout.TrimWriteLine, length)
-        {
-        }
         public ConsoleTable(Action<string> writeLine, int length)
         {
             this.writeLine = writeLine;

@@ -10,27 +10,41 @@ namespace sqlcon
 {
     public static class Extension
     {
-        public static void WriteArea(this TextWriter stream, DataTable dt, bool vertical = false)
+        public static void WriteData(this TextWriter stream, DataTable dt, bool header = false, bool footer = false, bool vertical = false)
         {
-            stream.WriteLine($"[{dt.TableName}]");
+            if (header)
+                stream.WriteLine($"[{dt.TableName}]");
 
             if (!vertical)
                 dt.ToConsole(stream.WriteLine);
             else
                 dt.ToVConsole(stream.WriteLine);
 
-            stream.WriteLine("<{0} row{1}>", dt.Rows.Count, dt.Rows.Count > 1 ? "s" : "");
+            if (footer)
+                stream.WriteLine("<{0} row{1}>", dt.Rows.Count, dt.Rows.Count > 1 ? "s" : "");
         }
 
-        public static void WriteArea(this TextWriter stream, DataSet ds, bool vertical = false)
+        public static void WriteData(this TextWriter stream, DataSet ds, bool header = false, bool tableHeader=false, bool tableFooter = false, bool vertical = false)
         {
-            stream.WriteLine($"{ds.DataSetName}");
+            if (header)
+                stream.WriteLine($"\"{ds.DataSetName}\"");
+
             foreach (DataTable dt in ds.Tables)
             {
-                WriteArea(stream, dt, vertical);
+                WriteData(stream, dt, tableHeader, tableFooter, vertical);
             }
-
-            stream.WriteLine();
         }
+
+
+        public static void WriteData<T>(this TextWriter stream, IEnumerable<T> source, bool vertical = false)
+        {
+            if (!vertical)
+                source.ToConsole(stream.WriteLine);
+            else
+                source.ToVConsole(stream.WriteLine);
+
+        }
+
+
     }
 }
