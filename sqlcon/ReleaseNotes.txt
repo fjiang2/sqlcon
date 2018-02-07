@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+2/6/2018 v1.9.1.0
+	Bug Fixes:
+	1. display wrong gird when console window resized
+
 2/2/2018 v1.9.0.0
 	Improvements/Enhancements:
 	1. export /c# support user defined data type
