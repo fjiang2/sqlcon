@@ -10,7 +10,7 @@ namespace sqlcon
 {
     public static class Extension
     {
-        public static void WriteLine(this TextWriter stream, DataTable dt, bool vertical = false)
+        public static void WriteArea(this TextWriter stream, DataTable dt, bool vertical = false)
         {
             stream.WriteLine($"[{dt.TableName}]");
 
@@ -22,12 +22,12 @@ namespace sqlcon
             stream.WriteLine("<{0} row{1}>", dt.Rows.Count, dt.Rows.Count > 1 ? "s" : "");
         }
 
-        public static void WriteLine(this TextWriter stream, DataSet ds, bool vertical = false)
+        public static void WriteArea(this TextWriter stream, DataSet ds, bool vertical = false)
         {
             stream.WriteLine($"{ds.DataSetName}");
             foreach (DataTable dt in ds.Tables)
             {
-                stream.WriteLine(dt);
+                WriteArea(stream, dt, vertical);
             }
 
             stream.WriteLine();
