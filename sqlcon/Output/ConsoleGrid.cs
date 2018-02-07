@@ -5,11 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data;
 using System.Data.Common;
-using System.IO;
 
 namespace sqlcon
 {
-    public static class ConsoleGrid
+    static class ConsoleGrid
     {
         public static void ToConsole<T>(this IEnumerable<T> source)
         {
@@ -123,15 +122,7 @@ namespace sqlcon
             cout.WriteLine("<{0}{1} row{2}>", more ? "top " : "", table.Rows.Count, table.Rows.Count > 1 ? "s" : "");
         }
 
-        public static void ToTextWriter(this DataTable table, TextWriter writer, bool vertical = false)
-        {
-            if (!vertical)
-                ToConsole(table, writer.WriteLine);
-            else
-                ToVConsole(table, writer.WriteLine);
-        }
-
-        private static void ToConsole(this DataTable table, Action<string> writeLine)
+        public static void ToConsole(this DataTable table, Action<string> writeLine)
         {
             ShellHistory.SetLastResult(table);
 
@@ -230,7 +221,7 @@ namespace sqlcon
         }
 
 
-        private static void ToVConsole(this DataTable table, Action<string> writeLine)
+        public static void ToVConsole(this DataTable table, Action<string> writeLine)
         {
 
             List<string> list = new List<string>();
@@ -272,5 +263,8 @@ namespace sqlcon
 
         }
 
+
     }
+
+ 
 }
