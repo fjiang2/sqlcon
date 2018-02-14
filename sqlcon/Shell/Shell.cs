@@ -428,19 +428,7 @@ namespace sqlcon
                     return NextStep.COMPLETED;
 
                 case "last":
-                    {
-                        DataSet ds = ShellHistory.LastDataSet();
-                        if (ds != null)
-                        {
-                            foreach (DataTable dt in ds.Tables)
-                            {
-                                cout.WriteLine($"[{dt.TableName}]");
-                                dt.ToConsole();
-                            }
-                        }
-                        else
-                            cout.WriteLine("last result is not found");
-                    }
+                    commandee.last(cmd, cfg);
                     return NextStep.COMPLETED;
 
                 case "chk":

@@ -1547,10 +1547,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("save [file]");
                 cout.WriteLine("options:");
                 cout.WriteLine("  /output       : copy sql script ouput to clipboard");
-                cout.WriteLine("  /last         : last dataset to xml file");
                 cout.WriteLine("example:");
                 cout.WriteLine("  save /output");
-                cout.WriteLine("  save products.xml /last");
                 return;
             }
 
@@ -1566,43 +1564,6 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     string data = reader.ReadToEnd();
                     System.Windows.Clipboard.SetText(data);
                     cout.WriteLine("copied to clipboard");
-                }
-            }
-            else if (cmd.Has("last"))
-            {
-                var ds = ShellHistory.LastDataSet();
-                if (ds == null)
-                {
-                    cerr.WriteLine("last result is null");
-                    return;
-                }
-
-                string file = cmd.arg1;
-                if (file == null)
-                {
-                    cerr.WriteLine("file name missing");
-                    return;
-                }
-
-                try
-                {
-                    string directory = Path.GetDirectoryName(file);
-                    if (directory != string.Empty)
-                    {
-                        if (!Directory.Exists(directory))
-                            Directory.CreateDirectory(directory);
-                    }
-
-                    string ext = Path.GetExtension(file);
-                    if (ext == string.Empty)
-                        file = Path.ChangeExtension(file, ".xml");
-
-                    ds.WriteXml(file, XmlWriteMode.WriteSchema);
-                    cout.WriteLine($"last result saved into {file}");
-                }
-                catch (Exception ex)
-                {
-                    cerr.WriteLine(ex.Message);
                 }
             }
             else
@@ -1716,6 +1677,86 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
 
             cerr.WriteLine($"invalid command");
+            return;
+        }
+
+
+        public void last(Command cmd, Configuration cfg)
+        {
+            if (cmd.HasHelp)
+            {
+                cout.WriteLine("last command display, load or save last dataset");
+                cout.WriteLine("options:");
+                cout.WriteLine("  /save                   : save last dataset to xml file");
+                cout.WriteLine("example:");
+                cout.WriteLine("  last                    : display last dataset");
+                cout.WriteLine("  last products.xml /save : save last dataset to a file");
+                cout.WriteLine("  last products.xml       : load file to last dataset");
+                return;
+            }
+
+            string file = cmd.arg1;
+            if (file == null)
+            {
+                DataSet ds = ShellHistory.LastDataSet();
+                if (ds != null)
+                {
+                    foreach (DataTable dt in ds.Tables)
+                    {
+                        cout.WriteLine($"[{dt.TableName}]");
+                        dt.ToConsole();
+                    }
+                }
+                else
+                    cout.WriteLine("last result is not found");
+
+                return;
+            }
+            if (cmd.Has("save"))
+            {
+                try
+                {
+                    var ds = ShellHistory.LastDataSet();
+                    if (ds == null)
+                    {
+                        cerr.WriteLine("last result is null");
+                        return;
+                    }
+
+                    string directory = Path.GetDirectoryName(file);
+                    if (directory != string.Empty)
+                    {
+                        if (!Directory.Exists(directory))
+                            Directory.CreateDirectory(directory);
+                    }
+
+                    string ext = Path.GetExtension(file);
+                    if (ext == string.Empty)
+                        file = Path.ChangeExtension(file, ".xml");
+
+                    ds.WriteXml(file, XmlWriteMode.WriteSchema);
+                    cout.WriteLine($"last result saved into {file}");
+                }
+                catch (Exception ex)
+                {
+                    cerr.WriteLine(ex.Message);
+                }
+            }
+            else
+            {
+                var ds = new DataSet();
+                try
+                {
+                    ds.ReadXml(file, XmlReadMode.ReadSchema); ;
+                    ShellHistory.SetLastResult(ds);
+                    cout.WriteLine($"{typeof(DataSet).FullName} xml file \"{file}\" has been loaded");
+                }
+                catch (Exception ex)
+                {
+                    cerr.WriteLine($"invalid {typeof(DataSet).FullName} xml file, {ex.Message}");
+                    return;
+                }
+            }
             return;
         }
     }

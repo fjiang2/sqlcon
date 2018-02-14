@@ -48,7 +48,7 @@ namespace sqlcon
             cout.WriteLine("save /?                 : see more info");
             cout.WriteLine("edit /?                 : see more info");
             cout.WriteLine("chk,check /?            : see more info");
-            cout.WriteLine("last                    : display last result");
+            cout.WriteLine("last                    : see more info");
             cout.WriteLine();
             cout.WriteLine("<File Command>");
             cout.WriteLine("lcd [path]              : change or display current directory");
