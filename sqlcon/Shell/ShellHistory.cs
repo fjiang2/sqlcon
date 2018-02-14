@@ -25,11 +25,10 @@ namespace sqlcon
             LastResult = ds;
         }
 
-        public static DataTable LastOrCurrentTable(TableName tname, int rows = -1)
+        public static DataSet LastOrCurrentTable(TableName tname, int rows = -1)
         {
-            var dt = LastTable();
-            if (dt != null)
-                return dt;
+            if (LastResult != null)
+                return LastResult;
 
             if (tname != null)
             {
@@ -39,11 +38,12 @@ namespace sqlcon
                 else
                     sql = $"SELECT * FROM {tname.FormalName}";
 
-                dt = new SqlCmd(tname.Provider, sql).FillDataTable();
+                var dt = new SqlCmd(tname.Provider, sql).FillDataTable();
                 dt.TableName = tname.Name;
+                return dt.DataSet;
             }
 
-            return dt;
+            return null;
         }
 
         public static DataTable LastTable()

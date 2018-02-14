@@ -612,32 +612,34 @@ namespace sqlcon
             }
         }
 
+        private DataSet LastOrCurrentDataSet()
+        {
+            var ds = ShellHistory.LastOrCurrentTable(tname);
+            if (ds == null || ds.Tables.Count == 0)
+            {
+                cerr.WriteLine("no data found");
+                return null;
+            }
+
+            return ds;
+        }
 
         private DataTable LastOrCurrentTable()
         {
-            var dt = ShellHistory.LastOrCurrentTable(tname);
-            if (dt == null)
-            {
-                cerr.WriteLine("display data table first by sql clause or command [type]");
+            var ds = LastOrCurrentDataSet();
+            if (ds == null || ds.Tables.Count == 0)
                 return null;
-            }
 
-            if (dt.Rows.Count == 0)
-            {
-                cerr.WriteLine("no rows found");
-                return null;
-            }
-
-            return dt;
+            return ds.Tables[0];
         }
 
         public void ExportJson()
         {
-            var dt = LastOrCurrentTable();
-            if (dt == null)
+            DataSet ds = LastOrCurrentDataSet();
+            if (ds == null)
                 return;
 
-            cout.WriteLine(TableOut.ToJson(dt));
+            cout.WriteLine(ds.ToJson());
         }
 
         /// <summary>

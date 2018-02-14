@@ -1771,6 +1771,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
             else    //display
             {
+                DataSet old = ShellHistory.LastDataSet();
                 var ds = new DataSet();
                 try
                 {
@@ -1786,6 +1787,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     cerr.WriteLine($"invalid {typeof(DataSet).FullName} xml file, {ex.Message}");
                     return;
                 }
+                ShellHistory.SetLastResult(old);
             }
             return;
         }

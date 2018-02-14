@@ -69,7 +69,7 @@ namespace sqlcon
 
             if (cmd.Has("json"))
             {
-                cout.WriteLine(ToJson(table));
+                cout.WriteLine(table.ToJson());
                 return;
             }
 
@@ -86,45 +86,7 @@ namespace sqlcon
                 table.ToConsole(more);
         }
 
-
-        public static string ToJson(DataTable dt)
-        {
-            //array
-            if (dt.Columns.Count == 1)
-            {
-                //string name = dt.Columns[0].ColumnName;
-                string json = VAL.Boxing(dt.ToArray(row => row[0])).ToJson();
-                //string.Format("{0}={1}", name, json);
-                return json;
-            }
-
-            string[] columns = dt.Columns.Cast<DataColumn>().Select(col => col.ColumnName).ToArray();
-            VAL L = new VAL();
-            foreach (DataRow row in dt.Rows)
-            {
-                VAL V = new VAL();
-                for (int i = 0; i < columns.Length; i++)
-                {
-                    object obj;
-                    switch (row[i])
-                    {
-                        case Guid x:
-                            obj = "{" + row[i].ToString() + "}";
-                            break;
-
-                        default:
-                            obj = row[i];
-                            break;
-                    }
-
-                    V.AddMember(columns[i], obj);
-                }
-                L.Add(V);
-            }
-
-            return L.ToJson();
-        }
-
+      
         private bool Display(Command cmd, SqlBuilder builder, TableName tname, int top)
         {
             try
