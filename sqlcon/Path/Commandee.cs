@@ -1686,17 +1686,20 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             if (cmd.HasHelp)
             {
                 cout.WriteLine("last command display, load or save last dataset");
+                cout.WriteLine("last [path]               :");
                 cout.WriteLine("options:");
+                cout.WriteLine("  /load                   : load xml file to last dataset");
                 cout.WriteLine("  /save                   : save last dataset to xml file");
                 cout.WriteLine("example:");
                 cout.WriteLine("  last                    : display last dataset");
+                cout.WriteLine("  last products.xml       : display dataset file");
                 cout.WriteLine("  last products.xml /save : save last dataset to a file");
-                cout.WriteLine("  last products.xml       : load file to last dataset");
+                cout.WriteLine("  last products.xml /load : load file to last dataset");
                 return;
             }
 
             string file = cmd.arg1;
-            if (file == null)
+            if (file == null && !cmd.Has("save"))
             {
                 DataSet ds = ShellHistory.LastDataSet();
                 if (ds != null)
@@ -1712,16 +1715,20 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
                 return;
             }
+
             if (cmd.Has("save"))
             {
                 try
                 {
                     var ds = ShellHistory.LastDataSet();
-                    if (ds == null)
+                    if (ds == null || ds.Tables.Count == 0)
                     {
                         cerr.WriteLine("last result is null");
                         return;
                     }
+
+                    if (file == null)
+                        file = ds.Tables[0].TableName;
 
                     string directory = Path.GetDirectoryName(file);
                     if (directory != string.Empty)
@@ -1730,8 +1737,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                             Directory.CreateDirectory(directory);
                     }
 
-                    string ext = Path.GetExtension(file);
-                    if (ext == string.Empty)
+                    if (Path.GetExtension(file) == string.Empty)
                         file = Path.ChangeExtension(file, ".xml");
 
                     ds.WriteXml(file, XmlWriteMode.WriteSchema);
@@ -1741,8 +1747,14 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 {
                     cerr.WriteLine(ex.Message);
                 }
+
+                return;
             }
-            else
+
+            if (Path.GetExtension(file) == string.Empty)
+                file = Path.ChangeExtension(file, ".xml");
+
+            if (cmd.Has("load"))
             {
                 var ds = new DataSet();
                 try
@@ -1750,6 +1762,24 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     ds.ReadXml(file, XmlReadMode.ReadSchema); ;
                     ShellHistory.SetLastResult(ds);
                     cout.WriteLine($"{typeof(DataSet).FullName} xml file \"{file}\" has been loaded");
+                }
+                catch (Exception ex)
+                {
+                    cerr.WriteLine($"invalid {typeof(DataSet).FullName} xml file, {ex.Message}");
+                    return;
+                }
+            }
+            else    //display
+            {
+                var ds = new DataSet();
+                try
+                {
+                    ds.ReadXml(file, XmlReadMode.ReadSchema);
+                    foreach (DataTable dt in ds.Tables)
+                    {
+                        cout.WriteLine($"[{dt.TableName}]");
+                        dt.ToConsole();
+                    }
                 }
                 catch (Exception ex)
                 {

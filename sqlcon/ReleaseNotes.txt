@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+2/14/2018 v1.9.2.0
+	Improvements/Enhancements:
+	1. command "last" can display/load/save dataset xml file
+
 2/6/2018 v1.9.1.0
 	Bug Fixes:
 	1. display wrong grid when console window resized
