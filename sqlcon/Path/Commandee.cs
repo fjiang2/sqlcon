@@ -1686,15 +1686,18 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             if (cmd.HasHelp)
             {
                 cout.WriteLine("last command display, load or save last dataset");
-                cout.WriteLine("last [path]               :");
+                cout.WriteLine("last [path]                :");
                 cout.WriteLine("options:");
-                cout.WriteLine("  /load                   : load xml file to last dataset");
-                cout.WriteLine("  /save                   : save last dataset to xml file");
+                cout.WriteLine("  /load                    : load xml file to last dataset");
+                cout.WriteLine("  /save                    : save last dataset to xml file");
                 cout.WriteLine("example:");
-                cout.WriteLine("  last                    : display last dataset");
-                cout.WriteLine("  last products.xml       : display dataset file");
-                cout.WriteLine("  last products.xml /save : save last dataset to a file");
-                cout.WriteLine("  last products.xml /load : load file to last dataset");
+                cout.WriteLine("  last                     : display last dataset");
+                cout.WriteLine("  last products.xml        : display dataset file in xml format");
+                cout.WriteLine("  last products.json       : display dataset file in json format");
+                cout.WriteLine("  last products.xml /save  : save last dataset to a xml file");
+                cout.WriteLine("  last products.json /save : save last dataset to a json file");
+                cout.WriteLine("  last products.xml /load  : load xml file to last dataset");
+                cout.WriteLine("  last products.json /load : load json file to last dataset");
                 return;
             }
 
@@ -1740,7 +1743,16 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     if (Path.GetExtension(file) == string.Empty)
                         file = Path.ChangeExtension(file, ".xml");
 
-                    ds.WriteXml(file, XmlWriteMode.WriteSchema);
+                    if (Path.GetExtension(file) == ".json")
+                    {
+                        string json = ds.ToJson();
+                        File.WriteAllText(file, json);
+                    }
+                    else
+                    {
+                        ds.WriteXml(file, XmlWriteMode.WriteSchema);
+                    }
+
                     cout.WriteLine($"last result saved into {file}");
                 }
                 catch (Exception ex)
@@ -1759,13 +1771,17 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 var ds = new DataSet();
                 try
                 {
-                    ds.ReadXml(file, XmlReadMode.ReadSchema); ;
+                    if (Path.GetExtension(file) == ".json")
+                        ds = JsonExtension.ReadJson(file);
+                    else
+                        ds.ReadXml(file, XmlReadMode.ReadSchema);
+
                     ShellHistory.SetLastResult(ds);
                     cout.WriteLine($"{typeof(DataSet).FullName} xml file \"{file}\" has been loaded");
                 }
                 catch (Exception ex)
                 {
-                    cerr.WriteLine($"invalid {typeof(DataSet).FullName} xml file, {ex.Message}");
+                    cerr.WriteLine($"invalid {typeof(DataSet).FullName} file, {ex.Message}");
                     return;
                 }
             }
@@ -1775,7 +1791,11 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 var ds = new DataSet();
                 try
                 {
-                    ds.ReadXml(file, XmlReadMode.ReadSchema);
+                    if (Path.GetExtension(file) == ".json")
+                        ds = JsonExtension.ReadJson(file);
+                    else
+                        ds.ReadXml(file, XmlReadMode.ReadSchema);
+
                     foreach (DataTable dt in ds.Tables)
                     {
                         cout.WriteLine($"[{dt.TableName}]");
