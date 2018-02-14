@@ -13,11 +13,11 @@ namespace sqlcon
         /// <summary>
         /// keep last answer
         /// </summary>
-        private static object LastResult;
+        private static DataSet LastResult;
 
         public static void SetLastResult(DataTable dt)
         {
-            LastResult = dt;
+            LastResult = dt.DataSet;
         }
 
         public static void SetLastResult(DataSet ds)
@@ -48,33 +48,18 @@ namespace sqlcon
 
         public static DataTable LastTable()
         {
-            DataTable dt = null;
-            if (LastResult is DataTable)
+            if (LastResult != null)
             {
-                dt = LastResult as DataTable;
-            }
-            else if (LastResult is DataSet)
-            {
-                var ds = LastResult as DataSet;
-                if (ds.Tables.Count > 0)
-                    dt = ds.Tables[0];
+                if (LastResult.Tables.Count > 0)
+                    return LastResult.Tables[0];
             }
 
-            return dt;
+            return null;
         }
 
         public static DataSet LastDataSet()
         {
-            if (LastResult is DataTable)
-            {
-                return (LastResult as DataTable).DataSet;
-            }
-            else if (LastResult is DataSet)
-            {
-                return LastResult as DataSet;
-            }
-
-            return null;
+            return LastResult;
         }
     }
 }

@@ -2,7 +2,7 @@
 
 2/6/2018 v1.9.1.0
 	Bug Fixes:
-	1. display wrong gird when console window resized
+	1. display wrong grid when console window resized
 
 2/2/2018 v1.9.0.0
 	Improvements/Enhancements:

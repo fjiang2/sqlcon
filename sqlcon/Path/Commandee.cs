@@ -1586,9 +1586,16 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
                 try
                 {
-                    string path = Path.GetDirectoryName(file);
-                    if (!Directory.Exists(path))
-                        Directory.CreateDirectory(path);
+                    string directory = Path.GetDirectoryName(file);
+                    if (directory != string.Empty)
+                    {
+                        if (!Directory.Exists(directory))
+                            Directory.CreateDirectory(directory);
+                    }
+
+                    string ext = Path.GetExtension(file);
+                    if (ext == string.Empty)
+                        file = Path.ChangeExtension(file, ".xml");
 
                     ds.WriteXml(file, XmlWriteMode.WriteSchema);
                     cout.WriteLine($"last result saved into {file}");
