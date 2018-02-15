@@ -1722,8 +1722,6 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            if (Path.GetExtension(file) == string.Empty)
-                file = Path.ChangeExtension(file, ".xml");
 
             if (cmd.Has("save"))
             {
@@ -1737,7 +1735,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     }
 
                     if (file == null)
-                        file = ds.Tables[0].TableName;
+                        file = ds.Tables[0].TableName + ".xml";
 
                     file.WriteDataSet(ds);
                     cout.WriteLine($"last result saved into {file}");
@@ -1776,22 +1774,56 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 //display data lake
                 try
                 {
+                    if (Path.GetExtension(file) == string.Empty)
+                        file = Path.ChangeExtension(file, ".json");
+
                     string json = File.ReadAllText(file);
                     var lake = json.ToDataLake();
                     if (lake == null)
                         return;
 
-                    foreach (var kvp in lake)
+                    string output = cmd.GetValue("out");
+                    if (output == null)
                     {
-                        cout.WriteLine($"\"{kvp.Key}\"");
-                        DataSet ds = kvp.Value;
-                        foreach (DataTable dt in ds.Tables)
+                        foreach (var kvp in lake)
                         {
-                            cout.WriteLine($"[{dt.TableName}]");
-                            dt.ToConsole();
+                            cout.WriteLine($"\"{kvp.Key}\"");
+                            DataSet ds = kvp.Value;
+                            foreach (DataTable dt in ds.Tables)
+                            {
+                                cout.WriteLine($"[{dt.TableName}]");
+                                dt.ToConsole();
+                            }
+
+                            cout.WriteLine();
+                        }
+                    }
+                    else
+                    {
+                        string directory = Path.GetDirectoryName(output);
+                        if (directory != string.Empty)
+                        {
+                            if (!Directory.Exists(directory))
+                                Directory.CreateDirectory(directory);
                         }
 
-                        cout.WriteLine();
+                        using (var writer = new StreamWriter(output))
+                        {
+                            foreach (var kvp in lake)
+                            {
+                                writer.WriteLine($"\"{kvp.Key}\"");
+                                DataSet ds = kvp.Value;
+                                foreach (DataTable dt in ds.Tables)
+                                {
+                                    writer.WriteLine($"[{dt.TableName}]");
+                                    writer.WriteData(dt, header: false, footer: true);
+                                }
+
+                                writer.WriteLine();
+                            }
+                        }
+
+                        cout.WriteLine($"saved into \"{output}\"");
                     }
                 }
                 catch (Exception ex)
