@@ -56,19 +56,19 @@ namespace sqlcon
             return val.ToJson();
         }
 
-        public static DataLake ToDataLake(string json)
+        public static DataLake ToDataLake(this string json)
         {
             VAL val = Script.Evaluate(json);
             return toDataLake(val);
         }
 
-        public static DataSet ToDataSet(string json)
+        public static DataSet ToDataSet(this string json)
         {
             VAL val = Script.Evaluate(json);
             return toDataSet(val);
         }
 
-        public static DataTable ToDataTable(string json)
+        public static DataTable ToDataTable(this string json)
         {
             VAL val = Script.Evaluate(json);
             return toDataTable(val);
@@ -202,31 +202,21 @@ namespace sqlcon
         }
 
 
-
-        public static DataSet ReadJson(this string path)
-        {
-            string json = File.ReadAllText(path);
-            VAL val = Script.Evaluate(json);
-            return toDataSet(val);
-        }
-
-        public static void WriteJson(this string path, DataSet ds)
-        {
-            string json = ToJson(ds);
-            File.WriteAllText(path, json);
-        }
-
         public static DataSet ReadDataSet(this string path)
         {
             try
             {
-                var ds = new DataSet();
                 if (Path.GetExtension(path) == ".json")
-                    ds = ReadJson(path);
+                {
+                    string json = File.ReadAllText(path);
+                    return ToDataSet(json);
+                }
                 else
+                {
+                    var ds = new DataSet();
                     ds.ReadXml(path, XmlReadMode.ReadSchema);
-
-                return ds;
+                    return ds;
+                }
             }
             catch (Exception ex)
             {
@@ -238,9 +228,6 @@ namespace sqlcon
 
         public static void WriteDataSet(this string path, DataSet ds)
         {
-            if (path == null)
-                path = ds.Tables[0].TableName;
-
             string directory = Path.GetDirectoryName(path);
             if (directory != string.Empty)
             {
@@ -253,7 +240,8 @@ namespace sqlcon
 
             if (Path.GetExtension(path) == ".json")
             {
-                WriteJson(path, ds);
+                string json = ToJson(ds);
+                File.WriteAllText(path, json);
             }
             else
             {

@@ -1690,12 +1690,14 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("options:");
                 cout.WriteLine("  /load                    : load xml file to last dataset");
                 cout.WriteLine("  /save                    : save last dataset to xml file");
-                cout.WriteLine("  /fmt:[ds|lake]           : ds: data set; lake: data lake");
+                cout.WriteLine("  /datalake                : format of json file is data lake");
                 cout.WriteLine("example:");
                 cout.WriteLine("  last                     : display last dataset");
                 cout.WriteLine("  last products.xml        : display dataset file in xml format");
                 cout.WriteLine("  last products.json       : display dataset file in json format");
+                cout.WriteLine("  last lake.json  /datalake: display data lake file");
                 cout.WriteLine("  last products.xml /save  : save last dataset to a xml file");
+                cout.WriteLine("  last /save               : use table name as file name and save");
                 cout.WriteLine("  last products.json /save : save last dataset to a json file");
                 cout.WriteLine("  last products.xml /load  : load xml file to last dataset");
                 cout.WriteLine("  last products.json /load : load json file to last dataset");
@@ -1720,6 +1722,9 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
+            if (Path.GetExtension(file) == string.Empty)
+                file = Path.ChangeExtension(file, ".xml");
+
             if (cmd.Has("save"))
             {
                 try
@@ -1731,7 +1736,10 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                         return;
                     }
 
-                    DataExtension.WriteDataSet(file, ds);
+                    if (file == null)
+                        file = ds.Tables[0].TableName;
+
+                    file.WriteDataSet(ds);
                     cout.WriteLine($"last result saved into {file}");
                 }
                 catch (Exception ex)
@@ -1742,82 +1750,79 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            if (Path.GetExtension(file) == string.Empty)
-                file = Path.ChangeExtension(file, ".xml");
 
             if (cmd.Has("load"))
             {
                 try
                 {
-                    var ds = DataExtension.ReadDataSet(file);
+                    var ds = file.ReadDataSet();
                     if (ds == null)
                         return;
 
                     ShellHistory.SetLastResult(ds);
-                    cout.WriteLine($"{typeof(DataSet).FullName} file \"{file}\" has been loaded");
+                    cout.WriteLine($"{typeof(DataSet).FullName} file \"{file}\" loaded");
                 }
                 catch (Exception ex)
                 {
-                    cerr.WriteLine($"invalid data set file:{file}, {ex.Message}");
-                    return;
+                    cerr.WriteLine($"invalid data set file: {file}, {ex.Message}");
                 }
+
+                return;
             }
-            else    //display
+
+
+            if (cmd.Has("datalake"))
             {
-
-                DataSet old = ShellHistory.LastDataSet();
-                if (cmd.GetValue("fmt") != "lake")
+                //display data lake
+                try
                 {
-                    //display data set
-                    try
-                    {
-                        var ds = DataExtension.ReadDataSet(file);
-                        if (ds == null)
-                            return;
+                    string json = File.ReadAllText(file);
+                    var lake = json.ToDataLake();
+                    if (lake == null)
+                        return;
 
+                    foreach (var kvp in lake)
+                    {
+                        cout.WriteLine($"\"{kvp.Key}\"");
+                        DataSet ds = kvp.Value;
                         foreach (DataTable dt in ds.Tables)
                         {
                             cout.WriteLine($"[{dt.TableName}]");
                             dt.ToConsole();
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        cerr.WriteLine($"invalid data set file:{file}, {ex.Message}");
-                        return;
+
+                        cout.WriteLine();
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    //display data lake
-                    try
-                    {
-                        string json = File.ReadAllText(file);
-                        var lake = DataExtension.ToDataLake(json);
-                        if (lake == null)
-                            return;
-
-                        foreach (var kvp in lake)
-                        {
-                            cout.WriteLine($"\"{kvp.Key}\"");
-                            DataSet ds = kvp.Value;
-                            foreach (DataTable dt in ds.Tables)
-                            {
-                                cout.WriteLine($"[{dt.TableName}]");
-                                dt.ToConsole();
-                            }
-
-                            cout.WriteLine();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        cerr.WriteLine($"invalid data lake file:{file}, {ex.Message}");
-                        return;
-                    }
+                    cerr.WriteLine($"invalid data lake file:{file}, {ex.Message}");
                 }
-                ShellHistory.SetLastResult(old);
+
+                return;
             }
+
+            //display data set
+            DataSet old = ShellHistory.LastDataSet();
+            try
+            {
+                var ds = file.ReadDataSet();
+                if (ds == null)
+                    return;
+
+                foreach (DataTable dt in ds.Tables)
+                {
+                    cout.WriteLine($"[{dt.TableName}]");
+                    dt.ToConsole();
+                }
+            }
+            catch (Exception ex)
+            {
+                cerr.WriteLine($"invalid data set file:{file}, {ex.Message}");
+                return;
+            }
+            ShellHistory.SetLastResult(old);
+
             return;
         }
 
