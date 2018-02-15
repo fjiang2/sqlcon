@@ -114,7 +114,7 @@
     <Compile Include="ClassBuilder\TheClassBuilder.cs" />
     <Compile Include="Extension.cs" />
     <Compile Include="Input\BaseCommand.cs" />
-    <Compile Include="Output\JsonExtension.cs" />
+    <Compile Include="Data\DataExtension.cs" />
     <Compile Include="stdio\cerr.cs" />
     <Compile Include="stdio\cin.cs" />
     <Compile Include="stdio\clog.cs" />
