@@ -14,10 +14,9 @@ namespace sqlcon
         private OutputDataLine consoleLine;
         private string[] headers;
         private bool vertical;
+        private Action<string> writeLine;
 
-        public Action<string> WriteLine { get; set; } = cout.TrimWriteLine;
-
-        public OutputDataTable(DataTable table, bool vertical)
+        public OutputDataTable(DataTable table, Action<string> writeLine, bool vertical)
         {
             this.dt = table;
             this.vertical = vertical;
@@ -30,11 +29,11 @@ namespace sqlcon
 
             if (!vertical)
             {
-                consoleLine = new OutputDataLine(WriteLine, headers.Length);
+                consoleLine = new OutputDataLine(writeLine, headers.Length);
             }
             else
             {
-                consoleLine = new OutputDataLine(WriteLine, dt.Rows.Count + 1);
+                consoleLine = new OutputDataLine(writeLine, dt.Rows.Count + 1);
             }
         }
 

@@ -15,10 +15,7 @@ namespace sqlcon
             if (header)
                 stream.WriteLine($"[{dt.TableName}]");
 
-            OutputDataTable cdt = new OutputDataTable(dt, vertical)
-            {
-                WriteLine = stream.WriteLine
-            };
+            OutputDataTable cdt = new OutputDataTable(dt, stream.WriteLine, vertical);
 
             cdt.WriteData();
 

@@ -12,7 +12,7 @@ namespace sqlcon
     {
         public static void ToConsole<T>(this IEnumerable<T> source)
         {
-            OutputCollection<T> oc = new OutputCollection<T>(source, vertical:false);
+            OutputCollection<T> oc = new OutputCollection<T>(source, vertical: false);
             oc.WriteData();
         }
 
@@ -80,7 +80,7 @@ namespace sqlcon
         public static void ToConsole(this DataTable table, bool vertical = false, bool more = false)
         {
             ShellHistory.SetLastResult(table);
-            OutputDataTable cdt = new OutputDataTable(table, vertical);
+            OutputDataTable cdt = new OutputDataTable(table, cout.TrimWriteLine, vertical);
             cdt.WriteData();
 
             cout.WriteLine("<{0}{1} row{2}>", more ? "top " : "", table.Rows.Count, table.Rows.Count > 1 ? "s" : "");
