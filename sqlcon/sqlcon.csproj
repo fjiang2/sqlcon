@@ -115,6 +115,8 @@
     <Compile Include="Extension.cs" />
     <Compile Include="Input\BaseCommand.cs" />
     <Compile Include="Data\DataExtension.cs" />
+    <Compile Include="Output\OutputCollection.cs" />
+    <Compile Include="Output\OutputDataTable.cs" />
     <Compile Include="stdio\cerr.cs" />
     <Compile Include="stdio\cin.cs" />
     <Compile Include="stdio\clog.cs" />
@@ -145,7 +147,7 @@
     <Compile Include="Shell\ActionType.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Input\Configuration.cs" />
-    <Compile Include="Output\ConsoleTable.cs" />
+    <Compile Include="Output\OutputDataLine.cs" />
     <Compile Include="Shell\Context.cs" />
     <Compile Include="Input\Command.cs" />
     <Compile Include="Path\PathLevel.cs" />

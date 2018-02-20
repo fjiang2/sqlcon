@@ -18,7 +18,10 @@ namespace sqlcon
             Console.WriteLine($"Copyright (c) 2014-{DateTime.Today.Year} Datconn. All rights reserved.");
             Console.WriteLine();
 
-            Constant.MAX_CPU_REG_NUM = 600;
+            Constant.MAX_CPU_REG_NUM = 2 * 1024;
+            Constant.MAX_STRING_SIZE = 24 * 1024 * 1024;
+            Constant.MAX_SRC_COL = 24 * 1024 * 1024;
+            Constant.MAX_INSTRUCTION_NUM = 1 * 1024 * 1024;
             string cfgFile = sqlcon.Main.PrepareConfigureFile(false);
 
             int i = 0;

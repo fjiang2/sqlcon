@@ -81,12 +81,12 @@ namespace sqlcon
             }
 
             if (cmd.IsVertical)
-                table.ToVConsole(more);
+                table.ToConsole(vertical: true, more: more);
             else
                 table.ToConsole(more);
         }
 
-      
+
         private bool Display(Command cmd, SqlBuilder builder, TableName tname, int top)
         {
             try

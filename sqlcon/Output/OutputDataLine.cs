@@ -7,7 +7,7 @@ using System.Data;
 
 namespace sqlcon
 {
-    class ConsoleTable  
+    public class OutputDataLine
     {
         private const char SPACE = ' ';
         private const char CROSS = '+';
@@ -18,7 +18,7 @@ namespace sqlcon
         private int[] W;
         private Action<string> writeLine;
 
-        public ConsoleTable(Action<string> writeLine, int length)
+        public OutputDataLine(Action<string> writeLine, int length)
         {
             this.writeLine = writeLine;
             this.W = new int[length];
@@ -37,7 +37,7 @@ namespace sqlcon
 
         private void DisplayLine(object[] columns, char delimiter, char sp)
         {
-       
+
             StringBuilder builder = new StringBuilder();
 
             builder.Append(delimiter).Append(sp);
@@ -97,13 +97,20 @@ namespace sqlcon
 
         }
 
+        public bool DisplayDbNull { get; set; } = true;
+
         private string Cell(object cell)
         {
             if (cell == null)
                 return "null";
 
             else if (cell == DBNull.Value)
-                return "NULL";
+            {
+                if (DisplayDbNull)
+                    return "NULL";
+                else
+                    return string.Empty;
+            }
             else if (cell is byte[])
             {
                 return "0x" + BitConverter.ToString((byte[])cell).Replace("-", "");
@@ -123,6 +130,6 @@ namespace sqlcon
             }
         }
 
-     
+
     }
 }

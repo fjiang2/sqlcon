@@ -12,54 +12,8 @@ namespace sqlcon
     {
         public static void ToConsole<T>(this IEnumerable<T> source)
         {
-            ToConsole(source, cout.TrimWriteLine);
-        }
-
-
-        public static void ToConsole<T>(this IEnumerable<T> source, Action<string> writeLine)
-        {
-            var properties = typeof(T).GetProperties();
-            string[] headers = properties.Select(p => p.Name).ToArray();
-
-            Func<T, object[]> selector = row =>
-                {
-                    var values = new object[headers.Length];
-                    int i = 0;
-
-                    foreach (var propertyInfo in properties)
-                    {
-                        values[i++] = propertyInfo.GetValue(row);
-                    }
-                    return values;
-                };
-
-            source.ToConsole(headers, selector, writeLine);
-        }
-
-        public static void ToConsole<T>(this IEnumerable<T> source, string[] headers, Func<T, object[]> selector, Action<string> writeLine)
-        {
-
-            var D = new ConsoleTable(writeLine, headers.Length);
-
-            D.MeasureWidth(headers);
-            foreach (var row in source)
-            {
-                D.MeasureWidth(selector(row));
-            }
-
-            D.DisplayLine();
-            D.DisplayLine(headers);
-            D.DisplayLine();
-
-            if (source.Count() == 0)
-                return;
-
-            foreach (var row in source)
-            {
-                D.DisplayLine(selector(row));
-            }
-
-            D.DisplayLine();
+            OutputCollection<T> oc = new OutputCollection<T>(source, vertical:false);
+            oc.WriteData();
         }
 
         public static void ToConsole(this DbDataReader reader, int maxRow = 0)
@@ -79,7 +33,7 @@ namespace sqlcon
 
                 string[] headers = schema.Select(row => row.Name).ToArray();
 
-                var D = new ConsoleTable(cout.TrimWriteLine, headers.Length);
+                var D = new OutputDataLine(cout.TrimWriteLine, headers.Length);
 
                 D.MeasureWidth(schema.Select(row => row.Size).ToArray());
                 D.MeasureWidth(headers);
@@ -122,152 +76,16 @@ namespace sqlcon
             }
 
         }
-        public static void ToConsole(this DataTable table, bool more = false)
-        {
-            ToConsole(table, cout.TrimWriteLine);
-            cout.WriteLine("<{0}{1} row{2}>", more ? "top " : "", table.Rows.Count, table.Rows.Count > 1 ? "s" : "");
-        }
 
-        public static void ToConsole(this DataTable table, Action<string> writeLine)
+        public static void ToConsole(this DataTable table, bool vertical = false, bool more = false)
         {
             ShellHistory.SetLastResult(table);
+            OutputDataTable cdt = new OutputDataTable(table, vertical);
+            cdt.WriteData();
 
-            List<string> list = new List<string>();
-            foreach (DataColumn column in table.Columns)
-                list.Add(column.ColumnName);
-
-            string[] headers = list.ToArray();
-
-            var D = new ConsoleTable(writeLine, headers.Length);
-
-            D.MeasureWidth(headers);
-            foreach (DataRow row in table.Rows)
-            {
-                D.MeasureWidth(row.ItemArray);
-            }
-
-            D.DisplayLine();
-            D.DisplayLine(headers);
-            D.DisplayLine();
-
-            if (table.Rows.Count == 0)
-                return;
-
-            foreach (DataRow row in table.Rows)
-            {
-                D.DisplayLine(row.ItemArray);
-            }
-
-            D.DisplayLine();
-
-        }
-
-
-        public static void ToVConsole<T>(this IEnumerable<T> source, Action<string> writeLine)
-        {
-            var properties = typeof(T).GetProperties();
-            string[] headers = properties.Select(p => p.Name).ToArray();
-
-            Func<T, object[]> selector = row =>
-            {
-                var values = new object[headers.Length];
-                int i = 0;
-
-                foreach (var propertyInfo in properties)
-                {
-                    values[i++] = propertyInfo.GetValue(row);
-                }
-                return values;
-            };
-
-            source.ToVConsole(headers, selector, writeLine);
-        }
-
-
-        public static void ToVConsole<T>(this IEnumerable<T> source, string[] headers, Func<T, object[]> selector, Action<string> writeLine)
-        {
-            int m = 1;
-            int n = headers.Length;
-
-            var D = new ConsoleTable(writeLine, m + 1);
-
-            object[] L = new object[m + 1];
-            T[] src = source.ToArray();
-
-            for (int i = 0; i < n; i++)
-            {
-                int k = 0;
-                L[k++] = headers[i];
-                L[k++] = src[i];
-
-                D.MeasureWidth(L);
-            }
-
-            D.DisplayLine();
-
-            if (source.Count() == 0)
-                return;
-
-            for (int i = 0; i < n; i++)
-            {
-                int k = 0;
-                L[k++] = headers[i];
-                L[k++] = src[i];
-
-                D.DisplayLine(L);
-            }
-
-            D.DisplayLine();
-        }
-
-        public static void ToVConsole(this DataTable table, bool more)
-        {
-            ToVConsole(table, cout.TrimWriteLine);
             cout.WriteLine("<{0}{1} row{2}>", more ? "top " : "", table.Rows.Count, table.Rows.Count > 1 ? "s" : "");
         }
 
-
-        public static void ToVConsole(this DataTable table, Action<string> writeLine)
-        {
-
-            List<string> list = new List<string>();
-            foreach (DataColumn column in table.Columns)
-                list.Add(column.ColumnName);
-
-            string[] headers = list.ToArray();
-
-            int m = table.Rows.Count;
-            int n = table.Columns.Count;
-
-            var D = new ConsoleTable(writeLine, m + 1);
-
-            object[] L = new object[m + 1];
-
-            for (int i = 0; i < n; i++)
-            {
-                int k = 0;
-                L[k++] = headers[i];
-                foreach (DataRow row in table.Rows)
-                    L[k++] = row[i];
-
-                D.MeasureWidth(L);
-            }
-
-            D.DisplayLine();
-
-            for (int i = 0; i < n; i++)
-            {
-                int k = 0;
-                L[k++] = headers[i];
-                foreach (DataRow row in table.Rows)
-                    L[k++] = row[i];
-
-                D.DisplayLine(L);
-            }
-
-            D.DisplayLine();
-
-        }
 
 
     }

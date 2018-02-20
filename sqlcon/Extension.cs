@@ -15,16 +15,18 @@ namespace sqlcon
             if (header)
                 stream.WriteLine($"[{dt.TableName}]");
 
-            if (!vertical)
-                dt.ToConsole(stream.WriteLine);
-            else
-                dt.ToVConsole(stream.WriteLine);
+            OutputDataTable cdt = new OutputDataTable(dt, vertical)
+            {
+                WriteLine = stream.WriteLine
+            };
+
+            cdt.WriteData();
 
             if (footer)
                 stream.WriteLine("<{0} row{1}>", dt.Rows.Count, dt.Rows.Count > 1 ? "s" : "");
         }
 
-        public static void WriteData(this TextWriter stream, DataSet ds, bool header = false, bool tableHeader=false, bool tableFooter = false, bool vertical = false)
+        public static void WriteData(this TextWriter stream, DataSet ds, bool header = false, bool tableHeader = false, bool tableFooter = false, bool vertical = false)
         {
             if (header)
                 stream.WriteLine($"\"{ds.DataSetName}\"");
@@ -38,11 +40,8 @@ namespace sqlcon
 
         public static void WriteData<T>(this TextWriter stream, IEnumerable<T> source, bool vertical = false)
         {
-            if (!vertical)
-                source.ToConsole(stream.WriteLine);
-            else
-                source.ToVConsole(stream.WriteLine);
-
+            OutputCollection<T> oc = new OutputCollection<T>(source, vertical) { WriteLine = stream.WriteLine };
+            oc.WriteData();
         }
 
 
