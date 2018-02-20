@@ -37,7 +37,7 @@ namespace sqlcon
 
         public static void WriteData<T>(this TextWriter stream, IEnumerable<T> source, bool vertical = false)
         {
-            OutputCollection<T> oc = new OutputCollection<T>(source, vertical) { WriteLine = stream.WriteLine };
+            OutputCollection<T> oc = new OutputCollection<T>(source, stream.WriteLine, vertical);
             oc.WriteData();
         }
 

@@ -12,7 +12,7 @@ namespace sqlcon
     {
         public static void ToConsole<T>(this IEnumerable<T> source)
         {
-            OutputCollection<T> oc = new OutputCollection<T>(source, vertical: false);
+            OutputCollection<T> oc = new OutputCollection<T>(source, cout.TrimWriteLine, vertical: false);
             oc.WriteData();
         }
 

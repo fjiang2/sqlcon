@@ -14,7 +14,6 @@ namespace sqlcon
         private OutputDataLine consoleLine;
         private string[] headers;
         private bool vertical;
-        private Action<string> writeLine;
 
         public OutputDataTable(DataTable table, Action<string> writeLine, bool vertical)
         {

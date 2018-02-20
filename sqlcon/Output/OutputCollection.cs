@@ -11,11 +11,12 @@ namespace sqlcon
         private IEnumerable<T> source;
         private bool vertical;
 
-        public Action<string> WriteLine { get; set; } = cout.TrimWriteLine;
+        public Action<string> writeLine { get; set; } = cout.TrimWriteLine;
 
-        public OutputCollection(IEnumerable<T> source, bool vertical)
+        public OutputCollection(IEnumerable<T> source, Action<string> writeLine, bool vertical)
         {
             this.source = source;
+            this.writeLine = writeLine;
             this.vertical = vertical;
         }
 
@@ -49,7 +50,7 @@ namespace sqlcon
 
         private void ToHGrid(string[] headers, Func<T, object[]> selector)
         {
-            var D = new OutputDataLine(WriteLine, headers.Length);
+            var D = new OutputDataLine(writeLine, headers.Length);
 
             D.MeasureWidth(headers);
             foreach (var row in source)
@@ -98,7 +99,7 @@ namespace sqlcon
             int m = 1;
             int n = headers.Length;
 
-            var D = new OutputDataLine(WriteLine, m + 1);
+            var D = new OutputDataLine(writeLine, m + 1);
 
             object[] L = new object[m + 1];
             T[] src = source.ToArray();
