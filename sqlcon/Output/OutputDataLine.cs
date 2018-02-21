@@ -97,7 +97,7 @@ namespace sqlcon
 
         }
 
-        public bool OuputDbNull { get; set; } = true;
+        public bool OutputDbNull { get; set; } = true;
 
         private string Cell(object cell)
         {
@@ -106,7 +106,7 @@ namespace sqlcon
 
             else if (cell == DBNull.Value)
             {
-                if (OuputDbNull)
+                if (OutputDbNull)
                     return "NULL";
                 else
                     return string.Empty;

@@ -42,10 +42,10 @@ namespace sqlcon
             }
         }
 
-        public bool OuputDbNull
+        public bool OutputDbNull
         {
-            get { return line.OuputDbNull; }
-            set { line.OuputDbNull = value; }
+            get { return line.OutputDbNull; }
+            set { line.OutputDbNull = value; }
         }
 
         public void Output()
