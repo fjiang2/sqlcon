@@ -13,6 +13,7 @@ namespace sqlcon
         private DataTable dt;
         private string[] headers;
         private bool vertical;
+        private OutputDataLine line;
 
         public OutputDataTable(DataTable dt, TextWriter textWriter, bool vertical)
             : this(dt, textWriter.WriteLine, vertical)
@@ -33,15 +34,19 @@ namespace sqlcon
 
             if (vertical)
             {
-                Line = new OutputDataLine(writeLine, this.dt.Rows.Count + 1);
+                line = new OutputDataLine(writeLine, this.dt.Rows.Count + 1);
             }
             else
             {
-                Line = new OutputDataLine(writeLine, headers.Length);
+                line = new OutputDataLine(writeLine, headers.Length);
             }
         }
 
-        public OutputDataLine Line { get; }
+        public bool OuputDbNull
+        {
+            get { return line.OuputDbNull; }
+            set { line.OuputDbNull = value; }
+        }
 
         public void Output()
         {
@@ -53,25 +58,25 @@ namespace sqlcon
 
         private void ToHorizontalGrid()
         {
-            Line.MeasureWidth(headers);
+            line.MeasureWidth(headers);
             foreach (DataRow row in dt.Rows)
             {
-                Line.MeasureWidth(row.ItemArray);
+                line.MeasureWidth(row.ItemArray);
             }
 
-            Line.DisplayLine();
-            Line.DisplayLine(headers);
-            Line.DisplayLine();
+            line.DisplayLine();
+            line.DisplayLine(headers);
+            line.DisplayLine();
 
             if (dt.Rows.Count == 0)
                 return;
 
             foreach (DataRow row in dt.Rows)
             {
-                Line.DisplayLine(row.ItemArray);
+                line.DisplayLine(row.ItemArray);
             }
 
-            Line.DisplayLine();
+            line.DisplayLine();
 
         }
 
@@ -88,10 +93,10 @@ namespace sqlcon
                 foreach (DataRow row in dt.Rows)
                     L[k++] = row[i];
 
-                Line.MeasureWidth(L);
+                line.MeasureWidth(L);
             }
 
-            Line.DisplayLine();
+            line.DisplayLine();
 
             for (int i = 0; i < n; i++)
             {
@@ -100,10 +105,10 @@ namespace sqlcon
                 foreach (DataRow row in dt.Rows)
                     L[k++] = row[i];
 
-                Line.DisplayLine(L);
+                line.DisplayLine(L);
             }
 
-            Line.DisplayLine();
+            line.DisplayLine();
 
         }
 

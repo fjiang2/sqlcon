@@ -7,7 +7,7 @@ using System.Data;
 
 namespace sqlcon
 {
-    public class OutputDataLine
+    class OutputDataLine
     {
         private const char SPACE = ' ';
         private const char CROSS = '+';
@@ -97,7 +97,7 @@ namespace sqlcon
 
         }
 
-        public bool DisplayDbNull { get; set; } = true;
+        public bool OuputDbNull { get; set; } = true;
 
         private string Cell(object cell)
         {
@@ -106,7 +106,7 @@ namespace sqlcon
 
             else if (cell == DBNull.Value)
             {
-                if (DisplayDbNull)
+                if (OuputDbNull)
                     return "NULL";
                 else
                     return string.Empty;
