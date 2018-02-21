@@ -13,7 +13,7 @@ namespace sqlcon
         public static void ToConsole<T>(this IEnumerable<T> source)
         {
             OutputCollection<T> oc = new OutputCollection<T>(source, cout.TrimWriteLine, vertical: false);
-            oc.WriteData();
+            oc.Output();
         }
 
         public static void ToConsole(this DbDataReader reader, int maxRow = 0)
@@ -81,7 +81,7 @@ namespace sqlcon
         {
             ShellHistory.SetLastResult(table);
             OutputDataTable cdt = new OutputDataTable(table, cout.TrimWriteLine, vertical);
-            cdt.WriteData();
+            cdt.Output();
 
             cout.WriteLine("<{0}{1} row{2}>", more ? "top " : "", table.Rows.Count, table.Rows.Count > 1 ? "s" : "");
         }

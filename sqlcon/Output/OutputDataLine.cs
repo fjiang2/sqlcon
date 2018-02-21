@@ -17,11 +17,12 @@ namespace sqlcon
 
         private int[] W;
         private Action<string> writeLine;
+        public int MaxWidth { get; set; } = -1;
 
-        public OutputDataLine(Action<string> writeLine, int length)
+        public OutputDataLine(Action<string> writeLine, int numberOfColumns)
         {
             this.writeLine = writeLine;
-            this.W = new int[length];
+            this.W = new int[numberOfColumns];
         }
 
         public void DisplayLine()
@@ -59,7 +60,6 @@ namespace sqlcon
             }
 
             string text = builder.ToString();
-
             writeLine(text);
         }
 

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace sqlcon
 {
@@ -10,107 +9,109 @@ namespace sqlcon
     {
         private IEnumerable<T> source;
         private bool vertical;
-        //private OutputDataLine line;
 
-        public Action<string> writeLine { get; set; } = cout.TrimWriteLine;
 
-        public OutputCollection(IEnumerable<T> source, Action<string> writeLine, bool vertical)
+        public Func<T, object[]> selector { get; set; }
+
+        public OutputCollection(IEnumerable<T> source, TextWriter textWriter, bool vertical)
+            : this(source, textWriter.WriteLine, vertical)
         {
-            this.source = source;
-            this.writeLine = writeLine;
-            this.vertical = vertical;
-
-            //if (vertical)
-            //{
-            //    line = new OutputDataLine(writeLine, dt.Rows.Count + 1);
-            //}
-            //else
-            //{
-            //    line = new OutputDataLine(writeLine, headers.Length);
-            //}
 
         }
 
-        public void WriteData()
+        internal OutputCollection(IEnumerable<T> source, Action<string> writeLine, bool vertical)
+        {
+            this.source = source;
+            this.vertical = vertical;
+
+            this.Headers = defaultHeaders;
+            this.selector = defaultSelector;
+
+            if (vertical)
+            {
+                Line = new OutputDataLine(writeLine, 2);
+            }
+            else
+            {
+                Line = new OutputDataLine(writeLine, Headers.Length);
+            }
+
+        }
+
+        public OutputDataLine Line { get; }
+        public string[] Headers { get; set; }
+
+        public void Output()
         {
             if (vertical)
                 ToVerticalGrid();
             else
                 ToHorizontalGrid();
         }
-        
-        private void ToHorizontalGrid()
+
+
+
+        private string[] defaultHeaders
         {
-            var properties = typeof(T).GetProperties();
-            string[] headers = properties.Select(p => p.Name).ToArray();
-
-            Func<T, object[]> selector = row =>
+            get
             {
-                var values = new object[headers.Length];
-                int i = 0;
-
-                foreach (var propertyInfo in properties)
-                {
-                    values[i++] = propertyInfo.GetValue(row);
-                }
-                return values;
-            };
-
-            ToHorizontalGrid(headers, selector);
+                var properties = typeof(T).GetProperties();
+                string[] _headers = properties.Select(p => p.Name).ToArray();
+                return _headers;
+            }
         }
 
-        private void ToHorizontalGrid(string[] headers, Func<T, object[]> selector)
+        private Func<T, object[]> defaultSelector
         {
-            var line = new OutputDataLine(writeLine, headers.Length);
+            get
+            {
+                var properties = typeof(T).GetProperties();
+                Func<T, object[]> _selector = row =>
+                {
+                    var values = new object[Headers.Length];
+                    int i = 0;
 
-            line.MeasureWidth(headers);
+                    foreach (var propertyInfo in properties)
+                    {
+                        values[i++] = propertyInfo.GetValue(row);
+                    }
+
+                    return values;
+                };
+
+                return _selector;
+            }
+        }
+
+
+        private void ToHorizontalGrid()
+        {
+            Line.MeasureWidth(Headers);
             foreach (var row in source)
             {
-                line.MeasureWidth(selector(row));
+                Line.MeasureWidth(selector(row));
             }
 
-            line.DisplayLine();
-            line.DisplayLine(headers);
-            line.DisplayLine();
+            Line.DisplayLine();
+            Line.DisplayLine(Headers);
+            Line.DisplayLine();
 
             if (source.Count() == 0)
                 return;
 
             foreach (var row in source)
             {
-                line.DisplayLine(selector(row));
+                Line.DisplayLine(selector(row));
             }
 
-            line.DisplayLine();
+            Line.DisplayLine();
         }
+
 
         private void ToVerticalGrid()
         {
-            var properties = typeof(T).GetProperties();
-            string[] headers = properties.Select(p => p.Name).ToArray();
-
-            Func<T, object[]> selector = row =>
-            {
-                var values = new object[headers.Length];
-                int i = 0;
-
-                foreach (var propertyInfo in properties)
-                {
-                    values[i++] = propertyInfo.GetValue(row);
-                }
-                return values;
-            };
-
-            ToVerticalGrid(headers, selector);
-        }
-
-
-        private void ToVerticalGrid(string[] headers, Func<T, object[]> selector)
-        {
             int m = 1;
-            int n = headers.Length;
-
-            var line = new OutputDataLine(writeLine, m + 1);
+            int n = Headers.Length;
 
             object[] L = new object[m + 1];
             T[] src = source.ToArray();
@@ -118,13 +119,13 @@ namespace sqlcon
             for (int i = 0; i < n; i++)
             {
                 int k = 0;
-                L[k++] = headers[i];
+                L[k++] = Headers[i];
                 L[k++] = src[i];
 
-                line.MeasureWidth(L);
+                Line.MeasureWidth(L);
             }
 
-            line.DisplayLine();
+            Line.DisplayLine();
 
             if (source.Count() == 0)
                 return;
@@ -132,13 +133,13 @@ namespace sqlcon
             for (int i = 0; i < n; i++)
             {
                 int k = 0;
-                L[k++] = headers[i];
+                L[k++] = Headers[i];
                 L[k++] = src[i];
 
-                line.DisplayLine(L);
+                Line.DisplayLine(L);
             }
 
-            line.DisplayLine();
+            Line.DisplayLine();
         }
 
 

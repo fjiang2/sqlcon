@@ -11,72 +11,71 @@ namespace sqlcon
     public class OutputDataTable
     {
         private DataTable dt;
-        private OutputDataLine line;
         private string[] headers;
         private bool vertical;
 
-        public OutputDataTable(DataTable table, TextWriter textWriter, bool vertical)
-            : this(table, textWriter.WriteLine, vertical)
+        public OutputDataTable(DataTable dt, TextWriter textWriter, bool vertical)
+            : this(dt, textWriter.WriteLine, vertical)
         {
 
         }
 
-        internal OutputDataTable(DataTable table, Action<string> writeLine, bool vertical)
+        internal OutputDataTable(DataTable dt, Action<string> writeLine, bool vertical)
         {
-            this.dt = table;
+            this.dt = dt;
             this.vertical = vertical;
 
             List<string> list = new List<string>();
-            foreach (DataColumn column in dt.Columns)
+            foreach (DataColumn column in this.dt.Columns)
                 list.Add(column.ColumnName);
 
             this.headers = list.ToArray();
 
             if (vertical)
             {
-                line = new OutputDataLine(writeLine, dt.Rows.Count + 1);
+                Line = new OutputDataLine(writeLine, this.dt.Rows.Count + 1);
             }
             else
             {
-                line = new OutputDataLine(writeLine, headers.Length);
+                Line = new OutputDataLine(writeLine, headers.Length);
             }
         }
 
-        public OutputDataLine Line => line;
+        public OutputDataLine Line { get; }
 
-        public void WriteData()
+        public void Output()
         {
             if (vertical)
-                ToVGrid();
+                ToVerticalGrid();
             else
                 ToHorizontalGrid();
         }
 
         private void ToHorizontalGrid()
         {
-            line.MeasureWidth(headers);
+            Line.MeasureWidth(headers);
             foreach (DataRow row in dt.Rows)
             {
-                line.MeasureWidth(row.ItemArray);
+                Line.MeasureWidth(row.ItemArray);
             }
 
-            line.DisplayLine();
-            line.DisplayLine(headers);
-            line.DisplayLine();
+            Line.DisplayLine();
+            Line.DisplayLine(headers);
+            Line.DisplayLine();
 
             if (dt.Rows.Count == 0)
                 return;
 
             foreach (DataRow row in dt.Rows)
             {
-                line.DisplayLine(row.ItemArray);
+                Line.DisplayLine(row.ItemArray);
             }
 
-            line.DisplayLine();
+            Line.DisplayLine();
 
         }
 
-        private void ToVGrid()
+        private void ToVerticalGrid()
         {
             int m = dt.Rows.Count;
             int n = dt.Columns.Count;
@@ -89,10 +88,10 @@ namespace sqlcon
                 foreach (DataRow row in dt.Rows)
                     L[k++] = row[i];
 
-                line.MeasureWidth(L);
+                Line.MeasureWidth(L);
             }
 
-            line.DisplayLine();
+            Line.DisplayLine();
 
             for (int i = 0; i < n; i++)
             {
@@ -101,10 +100,10 @@ namespace sqlcon
                 foreach (DataRow row in dt.Rows)
                     L[k++] = row[i];
 
-                line.DisplayLine(L);
+                Line.DisplayLine(L);
             }
 
-            line.DisplayLine();
+            Line.DisplayLine();
 
         }
 

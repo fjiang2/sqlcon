@@ -1816,7 +1816,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                                 foreach (DataTable dt in ds.Tables)
                                 {
                                     writer.WriteLine($"[{dt.TableName}]");
-                                    new OutputDataTable(dt, writer, vertical: false).WriteData();
+                                    new OutputDataTable(dt, writer, vertical: false).Output();
                                     writer.WriteLine("<{0} row{1}>", dt.Rows.Count, dt.Rows.Count > 1 ? "s" : "");
                                 }
 
