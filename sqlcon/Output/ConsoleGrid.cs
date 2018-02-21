@@ -6,14 +6,51 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Data.Common;
 
+
 namespace sqlcon
 {
     static class ConsoleGrid
     {
-        public static void ToConsole<T>(this IEnumerable<T> source)
+        public static void ToConsole<T>(this IEnumerable<T> source, bool vertical = false)
         {
-            OutputCollection<T> oc = new OutputCollection<T>(source, cout.TrimWriteLine, vertical: false);
-            oc.Output();
+            DataTable dt = ToDataTable(source);
+            new OutputDataTable(dt, cout.TrimWriteLine, vertical).Output();
+        }
+
+        private static DataTable ToDataTable<T>(IEnumerable<T> source)
+        {
+            var properties = typeof(T).GetProperties();
+            string[] headers = properties.Select(p => p.Name).ToArray();
+            DataTable dt = new DataTable();
+            foreach (var header in headers)
+                dt.Columns.Add(new DataColumn(header, typeof(string)));
+
+            Func<T, object[]> selector = row =>
+            {
+                var values = new object[headers.Length];
+                int i = 0;
+
+                foreach (var propertyInfo in properties)
+                {
+                    values[i++] = propertyInfo.GetValue(row);
+                }
+
+                return values;
+            };
+
+            foreach (T row in source)
+            {
+                object[] values = selector(row);
+                var newRow = dt.NewRow();
+                int k = 0;
+                foreach (var item in values)
+                {
+                    newRow[k++] = item;
+                }
+                dt.Rows.Add(newRow);
+            }
+
+            return dt;
         }
 
         public static void ToConsole(this DbDataReader reader, int maxRow = 0)
@@ -77,13 +114,13 @@ namespace sqlcon
 
         }
 
-        public static void ToConsole(this DataTable table, bool vertical = false, bool more = false)
+        public static void ToConsole(this DataTable dt, bool vertical = false, bool more = false)
         {
-            ShellHistory.SetLastResult(table);
-            OutputDataTable cdt = new OutputDataTable(table, cout.TrimWriteLine, vertical);
-            cdt.Output();
+            ShellHistory.SetLastResult(dt);
+            OutputDataTable odt = new OutputDataTable(dt, cout.TrimWriteLine, vertical);
+            odt.Output();
 
-            cout.WriteLine("<{0}{1} row{2}>", more ? "top " : "", table.Rows.Count, table.Rows.Count > 1 ? "s" : "");
+            cout.WriteLine("<{0}{1} row{2}>", more ? "top " : "", dt.Rows.Count, dt.Rows.Count > 1 ? "s" : "");
         }
 
 
