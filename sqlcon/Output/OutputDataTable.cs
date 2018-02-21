@@ -4,18 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
-using Sys.Data;
+using System.IO;
 
 namespace sqlcon
 {
     public class OutputDataTable
     {
         private DataTable dt;
-        private OutputDataLine consoleLine;
+        private OutputDataLine line;
         private string[] headers;
         private bool vertical;
 
-        public OutputDataTable(DataTable table, Action<string> writeLine, bool vertical)
+        public OutputDataTable(DataTable table, TextWriter textWriter, bool vertical)
+            : this(table, textWriter.WriteLine, vertical)
+        {
+
+        }
+
+        internal OutputDataTable(DataTable table, Action<string> writeLine, bool vertical)
         {
             this.dt = table;
             this.vertical = vertical;
@@ -26,47 +32,47 @@ namespace sqlcon
 
             this.headers = list.ToArray();
 
-            if (!vertical)
+            if (vertical)
             {
-                consoleLine = new OutputDataLine(writeLine, headers.Length);
+                line = new OutputDataLine(writeLine, dt.Rows.Count + 1);
             }
             else
             {
-                consoleLine = new OutputDataLine(writeLine, dt.Rows.Count + 1);
+                line = new OutputDataLine(writeLine, headers.Length);
             }
         }
 
-        public OutputDataLine Line => consoleLine;
+        public OutputDataLine Line => line;
 
         public void WriteData()
         {
             if (vertical)
                 ToVGrid();
             else
-                ToHGrid();
+                ToHorizontalGrid();
         }
 
-        private void ToHGrid()
+        private void ToHorizontalGrid()
         {
-            consoleLine.MeasureWidth(headers);
+            line.MeasureWidth(headers);
             foreach (DataRow row in dt.Rows)
             {
-                consoleLine.MeasureWidth(row.ItemArray);
+                line.MeasureWidth(row.ItemArray);
             }
 
-            consoleLine.DisplayLine();
-            consoleLine.DisplayLine(headers);
-            consoleLine.DisplayLine();
+            line.DisplayLine();
+            line.DisplayLine(headers);
+            line.DisplayLine();
 
             if (dt.Rows.Count == 0)
                 return;
 
             foreach (DataRow row in dt.Rows)
             {
-                consoleLine.DisplayLine(row.ItemArray);
+                line.DisplayLine(row.ItemArray);
             }
 
-            consoleLine.DisplayLine();
+            line.DisplayLine();
 
         }
 
@@ -83,10 +89,10 @@ namespace sqlcon
                 foreach (DataRow row in dt.Rows)
                     L[k++] = row[i];
 
-                consoleLine.MeasureWidth(L);
+                line.MeasureWidth(L);
             }
 
-            consoleLine.DisplayLine();
+            line.DisplayLine();
 
             for (int i = 0; i < n; i++)
             {
@@ -95,10 +101,10 @@ namespace sqlcon
                 foreach (DataRow row in dt.Rows)
                     L[k++] = row[i];
 
-                consoleLine.DisplayLine(L);
+                line.DisplayLine(L);
             }
 
-            consoleLine.DisplayLine();
+            line.DisplayLine();
 
         }
 

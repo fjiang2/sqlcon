@@ -10,6 +10,7 @@ namespace sqlcon
     {
         private IEnumerable<T> source;
         private bool vertical;
+        //private OutputDataLine line;
 
         public Action<string> writeLine { get; set; } = cout.TrimWriteLine;
 
@@ -18,17 +19,27 @@ namespace sqlcon
             this.source = source;
             this.writeLine = writeLine;
             this.vertical = vertical;
+
+            //if (vertical)
+            //{
+            //    line = new OutputDataLine(writeLine, dt.Rows.Count + 1);
+            //}
+            //else
+            //{
+            //    line = new OutputDataLine(writeLine, headers.Length);
+            //}
+
         }
 
         public void WriteData()
         {
             if (vertical)
-                ToVGrid();
+                ToVerticalGrid();
             else
-                ToHGrid();
+                ToHorizontalGrid();
         }
         
-        private void ToHGrid()
+        private void ToHorizontalGrid()
         {
             var properties = typeof(T).GetProperties();
             string[] headers = properties.Select(p => p.Name).ToArray();
@@ -45,35 +56,35 @@ namespace sqlcon
                 return values;
             };
 
-            ToHGrid(headers, selector);
+            ToHorizontalGrid(headers, selector);
         }
 
-        private void ToHGrid(string[] headers, Func<T, object[]> selector)
+        private void ToHorizontalGrid(string[] headers, Func<T, object[]> selector)
         {
-            var D = new OutputDataLine(writeLine, headers.Length);
+            var line = new OutputDataLine(writeLine, headers.Length);
 
-            D.MeasureWidth(headers);
+            line.MeasureWidth(headers);
             foreach (var row in source)
             {
-                D.MeasureWidth(selector(row));
+                line.MeasureWidth(selector(row));
             }
 
-            D.DisplayLine();
-            D.DisplayLine(headers);
-            D.DisplayLine();
+            line.DisplayLine();
+            line.DisplayLine(headers);
+            line.DisplayLine();
 
             if (source.Count() == 0)
                 return;
 
             foreach (var row in source)
             {
-                D.DisplayLine(selector(row));
+                line.DisplayLine(selector(row));
             }
 
-            D.DisplayLine();
+            line.DisplayLine();
         }
 
-        private void ToVGrid()
+        private void ToVerticalGrid()
         {
             var properties = typeof(T).GetProperties();
             string[] headers = properties.Select(p => p.Name).ToArray();
@@ -90,16 +101,16 @@ namespace sqlcon
                 return values;
             };
 
-            ToVGrid(headers, selector);
+            ToVerticalGrid(headers, selector);
         }
 
 
-        private void ToVGrid(string[] headers, Func<T, object[]> selector)
+        private void ToVerticalGrid(string[] headers, Func<T, object[]> selector)
         {
             int m = 1;
             int n = headers.Length;
 
-            var D = new OutputDataLine(writeLine, m + 1);
+            var line = new OutputDataLine(writeLine, m + 1);
 
             object[] L = new object[m + 1];
             T[] src = source.ToArray();
@@ -110,10 +121,10 @@ namespace sqlcon
                 L[k++] = headers[i];
                 L[k++] = src[i];
 
-                D.MeasureWidth(L);
+                line.MeasureWidth(L);
             }
 
-            D.DisplayLine();
+            line.DisplayLine();
 
             if (source.Count() == 0)
                 return;
@@ -124,10 +135,10 @@ namespace sqlcon
                 L[k++] = headers[i];
                 L[k++] = src[i];
 
-                D.DisplayLine(L);
+                line.DisplayLine(L);
             }
 
-            D.DisplayLine();
+            line.DisplayLine();
         }
 
 
