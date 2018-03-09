@@ -80,10 +80,7 @@ namespace sqlcon
                 return;
             }
 
-            if (cmd.IsVertical)
-                table.ToConsole(vertical: true, more: more);
-            else
-                table.ToConsole(more);
+            table.ToConsole(vertical: cmd.IsVertical, more: more);
         }
 
 
