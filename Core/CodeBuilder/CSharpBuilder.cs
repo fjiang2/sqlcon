@@ -95,7 +95,7 @@ namespace Sys.CodeBuilder
 
             string code = this.ToString();
             string file = Path.ChangeExtension(Path.Combine(directory, cname), "cs");
-            File.WriteAllText(directory, code);
+            File.WriteAllText(file, code);
         }
     }
 }
