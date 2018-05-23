@@ -35,12 +35,14 @@ namespace Sys.CodeBuilder
                     else if (arg is AttributeInfoArg)
                     {
                         list.Add((arg as AttributeInfoArg).ToString());
-                        continue;
                     }
-                    foreach (var propertyInfo in arg.GetType().GetProperties())
+                    else
                     {
-                        var val = VAL.Boxing(propertyInfo.GetValue(arg));
-                        list.Add($"{propertyInfo.Name} = {val}");
+                        foreach (var propertyInfo in arg.GetType().GetProperties())
+                        {
+                            var val = VAL.Boxing(propertyInfo.GetValue(arg));
+                            list.Add($"{propertyInfo.Name} = {val}");
+                        }
                     }
                 }
 
