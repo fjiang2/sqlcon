@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+6/6/2018 v1.9.2.1
+	Bug Fixes:
+	1. IDENTITY(1,1) is on incorrect place when CREATE/ALTER a table
+
 2/14/2018 v1.9.2.0
 	Improvements/Enhancements:
 	1. command "last" can display/load/save dataset xml file

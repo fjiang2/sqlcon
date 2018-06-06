@@ -326,13 +326,18 @@ namespace Sys.Data
         {
             string ty = GetSQLType(column);
 
-            string line = string.Format("[{0}] {1} {2}", column.ColumnName, ty, column.Nullable ? "NULL" : "NOT NULL");
+            string line = $"[{column.ColumnName}] {ty}";
 
             if (column.IsIdentity)
             {
                 line += " IDENTITY(1,1)";
                 return line;
             }
+
+            if (column.Nullable)
+                line += " NULL";
+            else
+                line += " NOT NULL";
 
             if (column.IsComputed)
             {
