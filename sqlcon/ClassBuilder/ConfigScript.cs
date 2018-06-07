@@ -155,7 +155,7 @@ namespace sqlcon
             //default value field
             field = new Field(ty, defaultKey)
             {
-                modifier = Modifier.Public | Modifier.Readonly | Modifier.Static,
+                modifier = Modifier.Public | Modifier.Const,
                 userValue = val.ToString(),
                 comment = comment
             };
