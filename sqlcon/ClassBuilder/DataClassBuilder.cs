@@ -14,6 +14,7 @@ namespace sqlcon
     enum DataClassType
     {
         Undefined,
+        Array,
         List,
         Dictionary,
         Enum
@@ -34,6 +35,7 @@ namespace sqlcon
         {
             switch (dataType)
             {
+                case DataClassType.Array:
                 case DataClassType.List:
                 case DataClassType.Dictionary:
                     ExportCSData(dt);
@@ -53,6 +55,7 @@ namespace sqlcon
                 string _dataType = cmd.GetValue("type") ?? "list";
                 switch (_dataType)
                 {
+                    case "array": return DataClassType.Array;
                     case "list": return DataClassType.List;
                     case "dict": return DataClassType.Dictionary;
                     case "enum": return DataClassType.Enum;
@@ -154,9 +157,9 @@ namespace sqlcon
             string[] columns = dt.Columns.Cast<DataColumn>().Select(col => col.ColumnName).ToArray();
 
 
-            if (dataType == DataClassType.List)
+            if (dataType == DataClassType.List || dataType == DataClassType.Array)
             {
-                Field field = CreateListField(dt, cname, columns, codeColumns);
+                Field field = CreateListOrArrayField(dataType, dt, cname, columns, codeColumns);
                 clss.Add(field);
             }
             else
@@ -247,7 +250,7 @@ namespace sqlcon
             return field;
         }
 
-        private static Field CreateListField(DataTable dt, string cname, string[] columns, IDictionary<string, TypeInfo> codeColumns)
+        private static Field CreateListOrArrayField(DataClassType dataType, DataTable dt, string cname, string[] columns, IDictionary<string, TypeInfo> codeColumns)
         {
             string fieldName = $"{cname}Data";
 
@@ -268,6 +271,9 @@ namespace sqlcon
             }
 
             TypeInfo typeinfo = new TypeInfo { userType = $"{cname}[]" };
+            if (dataType == DataClassType.List)
+                typeinfo = new TypeInfo { userType = $"List<{cname}>" };
+
             Field field = new Field(typeinfo, fieldName, new Value(L.ToArray()) { type = typeinfo })
             {
                 modifier = Modifier.Public | Modifier.Static | Modifier.Readonly

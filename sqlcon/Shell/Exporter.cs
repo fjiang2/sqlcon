@@ -714,7 +714,7 @@ namespace sqlcon
             cout.WriteLine("   /entity  : generate C# method copy/compare/clone for Entity framework");
             cout.WriteLine("      [/base:type] define base class or interface, use ~ to represent generic class itself, delimited by ;");
             cout.WriteLine("   /c#      : generate C# data from last result");
-            cout.WriteLine("      [/type:dict|list|enum] data type, default is list");
+            cout.WriteLine("      [/type:dict|list|array|enum] data type, default is list");
             cout.WriteLine("      [/code-column:col1=usertype1;col2=usertyp2] define user type for columns");
             cout.WriteLine("   /conf    : generate Config C# class");
             cout.WriteLine("      [/type:k|d|f|p|F|P] C# class type, default is kdP");
