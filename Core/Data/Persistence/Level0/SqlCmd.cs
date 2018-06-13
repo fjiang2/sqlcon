@@ -140,6 +140,9 @@ namespace Sys.Data
             if (!parameterName.StartsWith("@"))
                 parameterName = "@" + parameterName;
 
+            if (value == null)
+                value = DBNull.Value;
+
             DbParameter param = dbProvider.AddParameter(parameterName, value);
             return param;
         }
