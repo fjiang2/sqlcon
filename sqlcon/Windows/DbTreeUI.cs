@@ -23,7 +23,7 @@ namespace sqlcon.Windows
     class DbTreeUI : TreeView
     {
         private PathManager mgr;
-        public event EventHandler<EventArgs<string>> PathChanged;
+        public event EventHandler<EventArgs<TreeNode<IDataPath>>> PathChanged;
 
         public DbTreeUI()
         {
@@ -65,11 +65,11 @@ namespace sqlcon.Windows
         private void chdir(string path)
         {
             PathName pathName = new PathName(path);
-            var node = mgr.Navigate(pathName);
+            TreeNode<IDataPath> node = mgr.Navigate(pathName);
             if (node != null)
             {
                 mgr.current = node;
-                PathChanged?.Invoke(this, new EventArgs<string>(path));
+                PathChanged?.Invoke(this, new EventArgs<TreeNode<IDataPath>>(node));
             }
         }
 

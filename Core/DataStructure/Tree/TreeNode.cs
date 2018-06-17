@@ -73,9 +73,9 @@ namespace Sys
             get
             {
                 List<TreeNode<T>> sibling = new List<TreeNode<T>>();
-                foreach(TreeNode<T> child in this.parent.Nodes)
+                foreach (TreeNode<T> child in this.parent.Nodes)
                 {
-                    if(child != this)
+                    if (child != this)
                         sibling.Add(child);
                 }
 
@@ -153,20 +153,43 @@ namespace Sys
         /// <summary>
         /// Gets the path from the root tree node to the current tree node.
         /// </summary>
-        public string FullPath
+        public string GetFullPath()
         {
-            get
+            string path = this.item.ToString();
+            TreeNode<T> node = this;
+            while (node.Parent != null)
             {
-                string path = this.item.ToString();
-                TreeNode<T> node = this;
-                while (node.Parent != null)
-                {
+                if (node.Parent.item != null)
                     path = node.Parent.item.ToString() + "\\" + path;
-                    node = node.Parent;
-                }
+                else
+                    path = "\\" + path;
 
-                return path;
+                node = node.Parent;
             }
+
+            return path;
+        }
+
+        /// <summary>
+        /// Get full path by x-path function
+        /// </summary>
+        /// <param name="xpath"></param>
+        /// <returns></returns>
+        public string GetFullPath(Func<T, string> xpath)
+        {
+            string path = xpath(this.item);
+            TreeNode<T> node = this;
+            while (node.Parent != null)
+            {
+                if (node.Parent.item != null)
+                    path = xpath(node.Parent.item) + "\\" + path;
+                else
+                    path = "\\" + path;
+
+                node = node.Parent;
+            }
+
+            return path;
         }
 
         /// <summary>

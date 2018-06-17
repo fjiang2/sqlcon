@@ -14,6 +14,8 @@ using System.Windows.Controls.Primitives;
 using System.IO;
 using System.Data;
 using System.Data.SqlClient;
+
+using Sys;
 using Sys.Data;
 using Sys.Data.IO;
 using System.ComponentModel;
@@ -91,7 +93,7 @@ namespace sqlcon.Windows
             Button btnSave = WpfUtils.NewImageButton(ApplicationCommands.Save, "Save", "Save(Ctrl-S)", "Save_16x16.png");
             Button btnExecute = WpfUtils.NewImageButton(ExecuteCommand, "Execute", "Execute(F5)", "Next_16x16.png");
             this.comboPath = new ComboBox { Width = 300, HorizontalAlignment = HorizontalAlignment.Right };
-
+            this.comboPath.SelectionChanged += ComboPath_SelectionChanged;
             DockPanel dockPanel = new DockPanel();
             this.Content = dockPanel;
 
@@ -195,20 +197,32 @@ namespace sqlcon.Windows
             }
         }
 
-        private void TreeView_PathChanged(object sender, Sys.EventArgs<string> e)
+        private void ComboPath_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string path = e.Value;
-            var found = comboPath.Items.OfType<string>().FirstOrDefault(x => x == path);
+            ComboBox combo = (ComboBox)sender;
+            string path = combo.SelectedValue as string;
+        }
+
+        private void TreeView_PathChanged(object sender, EventArgs<TreeNode<IDataPath>> e)
+        {
+            TreeNode<IDataPath> node = e.Value;
+            IDataPath name = node.Item;
+            if (!(name is DatabaseName))
+                return;
+
+            //string path = node.XPath(x => x.Path);
+
+            var found = comboPath.Items.OfType<IDataPath>().FirstOrDefault(x => x == name);
             if (found == null)
             {
-                comboPath.Items.Add(path);
-                found = path;
+                comboPath.Items.Add(name);
+                found = name;
             }
 
             comboPath.SelectedValue = found;
         }
 
-    
+
         #endregion
 
 
@@ -255,6 +269,10 @@ namespace sqlcon.Windows
                 return;
 
             tabControl.Items.Clear();
+
+            IDataPath name = comboPath.SelectedValue as IDataPath;
+            if (name is DatabaseName)
+                provider = (name as DatabaseName).Provider;
 
             var cmd = new SqlCmd(provider, text);
             if (text.IndexOf("select", StringComparison.CurrentCultureIgnoreCase) >= 0
