@@ -38,7 +38,7 @@ namespace Sys.Data
 
         public static bool gb2312text(string text)
         {
-            Encoding encoding = System.Text.Encoding.GetEncoding("gb2312");
+            Encoding encoding = Encoding.GetEncoding("gb2312");
 
             for (int i = 0; i < text.Length; i++)
             {

@@ -33,7 +33,7 @@ namespace sqlcon
 
             var builder = new SqlBuilder()
                 .SELECT
-                .AppendFormat("COUNT(*) AS [{0}], ", COUNT_COLUMN_NAME)
+                .Append($"COUNT(*) AS [{COUNT_COLUMN_NAME}], ")
                 .COLUMNS(_columns)
                 .FROM(tname)
                 .GROUP_BY(_columns).Append("HAVING COUNT(*)>1 ")
