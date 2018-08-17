@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data;
-using Sys;
+﻿using Sys;
 using Sys.Data;
 using Sys.Data.Comparison;
 using Sys.Data.Manager;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace sqlcon
 {
@@ -484,9 +484,21 @@ namespace sqlcon
             string mtd = cmd.GetValue("method");
             string[] keys = cmd.Columns;
 
-            if (version == 1)
+            if (version == 0)
             {
                 var builder = new DataContractClassBuilder(cmd, dt)
+                {
+                    ns = ns,
+                    cname = className,
+                    mtd = mtd
+                };
+
+                string file = builder.WriteFile(path);
+                cout.WriteLine("code generated on {0}", file);
+            }
+            else if (version == 1)
+            {
+                var builder = new DataContract1ClassBuilder(cmd, dt)
                 {
                     ns = ns,
                     cname = className,
@@ -706,6 +718,7 @@ namespace sqlcon
             cout.WriteLine("option of code generation:");
             cout.WriteLine("   /dpo     : generate C# table class");
             cout.WriteLine("   /l2s     : generate C# Linq to SQL class");
+            cout.WriteLine("   /dc      : generate C# data contract class");
             cout.WriteLine("   /dc1     : generate C# data contract class and extension class from last result");
             cout.WriteLine("      [/readonly]: contract class for reading only");
             cout.WriteLine("   /dc2     : generate C# data contract class from last result");
@@ -766,6 +779,8 @@ namespace sqlcon
                 ExportClass();
             else if (cmd.Has("csv"))
                 ExportCsvFile();
+            else if (cmd.Has("dc"))
+                ExportDataContract(0);
             else if (cmd.Has("dc1"))
                 ExportDataContract(1);
             else if (cmd.Has("dc2"))
