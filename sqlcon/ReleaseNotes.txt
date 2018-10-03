@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+10/3/2018 v1.9.2.2
+	Bug Fixes:
+	1. compare data on identity column or computed column
+
 6/6/2018 v1.9.2.1
 	Bug Fixes:
 	1. IDENTITY(1,1) is on incorrect place when CREATE/ALTER a table

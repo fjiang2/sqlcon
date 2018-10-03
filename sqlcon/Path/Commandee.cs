@@ -532,7 +532,7 @@ namespace sqlcon
                     {
                         if (sql == string.Empty)
                         {
-                            cout.WriteLine("source {0} and destination {1} are identical", tname1, tname2);
+                            cout.WriteLine("source {0} and destination {1} are identical, or table is not found", tname1, tname2);
                         }
                         continue;
                     }

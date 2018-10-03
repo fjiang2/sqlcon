@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Data;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace Sys.Data.Comparison
 {
@@ -110,7 +110,20 @@ namespace Sys.Data.Comparison
 
         public static string TableDifference(CompareSideType sideType, TableSchema schema1, TableSchema schema2, string[] primaryKeys, string[] exceptColumns)
         {
-            TableCompare compare = new TableCompare(schema1, schema2) { SideType = sideType, ExceptColumns = exceptColumns };
+            //don't compare identity column or computed column
+            exceptColumns = schema1.Columns
+                .Where(column => column.IsComputed || column.IsIdentity)
+                .Select(column => column.ColumnName)
+                .Union(exceptColumns)
+                .Distinct()
+                .ToArray();
+
+            TableCompare compare = new TableCompare(schema1, schema2)
+            {
+                SideType = sideType,
+                ExceptColumns = exceptColumns
+            };
+
             IPrimaryKeys keys = new PrimaryKeys(primaryKeys);
             return compare.Compare(keys);
         }

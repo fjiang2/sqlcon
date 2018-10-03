@@ -125,7 +125,9 @@ namespace sqlcon
             TableSchema schema2 = new TableSchema(tname2);
 
             if (!Exists(tname1))
+            {
                 return string.Empty;
+            }
 
 
             string sql = string.Empty;

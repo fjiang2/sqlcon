@@ -16,9 +16,10 @@
 //--------------------------------------------------------------------------------------------------//
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
-using System.Data;
+using System.Xml.Linq;
 
 namespace Sys.Data
 {
@@ -471,7 +472,8 @@ namespace Sys.Data
                 case CType.BigInt:
                     return Convert.ToInt64(val);
 
-                //                case CType.Xml:
+                case CType.Xml:
+                    return XElement.Parse(val);
 
                 default:
                     throw new NotImplementedException(string.Format("cannot convert {0} into type of {1}", val, ctype));

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.OleDb;
+using System.Xml.Linq;
 
 namespace Sys.Data
 {
@@ -311,9 +312,10 @@ namespace Sys.Data
                 case CType.UniqueIdentifier:
                     return typeof(Guid);
 
+                case CType.Xml:
+                    return typeof(XElement);
 
                 case CType.Variant:
-                case CType.Xml:
                 case CType.Udt:
                     break;
 
