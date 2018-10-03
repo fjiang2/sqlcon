@@ -112,7 +112,7 @@ namespace Sys.Data.Comparison
         {
             //don't compare identity column or computed column
             exceptColumns = schema1.Columns
-                .Where(column => column.IsComputed || column.IsIdentity)
+                .Where(column => column.IsComputed || (column.IsIdentity && !column.IsPrimary))
                 .Select(column => column.ColumnName)
                 .Union(exceptColumns)
                 .Distinct()
