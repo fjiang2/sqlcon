@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data;
 
 namespace Sys.Data
 {
@@ -111,6 +111,21 @@ namespace Sys.Data
             }
         }
 
+
+        public string DROP_TABLE(TableName tname, bool ifExists)
+        {
+            StringBuilder builder = new StringBuilder();
+            var fkrows = GetFkRows(tname);
+            foreach (var row in fkrows)
+            {
+                DROP_TABLE(row, GetFkRows(row.fkTable), ifExists, builder);
+                builder.AppendLine(dropTemplate(row.fkTable, ifExists));
+            }
+
+            return builder.ToString();
+        }
+
+
         public string DELETE(TableName tname)
         {
             StringBuilder builder = new StringBuilder();
@@ -128,6 +143,11 @@ namespace Sys.Data
             return builder.ToString();
         }
 
+        private static string dropTemplate(TableName tableName, bool ifExists)
+        {
+            return TableClause.DROP_TABLE(tableName, ifExists);
+        }
+
         private string deleteTemplate(RowDef row, string locator)
         {
             return string.Format("DELETE FROM {0} WHERE [{1}] IN (SELECT [{2}] FROM {3} WHERE {4})",
@@ -141,6 +161,27 @@ namespace Sys.Data
         private string selectTemplate(RowDef pkrow, RowDef fkrow)
         {
             return string.Format("SELECT [{0}] FROM {1} WHERE [{2}] = @{3}", fkrow.pkColumn, fkrow.pkTable.FormalName, fkrow.fkColumn, pkrow.pkColumn);
+        }
+
+
+        private void DROP_TABLE(RowDef pkrow, RowDef[] fkrows, bool ifExists, StringBuilder builder)
+        {
+            if (fkrows.Length == 0)
+                return;
+
+            List<string> completed = new List<string>();
+            foreach (var row in fkrows)
+            {
+                RowDef[] getFkRows = GetFkRows(row.fkTable);
+
+                string stamp = $"{row.fkTable}=>{row.pkTable}";
+                if (completed.IndexOf(stamp) < 0)   //don't allow to same fk=>pk many times
+                {
+                    DROP_TABLE(row, getFkRows, ifExists, builder);
+                    builder.AppendLine(dropTemplate(row.fkTable, ifExists));
+                    completed.Add(stamp);
+                }
+            }
         }
 
 

@@ -104,7 +104,7 @@ namespace sqlcon
             {
                 using (var writer = fileName.NewStreamWriter())
                 {
-                    string sql = Compare.GenerateTemplate(new TableSchema(tname), type);
+                    string sql = Compare.GenerateTemplate(new TableSchema(tname), type, cmd.HasIfExists);
                     cout.WriteLine(sql);
                     writer.WriteLine(sql);
                 }
@@ -177,7 +177,7 @@ namespace sqlcon
                 {
                     using (var writer = fileName.NewStreamWriter())
                     {
-                        string sql = Compare.GenerateTemplate(new TableSchema(tname), SqlScriptType.INSERT);
+                        string sql = Compare.GenerateTemplate(new TableSchema(tname), SqlScriptType.INSERT, cmd.HasIfExists);
                         cout.WriteLine(sql);
                         writer.WriteLine(sql);
                     }
@@ -704,12 +704,13 @@ namespace sqlcon
             cout.WriteLine("export data, schema, class, and template on current selected server/db/table");
             cout.WriteLine("option of SQL generation:");
             cout.WriteLine("   /insert  : export INSERT INTO script on current table/database");
-            cout.WriteLine("   [/if]    : option /if generate if exists row then UPDATE else INSERT");
+            cout.WriteLine("   [/if]    : option /if generate if exists row then UPDATE else INSERT; or check existence of table when drop table");
             cout.WriteLine("   /create  : generate CREATE TABLE script on current table/database");
             cout.WriteLine("   /select  : generate SELECT FROM WHERE template");
             cout.WriteLine("   /update  : generate UPDATE SET WHERE template");
             cout.WriteLine("   /save    : generate IF EXISTS UPDATE ELSE INSERT template");
             cout.WriteLine("   /delete  : generate DELETE FROM WHERE template, delete rows with foreign keys constraints");
+            cout.WriteLine("   /drop    : generate DROP TABLE template, drop tables with foreign keys constraints");
             cout.WriteLine("option of data generation:");
             cout.WriteLine("   /schema  : generate database schema xml file");
             cout.WriteLine("   /data    : generate database/table data xml file");
@@ -767,6 +768,8 @@ namespace sqlcon
                 ExportScud(SqlScriptType.SELECT);
             else if (cmd.Has("delete"))
                 ExportScud(SqlScriptType.DELETE);
+            else if (cmd.Has("drop"))
+                ExportScud(SqlScriptType.DROP);
             else if (cmd.Has("update"))
                 ExportScud(SqlScriptType.UPDATE);
             else if (cmd.Has("save"))

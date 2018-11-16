@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+11/16/2018 v1.9.3.0
+	Improvements/Enhancements:
+	1. export DROP TABLE Script, command "export tableName /drop [/if]"
+
 10/3/2018 v1.9.2.2
 	Bug Fixes:
 	1. compare data on identity column or computed column

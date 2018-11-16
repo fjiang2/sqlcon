@@ -195,7 +195,7 @@ namespace Sys.Data.Comparison
             return count;
         }
 
-        public static string GenerateTemplate(TableSchema schema, SqlScriptType type)
+        public static string GenerateTemplate(TableSchema schema, SqlScriptType type, bool ifExists)
         {
             TableName tableName = schema.TableName;
             TableClause script = new TableClause(schema);
@@ -216,6 +216,10 @@ namespace Sys.Data.Comparison
                 case SqlScriptType.DELETE:
                     return new Dependency(tableName.DatabaseName).DELETE(tableName)
                      + script.DELETE(schema.Columns);
+
+                case SqlScriptType.DROP:
+                    return new Dependency(tableName.DatabaseName).DROP_TABLE(tableName, ifExists)
+                        + script.DROP_TABLE(ifExists);
             }
 
             return null;

@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Sys.Data.Comparison;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Data;
 using System.Data.Common;
-using Sys.Data.Comparison;
+using System.Linq;
+using System.Text;
 
 namespace Sys.Data
 {
@@ -164,7 +164,6 @@ namespace Sys.Data
             return builder.ToString();
         }
 
-
         public string DELETE(IEnumerable<IColumn> columns)
         {
             return string.Format(deleteCommandTemplate, primaryWhere(columns));
@@ -192,10 +191,23 @@ namespace Sys.Data
             return script;
         }
 
-        public string DROP_TABLE()
+        public string DROP_TABLE(bool ifExists)
         {
-            string script = string.Format("DROP TABLE {0}", tableName.FormalName);
-            return script;
+            return DROP_TABLE(tableName, ifExists);
+        }
+
+        public static string DROP_TABLE(TableName tableName, bool ifExists)
+        {
+            if (ifExists)
+            {
+                var builder = new StringBuilder();
+                builder.AppendLine($"IF OBJECT_ID('{tableName.Name}') IS NOT NULL")
+                      .AppendLine($"  DROP TABLE {tableName.FormalName}")
+                      .AppendLine("GO");
+                return builder.ToString();
+            }
+
+            return $"DROP TABLE {tableName.FormalName}";
         }
 
         #endregion
