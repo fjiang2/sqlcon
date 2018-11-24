@@ -7,6 +7,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Sys.Data.Manager;
 
 namespace sqlcon
 {
@@ -62,7 +63,7 @@ namespace sqlcon
 
             foreach (DataColumn column in dt.Columns)
             {
-                var property = new Property(dict[column], column.ColumnName)
+                var property = new Property(dict[column], column.ColumnName.ToFieldName())
                 {
                     modifier = Modifier.Public
                 };
