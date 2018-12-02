@@ -30,12 +30,12 @@ namespace Sys.Data.Comparison
 
             foreach (ColumnSchema column in schema1.Columns)
             {
-                if (schema2.Columns.Where(c => c.ColumnName == column.ColumnName).Count() == 0)
+                if (schema2.Columns.Where(c => IgnoreCaseEquals(c.ColumnName, column.ColumnName)).Count() == 0)
                 {
                     builder.AppendLine(script.ADD_COLUMN(column));
                 }
                 else if (schema2.Columns.Where(c =>
-                    c.ColumnName.Equals(column.ColumnName)
+                    IgnoreCaseEquals(c.ColumnName, column.ColumnName)
                     && (c.CType != column.CType
                     || c.Length != column.Length
                     || c.Nullable != column.Nullable
@@ -52,7 +52,7 @@ namespace Sys.Data.Comparison
 
             var pk1 = schema1.PrimaryKeys;
             var pk2 = schema2.PrimaryKeys;
-            
+
             if (pk2.Keys.Length == 0)
             {
                 if (pk1.Keys.Length > 0)
@@ -61,7 +61,7 @@ namespace Sys.Data.Comparison
                     builder.AppendLine(TableClause.GO);
                 }
             }
-            else 
+            else
             {
                 if (pk1.Keys.Length > 0 && !Equals(pk1.Keys, pk2.Keys))
                 {
@@ -103,6 +103,11 @@ namespace Sys.Data.Comparison
             return builder.ToString();
         }
 
+        private static bool IgnoreCaseEquals(string s1, string s2)
+        {
+            return string.Compare(s1, s2, ignoreCase: true) == 0;
+        }
+
         private static bool Equals(string[] A1, string[] A2)
         {
             if (A1.Length != A2.Length)
@@ -117,7 +122,7 @@ namespace Sys.Data.Comparison
             return true;
         }
 
-       
-      
+
+
     }
 }
