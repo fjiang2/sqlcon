@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Sys;
+using Sys.CodeBuilder;
+using Sys.Data;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
-using System.Data;
-using Sys;
-using Sys.Data;
-using Sys.CodeBuilder;
 
 namespace sqlcon
 {
@@ -51,13 +51,24 @@ namespace sqlcon
                 clss.Add(field);
             }
 
+            UtilsThisMethod option = UtilsThisMethod.ToString;
 
-            clss.AddUtilsMethod(cname, schema.Columns.Select(column => column.ColumnName),
-                UtilsThisMethod.Copy |
-                UtilsThisMethod.Equals |
-                UtilsThisMethod.Clone | 
-                UtilsThisMethod.Equals | 
-                UtilsThisMethod.ToString);
+            if (cmd.Has("Copy"))
+                option |= UtilsThisMethod.Copy;
+
+            if (cmd.Has("Clone"))
+                option |= UtilsThisMethod.Clone;
+
+            if (cmd.Has("Equals"))
+                option |= UtilsThisMethod.Equals;
+
+            if (cmd.Has("GetHashCode"))
+                option |= UtilsThisMethod.GetHashCode;
+
+            if (cmd.Has("Compare"))
+                option |= UtilsThisMethod.GetHashCode;
+
+            clss.AddUtilsMethod(cname, schema.Columns.Select(column => column.ColumnName), option);
         }
 
 

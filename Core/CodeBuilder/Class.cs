@@ -265,6 +265,9 @@ namespace Sys.CodeBuilder
             if ((type & UtilsThisMethod.Copy) == UtilsThisMethod.Copy)
                 Add(x.Copy());
 
+            if ((type & UtilsThisMethod.GetHashCode) == UtilsThisMethod.GetHashCode)
+                Add(x.CreateGetHashCode());
+
             if ((type & UtilsThisMethod.ToString) == UtilsThisMethod.ToString)
                 Add(x._ToString());
 

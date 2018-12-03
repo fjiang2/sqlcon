@@ -132,6 +132,18 @@ namespace Sys.CodeBuilder
             return mtd;
         }
 
+        public Method CreateGetHashCode()
+        {
+            Method mtd = new Method(new TypeInfo { type = typeof(int) }, "GetHashCode")
+            {
+                modifier = Modifier.Public | Modifier.Override,
+            };
+
+            var sent = mtd.statements;
+            sent.AppendLine("return 0;");
+            return mtd;
+        }
+
         public Method Compare()
         {
             Method mtd = new Method(new TypeInfo { type = typeof(bool) }, "Compare")
@@ -248,6 +260,7 @@ namespace Sys.CodeBuilder
         Compare = 0x04,
         ToString = 0x08,
         Equals = 0x10,
+        GetHashCode = 0x11,
     }
 
     [Flags]
