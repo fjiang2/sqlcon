@@ -1,5 +1,10 @@
 ﻿sqlcon release notes
 
+12/3/2018 v1.9.4.0
+	Improvements/Enhancements:
+	1. export entity class for the methods of Copy/Clone/Compare/Equals
+	2. Compare columne name with ignoring case
+
 11/16/2018 v1.9.3.0
 	Improvements/Enhancements:
 	1. export DROP TABLE Script, command "export tableName /drop [/if]"
