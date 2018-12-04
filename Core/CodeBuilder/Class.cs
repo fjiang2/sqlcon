@@ -266,10 +266,10 @@ namespace Sys.CodeBuilder
                 Add(x.Copy());
 
             if ((type & UtilsThisMethod.GetHashCode) == UtilsThisMethod.GetHashCode)
-                Add(x.CreateGetHashCode());
+                Add(x._GetHashCode());
 
             if ((type & UtilsThisMethod.ToString) == UtilsThisMethod.ToString)
-                Add(x._ToString());
+                Add(x._ToString_v2());
 
         }
 

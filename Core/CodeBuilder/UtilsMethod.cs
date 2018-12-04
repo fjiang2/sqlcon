@@ -132,7 +132,7 @@ namespace Sys.CodeBuilder
             return mtd;
         }
 
-        public Method CreateGetHashCode()
+        public Method _GetHashCode()
         {
             Method mtd = new Method(new TypeInfo { type = typeof(int) }, "GetHashCode")
             {
@@ -250,11 +250,33 @@ namespace Sys.CodeBuilder
             return mtd;
         }
 
+        public Method _ToString_v2()
+        {
+            Method mtd = new Method(new TypeInfo { type = typeof(string) }, "ToString")
+            {
+                modifier = Modifier.Public | Modifier.Override,
+            };
+
+            var sent = mtd.statements;
+
+
+            sent.Append("return ");
+            sent.Append("$\"");
+            variables.ForEach(
+                variable => sent.Append($"{variable}:{{{variable}}}"),
+                variable => sent.Append(", ")
+                );
+            sent.Append("\";");
+
+            return mtd;
+        }
+
     }
 
     [Flags]
     public enum UtilsThisMethod
     {
+        Undefined = 0x00,
         Copy = 0x01,
         Clone = 0x02,
         Compare = 0x04,
@@ -266,6 +288,7 @@ namespace Sys.CodeBuilder
     [Flags]
     public enum UtilsStaticMethod
     {
+        Undefined = 0x00,
         CopyTo = 0x01,
         CloneFrom = 0x02,
         CompareTo = 0x04,

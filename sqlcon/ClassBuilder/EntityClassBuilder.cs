@@ -51,24 +51,51 @@ namespace sqlcon
                 clss.Add(field);
             }
 
-            UtilsThisMethod option = UtilsThisMethod.ToString;
+            UtilsThisMethod option = UtilsThisMethod.Undefined;
 
-            if (cmd.Has("Copy"))
+            string x = cmd.GetValue("method");
+            if(x==null)
+            {
+                cerr.WriteLine("invalid option /method");
+                return;
+            }
+
+            string[] methods = x.Split(',');
+
+            if (methods.Contains("Copy"))
                 option |= UtilsThisMethod.Copy;
 
-            if (cmd.Has("Clone"))
+            if (methods.Contains("Clone"))
                 option |= UtilsThisMethod.Clone;
 
-            if (cmd.Has("Equals"))
+            if (methods.Contains("Equals"))
                 option |= UtilsThisMethod.Equals;
 
-            if (cmd.Has("GetHashCode"))
+            if (methods.Contains("GetHashCode"))
                 option |= UtilsThisMethod.GetHashCode;
 
-            if (cmd.Has("Compare"))
+            if (methods.Contains("Compare"))
                 option |= UtilsThisMethod.GetHashCode;
 
-            clss.AddUtilsMethod(cname, schema.Columns.Select(column => column.ColumnName), option);
+            if (methods.Contains("ToString"))
+                option |= UtilsThisMethod.ToString;
+
+            string[] columns;
+            if (cmd.Has("identity"))
+            {
+                columns = schema.Columns
+                .Select(column => column.ColumnName)
+                .ToArray();
+            }
+            else
+            {
+                columns = schema.Columns
+                    .Where(column => !column.IsIdentity)
+                    .Select(column => column.ColumnName)
+                    .ToArray();
+            }
+
+            clss.AddUtilsMethod(cname, columns, option);
         }
 
 
