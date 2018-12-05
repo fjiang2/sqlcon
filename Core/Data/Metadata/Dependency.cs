@@ -192,7 +192,7 @@ namespace Sys.Data
 
             foreach (var row in fkrows)
             {
-                string sql = string.Format("[{0}] IN (SELECT [{1}] FROM {2} WHERE {3})", row.fkColumn, pkrow.pkColumn, pkrow.fkTable.FormalName, locator);
+                string sql = string.Format("[{0}] IN (SELECT [{1}] FROM {2} WHERE {3})", row.fkColumn, row.pkColumn, pkrow.fkTable.FormalName, locator);
                 RowDef[] getFkRows = GetFkRows(row.fkTable);
                 DELETE(row, getFkRows, sql, builder);
 
