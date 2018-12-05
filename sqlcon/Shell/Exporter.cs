@@ -123,7 +123,8 @@ namespace sqlcon
                 cout.WriteLine("start to generate CREATE TABLE script: {0}", dname);
                 using (var writer = fileName.NewStreamWriter())
                 {
-                    writer.WriteLine(tname.GenerateCluase(true));
+                    writer.WriteLine(tname.GenerateIfDropClause());
+                    writer.WriteLine(tname.GenerateClause());
                 }
                 cout.WriteLine("completed to generate script on file: {0}", fileName);
                 return;
@@ -138,13 +139,22 @@ namespace sqlcon
                     TableName[] tnames = md.MatchedTableNames;
                     if (tnames.Length > 0)
                     {
+                        Stack<string> stack = new Stack<string>();
+                        Queue<string> queue = new Queue<string>();
+                        foreach (var tname in tnames)
+                        {
+                            cout.WriteLine("start to generate CREATE TABLE script: {0} ", tname);
+                            stack.Push(tname.GenerateIfDropClause());
+                            queue.Enqueue(tname.GenerateClause());
+                        }
+
                         using (var writer = fileName.NewStreamWriter())
                         {
-                            foreach (var tname in tnames)
-                            {
-                                cout.WriteLine("start to generate CREATE TABLE script: {0} ", tname);
-                                writer.WriteLine(tname.GenerateCluase(true));
-                            }
+                            while (stack.Count > 0)
+                                writer.WriteLine(stack.Pop());
+
+                            while (queue.Count > 0)
+                                writer.WriteLine(queue.Dequeue());
                         }
                     }
                     else

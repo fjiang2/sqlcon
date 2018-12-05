@@ -16,8 +16,8 @@
 //--------------------------------------------------------------------------------------------------//
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Data;
+using System.Text;
 
 namespace Sys.Data
 {
@@ -200,16 +200,23 @@ namespace Sys.Data
             return Provider.Schema.GetTableSchema(this);
         }
 
-
-        public string GenerateCluase(bool if_drop = false)
+        public string GenerateIfDropClause()
         {
             TableSchema schema = new TableSchema(this);
             var script = new TableClause(schema);
 
             StringBuilder builder = new StringBuilder();
-            if (if_drop)
-                builder.Append(script.IF_EXISTS_DROP_TABLE())
-                    .AppendLine(TableClause.GO);
+            builder.Append(script.IF_EXISTS_DROP_TABLE())
+                .AppendLine(TableClause.GO);
+
+            return builder.ToString();
+        }
+
+
+        public string GenerateClause()
+        {
+            TableSchema schema = new TableSchema(this);
+            var script = new TableClause(schema);
 
             return script.GenerateScript();
         }

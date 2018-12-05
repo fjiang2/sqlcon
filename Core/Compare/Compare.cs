@@ -102,7 +102,7 @@ namespace Sys.Data.Comparison
             }
             else
             {
-                sql = tableName1.GenerateCluase();
+                sql = tableName1.GenerateClause();
             }
 
             return sql;

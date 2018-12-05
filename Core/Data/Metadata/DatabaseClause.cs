@@ -58,7 +58,7 @@ namespace Sys.Data
                 Console.WriteLine("generate CREATE TABLE {0}", tableName.FormalName);
                 try
                 {
-                    builder.AppendLine(tableName.GenerateCluase());
+                    builder.AppendLine(tableName.GenerateClause());
                 }
                 catch (Exception ex)
                 {

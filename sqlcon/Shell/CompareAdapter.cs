@@ -88,7 +88,7 @@ namespace sqlcon
                     {
                         if (compareType == ActionType.CompareSchema)
                         {
-                            string sql = tname1.GenerateCluase();
+                            string sql = tname1.GenerateClause();
                             cout.WriteLine(sql);
                             builder.Append(sql);
                         }
