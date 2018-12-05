@@ -86,7 +86,7 @@ namespace sqlcon
                 option |= UtilsThisMethod.GetHashCode;
 
             if (methods.Contains("Compare"))
-                option |= UtilsThisMethod.GetHashCode;
+                option |= UtilsThisMethod.Compare;
 
             if (methods.Contains("ToString"))
                 option |= UtilsThisMethod.ToString;
