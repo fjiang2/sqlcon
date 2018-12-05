@@ -253,6 +253,9 @@ namespace Sys.CodeBuilder
         {
             var x = new UtilsMethod(className, propertyNames);
 
+            if ((type & UtilsThisMethod.Map) == UtilsThisMethod.Map)
+                Add(x.Map());
+
             if ((type & UtilsThisMethod.Equals) == UtilsThisMethod.Equals)
                 Add(x.Equals());
 

@@ -54,13 +54,24 @@ namespace sqlcon
             UtilsThisMethod option = UtilsThisMethod.Undefined;
 
             string x = cmd.GetValue("method");
-            if(x==null)
+            if (x == null)
             {
                 cerr.WriteLine("invalid option /method");
                 return;
             }
 
             string[] methods = x.Split(',');
+
+            if (methods.Contains("Map"))
+            {
+                //identity column excluded
+                string[] columns = schema.Columns
+                    .Where(column => !column.IsIdentity)
+                    .Select(column => column.ColumnName)
+                    .ToArray();
+
+                clss.AddUtilsMethod(cname, columns, UtilsThisMethod.Map);
+            }
 
             if (methods.Contains("Copy"))
                 option |= UtilsThisMethod.Copy;
@@ -80,24 +91,12 @@ namespace sqlcon
             if (methods.Contains("ToString"))
                 option |= UtilsThisMethod.ToString;
 
-            string[] columns;
-            if (cmd.Has("identity"))
             {
-                columns = schema.Columns
-                .Select(column => column.ColumnName)
-                .ToArray();
-            }
-            else
-            {
-                columns = schema.Columns
-                    .Where(column => !column.IsIdentity)
+                string[] columns = schema.Columns
                     .Select(column => column.ColumnName)
                     .ToArray();
+                clss.AddUtilsMethod(cname, columns, option);
             }
-
-            clss.AddUtilsMethod(cname, columns, option);
         }
-
-
     }
 }

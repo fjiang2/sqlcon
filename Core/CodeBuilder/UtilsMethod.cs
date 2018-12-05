@@ -19,10 +19,18 @@ namespace Sys.CodeBuilder
             this.classType = new TypeInfo { userType = className };
 
         }
-
+        public Method Map()
+        {
+            return Assign("Map");
+        }
         public Method Copy()
         {
-            Method mtd = new Method("Copy")
+            return Assign("Copy");
+        }
+
+        private Method Assign(string methodName)
+        {
+            Method mtd = new Method(methodName)
             {
                 modifier = Modifier.Public,
             };
@@ -282,7 +290,8 @@ namespace Sys.CodeBuilder
         Compare = 0x04,
         ToString = 0x08,
         Equals = 0x10,
-        GetHashCode = 0x11,
+        GetHashCode = 0x20,
+        Map = 0x40,
     }
 
     [Flags]
