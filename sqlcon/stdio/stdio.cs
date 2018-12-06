@@ -47,7 +47,7 @@ namespace sqlcon
             process.StartInfo.UseShellExecute = false;
             //process.StartInfo.WorkingDirectory = startin;
             process.StartInfo.FileName = editor;
-            process.StartInfo.Arguments = fileName;
+            process.StartInfo.Arguments = $"\"{fileName}\"";
 
 
             try
