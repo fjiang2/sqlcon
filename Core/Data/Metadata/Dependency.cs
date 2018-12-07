@@ -153,7 +153,7 @@ namespace Sys.Data
             var fkrows = GetFkRows(tname);
             foreach (var row in fkrows)
             {
-                string locator = $"[{row.fkColumn}]=@{row.pkColumn}";
+                string locator = $"[{row.fkColumn}] = @{row.pkColumn}";
                 DELETE(row, GetFkRows(row.fkTable), locator, builder);
                 builder.AppendLine($"DELETE FROM {row.fkTable.FormalName} WHERE [{row.fkColumn}] = @{row.pkColumn}");
             }

@@ -175,7 +175,7 @@ namespace Sys.Data
             var L = new List<string>();
             foreach (var key in primaryKeys)
             {
-                L.Add(string.Format("[{0}]={1}", key, key.SqlParameterName()));
+                L.Add(string.Format("[{0}] = {1}", key, key.SqlParameterName()));
             }
             return string.Join(" AND ", L);
         }
