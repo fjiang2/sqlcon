@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+12/7/2018 v1.9.5.0
+	Improvements/Enhancements:
+	1. in the command export tablename /delete, set foreign key = NULL when foreign key column is nullable.
+
 12/3/2018 v1.9.4.0
 	Improvements/Enhancements:
 	1. export entity class for the methods of Copy/Clone/Compare/Equals
