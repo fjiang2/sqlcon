@@ -125,45 +125,6 @@ namespace Sys.Data
             return builder.ToString();
         }
 
-
-        public string DELETE(TableName tname)
-        {
-            StringBuilder builder = new StringBuilder();
-            var fkrows = GetFkRows(tname);
-            foreach (var row in fkrows)
-            {
-                //string locator = string.Format("SELECT [{0}] FROM {1} WHERE {2}=@{2}", "{0}", row.pkTable.FormalName, row.pkColumn);
-                string locator = string.Format("[{0}]=@{1}", row.fkColumn, row.pkColumn);
-                DELETE(row, GetFkRows(row.fkTable), locator, builder);
-                builder
-                    .AppendFormat("DELETE FROM {0} WHERE [{1}] = @{2}", row.fkTable.FormalName, row.fkColumn, row.pkColumn)
-                    .AppendLine();
-            }
-
-            return builder.ToString();
-        }
-
-        private static string dropTemplate(TableName tableName, bool ifExists)
-        {
-            return TableClause.DROP_TABLE(tableName, ifExists);
-        }
-
-        private string deleteTemplate(RowDef row, string locator)
-        {
-            return string.Format("DELETE FROM {0} WHERE [{1}] IN (SELECT [{2}] FROM {3} WHERE {4})",
-                row.fkTable.FormalName,
-                row.fkColumn,
-                row.pkColumn,
-                row.pkTable.FormalName,
-                locator);
-        }
-
-        private string selectTemplate(RowDef pkrow, RowDef fkrow)
-        {
-            return string.Format("SELECT [{0}] FROM {1} WHERE [{2}] = @{3}", fkrow.pkColumn, fkrow.pkTable.FormalName, fkrow.fkColumn, pkrow.pkColumn);
-        }
-
-
         private void DROP_TABLE(RowDef pkrow, RowDef[] fkrows, bool ifExists, StringBuilder builder)
         {
             if (fkrows.Length == 0)
@@ -182,6 +143,22 @@ namespace Sys.Data
                     completed.Add(stamp);
                 }
             }
+
+            return;
+        }
+
+        public string DELETE(TableName tname)
+        {
+            StringBuilder builder = new StringBuilder();
+            var fkrows = GetFkRows(tname);
+            foreach (var row in fkrows)
+            {
+                string locator = $"[{row.fkColumn}]=@{row.pkColumn}";
+                DELETE(row, GetFkRows(row.fkTable), locator, builder);
+                builder.AppendLine($"DELETE FROM {row.fkTable.FormalName} WHERE [{row.fkColumn}] = @{row.pkColumn}");
+            }
+
+            return builder.ToString();
         }
 
 
@@ -192,14 +169,45 @@ namespace Sys.Data
 
             foreach (var row in fkrows)
             {
-                string sql = string.Format("[{0}] IN (SELECT [{1}] FROM {2} WHERE {3})", row.fkColumn, row.pkColumn, pkrow.fkTable.FormalName, locator);
+                string sql = $"[{row.fkColumn}] IN (SELECT [{row.pkColumn}] FROM {pkrow.fkTable.FormalName} WHERE {locator})";
                 RowDef[] getFkRows = GetFkRows(row.fkTable);
-                DELETE(row, getFkRows, sql, builder);
 
-                builder.AppendLine(deleteTemplate(row, locator));
+                var columnInfo = row.fkTable.GetTableSchema().Columns[row.fkColumn];
+
+                if (columnInfo.Nullable)
+                {
+                    builder.AppendLine(updateTemplate(row, locator));
+                }
+                else
+                {
+                    DELETE(row, getFkRows, sql, builder);
+                    builder.AppendLine(deleteTemplate(row, locator));
+                }
             }
-
-
         }
+
+        private static string dropTemplate(TableName tableName, bool ifExists)
+        {
+            return TableClause.DROP_TABLE(tableName, ifExists);
+        }
+
+        private string deleteTemplate(RowDef row, string locator)
+        {
+            return $"DELETE FROM {row.fkTable.FormalName} WHERE [{row.fkColumn}] IN (SELECT [{row.pkColumn}] FROM {row.pkTable.FormalName} WHERE {locator})";
+        }
+
+        private string updateTemplate(RowDef row, string locator)
+        {
+            return $"UPDATE {row.fkTable.FormalName} SET {row.fkColumn} = NULL WHERE [{row.fkColumn}] IN (SELECT [{row.pkColumn}] FROM {row.pkTable.FormalName} WHERE {locator})";
+        }
+
+        private string selectTemplate(RowDef pkrow, RowDef fkrow)
+        {
+            return $"SELECT [{fkrow.pkColumn}] FROM {fkrow.pkTable.FormalName} WHERE [{fkrow.fkColumn}] = @{pkrow.pkColumn}";
+        }
+
+
+
+
     }
 }
