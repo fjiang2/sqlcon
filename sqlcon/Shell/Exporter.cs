@@ -58,23 +58,7 @@ namespace sqlcon
             }
 
         }
-        private string fileName
-        {
-            get
-            {
-                string output = cmd.GetValue("out");
-                if (!string.IsNullOrEmpty(output))
-                {
-                    string directory = Path.GetDirectoryName(output);
-                    if (!Directory.Exists(directory))
-                        Directory.CreateDirectory(directory);
-
-                    return output;
-                }
-
-                return cfg.OutputFile;
-            }
-        }
+        private string fileName => cmd.OutputPath();
 
         private TableName[] getTableNames(Command cmd)
         {
@@ -712,6 +696,8 @@ namespace sqlcon
         public static void Help()
         {
             cout.WriteLine("export data, schema, class, and template on current selected server/db/table");
+            cout.WriteLine("option:");
+            cout.WriteLine("   /out:xxx : output path or file name");
             cout.WriteLine("option of SQL generation:");
             cout.WriteLine("   /insert  : export INSERT INTO script on current table/database");
             cout.WriteLine("   [/if]    : option /if generate if exists row then UPDATE else INSERT; or check existence of table when drop table");

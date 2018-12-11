@@ -296,8 +296,8 @@ namespace sqlcon
                 case "compare":
                     {
                         PathBothSide both = new PathBothSide(mgr, cmd);
-
-                        using (var writer = cfg.OutputFile.NewStreamWriter())
+                        string fileName = cmd.OutputPath();
+                        using (var writer = fileName.NewStreamWriter())
                         {
                             ActionType type;
                             if (cmd.IsSchema)
@@ -327,7 +327,7 @@ namespace sqlcon
                             var sql = adapter.Run(type, T1, T2, cfg, cmd.Columns);
                             writer.Write(sql);
                         }
-                        cout.WriteLine("completed");
+                        cout.WriteLine($"result in \"{fileName}\"");
                         return NextStep.COMPLETED;
                     }
 

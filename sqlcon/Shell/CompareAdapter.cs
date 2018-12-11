@@ -65,6 +65,7 @@ namespace sqlcon
 
             CancelableWork.CanCancel(cts =>
             {
+                int i = 0;
                 foreach (var tname1 in N1)
                 {
                     if (cts.IsCancellationRequested)
@@ -73,7 +74,10 @@ namespace sqlcon
                     TableName tname2 = N2.Where(t => t.ShortName == tname1.ShortName).FirstOrDefault();
                     if (tname2 == null)
                     {
-                        tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
+                        if (i < N2.Length)
+                            tname2 = N2[i];
+                        else
+                            tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
                     }
 
                     if (compareType == ActionType.CompareData && !MatchedDatabase.Includes(cfg.compareIncludedTables, tname1))
@@ -97,6 +101,8 @@ namespace sqlcon
                             cout.WriteLine("{0} doesn't exist", tname2);
                         }
                     }
+
+                    i++;
                 }
 
             });

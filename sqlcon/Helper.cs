@@ -14,6 +14,36 @@ namespace sqlcon
 {
     static class Helper
     {
+        public static string OutputPath(this Command cmd)
+        {
+            string output = cmd.GetValue("out");
+            if (!string.IsNullOrEmpty(output))
+            {
+                try
+                {
+                    if (Directory.Exists(output))
+                    {
+                        string file = Path.GetFileName(cmd.Configuration.OutputFile);
+                        return Path.Combine(output, "sqlcon.out");
+                    }
+                    else
+                    {
+                        string directory = Path.GetDirectoryName(output);
+                        if (!Directory.Exists(directory))
+                            Directory.CreateDirectory(directory);
+
+                        return output;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    cerr.WriteLine($"invalid path \"{output}\", {ex.Message}");
+                }
+            }
+
+            return cmd.Configuration.OutputFile;
+        }
+
 
         public static StreamWriter NewStreamWriter(this string fileName)
         {
