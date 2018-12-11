@@ -74,7 +74,8 @@ namespace sqlcon
                     TableName tname2 = N2.Where(t => t.ShortName == tname1.ShortName).FirstOrDefault();
                     if (tname2 == null)
                     {
-                        if (i < N2.Length)
+                        //when compare tables in the same database, the table name could be different
+                        if (i < N2.Length && N2[i].DatabaseName == tname1.DatabaseName)
                             tname2 = N2[i];
                         else
                             tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
