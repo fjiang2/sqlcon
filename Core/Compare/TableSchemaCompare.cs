@@ -26,7 +26,7 @@ namespace Sys.Data.Comparison
             TableSchema schema2 = new TableSchema(tableName2);
 
             StringBuilder builder = new StringBuilder();
-            TableClause script = new TableClause(schema1);
+            TableClause script = new TableClause(schema2);
 
             foreach (ColumnSchema column in schema1.Columns)
             {
