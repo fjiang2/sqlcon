@@ -304,18 +304,19 @@ namespace sqlcon
 
         public void ExportClass()
         {
-            DpoOption option = new DpoOption();
+            DpoOption option = new DpoOption
+            {
+                NameSpace = cfg.GetValue<string>("dpo.ns", "Sys.DataModel.Dpo"),
+                OutputPath = cfg.GetValue<string>("dpo.path", $"{Configuration.MyDocuments}\\DataModel\\Dpo"),
+                Level = cfg.GetValue<Level>("dpo.level", Level.Application),
+                HasProvider = cfg.GetValue<bool>("dpo.hasProvider", false),
+                HasTableAttribute = cfg.GetValue<bool>("dpo.hasTableAttr", true),
+                HasColumnAttribute = cfg.GetValue<bool>("dpo.hasColumnAttr", true),
+                IsPack = cfg.GetValue<bool>("dpo.isPack", true),
+                CodeSorted = cmd.Has("sort"),
 
-            option.NameSpace = cfg.GetValue<string>("dpo.ns", "Sys.DataModel.Dpo");
-            option.OutputPath = cfg.GetValue<string>("dpo.path", $"{Configuration.MyDocuments}\\DataModel\\Dpo");
-            option.Level = cfg.GetValue<Level>("dpo.level", Level.Application);
-            option.HasProvider = cfg.GetValue<bool>("dpo.hasProvider", false);
-            option.HasTableAttribute = cfg.GetValue<bool>("dpo.hasTableAttr", true);
-            option.HasColumnAttribute = cfg.GetValue<bool>("dpo.hasColumnAttr", true);
-            option.IsPack = cfg.GetValue<bool>("dpo.isPack", true);
-            option.CodeSorted = cmd.Has("sort");
-
-            option.ClassNameSuffix = cfg.GetValue<string>("dpo.suffix", Setting.DPO_CLASS_SUFFIX_CLASS_NAME);
+                ClassNameSuffix = cfg.GetValue<string>("dpo.suffix", Setting.DPO_CLASS_SUFFIX_CLASS_NAME)
+            };
             option.ClassNameRule =
                 name => name.Substring(0, 1).ToUpper() + name.Substring(1).ToLower() + option.ClassNameSuffix;
 
@@ -366,7 +367,7 @@ namespace sqlcon
             string path = cfg.GetValue<string>("csv.path", $"{Configuration.MyDocuments}\\csv");
 
             string file;
-            Func<TableName, string> fullName = tname => $"{path}\\{sname.Path}\\{dname.Name}\\{tname.ShortName}.csv";
+            string fullName(TableName tname) => $"{path}\\{sname.Path}\\{dname.Name}\\{tname.ShortName}.csv";
 
             if (tname != null)
             {

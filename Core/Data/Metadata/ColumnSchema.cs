@@ -182,9 +182,8 @@ namespace Sys.Data
 
         public override bool Equals(object obj)
         {
-            ColumnSchema it = obj as ColumnSchema;
 
-            if (it == null)
+            if (!(obj is ColumnSchema it))
                 return false;
 
             return this.ColumnName.Equals(it.ColumnName)

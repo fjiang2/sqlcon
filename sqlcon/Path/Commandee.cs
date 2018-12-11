@@ -433,8 +433,7 @@ namespace sqlcon
             }
             else
             {
-                int result;
-                if (int.TryParse(cmd.Path1.name, out result))
+                if (int.TryParse(cmd.Path1.name, out int result))
                 {
                     result--;
 
@@ -898,9 +897,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
 
 
-            if (pt.Item is TableName)
+            if (pt.Item is TableName tname)
             {
-                var tname = (TableName)pt.Item;
                 var dup = new DuplicatedTable(tname, cmd.Columns);
                 if (cmd.Has("d"))
                 {
@@ -919,9 +917,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
 
 
-            if (pt.Item is DatabaseName)
+            if (pt.Item is DatabaseName dname)
             {
-                var dname = (DatabaseName)pt.Item;
                 var m = new MatchedDatabase(dname, cmd.wildcard, cfg.compareIncludedTables);
                 var T = m.MatchedTableNames;
 

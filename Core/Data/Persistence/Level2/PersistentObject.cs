@@ -42,7 +42,7 @@ namespace Sys.Data
 
 
         private TableAttribute dataTableAttribute;
-        private PropertyInfo[] columnProperties;
+        private readonly PropertyInfo[] columnProperties;
 
         private bool insertIdentityOn = false;      //used for re-create table data during SQL Server updating
 
@@ -138,8 +138,7 @@ namespace Sys.Data
             FillObject(dataRow);
 
             //RowLoaded(dataRow);
-            if (AfterLoaded != null)
-                AfterLoaded(this, new DataRowChangeEventArgs(dataRow, DataRowAction.Nothing));
+            AfterLoaded?.Invoke(this, new DataRowChangeEventArgs(dataRow, DataRowAction.Nothing));
         }
 
 
@@ -623,11 +622,10 @@ namespace Sys.Data
 
             exists = d.Load();      
             FillObject(d.Row);
-            
+
             //RowLoaded(d.Row);
 
-            if (AfterLoaded != null)
-                AfterLoaded(this, new DataRowChangeEventArgs(d.Row, DataRowAction.Nothing));
+            AfterLoaded?.Invoke(this, new DataRowChangeEventArgs(d.Row, DataRowAction.Nothing));
 
 
             return d.Row;
@@ -712,8 +710,10 @@ namespace Sys.Data
 
         public RowAdapter NewRowAdapter(Selector columnNames)
         {
-            RowObjectAdapter d = new RowObjectAdapter(this, columnNames);
-            d.InsertIdentityOn = this.insertIdentityOn;
+            RowObjectAdapter d = new RowObjectAdapter(this, columnNames)
+            {
+                InsertIdentityOn = this.insertIdentityOn
+            };
             return d;
         }
 
