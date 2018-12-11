@@ -40,27 +40,37 @@ namespace sqlcon
             var clss = new Class(cname, OptionalBaseType()) { modifier = Modifier.Public | Modifier.Partial };
             builder.AddClass(clss);
 
-            //Const Field
-            Field field;
-            foreach (var column in schema.Columns)
+            string optionField = cmd.GetValue("field");
+            if (optionField != null)
             {
-                field = new Field(new TypeInfo { type = typeof(string) }, COLUMN(column), new Value(column.ColumnName))
+                string[] fields = optionField.Split(',');
+
+                if (fields.Contains("const"))
                 {
-                    modifier = Modifier.Public | Modifier.Const
-                };
-                clss.Add(field);
+                    //Const Field
+                    Field field;
+                    foreach (var column in schema.Columns)
+                    {
+                        field = new Field(new TypeInfo { type = typeof(string) }, COLUMN(column), new Value(column.ColumnName))
+                        {
+                            modifier = Modifier.Public | Modifier.Const
+                        };
+                        clss.Add(field);
+                    }
+                }
             }
+
 
             UtilsThisMethod option = UtilsThisMethod.Undefined;
 
-            string x = cmd.GetValue("method");
-            if (x == null)
+            string optionMethod = cmd.GetValue("method");
+            if (optionMethod == null)
             {
                 cerr.WriteLine("invalid option /method");
                 return;
             }
 
-            string[] methods = x.Split(',');
+            string[] methods = optionMethod.Split(',');
 
             if (methods.Contains("Map"))
             {

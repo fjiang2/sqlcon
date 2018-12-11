@@ -724,6 +724,7 @@ namespace sqlcon
             cout.WriteLine("      [/col:pk1,pk2] default primary key is the first column");
             cout.WriteLine("   /entity  : generate C# method copy/compare/clone for Entity framework");
             cout.WriteLine("      [/base:type] define base class or interface, use ~ to represent generic class itself, delimited by ;");
+            cout.WriteLine("      [/field:constMap] create const fields for name of columns");
             cout.WriteLine("      [/method:Map,Copy,Equals,Clone,GetHashCode,ToString] create Copy,Equals,Clone,GetHashCode, and ToString method");
             cout.WriteLine("   /c#      : generate C# data from last result");
             cout.WriteLine("      [/type:dict|list|array|enum] data type, default is list");
