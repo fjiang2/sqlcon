@@ -766,9 +766,9 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             {
                 cout.WriteLine("let assignment              : variable assign statement ");
                 cout.WriteLine("let key=value               : update column by current table or locator");
-                cout.WriteLine("example:");
-                cout.WriteLine("let Host=\"127.0.0.1\"      : value of variable Host is '\"127.0.0.1\"'");
-                cout.WriteLine("let a=12                    : value of variable Host is '\"127.0.0.1\"'");
+                cout.WriteLine("examples:");
+                cout.WriteLine("let Host=\"127.0.0.1\"      : value of variable Host is \"127.0.0.1\"");
+                cout.WriteLine("let a=12                    : value of variable a is 12");
                 return;
             }
 

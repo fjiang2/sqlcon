@@ -29,14 +29,14 @@ namespace Sys.Data
         private const string DELIMETER = "'";
         private const string NULL = "NULL";
 
-        private object value;
+        private readonly object value;
 
         public SqlValue(object value)
         {
             this.value = value;
         }
 
-        public static bool gb2312text(string text)
+        private static bool gb2312text(string text)
         {
             Encoding encoding = Encoding.GetEncoding("gb2312");
 

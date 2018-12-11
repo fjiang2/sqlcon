@@ -41,8 +41,7 @@ namespace sqlcon
             int k = parseAction(_line, out Action);
             this.args = _line.Substring(k);
 
-            string[] L;
-            this.badcommand = !parseArgument(this.args, out L);
+            this.badcommand = !parseArgument(this.args, out string[] L);
             this.arguments = L;
 
             if (L.Length > 0 && !L[0].StartsWith("/"))
