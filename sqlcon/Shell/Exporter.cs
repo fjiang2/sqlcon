@@ -58,7 +58,7 @@ namespace sqlcon
             }
 
         }
-        private string fileName => cmd.OutputPath();
+        private string fileName => cmd.OutputFile();
 
         private TableName[] getTableNames(Command cmd)
         {

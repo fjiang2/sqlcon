@@ -296,7 +296,7 @@ namespace sqlcon
                 case "compare":
                     {
                         PathBothSide both = new PathBothSide(mgr, cmd);
-                        string fileName = cmd.OutputPath();
+                        string fileName = cmd.OutputFile();
                         using (var writer = fileName.NewStreamWriter())
                         {
                             ActionType type;
