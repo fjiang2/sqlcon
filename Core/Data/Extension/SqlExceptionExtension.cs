@@ -7,7 +7,7 @@ using System.Data.SqlClient;
 
 namespace Sys.Data
 {
-    public static class ExceptionExtension
+    public static class SqlExceptionExtension
     {
         public static string AllMessages(this SqlException ex, string sql = null)
         {

@@ -164,11 +164,11 @@
     <Compile Include="Data\DbProvider\XmlDb\XmlDbConnectionProvider.cs" />
     <Compile Include="Data\DbProvider\XmlDb\XmlDbFile.cs" />
     <Compile Include="Data\DbProvider\XmlDb\XmlDbSchemaProvider.cs" />
-    <Compile Include="Data\Conversion.cs" />
+    <Compile Include="Data\Extension\Conversion.cs" />
     <Compile Include="Data\Extension\ConnectionProviderExtension.cs" />
     <Compile Include="Data\Extension\DbTypeExtension.cs" />
     <Compile Include="Data\DefaultRowValue.cs" />
-    <Compile Include="Data\ExceptionExtension.cs" />
+    <Compile Include="Data\Extension\SqlExceptionExtension.cs" />
     <Compile Include="Data\Extension\CTypeExtension.cs" />
     <Compile Include="Data\Extension\SqlTypeExtension.cs" />
     <Compile Include="Data\IDataPath.cs" />
@@ -228,7 +228,7 @@
     <Compile Include="Data\Persistence\Level2\PersistentList.cs" />
     <Compile Include="Data\Persistence\Level2\PersistentObject.cs" />
     <Compile Include="Data\Persistence\Level2\PersistentValue.cs" />
-    <Compile Include="Data\Persistence\Level2\Reflex.cs" />
+    <Compile Include="Data\Extension\Reflex.cs" />
     <Compile Include="Data\Persistence\Level2\RowObjectAdapter.cs" />
     <Compile Include="Data\Persistence\Level3\DPCollection.cs" />
     <Compile Include="Data\Persistence\Level3\DPList.cs" />

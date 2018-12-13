@@ -23,7 +23,7 @@ using System.Data;
 
 namespace Sys.Data
 {
-    class Reflex
+    static class Reflex
     {
 
         public static PropertyInfo[] GetColumnProperties(object instance)
