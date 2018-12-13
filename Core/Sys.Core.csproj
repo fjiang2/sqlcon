@@ -140,6 +140,7 @@
     <Compile Include="Data\Connection\Name\DatabaseName.cs" />
     <Compile Include="Data\Connection\Name\ServerName.cs" />
     <Compile Include="Data\Connection\Name\TableName.cs" />
+    <Compile Include="Data\CType.cs" />
     <Compile Include="Data\DataContract\DataContractTable.cs" />
     <Compile Include="Data\DataContract\IDataContractRow.cs" />
     <Compile Include="Data\DataLake.cs" />
@@ -164,9 +165,12 @@
     <Compile Include="Data\DbProvider\XmlDb\XmlDbFile.cs" />
     <Compile Include="Data\DbProvider\XmlDb\XmlDbSchemaProvider.cs" />
     <Compile Include="Data\Conversion.cs" />
-    <Compile Include="Data\DbType.cs" />
+    <Compile Include="Data\Extension\ConnectionProviderExtension.cs" />
+    <Compile Include="Data\Extension\DbTypeExtension.cs" />
     <Compile Include="Data\DefaultRowValue.cs" />
     <Compile Include="Data\ExceptionExtension.cs" />
+    <Compile Include="Data\Extension\CTypeExtension.cs" />
+    <Compile Include="Data\Extension\SqlTypeExtension.cs" />
     <Compile Include="Data\IDataPath.cs" />
     <Compile Include="Data\ILockable.cs" />
     <Compile Include="Data\Metadata\ColumnCollection.cs" />
@@ -181,8 +185,8 @@
     <Compile Include="Data\Metadata\DatabaseClause.cs" />
     <Compile Include="Data\Metadata\TableSchema.cs" />
     <Compile Include="Data\Metadata\TableClause.cs" />
-    <Compile Include="Data\Persistence\DataExtension.cs" />
-    <Compile Include="Data\Persistence\InternalDataExtension.cs" />
+    <Compile Include="Data\Extension\DataExtension.cs" />
+    <Compile Include="Data\Extension\InternalDataExtension.cs" />
     <Compile Include="Data\Persistence\Level0\DbCmd.cs" />
     <Compile Include="Data\DbProvider\DbProvider.cs" />
     <Compile Include="Data\DbProvider\DbProviderType.cs" />

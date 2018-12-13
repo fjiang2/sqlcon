@@ -46,7 +46,7 @@ namespace Sys.Data.Manager
         {
             
             string fieldName = column.ToFieldName();
-            string ty = ColumnSchema.GetFieldType(column.DataType, column.Nullable);
+            string ty = column.DataType.GetFieldType(column.Nullable);
 
             Property prop = new Property(new CodeBuilder.TypeInfo { userType = ty }, fieldName);
             if (dpoClass.option.HasColumnAttribute || column.ColumnName != fieldName)

@@ -250,12 +250,12 @@ namespace Sys.Data
         }
         private string _ADD_COLUMN(IColumn column)
         {
-            return string.Format("ALTER TABLE {0} ADD {1}", tableName.FormalName, ColumnSchema.GetSQLField(column));
+            return string.Format("ALTER TABLE {0} ADD {1}", tableName.FormalName, column.GetSQLField());
         }
 
         public string ALTER_COLUMN(IColumn column)
         {
-            return string.Format("ALTER TABLE {0} ALTER COLUMN {1}", tableName.FormalName, ColumnSchema.GetSQLField(column));
+            return string.Format("ALTER TABLE {0} ALTER COLUMN {1}", tableName.FormalName, column.GetSQLField());
         }
 
         public string DROP_COLUMN(IColumn column)
@@ -379,7 +379,7 @@ IF NOT EXISTS(SELECT * FROM @@0 WHERE @@1)
 
         internal static string GenerateCREATE_TABLE(ITable table)
         {
-            string fields = string.Join(",\r\n", table.Columns.Select(column => "\t" + Sys.Data.ColumnSchema.GetSQLField(column)));
+            string fields = string.Join(",\r\n", table.Columns.Select(column => "\t" + column.GetSQLField()));
             return CREATE_TABLE(fields, table.PrimaryKeys);
 
         }

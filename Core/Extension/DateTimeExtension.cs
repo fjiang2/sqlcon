@@ -7,7 +7,6 @@ namespace Sys
 {
     public static class DateTimeExtension
     {
-        #region Time Stamp
 
         public static string TimeAgoStamp(this DateTime time)
         {
@@ -54,6 +53,5 @@ namespace Sys
                 return string.Format("{0} months", span.Days / 30);
         }
 
-        #endregion
     }
 }

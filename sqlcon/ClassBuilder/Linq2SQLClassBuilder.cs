@@ -63,7 +63,7 @@ namespace sqlcon
             Property prop;
             foreach (IColumn column in schema.Columns)
             {
-                TypeInfo ty = new TypeInfo { userType = ColumnSchema.GetFieldType(column.DataType, column.Nullable) };
+                TypeInfo ty = new TypeInfo { userType = column.DataType.GetFieldType(column.Nullable) };
 
                 prop = new Property(ty, column.ToFieldName()) { modifier = Modifier.Public };
 

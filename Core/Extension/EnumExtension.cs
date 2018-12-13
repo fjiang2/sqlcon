@@ -9,7 +9,6 @@ namespace Sys
     public static class EnumExtension
     {
 
-        #region Enum Bit flag
 
         public static string EnumBitFlags(object host)
         {
@@ -57,6 +56,5 @@ namespace Sys
             return L;
         }
 
-        #endregion
     }
 }

@@ -160,7 +160,7 @@ namespace sqlcon.Windows
 
         private static string GetSQLField(ColumnSchema column)
         {
-            string ty = ColumnSchema.GetSQLType(column);
+            string ty = column.GetSQLType();
             List<string> list = new List<string>();
             if (column.IsPrimary)
                 list.Add("PK");

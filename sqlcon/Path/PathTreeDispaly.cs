@@ -260,7 +260,7 @@ namespace sqlcon
                     cout.WriteLine("{0,5} {1,26} {2,-16} {3,10} {4,10}",
                        sub(++i),
                        string.Format("[{0}]", column.ColumnName),
-                       ColumnSchema.GetSQLType(column),
+                       column.GetSQLType(),
                        keys,
                        column.Nullable ? "null" : "not null");
 

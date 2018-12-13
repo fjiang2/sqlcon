@@ -359,7 +359,7 @@ namespace Sys.Data
                             f += ",\r\n";
 
                         ColumnSchema column = new ColumnSchema(attr);
-                        f += "\t" + ColumnSchema.GetSQLField(column);
+                        f += "\t" + column.GetSQLField();
                     }
                 }
 
