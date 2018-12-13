@@ -793,7 +793,7 @@ namespace sqlcon
                 ExportLinq2SQLClass();
             else if (cmd.Has("json"))
                 ExportJson();
-            else if (cmd.ToCSharp)
+            else if (cmd.Has("c#"))
                 ExportCSharpData();
             else if (cmd.Has("conf"))
                 ExportConfigurationClass();

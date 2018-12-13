@@ -24,7 +24,6 @@ namespace sqlcon
         public bool HasDependency { get; private set; }
         public bool HasIndex { get; private set; }
         public bool HasStorage { get; private set; }
-        public bool ToCSharp { get; private set; }
         public int Top { get; private set; }
 
 
@@ -102,10 +101,6 @@ namespace sqlcon
 
                 case "/sto":
                     HasStorage = true;
-                    return true;
-
-                case "/c#":
-                    ToCSharp = true;
                     return true;
 
                 default:
