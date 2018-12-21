@@ -1,5 +1,10 @@
 ﻿sqlcon release notes
 
+12/21/2018 v1.9.6.0
+	Improvements/Enhancements:
+	1. support property lambda getter and setter on the C# class builder
+	2. can generate ToDictionary/FromDictionary methods on the Entity class builder
+
 12/7/2018 v1.9.5.0
 	Improvements/Enhancements:
 	1. in the command export tablename /delete, set foreign key = NULL when foreign key column is nullable.
