@@ -52,7 +52,7 @@ namespace Sys
         /// <returns></returns>
         public static IEnumerable<T> Split<T>(this string text, Func<string, T> convert, string separator)
         {
-            string[] items = text.Split(new string[] { separator }, StringSplitOptions.None);
+            string[] items = text.Split(new string[] { separator }, StringSplitOptions.RemoveEmptyEntries);
 
             List<T> list = new List<T>();
 

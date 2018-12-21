@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Sys;
+using Sys.CodeBuilder;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
-using System.Data;
-using Sys;
-using Sys.CodeBuilder;
 
 namespace sqlcon
 {
@@ -77,7 +77,7 @@ namespace sqlcon
 
             //Const Field
             Field field;
-           
+
 
             if (dt.TableName != null)
             {
@@ -286,7 +286,7 @@ namespace sqlcon
             sent.End(";");
 
 
-            clss.AddUtilsMethod(cname, dict.Keys.Select(column => column.ColumnName), UtilsStaticMethod.CopyTo  | UtilsStaticMethod.CompareTo | UtilsStaticMethod.ToSimpleString);
+            clss.AddUtilsMethod(cname, dict.Keys.Select(column => new PropertyInfo { PropertyName = column.ColumnName }), UtilsStaticMethod.CopyTo | UtilsStaticMethod.CompareTo | UtilsStaticMethod.ToSimpleString);
             clss.AppendLine();
 
             foreach (DataColumn column in dt.Columns)

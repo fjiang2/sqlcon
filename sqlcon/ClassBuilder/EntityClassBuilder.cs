@@ -37,7 +37,13 @@ namespace sqlcon
             TableSchema schema = new TableSchema(tname);
             Func<IColumn, string> COLUMN = column => "_" + column.ColumnName.ToUpper();
 
-            var clss = new Class(cname, OptionalBaseType()) { modifier = Modifier.Public | Modifier.Partial };
+            TypeInfo[] baseClass = OptionalBaseType();
+
+            var clss = new Class(cname, OptionalBaseType())
+            {
+                modifier = Modifier.Public | Modifier.Partial
+            };
+
             builder.AddClass(clss);
 
             string optionField = cmd.GetValue("field");
@@ -74,10 +80,28 @@ namespace sqlcon
 
             if (methods.Contains("Map"))
             {
-                //identity column excluded
-                string[] columns = schema.Columns
-                    .Where(column => !column.IsIdentity)
+                string identityColumn = schema.Columns
+                    .Where(column => column.IsIdentity)
                     .Select(column => column.ColumnName)
+                    .FirstOrDefault();
+
+                if (identityColumn == null && schema.Columns[0].CType == CType.Int)
+                    identityColumn = schema.Columns[0].ColumnName;
+
+                if (identityColumn != null)
+                {
+                    Property identity = new Property(new TypeInfo(typeof(int)), "Identity")
+                    {
+                        IsLambda = true,
+                    };
+                    identity.gets.Append($"this.{identityColumn};");
+                    clss.Add(identity);
+                }
+
+                //identity column excluded
+                PropertyInfo[] columns = schema.Columns
+                    .Where(column => !column.IsIdentity)
+                    .Select(column => new PropertyInfo { PropertyName = column.ColumnName })
                     .ToArray();
 
                 clss.AddUtilsMethod(cname, columns, UtilsThisMethod.Map);
@@ -98,13 +122,21 @@ namespace sqlcon
             if (methods.Contains("Compare"))
                 option |= UtilsThisMethod.Compare;
 
+            if (methods.Contains("ToDictionary"))
+                option |= UtilsThisMethod.ToDictionary;
+
             if (methods.Contains("ToString"))
                 option |= UtilsThisMethod.ToString;
 
             {
-                string[] columns = schema.Columns
-                    .Select(column => column.ColumnName)
+                PropertyInfo[] columns = schema.Columns
+                    .Select(column => new PropertyInfo
+                    {
+                        PropertyType = column.GetTypeInfo(),
+                        PropertyName = column.ColumnName
+                    })
                     .ToArray();
+
                 clss.AddUtilsMethod(cname, columns, option);
             }
         }

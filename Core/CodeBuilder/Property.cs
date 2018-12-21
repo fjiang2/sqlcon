@@ -31,6 +31,8 @@ namespace Sys.CodeBuilder
         public Modifier getModifier { get; set; } = Modifier.Public;
         public Modifier setModifier { get; set; } = Modifier.Public;
 
+        public bool IsLambda { get; set; }
+
         public Property(TypeInfo returnType, string propertyName)
             : this(returnType, propertyName, null)
         {
@@ -104,7 +106,7 @@ namespace Sys.CodeBuilder
             {
                 block.AppendFormat("{0}{1}", $"{Signature} {{ {get}; {set}; }}", comment);
             }
-            else
+            else if (!IsLambda)
             {
                 block.AppendLine(Signature + comment);
                 block.Begin();
@@ -122,8 +124,28 @@ namespace Sys.CodeBuilder
 
                 block.End();
             }
+            else
+            {
+                block.AppendLine(Signature + comment);
+                if (gets.Count != 0)
+                    Lambda(block, get, gets);
+
+                if (sets.Count != 0)
+                    Lambda(block, set, sets);
+            }
 
             return;
+        }
+
+        private void Lambda(CodeBlock block, string opr, Statement statement)
+        {
+            if (opr.EndsWith("get") && statement.Count == 1)
+            {
+                block.Append($" => {statement}");
+                return;
+            }
+
+            block.Append($"{opr} => ").AddWithBeginEnd(statement);
         }
     }
 }

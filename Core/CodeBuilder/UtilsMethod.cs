@@ -9,20 +9,22 @@ namespace Sys.CodeBuilder
     class UtilsMethod
     {
         private string className;
-        private IEnumerable<string> variables;
+        private IEnumerable<PropertyInfo> variables;
 
         TypeInfo classType;
-        public UtilsMethod(string className, IEnumerable<string> variables)
+        public UtilsMethod(string className, IEnumerable<PropertyInfo> variables)
         {
             this.className = className;
             this.variables = variables;
             this.classType = new TypeInfo { userType = className };
 
         }
+
         public Method Map()
         {
             return Assign("Map");
         }
+
         public Method Copy()
         {
             return Assign("Copy");
@@ -279,6 +281,49 @@ namespace Sys.CodeBuilder
             return mtd;
         }
 
+        public Method ToDictinary()
+        {
+            Method method = new Method("ToDictionary")
+            {
+                modifier = Modifier.Public,
+                type = new TypeInfo { type = typeof(IDictionary<string, object>) },
+            };
+            var sent = method.statements;
+            sent.AppendLine("return new Dictionary<string,object>() ");
+            sent.Begin();
+
+            foreach (var variable in variables)
+            {
+                var line = $"[\"{variable}\"] = this.{variable},";
+                sent.AppendLine(line);
+            }
+            sent.End(";");
+
+            return method;
+        }
+
+        public Method FromDictinary()
+        {
+            var type = new TypeInfo { type = typeof(IDictionary<string, object>) };
+            Method method = new Method("Copy")
+            {
+                modifier = Modifier.Public,
+                args = new Arguments(new Argument[] { new Argument(type, "dictionary") }),
+            };
+
+            var sent = method.statements;
+            foreach (var variable in variables)
+            {
+                TypeInfo typeInfo = variable.PropertyType;
+                if (typeInfo.type == typeof(System.Xml.Linq.XElement))
+                    typeInfo.type = typeof(string);
+
+                var line = $"this.{variable} = ({typeInfo})dictionary[\"{variable.PropertyName}\"];";
+                sent.AppendLine(line);
+            }
+
+            return method;
+        }
     }
 
     [Flags]
@@ -292,6 +337,7 @@ namespace Sys.CodeBuilder
         Equals = 0x10,
         GetHashCode = 0x20,
         Map = 0x40,
+        ToDictionary = 0x80,
     }
 
     [Flags]

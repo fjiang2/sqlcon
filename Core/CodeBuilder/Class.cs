@@ -14,12 +14,12 @@
 //                                                                                                  //
 //                                                                                                  //
 //--------------------------------------------------------------------------------------------------//
+using Sys;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
-using Sys;
+using System.Text;
 
 namespace Sys.CodeBuilder
 {
@@ -244,12 +244,12 @@ namespace Sys.CodeBuilder
         {
             var rw = properties
                 .Where(p => (p.modifier & Modifier.Public) == Modifier.Public && p.CanRead && p.CanWrite)
-                .Select(p => p.name);
+                .Select(p => new PropertyInfo { PropertyName = p.name });
 
             AddUtilsMethod(this.name, rw, type);
         }
 
-        public void AddUtilsMethod(string className, IEnumerable<string> propertyNames, UtilsThisMethod type)
+        public void AddUtilsMethod(string className, IEnumerable<PropertyInfo> propertyNames, UtilsThisMethod type)
         {
             var x = new UtilsMethod(className, propertyNames);
 
@@ -271,12 +271,18 @@ namespace Sys.CodeBuilder
             if ((type & UtilsThisMethod.GetHashCode) == UtilsThisMethod.GetHashCode)
                 Add(x._GetHashCode());
 
+            if ((type & UtilsThisMethod.ToDictionary) == UtilsThisMethod.ToDictionary)
+            {
+                Add(x.ToDictinary());
+                Add(x.FromDictinary());
+            }
+
             if ((type & UtilsThisMethod.ToString) == UtilsThisMethod.ToString)
                 Add(x._ToString_v2());
 
         }
 
-        public void AddUtilsMethod(string className, IEnumerable<string> propertyNames, UtilsStaticMethod type)
+        public void AddUtilsMethod(string className, IEnumerable<PropertyInfo> propertyNames, UtilsStaticMethod type)
         {
             var x = new UtilsMethod(className, propertyNames);
 
