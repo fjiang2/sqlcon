@@ -7,72 +7,53 @@ using System.Threading.Tasks;
 
 namespace Sys.Data
 {
+
+
     class Dependency
     {
-        class RowDef
-        {
-            public TableName fkTable { get; set; }
-            public TableName pkTable { get; set; }
-            public string pkColumn { get; set; }
-            public string fkColumn { get; set; }
-
-            public override string ToString() => $"{fkTable.ShortName}.{fkColumn} => {pkTable.ShortName}.{pkColumn}";
-        }
-
-        private RowDef[] rows;
+        private DependencyInfo[] rows;
 
         public Dependency(DatabaseName dname)
         {
-            var dt = dname
+            this.rows = dname
                .Provider
                .Schema
-               .GetDependencySchema(dname)
-               .AsEnumerable();
-
-            rows = dt.Select(
-                   row => new RowDef
-                   {
-                       fkTable = new TableName(dname, (string)row["FK_SCHEMA"], (string)row["FK_Table"]),
-                       pkTable = new TableName(dname, (string)row["PK_SCHEMA"], (string)row["PK_Table"]),
-                       pkColumn = (string)row["PK_Column"],
-                       fkColumn = (string)row["FK_Column"]
-                   })
-                   .ToArray();
+               .GetDependencySchema(dname);
         }
 
         public ForeignKeys ByForeignKeys(TableName tname)
         {
-            var L = rows.Where(row => row.pkTable.Equals(tname)).ToArray();
+            var L = rows.Where(row => row.PkTable.Equals(tname)).ToArray();
             List<ForeignKey> keys = new List<ForeignKey>();
             foreach (var l in L)
             {
                 keys.Add(new ForeignKey
                 {
-                    TableName = l.fkTable,
-                    FK_Column = l.fkColumn,
+                    TableName = l.FkTable,
+                    FK_Column = l.FkColumn,
                     PK_Schema = tname.SchemaName,
                     PK_Table = tname.Name,
-                    PK_Column = l.pkColumn
+                    PK_Column = l.PkColumn
                 });
             }
 
             return new ForeignKeys(keys.ToArray());
         }
 
-        private RowDef[] GetFkRows(TableName pk)
-            => rows.Where(row => row.pkTable.Equals(pk)).ToArray();
+        private DependencyInfo[] GetFkRows(TableName pk)
+            => rows.Where(row => row.PkTable.Equals(pk)).ToArray();
 
-        private RowDef[] GetPkRows(TableName fk)
-            => rows.Where(row => row.fkTable.Equals(fk)).ToArray();
+        private DependencyInfo[] GetPkRows(TableName fk)
+            => rows.Where(row => row.FkTable.Equals(fk)).ToArray();
 
         public TableName[] GetDependencyTableNames(DatabaseName databaseName)
         {
             var dict = rows.GroupBy(
-                    row => row.fkTable,
+                    row => row.FkTable,
                     (Key, rows) => new
                     {
                         FkTable = Key,
-                        PkTables = rows.Select(row => row.pkTable).ToArray()
+                        PkTables = rows.Select(row => row.PkTable).ToArray()
                     })
                 .ToDictionary(row => row.FkTable, row => row.PkTables);
 
@@ -118,14 +99,14 @@ namespace Sys.Data
             var fkrows = GetFkRows(tname);
             foreach (var row in fkrows)
             {
-                DROP_TABLE(row, GetFkRows(row.fkTable), ifExists, builder);
-                builder.AppendLine(dropTemplate(row.fkTable, ifExists));
+                DROP_TABLE(row, GetFkRows(row.FkTable), ifExists, builder);
+                builder.AppendLine(dropTemplate(row.FkTable, ifExists));
             }
 
             return builder.ToString();
         }
 
-        private void DROP_TABLE(RowDef pkrow, RowDef[] fkrows, bool ifExists, StringBuilder builder)
+        private void DROP_TABLE(DependencyInfo pkrow, DependencyInfo[] fkrows, bool ifExists, StringBuilder builder)
         {
             if (fkrows.Length == 0)
                 return;
@@ -133,13 +114,13 @@ namespace Sys.Data
             List<string> completed = new List<string>();
             foreach (var row in fkrows)
             {
-                RowDef[] getFkRows = GetFkRows(row.fkTable);
+                DependencyInfo[] getFkRows = GetFkRows(row.FkTable);
 
-                string stamp = $"{row.fkTable}=>{row.pkTable}";
+                string stamp = $"{row.FkTable}=>{row.PkTable}";
                 if (completed.IndexOf(stamp) < 0)   //don't allow to same fk=>pk many times
                 {
                     DROP_TABLE(row, getFkRows, ifExists, builder);
-                    builder.AppendLine(dropTemplate(row.fkTable, ifExists));
+                    builder.AppendLine(dropTemplate(row.FkTable, ifExists));
                     completed.Add(stamp);
                 }
             }
@@ -153,26 +134,26 @@ namespace Sys.Data
             var fkrows = GetFkRows(tname);
             foreach (var row in fkrows)
             {
-                string locator = $"[{row.fkColumn}] = @{row.pkColumn}";
-                DELETE(row, GetFkRows(row.fkTable), locator, builder);
-                builder.AppendLine($"DELETE FROM {row.fkTable.FormalName} WHERE [{row.fkColumn}] = @{row.pkColumn}");
+                string locator = $"[{row.FkColumn}] = @{row.PkColumn}";
+                DELETE(row, GetFkRows(row.FkTable), locator, builder);
+                builder.AppendLine($"DELETE FROM {row.FkTable.FormalName} WHERE [{row.FkColumn}] = @{row.PkColumn}");
             }
 
             return builder.ToString();
         }
 
 
-        private void DELETE(RowDef pkrow, RowDef[] fkrows, string locator, StringBuilder builder)
+        private void DELETE(DependencyInfo pkrow, DependencyInfo[] fkrows, string locator, StringBuilder builder)
         {
             if (fkrows.Length == 0)
                 return;
 
             foreach (var row in fkrows)
             {
-                string sql = $"[{row.fkColumn}] IN (SELECT [{row.pkColumn}] FROM {pkrow.fkTable.FormalName} WHERE {locator})";
-                RowDef[] getFkRows = GetFkRows(row.fkTable);
+                string sql = $"[{row.FkColumn}] IN (SELECT [{row.PkColumn}] FROM {pkrow.FkTable.FormalName} WHERE {locator})";
+                DependencyInfo[] getFkRows = GetFkRows(row.FkTable);
 
-                var columnInfo = row.fkTable.GetTableSchema().Columns[row.fkColumn];
+                var columnInfo = row.FkTable.GetTableSchema().Columns[row.FkColumn];
 
                 if (columnInfo.Nullable)
                 {
@@ -191,19 +172,19 @@ namespace Sys.Data
             return TableClause.DROP_TABLE(tableName, ifExists);
         }
 
-        private string deleteTemplate(RowDef row, string locator)
+        private string deleteTemplate(DependencyInfo row, string locator)
         {
-            return $"DELETE FROM {row.fkTable.FormalName} WHERE [{row.fkColumn}] IN (SELECT [{row.pkColumn}] FROM {row.pkTable.FormalName} WHERE {locator})";
+            return $"DELETE FROM {row.FkTable.FormalName} WHERE [{row.FkColumn}] IN (SELECT [{row.PkColumn}] FROM {row.PkTable.FormalName} WHERE {locator})";
         }
 
-        private string updateTemplate(RowDef row, string locator)
+        private string updateTemplate(DependencyInfo row, string locator)
         {
-            return $"UPDATE {row.fkTable.FormalName} SET {row.fkColumn} = NULL WHERE [{row.fkColumn}] IN (SELECT [{row.pkColumn}] FROM {row.pkTable.FormalName} WHERE {locator})";
+            return $"UPDATE {row.FkTable.FormalName} SET {row.FkColumn} = NULL WHERE [{row.FkColumn}] IN (SELECT [{row.PkColumn}] FROM {row.PkTable.FormalName} WHERE {locator})";
         }
 
-        private string selectTemplate(RowDef pkrow, RowDef fkrow)
+        private string selectTemplate(DependencyInfo pkrow, DependencyInfo fkrow)
         {
-            return $"SELECT [{fkrow.pkColumn}] FROM {fkrow.pkTable.FormalName} WHERE [{fkrow.fkColumn}] = @{pkrow.pkColumn}";
+            return $"SELECT [{fkrow.PkColumn}] FROM {fkrow.PkTable.FormalName} WHERE [{fkrow.FkColumn}] = @{pkrow.PkColumn}";
         }
 
 

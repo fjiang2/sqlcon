@@ -77,16 +77,25 @@ namespace Sys.Data
             return dbSchema;
         }
 
-        public override DataTable GetDependencySchema(DatabaseName dname)
+        public override DependencyInfo[] GetDependencySchema(DatabaseName dname)
         {
-            DataTable dt = new DataTable();
-            dt.Columns.Add(new DataColumn("FK_SCHEMA", typeof(string)));
-            dt.Columns.Add(new DataColumn("FK_Table", typeof(string)));
-            dt.Columns.Add(new DataColumn("PK_SCHEMA", typeof(string)));
-            dt.Columns.Add(new DataColumn("PK_Table", typeof(string)));
+            var dt = this.dbSchema.Tables[0];
+            var L = dt.AsEnumerable().Where(row => 
+                row[nameof(ColumnSchema.PK_Schema)] != DBNull.Value && 
+                row[nameof(ColumnSchema.PK_Table)] != DBNull.Value && 
+                row[nameof(ColumnSchema.PK_Column)] != DBNull.Value);
 
-            dt.AcceptChanges();
-            return dt;
+            DependencyInfo[] rows = L.Select(
+               row => new DependencyInfo
+               {
+                   FkTable = new TableName(dname, (string)row["SchemaName"], (string)row["TableName"]),
+                   PkTable = new TableName(dname, (string)row[nameof(ColumnSchema.PK_Schema)], (string)row[nameof(ColumnSchema.PK_Table)]),
+                   PkColumn = (string)row[nameof(ColumnSchema.PK_Column)],
+                   FkColumn = (string)row[nameof(ColumnSchema.ColumnName)]
+               })
+               .ToArray();
+
+            return rows;
         }
     }
 }

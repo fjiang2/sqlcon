@@ -106,16 +106,15 @@ namespace Sys.Data
 
         public TableName[] GetDependencyTableNames()
         {
-            var dt = Provider
-                .Schema.GetDependencySchema(this)
-                .AsEnumerable();
+            var dependencies = Provider
+                .Schema.GetDependencySchema(this);
 
-            var dict = dt.GroupBy(
-                    row => new TableName(this, (string)row["FK_SCHEMA"], (string)row["FK_Table"]),
+            var dict = dependencies.GroupBy(
+                    row => row.FkTable,
                     (Key, rows) => new
                     {
                         FkTable = Key,
-                        PkTables = rows.Select(row => new TableName(this, (string)row["PK_SCHEMA"], (string)row["PK_Table"])).ToArray()
+                        PkTables = rows.Select(row => row.PkTable).ToArray()
                     })
                 .ToDictionary(row => row.FkTable, row => row.PkTables);
 

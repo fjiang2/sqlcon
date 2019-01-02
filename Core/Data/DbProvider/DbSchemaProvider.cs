@@ -44,6 +44,6 @@ namespace Sys.Data
         public abstract DataSet GetServerSchema(ServerName sname);
         public abstract DataTable GetDatabaseSchema(DatabaseName dname);
         public abstract DataTable GetTableSchema(TableName tname);
-        public abstract DataTable GetDependencySchema(DatabaseName dname);
+        public abstract DependencyInfo[] GetDependencySchema(DatabaseName dname);
     }
 }

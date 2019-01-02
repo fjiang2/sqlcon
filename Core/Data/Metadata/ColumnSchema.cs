@@ -94,7 +94,7 @@ namespace Sys.Data
         {
 
             this.ColumnName = attr.ColumnName;
-            this.CType = attr.CType;
+            SetCType(attr.CType);
 
             this.Nullable = attr.Nullable;
             this.Precision = attr.Precision;
@@ -158,22 +158,25 @@ namespace Sys.Data
         public CType CType
         {
             get { return this.ctype; }
-            set
-            {
-                this.ctype = value;
-                this.DataType = value.ToString();
-            }
+        }
+
+        private void SetCType(CType value)
+        {
+            this.ctype = value;
+            this.DataType = value.ToString();
         }
 
 
         public bool IsForeignKey => FkContraintName != null;
 
 
-        public IForeignKey ForeignKey
+        public IForeignKey ForeignKey => this.foreignKey;
+
+        public void SetForeignKey(IForeignKey value)
         {
-            get { return this.foreignKey; }
-            set { this.foreignKey = value; }
+            this.foreignKey = value;
         }
+
 
         public override int GetHashCode()
         {

@@ -69,6 +69,9 @@ namespace Sys.Data
 
         public static ColumnAttribute GetColumnAttribute(PropertyInfo propertyInfo)
         {
+            if (propertyInfo.PropertyType == typeof(DataRow))
+                return null;
+
             ColumnAttribute[] attributes = CustomAttributeProvider.GetAttributes<ColumnAttribute>(propertyInfo);
 
             foreach (ColumnAttribute attribute in attributes)

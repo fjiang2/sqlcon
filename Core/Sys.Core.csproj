@@ -147,6 +147,7 @@
     <Compile Include="Data\DataLake.cs" />
     <Compile Include="Data\DbProvider\OleDb\OleDbServer.cs" />
     <Compile Include="Data\DbProvider\DbSchemaProvider.cs" />
+    <Compile Include="Data\DbProvider\OleDb\OleDbSchemaProvider.cs" />
     <Compile Include="Data\DbProvider\RiaDb\RiaDbConnectionProvider.cs" />
     <Compile Include="Data\DbProvider\RiaDb\RiaDbCommand.cs">
       <SubType>Component</SubType>
@@ -178,6 +179,7 @@
     <Compile Include="Data\Metadata\ColumnSchema.cs" />
     <Compile Include="Data\Metadata\ComputedColumns.cs" />
     <Compile Include="Data\Metadata\Dependency.cs" />
+    <Compile Include="Data\Metadata\DependencyInfo.cs" />
     <Compile Include="Data\Metadata\ForeignKeys.cs" />
     <Compile Include="Data\Metadata\IdentityKeys.cs" />
     <Compile Include="Data\Metadata\InformationSchema.cs" />

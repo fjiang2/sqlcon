@@ -67,7 +67,7 @@ namespace Sys.Data
             foreach (ForeignKey key in foreign.Keys)
             {
                 IColumn column = this.Find(col => col.ColumnName == key.FK_Column);
-                column.ForeignKey = key;
+                column.SetForeignKey(key);
             }
         }
 

@@ -53,7 +53,7 @@ namespace Sys.Data
 
         protected override DbSchemaProvider GetSchema()
         {
-            throw new NotImplementedException($"schema provider not implemented on {Type}");
+           return new OleDbSchemaProvider(this);
         }
 
 

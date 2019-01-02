@@ -7,13 +7,14 @@ using System.Data;
 
 namespace Sys.Data
 {
-    class SqlDbSchemaProvider : DbSchemaProvider
+    class OleDbSchemaProvider : DbSchemaProvider
     {
         private static string[] __sys_tables = { "master", "model", "msdb", "tempdb" };
 
-        public SqlDbSchemaProvider(ConnectionProvider provider)
+        public OleDbSchemaProvider(ConnectionProvider provider)
             : base(provider)
         {
+            throw new NotImplementedException("this class has not been tested yet");
         }
 
         public override bool Exists(DatabaseName dname)
@@ -68,8 +69,7 @@ namespace Sys.Data
             string[] dnames;
             switch (provider.DpType)
             {
-                case DbProviderType.SqlDb:
-                case DbProviderType.RiaDb:
+                case DbProviderType.OleDb:
                     dnames = provider.FillDataTable(SQL).ToArray<string>("DATABASE_NAME");
                     List<string> L = new List<string>();
                     foreach (var dname in dnames)
@@ -79,10 +79,6 @@ namespace Sys.Data
                     }
 
                     dnames = L.ToArray();
-                    break;
-
-                case DbProviderType.SqlCe:
-                    dnames = new string[] { "Database" };
                     break;
 
                 default:
@@ -169,40 +165,7 @@ namespace Sys.Data
 
         public override DependencyInfo[] GetDependencySchema(DatabaseName dname)
         {
-            const string sql = @"
-SELECT  
-		FK.TABLE_SCHEMA AS FK_SCHEMA,
-		FK.TABLE_NAME AS FK_Table,
-		PK.TABLE_SCHEMA AS PK_SCHEMA,
-        PK.TABLE_NAME AS PK_Table,
-        PT.COLUMN_NAME AS PK_Column,
-        CU.COLUMN_NAME AS FK_Column
-  FROM  INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS C
-        INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS FK ON C.CONSTRAINT_NAME = FK.CONSTRAINT_NAME
-        INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS PK ON C.UNIQUE_CONSTRAINT_NAME = PK.CONSTRAINT_NAME
-        INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE CU ON C.CONSTRAINT_NAME = CU.CONSTRAINT_NAME
-        INNER JOIN ( SELECT i1.TABLE_NAME ,
-                            i2.COLUMN_NAME
-                     FROM   INFORMATION_SCHEMA.TABLE_CONSTRAINTS i1
-                            INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE i2 ON i1.CONSTRAINT_NAME = i2.CONSTRAINT_NAME
-                     WHERE  i1.CONSTRAINT_TYPE = 'PRIMARY KEY'
-                   ) PT ON PT.TABLE_NAME = PK.TABLE_NAME
- WHERE FK.TABLE_NAME <> PK.TABLE_NAME
-";
-
-            var dt = new SqlCmd(dname.Provider, sql).FillDataTable();
-
-            DependencyInfo[] rows = dt.AsEnumerable().Select(
-                row => new DependencyInfo
-                {
-                    FkTable = new TableName(dname, (string)row["FK_SCHEMA"], (string)row["FK_Table"]),
-                    PkTable = new TableName(dname, (string)row["PK_SCHEMA"], (string)row["PK_Table"]),
-                    PkColumn = (string)row["PK_Column"],
-                    FkColumn = (string)row["FK_Column"]
-                })
-                .ToArray();
-
-            return rows;
+            throw new NotImplementedException();
         }
     }
 }

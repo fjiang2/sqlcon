@@ -32,8 +32,10 @@ namespace Sys.Data
         string Definition { get; }
         int ColumnID { get; }
 
-        IForeignKey ForeignKey { get; set; }
+        IForeignKey ForeignKey { get; }
         CType CType { get; }
+
+        void SetForeignKey(IForeignKey value);
     }
 
 

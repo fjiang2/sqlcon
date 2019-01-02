@@ -191,8 +191,10 @@ namespace Sys.Data.Manager
             {
                 return null;
             }
-            set
-            { }
+        }
+
+        public void SetForeignKey(IForeignKey value)
+        {
 
         }
         
