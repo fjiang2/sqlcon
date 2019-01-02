@@ -77,7 +77,7 @@ namespace sqlcon
 
         protected void PrintOutput(string text, string name, string ext)
         {
-            string path = cmd.GetValue("out");
+            string path = cmd.OutputPath;
             if (path == null)
             {
                 cout.WriteLine(text);

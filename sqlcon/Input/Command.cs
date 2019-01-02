@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 using Tie;
 
@@ -176,7 +177,36 @@ namespace sqlcon
             }
         }
 
+        public string OutputDirectory
+        {
+            get
+            {
+                string path = OutputPath;
+                if (path == null)
+                    return null;
 
+                if (Directory.Exists(path))
+                    return path;
+
+                string directory = Path.GetDirectoryName(path);
+                if (!Directory.Exists(directory))
+                    Directory.CreateDirectory(directory);
+
+                return directory;
+            }
+        }
+
+        public string OutputPath
+        {
+            get
+            {
+                string path = GetValue("out");
+                if (path == null)
+                    return null;
+
+                return path;
+            }
+        }
 
     }
 }

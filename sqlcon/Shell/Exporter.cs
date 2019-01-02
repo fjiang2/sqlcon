@@ -23,14 +23,14 @@ namespace sqlcon
         private DatabaseName dname;
         private ServerName sname;
 
-        XmlDbFile xml;
+        XmlDbFile xmlDbFile;
         public Exporter(PathManager mgr, TreeNode<IDataPath> pt, Command cmd)
         {
             this.mgr = mgr;
             this.cmd = cmd;
             this.cfg = cmd.Configuration;
 
-            this.xml = new XmlDbFile { XmlDbFolder = cfg.XmlDbDirectory };
+            this.xmlDbFile = new XmlDbFile { XmlDbFolder = cfg.XmlDbDirectory };
 
             if (pt.Item is Locator)
             {
@@ -241,10 +241,14 @@ namespace sqlcon
 
         public void ExportSchema()
         {
+            string directory = cmd.OutputDirectory;
+            if (directory != null)
+                xmlDbFile.XmlDbFolder = directory;
+
             if (dname != null)
             {
                 cout.WriteLine("start to generate database schema {0}", dname);
-                var file = xml.WriteSchema(dname);
+                var file = xmlDbFile.WriteSchema(dname);
                 cout.WriteLine("completed {0}", file);
             }
             else if (sname != null)
@@ -252,7 +256,7 @@ namespace sqlcon
                 if (sname != null)
                 {
                     cout.WriteLine("start to generate server schema {0}", sname);
-                    var file = xml.WriteSchema(sname);
+                    var file = xmlDbFile.WriteSchema(sname);
                     cout.WriteLine("completed {0}", file);
                 }
                 else
@@ -266,7 +270,7 @@ namespace sqlcon
             {
                 cout.WriteLine("start to generate {0} data file", tname);
                 var dt = new TableReader(tname).Table;
-                var file = xml.Write(tname, dt);
+                var file = xmlDbFile.Write(tname, dt);
                 cout.WriteLine("completed {0} =>{1}", tname.ShortName, file);
             }
 
@@ -284,7 +288,7 @@ namespace sqlcon
 
                         cout.WriteLine("start to generate {0}", tname);
                         var dt = new SqlBuilder().SELECT.TOP(cmd.Top).COLUMNS().FROM(tname).SqlCmd.FillDataTable();
-                        var file = xml.Write(tname, dt);
+                        var file = xmlDbFile.Write(tname, dt);
                         cout.WriteLine("completed {0} => {1}", tname.ShortName, file);
                     }
                     return;
@@ -420,7 +424,7 @@ namespace sqlcon
 
         public void ExportDataContract(int version)
         {
-            string path = cmd.GetValue("out") ?? cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
+            string path = cmd.OutputPath ?? cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
             string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("dc.ns", "Sys.DataModel.DataContract");
             string clss = cmd.GetValue("class");
 
@@ -526,7 +530,7 @@ namespace sqlcon
                 return;
             }
 
-            string path = cmd.GetValue("out") ?? cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
+            string path = cmd.OutputPath ?? cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
             string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("dc.ns", "Sys.DataModel.DataContracts");
 
             if (tname != null)
