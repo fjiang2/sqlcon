@@ -38,7 +38,7 @@ namespace sqlcon
         private void createClass(Class clss, string prefix, string key, VAL val, bool classOnly)
         {
             TypeInfo ty = null;
-            string var = null;
+            string path = null;
 
             if (val.IsAssociativeArray())
             {
@@ -92,7 +92,7 @@ namespace sqlcon
                         isArray = true
                     };
 
-                    var = MakeVariableName(prefix, $"{key}[]");
+                    path = MakeVariableName(prefix, $"{key}[]");
                 }
             }
 
@@ -107,10 +107,10 @@ namespace sqlcon
                 ty = new TypeInfo(type);
             }
 
-            //if (var == null)
-                var = MakeVariableName(prefix, key);
+            if (path == null)
+                path = MakeVariableName(prefix, key);
 
-            Property prop = createProperty(key, ty, var);
+            Property prop = createProperty(key, ty, path);
             clss.Add(prop);
         }
 
@@ -127,9 +127,9 @@ namespace sqlcon
 
         }
 
-        private Property createProperty(string name, TypeInfo ty, string var)
+        private Property createProperty(string name, TypeInfo ty, string path)
         {
-            Comment comment = new Comment(var) { alignment = Alignment.Top };
+            Comment comment = new Comment(path) { alignment = Alignment.Top };
             return new Property(ty, name)
             {
                 modifier = Modifier.Public,
