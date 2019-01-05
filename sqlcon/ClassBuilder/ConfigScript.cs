@@ -65,7 +65,6 @@ namespace sqlcon
                 foreach (var member in val.Members)
                 {
                     createConfigKeyMap(clss1, prefix, member.Name, member.Value);
-                    continue;
                 }
 
                 return;
@@ -80,7 +79,6 @@ namespace sqlcon
                 {
                     createConfigKeyMap(clss, prefix, $"[{index}]", item);
                     index++;
-                    continue;
                 }
 
                 return;
@@ -204,7 +202,6 @@ namespace sqlcon
                 {
                     VAL val = DS[var];
                     createConfigFile(statements, string.Empty, (string)var, val);
-                    statements.Add(string.Empty);
                 }
 
             }
@@ -227,25 +224,35 @@ namespace sqlcon
         {
             if (val.IsAssociativeArray())
             {
-                if (prefix == string.Empty)
-                    prefix = key;
-                else
-                    prefix = $"{prefix}.{key}";
+                prefix = MakeVariableName(prefix, key);
 
                 foreach (var member in val.Members)
                 {
                     createConfigFile(statements, prefix, member.Name, member.Value);
-                    continue;
+                }
+
+                statements.Add(string.Empty);
+
+                return;
+            }
+
+            if (val.IsList)
+            {
+                prefix = MakeVariableName(prefix, key);
+
+                int index = 0;
+                foreach (var item in val)
+                {
+                    createConfigFile(statements, prefix, $"[{index}]", item);
+                    index++;
                 }
 
                 return;
             }
 
-            string var = $"{prefix}.{key}";
-            if (prefix == string.Empty)
-                var = key;
-
+            string var = MakeVariableName(prefix, key);
             string code = $"{var} = {val.ToString()};";
+
             statements.Add(code);
         }
 
