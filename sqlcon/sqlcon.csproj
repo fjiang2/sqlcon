@@ -107,6 +107,7 @@
     <Compile Include="ClassBuilder\DataClassBuilder.cs" />
     <Compile Include="ClassBuilder\ConfigScript.cs" />
     <Compile Include="ClassBuilder\DataContractClassBuilder.cs" />
+    <Compile Include="ClassBuilder\Json2CSharp.cs" />
     <Compile Include="ClassBuilder\TieClassBuilder.cs" />
     <Compile Include="Data\CsvFile.cs" />
     <Compile Include="Data\DuplicatedTable.cs" />

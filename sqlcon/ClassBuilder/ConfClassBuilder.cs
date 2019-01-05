@@ -24,6 +24,8 @@ namespace sqlcon
             StaticPropery = 0x08,           // public static double MATH_PI => GetValue<double>(_MATH_PI, __MATH_PI);
             HierarchicalField = 0x10,       // public static Math { public static class Pi = GetValue<double>(_MATH_PI, __MATH_PI); }
             HierarchicalProperty = 0x20,    // public static Math { public static class Pi => GetValue<double>(_MATH_PI, __MATH_PI); }
+
+            DataContract = 0x40,
         }
 
         private DataTable dt;
@@ -55,7 +57,6 @@ namespace sqlcon
 
             ClassType ctype = getClassType();
 
-            var maker = new ConfigScript(code);
             string _GetValueMethodName = cmd.GetValue("method");
             string _ConstKeyClassName = cmd.GetValue("kc");
             string _DefaultValueClassName = cmd.GetValue("dc");
@@ -65,6 +66,13 @@ namespace sqlcon
             builder.AddUsing("System.Collections.Generic");
             string cname = ClassName;
 
+            if(ctype== ClassType.DataContract)
+            {
+                ConvertJson2CS(code, builder, cname);
+                return;
+            }
+
+            var maker = new ConfigScript(code);
             maker.IsHierarchicalProperty = (ctype & ClassType.HierarchicalProperty) == ClassType.HierarchicalProperty;
 
             if (_GetValueMethodName != null)
@@ -113,7 +121,7 @@ namespace sqlcon
             PrintOutput(builder, cname);
         }
 
-
+     
         private ClassType getClassType()
         {
             string _type = cmd.GetValue("type") ?? "kdP";
@@ -148,6 +156,10 @@ namespace sqlcon
 
                     case 'p':
                         ctype |= ClassType.HierarchicalProperty;
+                        break;
+
+                    case 'c':
+                        ctype = ClassType.DataContract;
                         break;
                 }
             }
@@ -219,6 +231,16 @@ namespace sqlcon
 
             return builder.ToString();
         }
+
+        private void ConvertJson2CS(string code, CSharpBuilder builder, string cname)
+        {
+            var x = new Json2CSharp(builder, code);
+            x.Generate(cname);
+            
+            builder.AddUsingRange(base.Usings);
+            PrintOutput(builder, cname);
+        }
+
 
     }
 }
