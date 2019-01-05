@@ -1,15 +1,14 @@
-﻿using System;
+﻿using Sys.CodeBuilder;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
-
 using Tie;
-using Sys.CodeBuilder;
 
 namespace sqlcon
 {
-    class ConfigScript
+    internal class ConfigScript
     {
         private Memory DS = new Memory();
 
@@ -61,14 +60,26 @@ namespace sqlcon
                 var clss1 = new Class(key) { modifier = Modifier.Public | Modifier.Static };
                 clss.Add(clss1);
 
-                if (prefix == string.Empty)
-                    prefix = key;
-                else
-                    prefix = $"{prefix}.{key}";
+                prefix = MakeVariableName(prefix, key);
 
                 foreach (var member in val.Members)
                 {
                     createConfigKeyMap(clss1, prefix, member.Name, member.Value);
+                    continue;
+                }
+
+                return;
+            }
+
+            if (val.IsList)
+            {
+                prefix = MakeVariableName(prefix, key);
+
+                int index = 0;
+                foreach (var item in val)
+                {
+                    createConfigKeyMap(clss, prefix, $"[{index}]", item);
+                    index++;
                     continue;
                 }
 
@@ -82,9 +93,7 @@ namespace sqlcon
             }
             TypeInfo ty = new TypeInfo(type);
 
-            string var = $"{prefix}.{key}";
-            if (prefix == string.Empty)
-                var = key;
+            string var = MakeVariableName(prefix, key);
 
             if (IsHierarchicalProperty)
             {
@@ -98,6 +107,19 @@ namespace sqlcon
             }
 
             Other(ty, var, val);
+        }
+
+        private string MakeVariableName(string prefix, string key)
+        {
+            if (prefix == string.Empty)
+                return key;
+
+            if (key.StartsWith("[") && key.EndsWith("]"))
+                return $"{prefix}{key}";
+            else
+                return $"{prefix}.{key}";
+
+
         }
 
         private Property createProperty(string name, TypeInfo ty, string var)
@@ -165,11 +187,12 @@ namespace sqlcon
             StaticProperties.Add(createProperty(toPascal(var), ty, var));
         }
 
-        static string TOKEY(string key) => key.Replace(".", "_").ToUpper();
-        static string tokey(string key) => key.Replace(".", "_").ToLower();
-        static string toPascal(string key) => key.Split('.').Select(k => char.ToUpper(k[0]) + k.Substring(1).ToLower()).Aggregate((x, y) => $"{x}_{y}");
-        static string ToConstKey(string key) => "_" + TOKEY(key);
-        static string ToDefaultKey(string key) => "__" + TOKEY(key);
+        private static string ToKey(string key) => key.Replace(".", "_").Replace("[", "_").Replace("]", "");
+        private static string TOKEY(string key) => ToKey(key).ToUpper();
+        private static string tokey(string key) => ToKey(key).ToLower();
+        private static string toPascal(string key) => ToKey(key).Split('_').Select(k => char.ToUpper(k[0]) + k.Substring(1).ToLower()).Aggregate((x, y) => $"{x}_{y}");
+        private static string ToConstKey(string key) => "_" + TOKEY(key);
+        private static string ToDefaultKey(string key) => "__" + TOKEY(key);
 
 
         public string GenerateTieScript(bool flat)

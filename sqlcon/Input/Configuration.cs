@@ -93,6 +93,9 @@ namespace sqlcon
                 case "include":
                     include(parameters, DS);
                     return new VAL();
+
+                case "localip":
+                    return new VAL("127.0.0.1");
             }
 
             return null;

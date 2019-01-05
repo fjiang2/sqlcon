@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+1/5/2019 v1.9.7.0
+	Bug Fixes:
+	1. cannot generate flat style C# class for configuration array.
+
 12/21/2018 v1.9.6.0
 	Improvements/Enhancements:
 	1. support property lambda getter and setter on the C# class builder
