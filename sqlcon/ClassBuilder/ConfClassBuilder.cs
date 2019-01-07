@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Sys.CodeBuilder;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data;
-using System.IO;
-
-using Sys.CodeBuilder;
 
 namespace sqlcon
 {
@@ -66,9 +65,14 @@ namespace sqlcon
             builder.AddUsing("System.Collections.Generic");
             string cname = ClassName;
 
-            if(ctype== ClassType.DataContract)
+            if (ctype == ClassType.DataContract)
             {
-                ConvertJson2CS(code, builder, cname);
+                bool isExpression = false;
+
+                if (cmd.InputPath != null && Path.GetExtension(cmd.InputPath) == ".json")
+                    isExpression = true;
+
+                ConvertJson2CS(code, builder, cname, isExpression);
                 return;
             }
 
@@ -121,7 +125,7 @@ namespace sqlcon
             PrintOutput(builder, cname);
         }
 
-     
+
         private ClassType getClassType()
         {
             string _type = cmd.GetValue("type") ?? "kdP";
@@ -185,7 +189,7 @@ namespace sqlcon
         private string LoadCode()
         {
             string code;
-            if (cmd.GetValue("in") != null)
+            if (cmd.InputPath != null)
                 code = ReadAllText();
             else
                 code = ReadCode(dt);
@@ -232,11 +236,11 @@ namespace sqlcon
             return builder.ToString();
         }
 
-        private void ConvertJson2CS(string code, CSharpBuilder builder, string cname)
+        private void ConvertJson2CS(string code, CSharpBuilder builder, string cname, bool isExpression)
         {
-            var x = new Json2CSharp(builder, code);
+            var x = new Json2CSharp(builder, code, isExpression);
             x.Generate(cname);
-            
+
             builder.AddUsingRange(base.Usings);
             PrintOutput(builder, cname);
         }

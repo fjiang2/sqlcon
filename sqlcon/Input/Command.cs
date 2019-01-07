@@ -208,5 +208,17 @@ namespace sqlcon
             }
         }
 
+        public string InputPath
+        {
+            get
+            {
+                string path = GetValue("in");
+                if (path == null)
+                    return null;
+
+                return path;
+            }
+        }
+
     }
 }

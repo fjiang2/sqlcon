@@ -89,6 +89,9 @@ namespace Sys.CodeBuilder
                 return "string";
             }
 
+            if (type == typeof(object))
+                return "object";
+
             if (type == typeof(int))
                 return "int";
 

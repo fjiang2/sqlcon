@@ -104,7 +104,7 @@ namespace sqlcon
 
         protected string ReadAllText()
         {
-            string path = cmd.GetValue("in");
+            string path = cmd.InputPath;
             if (path == null)
                 return null;
 

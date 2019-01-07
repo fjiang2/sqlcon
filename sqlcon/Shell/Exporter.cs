@@ -628,7 +628,6 @@ namespace sqlcon
             var ds = ShellHistory.LastOrCurrentTable(tname);
             if (ds == null || ds.Tables.Count == 0)
             {
-                cerr.WriteLine("no data found");
                 return null;
             }
 
@@ -672,7 +671,7 @@ namespace sqlcon
             var dt = LastOrCurrentTable();
 
             //not .cfg file
-            if (cmd.GetValue("in") == null)
+            if (cmd.InputPath == null)
             {
                 if (dt == null)
                     return;
@@ -687,7 +686,7 @@ namespace sqlcon
             var dt = LastOrCurrentTable();
 
             //not .cfg file
-            if (cmd.GetValue("in") == null)
+            if (cmd.InputPath == null)
             {
                 if (dt == null)
                     return;

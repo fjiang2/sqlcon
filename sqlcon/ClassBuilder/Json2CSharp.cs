@@ -12,10 +12,19 @@ namespace sqlcon
     {
         private Memory DS = new Memory();
         private CSharpBuilder builder;
-        public Json2CSharp(CSharpBuilder builder, string code)
+
+        public Json2CSharp(CSharpBuilder builder, string code, bool isExpression)
         {
             this.builder = builder;
-            Script.Execute(code, DS);
+            if (isExpression)
+            {
+                VAL result = Script.Evaluate(code, DS);
+                DS.Add("Example", result);
+            }
+            else
+            {
+                Script.Execute(code, DS);
+            }
         }
 
         public void Generate(string cname)
@@ -98,7 +107,7 @@ namespace sqlcon
 
             if (ty == null)
             {
-                Type type = typeof(string);
+                Type type = typeof(object);
                 if (val.HostValue != null)
                 {
                     type = val.HostValue.GetType();
@@ -133,7 +142,7 @@ namespace sqlcon
             return new Property(ty, name)
             {
                 modifier = Modifier.Public,
-                comment = comment
+               // comment = comment
             };
         }
 
