@@ -19,7 +19,7 @@ namespace sqlcon
             if (isExpression)
             {
                 VAL result = Script.Evaluate(code, DS);
-                DS.Add("Example", result);
+                DS = (Memory)result;
             }
             else
             {
@@ -142,7 +142,7 @@ namespace sqlcon
             return new Property(ty, name)
             {
                 modifier = Modifier.Public,
-               // comment = comment
+                // comment = comment
             };
         }
 
