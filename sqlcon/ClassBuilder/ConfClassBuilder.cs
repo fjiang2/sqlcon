@@ -24,7 +24,8 @@ namespace sqlcon
             HierarchicalField = 0x10,       // public static Math { public static class Pi = GetValue<double>(_MATH_PI, __MATH_PI); }
             HierarchicalProperty = 0x20,    // public static Math { public static class Pi => GetValue<double>(_MATH_PI, __MATH_PI); }
 
-            DataContract = 0x40,
+            TieDataContract = 0x40,
+            JsonDataContract = 0x80,
         }
 
         private DataTable dt;
@@ -65,11 +66,11 @@ namespace sqlcon
             builder.AddUsing("System.Collections.Generic");
             string cname = ClassName;
 
-            if (ctype == ClassType.DataContract)
+            if (ctype == ClassType.TieDataContract || ctype == ClassType.JsonDataContract)
             {
-                bool isExpression = false;
+                bool isExpression = ctype == ClassType.JsonDataContract;
 
-                if (cmd.InputPath != null && Path.GetExtension(cmd.InputPath) == ".json")
+                if (cmd.InputPath != null && Path.GetExtension(cmd.InputPath).ToLower() == ".json")
                     isExpression = true;
 
                 ConvertJson2CS(code, builder, cname, isExpression);
@@ -162,8 +163,12 @@ namespace sqlcon
                         ctype |= ClassType.HierarchicalProperty;
                         break;
 
-                    case 'c':
-                        ctype = ClassType.DataContract;
+                    case 't':
+                        ctype = ClassType.TieDataContract;
+                        break;
+
+                    case 'j':
+                        ctype = ClassType.JsonDataContract;
                         break;
                 }
             }
