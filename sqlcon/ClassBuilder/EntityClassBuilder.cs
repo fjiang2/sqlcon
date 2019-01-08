@@ -90,10 +90,19 @@ namespace sqlcon
 
                 if (identityColumn != null)
                 {
-                    Property identity = new Property(new TypeInfo(typeof(int)), "Identity")
+                    const string IdentityName = "Identity";
+                    Property identity = new Property(new TypeInfo(typeof(int)), IdentityName)
                     {
                         IsLambda = true,
                     };
+
+                    var attr = base.Attributes;
+                    if (attr.ContainsKey(IdentityName))
+                    {
+                        foreach (string x in attr[IdentityName])
+                            identity.AddAttribute(new AttributeInfo(x));
+                    }
+
                     identity.gets.Append($"this.{identityColumn};");
                     clss.Add(identity);
                 }

@@ -1,13 +1,12 @@
-﻿using System;
+﻿using Sys;
+using Sys.CodeBuilder;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data;
-using System.IO;
-
-using Sys;
-using Sys.CodeBuilder;
 
 namespace sqlcon
 {
@@ -69,6 +68,20 @@ namespace sqlcon
             }
         }
 
+        protected Dictionary<string, string[]> Attributes
+        {
+            get
+            {
+                string attr = cmd.GetValue("attribute");
+                if (attr == null)
+                    return new Dictionary<string, string[]>();
+
+                return attr.Split(',')
+                    .Select(x => new AttributeDefinition(x))
+                    .ToDictionary(x => x.MemberName, x => x.Attributes.ToArray());
+            }
+        }
+
         protected void PrintOutput(CSharpBuilder builder, string cname)
         {
             string code = $"{builder}";
@@ -121,5 +134,43 @@ namespace sqlcon
 
             return File.ReadAllText(path);
         }
+
+        class AttributeDefinition
+        {
+            public List<string> Attributes { get; } = new List<string>();
+            public string MemberName { get; set; }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="definition">[A1][A2]PropertyName</param>
+            public AttributeDefinition(string definition)
+            {
+                int i = 0;
+                while (i < definition.Length)
+                {
+                    char ch = definition[i];
+                    int start;
+                    int count;
+                    switch (ch)
+                    {
+                        case '[':
+                            i++;
+                            start = i;
+                            count = 0;
+                            while (definition[i++] != ']')
+                                count++;
+
+                            Attributes.Add(definition.Substring(start, count));
+                            break;
+
+                        default:
+                            MemberName = definition.Substring(i, definition.Length - i);
+                            return;
+                    }
+                }
+            }
+        }
     }
+
 }
