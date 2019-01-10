@@ -279,6 +279,7 @@
     <Compile Include="Message\MessageCode.cs" />
     <Compile Include="Message\MessageLevel.cs" />
     <Compile Include="Message\MessageLocation.cs" />
+    <Compile Include="Networking\LocalHost.cs" />
     <Compile Include="Networking\WebSockets\WebSocketMessage.cs" />
     <Compile Include="Networking\WebSockets\WebSocketServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

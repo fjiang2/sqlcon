@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.OleDb;
+using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using System.IO;
-using System.Data.SqlClient;
-using System.Data.OleDb;
-using Tie;
-using Sys.Data.IO;
 using Sys.Data;
+using Sys.Data.IO;
+using Sys.Networking;
+using Tie;
 
 namespace sqlcon
 {
@@ -73,6 +74,8 @@ namespace sqlcon
 
         private static VAL functions(string func, VAL parameters, Memory DS)
         {
+            const string _FUNC_LOCAL_IP = "localip";
+
             string conn;
             switch (func)
             {
@@ -94,8 +97,25 @@ namespace sqlcon
                     include(parameters, DS);
                     return new VAL();
 
-                case "localip":
-                    return new VAL("127.0.0.1");
+                case _FUNC_LOCAL_IP:
+                    if (parameters.Size > 1)
+                    {
+                        cerr.WriteLine($"function {_FUNC_LOCAL_IP} requires 1 or zero parameter");
+                        return new VAL();
+                    }
+
+                    if (parameters.Size == 1 && parameters[0].VALTYPE != VALTYPE.intcon)
+                    {
+                        cerr.WriteLine($"function {_FUNC_LOCAL_IP} requires integer parameter");
+                        return new VAL();
+                    }
+
+                    int index = 0;
+                    if (parameters.Size == 1)
+                        index = (int)parameters[0];
+
+                    string address = LocalHost.GetLocalIP(index);
+                    return new VAL(address);
             }
 
             return null;
@@ -208,7 +228,7 @@ namespace sqlcon
                     ConnectionProvider provider = ConnectionProviderManager.Register(serverName, connectionString);
                     pvds.Add(provider);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     cerr.WriteLine(ex.Message);
                 }
