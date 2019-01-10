@@ -29,8 +29,10 @@ namespace sqlcon
                     else
                     {
                         string directory = Path.GetDirectoryName(outputFile);
-                        if (!Directory.Exists(directory))
+                        if (directory != string.Empty && !Directory.Exists(directory))
+                        {
                             Directory.CreateDirectory(directory);
+                        }
 
                         return outputFile;
                     }

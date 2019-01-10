@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+1/10/2019 v1.9.8.0
+	Improvements/Enhancements:
+	1. command "call" can dump memory to output file when option /dump used.
+
 1/5/2019 v1.9.7.0
 	Bug Fixes:
 	1. cannot generate flat style C# class for configuration array.

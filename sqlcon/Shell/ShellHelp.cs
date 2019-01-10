@@ -55,7 +55,7 @@ namespace sqlcon
             cout.WriteLine("ldir [path]             : display local files on the directory");
             cout.WriteLine("ltype [path]            : display local file content");
             cout.WriteLine("run [path]file          : run a batch program (.sqc)");
-            cout.WriteLine("call [path]file         : call Tie program (.sqt)");
+            cout.WriteLine("call [path]file [/dump] : call Tie program (.sqt), if option /dump used, memory dumps to output file");
             cout.WriteLine("execute [path]file      : execute sql script(.sql)");
             cout.WriteLine();
             cout.WriteLine("<Schema Commands>");

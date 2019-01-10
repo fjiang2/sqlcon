@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data;
+using Sys;
 using Sys.Data;
 using Sys.Data.Comparison;
-using Sys;
 using Tie;
 
 namespace sqlcon
@@ -389,10 +389,36 @@ namespace sqlcon
                         }
                         else
                         {
+                            bool dump = cmd.Has("dump");
                             try
                             {
+                                Memory DS = Context.DS;
+                                if (dump)
+                                    DS = new Memory();
+
                                 string code = System.IO.File.ReadAllText(path);
-                                Script.Execute(code, Context.DS);
+                                Script.Execute(code, DS);
+
+                                if (dump)
+                                {
+                                    StringBuilder builder = new StringBuilder();
+                                    foreach (VAR var in DS.Names)
+                                    {
+                                        VAL val = DS[var];
+                                        try
+                                        {
+                                            builder.AppendLine($"{var} = {val.ToExJson()};").AppendLine();
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            builder.AppendLine($"error on the variable \"{var}\", {ex.AllMessages()}");
+                                        }
+                                    }
+
+                                    string _path = cmd.OutputFile();
+                                    System.IO.File.WriteAllText(_path, builder.ToString());
+                                    cout.WriteLine($"Memory dumps to \"{_path}\"");
+                                }
                             }
                             catch (Exception ex)
                             {
@@ -400,6 +426,10 @@ namespace sqlcon
                                 return NextStep.ERROR;
                             }
                         }
+                    }
+                    else
+                    {
+                        cerr.WriteLine($"missing file name");
                     }
                     return NextStep.COMPLETED;
 
