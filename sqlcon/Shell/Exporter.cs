@@ -310,16 +310,16 @@ namespace sqlcon
         {
             DpoOption option = new DpoOption
             {
-                NameSpace = cfg.GetValue<string>("dpo.ns", "Sys.DataModel.Dpo"),
-                OutputPath = cfg.GetValue<string>("dpo.path", $"{Configuration.MyDocuments}\\DataModel\\Dpo"),
-                Level = cfg.GetValue<Level>("dpo.level", Level.Application),
-                HasProvider = cfg.GetValue<bool>("dpo.hasProvider", false),
-                HasTableAttribute = cfg.GetValue<bool>("dpo.hasTableAttr", true),
-                HasColumnAttribute = cfg.GetValue<bool>("dpo.hasColumnAttr", true),
-                IsPack = cfg.GetValue<bool>("dpo.isPack", true),
+                NameSpace = cfg.GetValue<string>("generator.dpo.ns", "Sys.DataModel.Dpo"),
+                OutputPath = cfg.GetValue<string>("generator.dpo.path", $"{Configuration.MyDocuments}\\DataModel\\Dpo"),
+                Level = cfg.GetValue<Level>("generator.dpo.level", Level.Application),
+                HasProvider = cfg.GetValue<bool>("generator.dpo.hasProvider", false),
+                HasTableAttribute = cfg.GetValue<bool>("generator.dpo.hasTableAttr", true),
+                HasColumnAttribute = cfg.GetValue<bool>("generator.dpo.hasColumnAttr", true),
+                IsPack = cfg.GetValue<bool>("generator.dpo.isPack", true),
                 CodeSorted = cmd.Has("sort"),
 
-                ClassNameSuffix = cfg.GetValue<string>("dpo.suffix", Setting.DPO_CLASS_SUFFIX_CLASS_NAME)
+                ClassNameSuffix = cfg.GetValue<string>("generator.dpo.suffix", Setting.DPO_CLASS_SUFFIX_CLASS_NAME)
             };
             option.ClassNameRule =
                 name => name.Substring(0, 1).ToUpper() + name.Substring(1).ToLower() + option.ClassNameSuffix;
@@ -368,7 +368,7 @@ namespace sqlcon
 
         public void ExportCsvFile()
         {
-            string path = cfg.GetValue<string>("csv.path", $"{Configuration.MyDocuments}\\csv");
+            string path = cfg.GetValue<string>("generator.csv.path", $"{Configuration.MyDocuments}\\csv");
 
             string file;
             string fullName(TableName tname) => $"{path}\\{sname.Path}\\{dname.Name}\\{tname.ShortName}.csv";
@@ -424,8 +424,8 @@ namespace sqlcon
 
         public void ExportDataContract(int version)
         {
-            string path = cmd.OutputPath ?? cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
-            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("dc.ns", "Sys.DataModel.DataContract");
+            string path = cmd.OutputPath ?? cfg.GetValue<string>("generator.dc.path", $"{Configuration.MyDocuments}\\dc");
+            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("generator.dc.ns", "Sys.DataModel.DataContract");
             string clss = cmd.GetValue("class");
 
             DataSet ds = ShellHistory.LastDataSet();
@@ -530,8 +530,8 @@ namespace sqlcon
                 return;
             }
 
-            string path = cmd.OutputPath ?? cfg.GetValue<string>("dc.path", $"{Configuration.MyDocuments}\\dc");
-            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("dc.ns", "Sys.DataModel.DataContracts");
+            string path = cmd.OutputPath ?? cfg.GetValue<string>("generator.dc.path", $"{Configuration.MyDocuments}\\dc");
+            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("generator.dc.ns", "Sys.DataModel.DataContracts");
 
             if (tname != null)
             {
@@ -587,8 +587,8 @@ namespace sqlcon
 
         public void ExportLinq2SQLClass()
         {
-            string path = cfg.GetValue<string>("l2s.path", $"{Configuration.MyDocuments}\\dc");
-            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("l2s.ns", "Sys.DataModel.L2s");
+            string path = cfg.GetValue<string>("generator.l2s.path", $"{Configuration.MyDocuments}\\dc");
+            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>("generator.l2s.ns", "Sys.DataModel.L2s");
             Dictionary<TableName, TableSchema> schemas = new Dictionary<TableName, TableSchema>();
 
             if (tname != null)

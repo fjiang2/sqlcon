@@ -97,6 +97,9 @@ namespace sqlcon
                     include(parameters, DS);
                     return new VAL();
 
+                case "mydoc":
+                    return new VAL(MyDocuments);
+
                 case _FUNC_LOCAL_IP:
                     if (parameters.Size > 1)
                     {
