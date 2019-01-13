@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
-using System.Data;
-using Tie;
 using Sys.Data;
+using Tie;
 
 namespace sqlcon
 {
@@ -204,18 +204,30 @@ namespace sqlcon
 
         public static DataSet ReadDataSet(this string path)
         {
+            string ext = Path.GetExtension(path);
             try
             {
-                if (Path.GetExtension(path) == ".json")
+                switch (ext)
                 {
-                    string json = File.ReadAllText(path);
-                    return ToDataSet(json);
-                }
-                else
-                {
-                    var ds = new DataSet();
-                    ds.ReadXml(path, XmlReadMode.ReadSchema);
-                    return ds;
+                    case ".json":
+                        string json = File.ReadAllText(path);
+                        return ToDataSet(json);
+
+                    case ".xml":
+                        var ds = new DataSet();
+                        ds.ReadXml(path, XmlReadMode.ReadSchema);
+                        return ds;
+
+                    case ".cs":
+                        var csc = new Sys.Compiler.CSharpCompiler();
+                        string cs = File.ReadAllText(path);
+                        csc.Compile("temp.dll", cs);
+                        if (csc.HasError)
+                        {
+                            cerr.WriteLine(csc.GetError());
+                            return null;
+                        }
+                        return new Sys.Compiler.DataSetBuilder(csc.GetAssembly()).ToDataSet();
                 }
             }
             catch (Exception ex)
@@ -249,6 +261,6 @@ namespace sqlcon
             }
         }
 
-        
+
     }
 }

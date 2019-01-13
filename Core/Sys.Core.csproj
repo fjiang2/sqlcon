@@ -91,6 +91,8 @@
     <Compile Include="Compare\SqlScriptType.cs" />
     <Compile Include="Compare\TableCompare.cs" />
     <Compile Include="Compare\TableSchemaCompare.cs" />
+    <Compile Include="Compiler\CSharpCompiler.cs" />
+    <Compile Include="Compiler\DataSetBuilder.cs" />
     <Compile Include="Const.cs" />
     <Compile Include="Data.Manager\DpoGenerate\ClassName.cs" />
     <Compile Include="Data.Manager\DpoGenerate\ClassTableName.cs" />
