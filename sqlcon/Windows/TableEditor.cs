@@ -32,9 +32,9 @@ namespace sqlcon.Windows
 
             this.Content = grid;
 
-            var evenRowColor = cfg.GetColor("gui.table.editor.AlternatingRowBackground", Colors.DimGray);
-            var fkColor = cfg.GetColor("gui.table.editor.Foreground", Colors.LightGray);
-            var bkColor = cfg.GetColor("gui.table.editor.RowBackground", Colors.Black);
+            var evenRowColor = cfg.GetColor(ConfigKey._GUI_TABLE_EDITOR_ALTERNATINGROWBACKGROUND, Colors.DimGray);
+            var fkColor = cfg.GetColor(ConfigKey._GUI_TABLE_EDITOR_FOREGROUND, Colors.LightGray);
+            var bkColor = cfg.GetColor(ConfigKey._GUI_TABLE_EDITOR_ROWBACKGROUND, Colors.Black);
 
             dataGrid = new DataGrid
             {

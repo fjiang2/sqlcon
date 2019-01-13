@@ -109,6 +109,7 @@
     <Compile Include="ClassBuilder\DataContractClassBuilder.cs" />
     <Compile Include="ClassBuilder\Json2CSharp.cs" />
     <Compile Include="ClassBuilder\TieClassBuilder.cs" />
+    <Compile Include="Configuration\ConfigKey.cs" />
     <Compile Include="Data\CsvFile.cs" />
     <Compile Include="Data\DuplicatedTable.cs" />
     <Compile Include="ClassBuilder\EntityClassBuilder.cs" />
@@ -145,7 +146,7 @@
     <Compile Include="Shell\CompareAdapter.cs" />
     <Compile Include="Shell\ActionType.cs" />
     <Compile Include="Main.cs" />
-    <Compile Include="Input\Configuration.cs" />
+    <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Output\OutputDataLine.cs" />
     <Compile Include="Shell\Context.cs" />
     <Compile Include="Input\Command.cs" />

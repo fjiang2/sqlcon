@@ -157,8 +157,8 @@ namespace sqlcon.Windows
             grid2.RowDefinitions.Add(new RowDefinition { Height = new GridLength(5) });
             grid2.RowDefinitions.Add(new RowDefinition());
 
-            textBox.Foreground = cfg.GetSolidBrush("gui.sql.editor.Foreground", Colors.Black);
-            textBox.Background = cfg.GetSolidBrush("gui.sql.editor.Background", Colors.White);
+            textBox.Foreground = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_FOREGROUND, Colors.Black);
+            textBox.Background = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_BACKGROUND, Colors.White);
 
             //Paragraph space
             Style style = new Style { TargetType = typeof(Paragraph) };
@@ -166,8 +166,8 @@ namespace sqlcon.Windows
             textBox.Resources.Add(typeof(Paragraph), style);
 
             GridSplitter hSplitter = new GridSplitter { Height = 5, HorizontalAlignment = HorizontalAlignment.Stretch };
-            tabControl.Foreground = cfg.GetSolidBrush("gui.sql.editor.Foreground", Colors.Black);
-            tabControl.Background = cfg.GetSolidBrush("gui.sql.editor.Background", Colors.White);
+            tabControl.Foreground = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_FOREGROUND, Colors.Black);
+            tabControl.Background = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_BACKGROUND, Colors.White);
 
             textBox.SetValue(Grid.RowProperty, 0);
             hSplitter.SetValue(Grid.RowProperty, 1);
@@ -329,8 +329,8 @@ namespace sqlcon.Windows
 
         private void DisplayMessage(string message)
         {
-            var fkColor = cfg.GetSolidBrush("gui.sql.result.message.Foreground", Colors.White);
-            var bkColor = cfg.GetSolidBrush("gui.sql.result.message.Background", Colors.Black);
+            var fkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_MESSAGE_FOREGROUND, Colors.White);
+            var bkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_MESSAGE_BACKGROUND, Colors.Black);
 
             var tab = new TabItem
             {
@@ -352,10 +352,10 @@ namespace sqlcon.Windows
 
         private DataGrid DisplayTable(DataTable table)
         {
-            var fkColor = cfg.GetSolidBrush("gui.sql.result.table.Foreground", Colors.White);
-            var bkColor = cfg.GetSolidBrush("gui.sql.result.table.Background", Colors.Black);
-            var evenRowColor = cfg.GetSolidBrush("gui.sql.result.table.AlternatingRowBackground", Colors.DimGray);
-            var oddRowColor = cfg.GetSolidBrush("gui.sql.result.table.RowBackground", Colors.Black);
+            var fkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_FOREGROUND, Colors.White);
+            var bkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_BACKGROUND, Colors.Black);
+            var evenRowColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_ALTERNATINGROWBACKGROUND, Colors.DimGray);
+            var oddRowColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_ROWBACKGROUND, Colors.Black);
 
             var dataGrid = new DataGrid
             {
