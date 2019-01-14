@@ -652,7 +652,7 @@ namespace sqlcon
             if (ds == null)
                 return;
 
-            cout.WriteLine(ds.ToJson());
+            cout.WriteLine(ds.WriteJson());
         }
 
         /// <summary>

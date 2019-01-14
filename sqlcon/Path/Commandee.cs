@@ -1777,7 +1777,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                         file = Path.ChangeExtension(file, ".json");
 
                     string json = File.ReadAllText(file);
-                    var lake = json.ToDataLake();
+                    DataLake lake = new DataLake();
+                    lake.ReadJson(json);
                     if (lake == null)
                         return;
 

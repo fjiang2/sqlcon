@@ -146,7 +146,8 @@
     <Compile Include="Data\CType.cs" />
     <Compile Include="Data\DataContract\DataContractTable.cs" />
     <Compile Include="Data\DataContract\IDataContractRow.cs" />
-    <Compile Include="Data\DataLake.cs" />
+    <Compile Include="Data\DataLake\DataLakeExtension.cs" />
+    <Compile Include="Data\DataLake\DataLake.cs" />
     <Compile Include="Data\DbProvider\OleDb\OleDbServer.cs" />
     <Compile Include="Data\DbProvider\DbSchemaProvider.cs" />
     <Compile Include="Data\DbProvider\OleDb\OleDbSchemaProvider.cs" />
