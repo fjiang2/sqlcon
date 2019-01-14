@@ -1,14 +1,14 @@
-﻿using Sys;
-using Sys.Data;
-using Sys.Data.Comparison;
-using Sys.Data.Manager;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sys;
+using Sys.Data;
+using Sys.Data.Comparison;
+using Sys.Data.Manager;
 
 namespace sqlcon
 {
@@ -319,7 +319,7 @@ namespace sqlcon
                 HasProvider = cfg.GetValue<bool>(ConfigKey._GENERATOR_DPO_HASPROVIDER, false),
                 HasTableAttribute = cfg.GetValue<bool>(ConfigKey._GENERATOR_DPO_HASTABLEATTR, true),
                 HasColumnAttribute = cfg.GetValue<bool>(ConfigKey._GENERATOR_DPO_HASCOLUMNATTR, true),
-                IsPack = cfg.GetValue<bool>(ConfigKey._GENERATOR_DPO_ISPACK , true),
+                IsPack = cfg.GetValue<bool>(ConfigKey._GENERATOR_DPO_ISPACK, true),
                 CodeSorted = cmd.Has("sort"),
 
                 ClassNameSuffix = cfg.GetValue<string>(ConfigKey._GENERATOR_DPO_SUFFIX, Setting.DPO_CLASS_SUFFIX_CLASS_NAME)
@@ -700,6 +700,74 @@ namespace sqlcon
             builder.ExportTie(_type == "f");
         }
 
+        public void ExportDataSetXml()
+        {
+            if (dname == null)
+            {
+                cerr.WriteLine("select a database first");
+                return;
+            }
+
+            string path = cmd.OutputPath ?? cfg.GetValue<string>(ConfigKey._GENERATOR_DS_PATH, $"{Configuration.MyDocuments}\\ds");
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            if (tname != null)
+            {
+                cout.WriteLine($"start to generate data file: {tname}");
+                var dt = new TableReader(tname).Table;
+                dt.TableName = tname.ShortName;
+
+                string file = Path.Combine(path, $"{tname.ShortName}.xml");
+                DataSet ds = dt.DataSet;
+                ds.DataSetName = dname.Name;
+
+                ds.WriteXml(file, XmlWriteMode.WriteSchema);
+                cout.WriteLine($"completed {tname} => {file}");
+            }
+            else if (dname != null)
+            {
+                cout.WriteLine($"start to generate data file to directory: {dname}");
+                CancelableWork.CanCancel(cts =>
+                {
+                    var md = new MatchedDatabase(dname, cmd.wildcard, null); //cfg.exportExcludedTables);
+                    TableName[] tnames = md.MatchedTableNames;
+                    DataSet ds = new DataSet
+                    {
+                        DataSetName = dname.Name,
+                    };
+
+                    foreach (var tn in tnames)
+                    {
+                        if (cts.IsCancellationRequested)
+                            return;
+
+                        try
+                        {
+                            var dt = new TableReader(tn).Table.Copy();
+                            dt.TableName = tn.ShortName;
+                            ds.Tables.Add(dt);
+                            cout.WriteLine($"generated for {tn.ShortName}");
+                        }
+                        catch (Exception ex)
+                        {
+                            cerr.WriteLine($"failed to generate {tn.ShortName}, {ex.Message}");
+                        }
+                    }
+
+                    string file = Path.Combine(path, $"{dname.Name}.xml");
+                    ds.WriteXml(file, XmlWriteMode.WriteSchema);
+                    cout.WriteLine($"completed generated: {file}");
+                    return;
+                });
+            }
+            else
+            {
+                cerr.WriteLine("warning: table or database is not seleted");
+            }
+
+        }
+
         public static void Help()
         {
             cout.WriteLine("export data, schema, class, and template on current selected server/db/table");
@@ -718,6 +786,7 @@ namespace sqlcon
             cout.WriteLine("   /schema  : generate database schema xml file");
             cout.WriteLine("   /data    : generate database/table data xml file");
             cout.WriteLine("   /csv     : generate table csv file");
+            cout.WriteLine("   /ds      : generate data set xml file");
             cout.WriteLine("   /json    : generate json from last result");
             cout.WriteLine("option of code generation:");
             cout.WriteLine("   /dpo     : generate C# table class");
@@ -807,6 +876,8 @@ namespace sqlcon
                 ExportConfigurationClass();
             else if (cmd.Has("cfg"))
                 ExportConfigurationFile();
+            else if (cmd.Has("ds"))
+                ExportDataSetXml();
             else
                 cerr.WriteLine("invalid command options");
         }

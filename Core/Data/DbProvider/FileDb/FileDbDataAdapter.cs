@@ -45,7 +45,7 @@ namespace Sys.Data
 
         private int FillDataTable(TableName tname, DataSet ds)
         {
-            var file = new XmlDbFile();
+            var file = (provider as FileDbConnectionProvider).DataFile;
             return file.ReadData(connection.FileLink, tname, ds);
         }
     }

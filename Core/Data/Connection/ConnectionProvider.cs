@@ -252,6 +252,7 @@ namespace Sys.Data
             switch (providerName)
             {
                 case "xmlfile":
+                case "file/db/xml":
                     return new FileDbConnectionProvider(serverName, connectionString, DbFileType.XmlDb);
 
                 case "file/dataset/json":

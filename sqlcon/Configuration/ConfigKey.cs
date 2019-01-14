@@ -29,12 +29,18 @@ namespace sqlcon
         public const string _GENERATOR_DPO_HASCOLUMNATTR = "generator.dpo.hasColumnAttr";
         public const string _GENERATOR_DPO_ISPACK = "generator.dpo.IsPack";
         public const string _GENERATOR_DPO_RULE = "generator.dpo.rule";
+
         public const string _GENERATOR_DC_PATH = "generator.dc.path";
         public const string _GENERATOR_DC_NS = "generator.dc.ns";
+
         public const string _GENERATOR_L2S_PATH = "generator.l2s.path";
         public const string _GENERATOR_L2S_NS = "generator.l2s.ns";
+
         public const string _GENERATOR_DE_PATH = "generator.de.path";
         public const string _GENERATOR_DE_NS = "generator.de.ns";
+
+        public const string _GENERATOR_DS_PATH = "generator.ds.path";
+
         public const string _GENERATOR_CSV_PATH = "generator.csv.path";
     }
 }

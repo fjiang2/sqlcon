@@ -13,11 +13,12 @@ namespace Sys.Data
     class FileDbConnectionProvider : ConnectionProvider
     {
         public DbFileType DbFileType { get; }
-
+        public IDbFile DataFile { get; }
         public FileDbConnectionProvider(string name, string connectionString, DbFileType fileType)
             : base(name, ConnectionProviderType.XmlFile, connectionString)
         {
             this.DbFileType = fileType;
+            this.DataFile = DbFile.Create(DbFileType);
         }
 
         public override bool CheckConnection()

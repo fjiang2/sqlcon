@@ -16,7 +16,7 @@ namespace Sys.Data
         public FileDbSchemaProvider(FileDbConnectionProvider provider)
                     : base(provider)
         {
-            this.dbFile = DbFile.Create(provider.DbFileType);
+            this.dbFile = provider.DataFile;
 
             var link = FileLink.CreateLink(provider.DataSource, provider.UserId, provider.Password);
             dbFile.ReadSchema(link, dbSchema);
