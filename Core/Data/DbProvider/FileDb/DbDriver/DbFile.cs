@@ -10,7 +10,7 @@ namespace Sys.Data
 {
     public abstract class DbFile : IDbFile
     {
-        public abstract int ReadData(FileLink link, TableName tname, DataSet ds);
+        public abstract int ReadData(FileLink link, TableName tname, DataSet ds, string where);
         public abstract void ReadSchema(FileLink link, DataSet dbSchema);
 
 

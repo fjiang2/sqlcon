@@ -84,7 +84,7 @@ namespace Sys.Data
         }
 
 
-        public override int ReadData(FileLink root, TableName tname, DataSet ds)
+        public override int ReadData(FileLink root, TableName tname, DataSet ds, string where)
         {
             var file = root.PathCombine(tname.DatabaseName.Name, tname.ShortName);
             file = string.Format("{0}.{1}", file, EXT);

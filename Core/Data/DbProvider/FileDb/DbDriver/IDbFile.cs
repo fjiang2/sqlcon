@@ -5,14 +5,16 @@ namespace Sys.Data
 {
     public interface IDbFile
     {
+        
         /// <summary>
-        /// read table data into ds
+        /// read table's data from data file with filtering
         /// </summary>
-        /// <param name="root"></param>
-        /// <param name="tname"></param>
-        /// <param name="ds"></param>
-        /// <returns>number of rows</returns>
-        int ReadData(FileLink link, TableName tname, DataSet ds);
+        /// <param name="link">data file</param>
+        /// <param name="tname">table to be wanted to read</param>
+        /// <param name="ds">read result</param>
+        /// <param name="where">filter expression</param>
+        /// <returns></returns>
+        int ReadData(FileLink link, TableName tname, DataSet ds, string where);
 
         /// <summary>
         /// write data into a file

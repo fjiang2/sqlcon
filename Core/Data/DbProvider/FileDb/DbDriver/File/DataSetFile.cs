@@ -38,18 +38,34 @@ namespace Sys.Data
 
         }
 
-        public override int ReadData(FileLink root, TableName tname, DataSet ds)
+        public override int ReadData(FileLink root, TableName tname, DataSet ds, string where)
         {
-            if (data.Tables.Contains(tname.ShortName))
-            {
-                DataTable dt = data.Tables[tname.ShortName];
+            if (!data.Tables.Contains(tname.ShortName))
+                return -1;
 
-                ds.Clear();
-                ds.Tables.Add(dt.Copy());
-                return dt.Rows.Count;
+            DataTable dt = data.Tables[tname.ShortName];
+            ds.Clear();
+
+            DataTable dt2;
+
+            if (where != null)
+            {
+                dt2 = dt.Clone();
+                DataRow[] rows = dt.Select(where);
+                foreach (DataRow row in rows)
+                {
+                    var newRow = dt2.NewRow();
+                    newRow.ItemArray = (object[])row.ItemArray.Clone();
+                    dt2.Rows.Add(newRow);
+                }
+            }
+            else
+            {
+                dt2 = dt.Copy();
             }
 
-            return -1;
+            ds.Tables.Add(dt2);
+            return dt2.Rows.Count;
         }
 
     }

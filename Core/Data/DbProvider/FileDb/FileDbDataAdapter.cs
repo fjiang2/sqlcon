@@ -26,27 +26,29 @@ namespace Sys.Data
             provider = connection.Provider;
 
             string sql = command.CommandText;
-            TableName tname = getTableName(sql);
-            return FillDataTable(tname, dataSet);
+            return FillTable(sql, dataSet);
         }
 
-        private TableName getTableName(string sql)
+        private int FillTable(string sql, DataSet ds)
         {
-            string[] items = sql.Trim().Split(new string[] { "SELECT", "FROM", "WHERE" }, StringSplitOptions.RemoveEmptyEntries);
+            sql = sql.Trim();
+            string[] items = sql.Split(new string[] { "SELECT", "FROM", "WHERE" }, StringSplitOptions.RemoveEmptyEntries);
 
             string name = null;
+            string where = null;
             if (items.Length > 1)
                 name = items[1].Trim();
             else
                 throw new InvalidDataException($"cannot extract table name from SQL:{sql}");
 
-            return new TableName(connection.Provider, name);
-        }
+            if (items.Length > 2)
+                where = items[2].Trim();
 
-        private int FillDataTable(TableName tname, DataSet ds)
-        {
+            var tname = new TableName(connection.Provider, name);
+
             var file = (provider as FileDbConnectionProvider).DataFile;
-            return file.ReadData(connection.FileLink, tname, ds);
+
+            return file.ReadData(connection.FileLink, tname, ds, where);
         }
     }
 }
