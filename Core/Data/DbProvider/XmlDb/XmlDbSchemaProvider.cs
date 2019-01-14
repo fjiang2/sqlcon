@@ -12,14 +12,6 @@ namespace Sys.Data
     {
         DataSet dbSchema;
 
-        public void Dispose()
-        {
-            if (dbSchema != null)
-            {
-                dbSchema.Dispose();
-                dbSchema = null;
-            }
-        }
         public XmlDbSchemaProvider(ConnectionProvider provider)
                     : base(provider)
         {
@@ -36,6 +28,16 @@ namespace Sys.Data
             catch (Exception)
             {
                 throw new Exception($"bad data source defined {provider.DataSource}");
+            }
+        }
+
+
+        public void Dispose()
+        {
+            if (dbSchema != null)
+            {
+                dbSchema.Dispose();
+                dbSchema = null;
             }
         }
 

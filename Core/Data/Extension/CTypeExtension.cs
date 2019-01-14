@@ -57,30 +57,30 @@ namespace Sys.Data
             switch (type)
             {
                 case CType.Bit:
-                    return typeof(System.Boolean);
+                    return typeof(bool);
 
                 case CType.TinyInt:
                     return typeof(byte);
 
                 case CType.SmallInt:
-                    return typeof(Int16);
+                    return typeof(short);
 
                 case CType.Int:
-                    return typeof(Int32);
+                    return typeof(int);
 
                 case CType.BigInt:
-                    return typeof(Int64);
+                    return typeof(long);
 
                 case CType.Float:
-                    return typeof(Double);
+                    return typeof(double);
 
                 case CType.Real:
-                    return typeof(Single);
+                    return typeof(float);
 
                 case CType.Decimal:
                 case CType.SmallMoney:
                 case CType.Money:
-                    return typeof(Decimal);
+                    return typeof(decimal);
 
                 case CType.Char:
                 case CType.NChar:
@@ -88,7 +88,7 @@ namespace Sys.Data
                 case CType.NVarChar:
                 case CType.Text:
                 case CType.NText:
-                    return typeof(String);
+                    return typeof(string);
 
                 case CType.SmallDateTime:
                 case CType.DateTime:
@@ -106,7 +106,7 @@ namespace Sys.Data
                 case CType.VarBinary:
                 case CType.Binary:
                 case CType.Image:
-                    return typeof(Byte[]);
+                    return typeof(byte[]);
 
                 case CType.UniqueIdentifier:
                     return typeof(Guid);
@@ -237,6 +237,110 @@ namespace Sys.Data
             }
 
             throw new MessageException("data type [{0}] is not supported", sqlType);
+        }
+
+
+        public static string GetSqlType(this CType ctype)
+        {
+            switch (ctype)
+            {
+                case CType.VarChar:
+                    return "varchar";
+
+                case CType.Char:
+                    return "char";
+
+                case CType.NVarChar:
+                    return "nvarchar";
+
+                case CType.NChar:
+                    return "nchar";
+
+                case CType.Decimal:
+                    return "decimal";
+                    //return "numeric";
+
+                case CType.Text:
+                    return "text";
+
+                case CType.NText:
+                    return "ntext";
+
+                case CType.DateTime:
+                    return "datetime";
+                    //return "datetime2";
+
+                case CType.SmallDateTime:
+                    return "smalldatetime";
+
+                case CType.DateTimeOffset:
+                    return "datetimeoffset";
+
+                case CType.Timestamp:
+                    return "timestamp";
+
+                case CType.Bit:
+                    return "bit";
+
+                case CType.Money:
+                    return "money";
+
+                case CType.SmallMoney:
+                    return "smallmoney";
+
+                case CType.Real:
+                    return "real";
+
+                case CType.Float:
+                    return "float";
+
+                case CType.TinyInt:
+                    return "tinyint";
+
+                case CType.SmallInt:
+                    return "smallint";
+
+                case CType.Int:
+                    return "int";
+
+                case CType.BigInt:
+                    return "bigint";
+
+                case CType.VarBinary:
+                    return "varbinary";
+
+                case CType.Binary:
+                    return "binary";
+
+                case CType.Image:
+                    return "image";
+
+                case CType.UniqueIdentifier:
+                    return "uniqueidentifier";
+
+                case CType.HierarchyId:
+                    return "hierarchyid";
+
+                case CType.Geometry:
+                    return "geometry";
+
+                case CType.Geography:
+                    return "geography";
+
+                case CType.Date:
+                    return "date";
+
+                case CType.Time:
+                    return "time";
+
+                case CType.Xml:
+                    return "xml";
+
+                case CType.Object:
+                    return "sql_variant";
+            }
+
+            throw new MessageException($"ctype [{ctype}] is not supported");
         }
 
 
