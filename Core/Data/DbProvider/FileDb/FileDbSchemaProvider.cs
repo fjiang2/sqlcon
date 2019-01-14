@@ -10,13 +10,13 @@ namespace Sys.Data
 {
     class FileDbSchemaProvider : DbSchemaProvider, IDisposable
     {
-        DataSet dbSchema = new DataSet();
-        IDbFile dbFile;
+        private DataSet dbSchema = new DataSet();
+        private IDbFile dbFile;
 
-        public FileDbSchemaProvider(ConnectionProvider provider)
+        public FileDbSchemaProvider(FileDbConnectionProvider provider)
                     : base(provider)
         {
-            this.dbFile = DbFile.Create(DbFileType.XmlDb);
+            this.dbFile = DbFile.Create(provider.DbFileType);
 
             var link = FileLink.CreateLink(provider.DataSource, provider.UserId, provider.Password);
             dbFile.ReadSchema(link, dbSchema);

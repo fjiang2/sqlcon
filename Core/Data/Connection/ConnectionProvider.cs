@@ -16,13 +16,13 @@
 //--------------------------------------------------------------------------------------------------//
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Data.OleDb;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
-using System.Data.Common;
-using System.Data.SqlClient;
-using System.Data.OleDb;
-using Tie;
 using Sys.Networking;
+using Tie;
 
 namespace Sys.Data
 {
@@ -215,15 +215,9 @@ namespace Sys.Data
             }
         }
 
-        public virtual int Version
-        {
-            get
-            {
-                return 2005;
-            }
-        }
+        public virtual int Version => 2005;
 
-        public bool IsReadOnly => DpType == DbProviderType.XmlDb;
+        public bool IsReadOnly => DpType == DbProviderType.FileDb;
 
         public abstract bool CheckConnection();
 
@@ -258,8 +252,25 @@ namespace Sys.Data
             switch (providerName)
             {
                 case "xmlfile":
-                    pvd = new FileDbConnectionProvider(serverName, connectionString);
-                    break;
+                    return new FileDbConnectionProvider(serverName, connectionString, DbFileType.XmlDb);
+
+                case "file/dataset/json":
+                    return new FileDbConnectionProvider(serverName, connectionString, DbFileType.JsonDataSet);
+
+                case "file/datalake/json":
+                    return new FileDbConnectionProvider(serverName, connectionString, DbFileType.JsonDataLake);
+
+                case "file/dataset/xml":
+                    return new FileDbConnectionProvider(serverName, connectionString, DbFileType.XmlDataSet);
+
+                case "file/datalake/xml":
+                    return new FileDbConnectionProvider(serverName, connectionString, DbFileType.XmlDataLake);
+
+                case "file/assembly":
+                    return new FileDbConnectionProvider(serverName, connectionString, DbFileType.Assembly);
+
+                case "file/c#":
+                    return new FileDbConnectionProvider(serverName, connectionString, DbFileType.CSharp);
 
                 case "riadb":                   //Remote Invoke Agent
                     pvd = new RiaDbConnectionProvider(serverName, connectionString);

@@ -12,11 +12,14 @@ namespace Sys.Data
 {
     class FileDbConnectionProvider : ConnectionProvider
     {
+        public DbFileType DbFileType { get; }
 
-        public FileDbConnectionProvider(string name, string connectionString)
+        public FileDbConnectionProvider(string name, string connectionString, DbFileType fileType)
             : base(name, ConnectionProviderType.XmlFile, connectionString)
         {
+            this.DbFileType = fileType;
         }
+
         public override bool CheckConnection()
         {
             return FileLink.CreateLink(DataSource, this.UserId, this.Password).Exists;
@@ -51,13 +54,7 @@ namespace Sys.Data
         }
 
 
-        internal override DbProviderType DpType
-        {
-            get
-            {
-                return DbProviderType.XmlDb;
-            }
-        }
+        internal override DbProviderType DpType => DbProviderType.FileDb;
 
         internal override DbConnection NewDbConnection
         {

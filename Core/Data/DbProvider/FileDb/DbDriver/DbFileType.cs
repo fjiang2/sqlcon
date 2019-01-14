@@ -3,9 +3,14 @@
     public enum DbFileType
     {
         XmlDb,
-        DataSet,
-        DataLake,
-        Json,
+
+        XmlDataSet,
+        XmlDataLake,
+
+        JsonDataSet,
+        JsonDataLake,
+
         Assembly,
+        CSharp,
     }
 }

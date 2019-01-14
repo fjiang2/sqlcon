@@ -23,7 +23,7 @@ namespace Sys.Data
         OleDb,
         SqlDb,
         SqlCe,
-        XmlDb,
+        FileDb,
 
         /// <summary>
         /// Sql server remote invoke agent (ria), e.g. invoke through http web site

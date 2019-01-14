@@ -36,7 +36,7 @@ namespace Sys.Data
                 case DbFileType.XmlDb:
                     return new XmlDbFile();
 
-                case DbFileType.DataSet:
+                case DbFileType.XmlDataSet:
                     return new DataSetFile();
             }
 
