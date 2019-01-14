@@ -31,7 +31,7 @@ namespace Sys.Data
 
         private int FillTable(string sql, DataSet ds)
         {
-            sql = sql.Trim();
+            sql = ToUpperCase(sql);
             string[] items = sql.Split(new string[] { "SELECT", "FROM", "WHERE" }, StringSplitOptions.RemoveEmptyEntries);
 
             string name = null;
@@ -49,6 +49,22 @@ namespace Sys.Data
             var file = (provider as FileDbConnectionProvider).DataFile;
 
             return file.ReadData(connection.FileLink, tname, ds, where);
+        }
+
+        private static string ToUpperCase(string sql)
+        {
+            string[] keywords = new string[] { "SELECT", "FROM", "WHERE" };
+            string[] items = sql.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < items.Length; i++)
+            {
+                foreach (string keyword in keywords)
+                {
+                    if (string.Compare(items[i], keyword, ignoreCase: true) == 0)
+                        items[i] = keyword;
+                }
+            }
+
+            return string.Join(" ", items);
         }
     }
 }
