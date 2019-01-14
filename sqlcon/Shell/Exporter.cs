@@ -30,7 +30,10 @@ namespace sqlcon
             this.cmd = cmd;
             this.cfg = cmd.Configuration;
 
-            this.xmlDbFile = new XmlDbFile { XmlDbFolder = cfg.XmlDbDirectory };
+            this.xmlDbFile = new XmlDbFile
+            {
+                XmlDbFolder = cfg.XmlDbDirectory
+            };
 
             if (pt.Item is Locator)
             {
@@ -270,7 +273,7 @@ namespace sqlcon
             {
                 cout.WriteLine("start to generate {0} data file", tname);
                 var dt = new TableReader(tname).Table;
-                var file = xmlDbFile.Write(tname, dt);
+                var file = xmlDbFile.WriteData(tname, dt);
                 cout.WriteLine("completed {0} =>{1}", tname.ShortName, file);
             }
 
@@ -288,7 +291,7 @@ namespace sqlcon
 
                         cout.WriteLine("start to generate {0}", tname);
                         var dt = new SqlBuilder().SELECT.TOP(cmd.Top).COLUMNS().FROM(tname).SqlCmd.FillDataTable();
-                        var file = xmlDbFile.Write(tname, dt);
+                        var file = xmlDbFile.WriteData(tname, dt);
                         cout.WriteLine("completed {0} => {1}", tname.ShortName, file);
                     }
                     return;

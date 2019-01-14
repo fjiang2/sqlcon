@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
-using System.Data;
 using Sys.Data.IO;
 
 namespace Sys.Data
 {
-    public class XmlDbFile
+    public class XmlDbFile : DbFile
     {
         public string XmlDbFolder { get; set; } = "db";
         private const string EXT = "xml";
@@ -28,8 +28,25 @@ namespace Sys.Data
 
         private string getSchemaFilName(DatabaseName dname) => string.Format("{0}\\{1}.{2}", getPath(dname.ServerName), dname.Name, EXT);
 
+        public override void ReadSchema(FileLink link, DataSet dbSchema)
+        {
+            try
+            {
+                link.ReadXml(dbSchema);
 
-        public string WriteSchema(ServerName sname)
+                if (dbSchema.Tables.Count == 0)
+                    throw new Exception($"error in xml schema file: {link}");
+
+            }
+            catch (Exception)
+            {
+                throw new Exception($"bad data source defined {link}");
+            }
+
+        }
+
+
+        public override string WriteSchema(ServerName sname)
         {
             var file = getSchemaFilName(sname);
             using (var writer = NewStreamWriter(file))
@@ -41,7 +58,7 @@ namespace Sys.Data
             return file;
         }
 
-        public string WriteSchema(DatabaseName dname)
+        public override string WriteSchema(DatabaseName dname)
         {
             var file = getSchemaFilName(dname);
             using (var writer = NewStreamWriter(file))
@@ -53,7 +70,7 @@ namespace Sys.Data
         }
 
 
-        public string Write(TableName tname, DataTable dt)
+        public override string WriteData(TableName tname, DataTable dt)
         {
             string file = getDataFileName(tname);
             using (var writer = NewStreamWriter(file))
@@ -67,7 +84,7 @@ namespace Sys.Data
         }
 
 
-        public int Read(FileLink root, TableName tname, DataSet ds)
+        public override int ReadData(FileLink root, TableName tname, DataSet ds)
         {
             var file = root.PathCombine(tname.DatabaseName.Name, tname.ShortName);
             file = string.Format("{0}.{1}", file, EXT);
@@ -77,7 +94,7 @@ namespace Sys.Data
                 throw new InvalidDataException($"table {tname.FormalName} data file \"{file}\" not exist");
 
             link.ReadXml(ds);
-            
+
             if (ds.Tables.Count > 0)
                 return ds.Tables[0].Rows.Count;
             else

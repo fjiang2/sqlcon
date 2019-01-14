@@ -165,11 +165,14 @@
     <Compile Include="Data\DbProvider\RiaDb\RiaDbConnection.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Data\DbProvider\XmlDb\DbDriver\DbFile.cs" />
+    <Compile Include="Data\DbProvider\XmlDb\DbDriver\DbFileType.cs" />
     <Compile Include="Data\DbProvider\XmlDb\DbDriver\DbSchemaBuilder.cs" />
     <Compile Include="Data\DbProvider\XmlDb\DbDriver\DbSchemaColumn.cs" />
     <Compile Include="Data\DbProvider\XmlDb\DbDriver\DbSchemaColumnExtension.cs" />
+    <Compile Include="Data\DbProvider\XmlDb\DbDriver\IDbFile.cs" />
     <Compile Include="Data\DbProvider\XmlDb\XmlDbConnectionProvider.cs" />
-    <Compile Include="Data\DbProvider\XmlDb\XmlDbFile.cs" />
+    <Compile Include="Data\DbProvider\XmlDb\DbDriver\XmlDbFile.cs" />
     <Compile Include="Data\DbProvider\XmlDb\XmlDbSchemaProvider.cs" />
     <Compile Include="Data\Extension\Conversion.cs" />
     <Compile Include="Data\Extension\ConnectionProviderExtension.cs" />

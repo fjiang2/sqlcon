@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data.Common;
-using System.Data;
-using System.IO;
 
 namespace Sys.Data
 {
@@ -45,8 +45,8 @@ namespace Sys.Data
 
         private int FillDataTable(TableName tname, DataSet ds)
         {
-            var xml = new XmlDbFile();
-            return xml.Read(connection.FileLink, tname, ds);
+            var file = new XmlDbFile();
+            return file.ReadData(connection.FileLink, tname, ds);
         }
     }
 }

@@ -1,34 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data;
 using Sys.Data.IO;
 
 namespace Sys.Data
 {
     class XmlDbSchemaProvider : DbSchemaProvider, IDisposable
     {
-        DataSet dbSchema;
+        DataSet dbSchema = new DataSet();
+        IDbFile dbFile;
 
         public XmlDbSchemaProvider(ConnectionProvider provider)
                     : base(provider)
         {
+            this.dbFile = DbFile.Create(DbFileType.XmlDb);
+
             var link = FileLink.CreateLink(provider.DataSource, provider.UserId, provider.Password);
-            dbSchema = new DataSet();
-
-            try
-            {
-                link.ReadXml(dbSchema);
-
-                if (dbSchema.Tables.Count == 0)
-                    throw new Exception(string.Format("error in xml schema file: {0}", provider));
-            }
-            catch (Exception)
-            {
-                throw new Exception($"bad data source defined {provider.DataSource}");
-            }
+            dbFile.ReadSchema(link, dbSchema);
         }
 
 
@@ -82,9 +73,9 @@ namespace Sys.Data
         public override DependencyInfo[] GetDependencySchema(DatabaseName dname)
         {
             var dt = this.dbSchema.Tables[0];
-            var L = dt.AsEnumerable().Where(row => 
-                row[nameof(ColumnSchema.PK_Schema)] != DBNull.Value && 
-                row[nameof(ColumnSchema.PK_Table)] != DBNull.Value && 
+            var L = dt.AsEnumerable().Where(row =>
+                row[nameof(ColumnSchema.PK_Schema)] != DBNull.Value &&
+                row[nameof(ColumnSchema.PK_Table)] != DBNull.Value &&
                 row[nameof(ColumnSchema.PK_Column)] != DBNull.Value);
 
             DependencyInfo[] rows = L.Select(

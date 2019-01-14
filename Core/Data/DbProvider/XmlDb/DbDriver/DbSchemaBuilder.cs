@@ -20,21 +20,6 @@ namespace Sys.Data
 
         public DataSet DbSchmea => dbSchema;
 
-        public DataSet LoadDataSet(string url, string userName, string password)
-        {
-            var link = FileLink.CreateLink(url, userName, password);
-            var ds = new DataSet();
-            try
-            {
-                link.ReadXml(ds);
-            }
-            catch (Exception)
-            {
-                throw new Exception($"bad data source defined: {url}");
-            }
-
-            return ds;
-        }
 
         /// <summary>
         /// create dbSchema from data with DataSet format
