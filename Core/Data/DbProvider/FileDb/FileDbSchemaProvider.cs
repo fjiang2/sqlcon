@@ -8,12 +8,12 @@ using Sys.Data.IO;
 
 namespace Sys.Data
 {
-    class XmlDbSchemaProvider : DbSchemaProvider, IDisposable
+    class FileDbSchemaProvider : DbSchemaProvider, IDisposable
     {
         DataSet dbSchema = new DataSet();
         IDbFile dbFile;
 
-        public XmlDbSchemaProvider(ConnectionProvider provider)
+        public FileDbSchemaProvider(ConnectionProvider provider)
                     : base(provider)
         {
             this.dbFile = DbFile.Create(DbFileType.XmlDb);

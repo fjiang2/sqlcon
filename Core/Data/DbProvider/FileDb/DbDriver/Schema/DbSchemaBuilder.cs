@@ -11,11 +11,16 @@ namespace Sys.Data
 {
     class DbSchemaBuilder
     {
-        private readonly DataSet dbSchema = new DataSet();
+        private readonly DataSet dbSchema;
 
         public DbSchemaBuilder()
         {
+            this.dbSchema = new DataSet();
+        }
 
+        public DbSchemaBuilder(DataSet dbSchema)
+        {
+            this.dbSchema = dbSchema;
         }
 
         public DataSet DbSchmea => dbSchema;

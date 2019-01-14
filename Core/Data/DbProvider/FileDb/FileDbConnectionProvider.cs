@@ -10,10 +10,10 @@ using Sys.Data.IO;
 
 namespace Sys.Data
 {
-    class XmlDbConnectionProvider : ConnectionProvider
+    class FileDbConnectionProvider : ConnectionProvider
     {
 
-        public XmlDbConnectionProvider(string name, string connectionString)
+        public FileDbConnectionProvider(string name, string connectionString)
             : base(name, ConnectionProviderType.XmlFile, connectionString)
         {
         }
@@ -47,7 +47,7 @@ namespace Sys.Data
 
         protected override DbSchemaProvider GetSchema()
         {
-            return new XmlDbSchemaProvider(this);
+            return new FileDbSchemaProvider(this);
         }
 
 
@@ -63,7 +63,7 @@ namespace Sys.Data
         {
             get
             {
-                return new XmlDbConnection(this);
+                return new FileDbConnection(this);
             }
         }
 
@@ -74,7 +74,7 @@ namespace Sys.Data
 
         internal override DbProvider CreateDbProvider(string script)
         {
-            return new XmlDbProvider(script, this);
+            return new FileDbProvider(script, this);
         }
 
     }

@@ -9,20 +9,20 @@ using System.Threading.Tasks;
 
 namespace Sys.Data
 {
-    public class XmlDbDataAdapter : DbDataAdapter
+    public class FileDbDataAdapter : DbDataAdapter
     {
-        XmlDbCommand command;
-        XmlDbConnection connection;
+        FileDbCommand command;
+        FileDbConnection connection;
         ConnectionProvider provider;
 
-        public XmlDbDataAdapter()
+        public FileDbDataAdapter()
         {
         }
 
         public override int Fill(DataSet dataSet)
         {
-            command = (XmlDbCommand)this.SelectCommand;
-            connection = (XmlDbConnection)command.Connection;
+            command = (FileDbCommand)this.SelectCommand;
+            connection = (FileDbConnection)command.Connection;
             provider = connection.Provider;
 
             string sql = command.CommandText;

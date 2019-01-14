@@ -10,7 +10,7 @@ using Sys.Data.IO;
 
 namespace Sys.Data
 {
-    public sealed class XmlDbConnection : DbConnection
+    public sealed class FileDbConnection : DbConnection
     {
         public override string ConnectionString { get; set; }
         public override string Database { get { return this.database; } }
@@ -22,7 +22,7 @@ namespace Sys.Data
         public FileLink FileLink { get; }
 
 
-        public XmlDbConnection(ConnectionProvider provider)
+        public FileDbConnection(ConnectionProvider provider)
         {
             this.Provider = provider;
             this.ConnectionString = Provider.ConnectionString;
@@ -63,7 +63,7 @@ namespace Sys.Data
 
         protected override DbCommand CreateDbCommand()
         {
-            return new XmlDbCommand("", this);
+            return new FileDbCommand("", this);
         }
 
         private string database;

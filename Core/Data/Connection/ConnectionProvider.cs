@@ -258,7 +258,7 @@ namespace Sys.Data
             switch (providerName)
             {
                 case "xmlfile":
-                    pvd = new XmlDbConnectionProvider(serverName, connectionString);
+                    pvd = new FileDbConnectionProvider(serverName, connectionString);
                     break;
 
                 case "riadb":                   //Remote Invoke Agent

@@ -165,15 +165,25 @@
     <Compile Include="Data\DbProvider\RiaDb\RiaDbConnection.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Data\DbProvider\XmlDb\DbDriver\DbFile.cs" />
-    <Compile Include="Data\DbProvider\XmlDb\DbDriver\DbFileType.cs" />
-    <Compile Include="Data\DbProvider\XmlDb\DbDriver\DbSchemaBuilder.cs" />
-    <Compile Include="Data\DbProvider\XmlDb\DbDriver\DbSchemaColumn.cs" />
-    <Compile Include="Data\DbProvider\XmlDb\DbDriver\DbSchemaColumnExtension.cs" />
-    <Compile Include="Data\DbProvider\XmlDb\DbDriver\IDbFile.cs" />
-    <Compile Include="Data\DbProvider\XmlDb\XmlDbConnectionProvider.cs" />
-    <Compile Include="Data\DbProvider\XmlDb\DbDriver\XmlDbFile.cs" />
-    <Compile Include="Data\DbProvider\XmlDb\XmlDbSchemaProvider.cs" />
+    <Compile Include="Data\DbProvider\FileDb\DbDriver\DbFile.cs" />
+    <Compile Include="Data\DbProvider\FileDb\DbDriver\DbFileType.cs" />
+    <Compile Include="Data\DbProvider\FileDb\DbDriver\Schema\DbSchemaBuilder.cs" />
+    <Compile Include="Data\DbProvider\FileDb\DbDriver\Schema\DbSchemaColumn.cs" />
+    <Compile Include="Data\DbProvider\FileDb\DbDriver\Schema\DbSchemaColumnExtension.cs" />
+    <Compile Include="Data\DbProvider\FileDb\DbDriver\IDbFile.cs" />
+    <Compile Include="Data\DbProvider\FileDb\DbDriver\File\DataSetFile.cs" />
+    <Compile Include="Data\DbProvider\FileDb\FileDbCommand.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Data\DbProvider\FileDb\FileDbConnection.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Data\DbProvider\FileDb\DbDriver\File\XmlDbFile.cs" />
+    <Compile Include="Data\DbProvider\FileDb\FileDbConnectionProvider.cs" />
+    <Compile Include="Data\DbProvider\FileDb\FileDbDataAdapter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Data\DbProvider\FileDb\FileDbSchemaProvider.cs" />
     <Compile Include="Data\Extension\Conversion.cs" />
     <Compile Include="Data\Extension\ConnectionProviderExtension.cs" />
     <Compile Include="Data\Extension\DbTypeExtension.cs" />
@@ -203,16 +213,7 @@
     <Compile Include="Data\DbProvider\DbProviderType.cs" />
     <Compile Include="Data\DbProvider\OleDb\OleDbProvider.cs" />
     <Compile Include="Data\DbProvider\SqlDb\SqlDbProvider.cs" />
-    <Compile Include="Data\DbProvider\XmlDb\XmlDbCommand.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Data\DbProvider\XmlDb\XmlDbConnection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Data\DbProvider\XmlDb\XmlDbDataAdapter.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Data\DbProvider\XmlDb\XmlDbProvider.cs" />
+    <Compile Include="Data\DbProvider\FileDb\FileDbProvider.cs" />
     <Compile Include="Data\Persistence\Level0\DbReader.cs" />
     <Compile Include="Data\Persistence\Level0\SqlCmd.cs" />
     <Compile Include="Data\Persistence\Level0\SqlExceptionEventArgs.cs" />

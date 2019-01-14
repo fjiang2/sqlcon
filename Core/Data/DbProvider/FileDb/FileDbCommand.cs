@@ -9,7 +9,7 @@ using System.Data;
 
 namespace Sys.Data
 {
-    public sealed class XmlDbCommand : DbCommand
+    public sealed class FileDbCommand : DbCommand
     {
         public override string CommandText { get; set; }
         public override int CommandTimeout { get; set; }
@@ -21,7 +21,7 @@ namespace Sys.Data
         protected override DbTransaction DbTransaction { get; set; }
 
 
-        public XmlDbCommand(string cmdText, XmlDbConnection connection)
+        public FileDbCommand(string cmdText, FileDbConnection connection)
         {
             this.CommandText = cmdText;
             this.CommandType = CommandType.Text;

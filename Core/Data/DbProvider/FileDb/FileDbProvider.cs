@@ -26,23 +26,23 @@ using System.Data;
 
 namespace Sys.Data
 {
-    class XmlDbProvider : DbProvider
+    class FileDbProvider : DbProvider
     {
-        public XmlDbProvider(string script, ConnectionProvider provider)
+        public FileDbProvider(string script, ConnectionProvider provider)
             : base(script, provider)
         { 
         }
 
         protected override DbDataAdapter NewDbDataAdapter()
         {
-            XmlDbDataAdapter adapter = new XmlDbDataAdapter();
-            adapter.SelectCommand = (XmlDbCommand)base.DbCommand;
+            FileDbDataAdapter adapter = new FileDbDataAdapter();
+            adapter.SelectCommand = (FileDbCommand)base.DbCommand;
             return adapter;
         }
 
         protected override DbCommand NewDbCommand()
         {
-            return new XmlDbCommand(script, (XmlDbConnection)DbConnection);
+            return new FileDbCommand(script, (FileDbConnection)DbConnection);
         }
 
         public override DbParameter AddParameter(string parameterName, Type type)
