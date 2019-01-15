@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Data;
+using System.IO;
 
 namespace Sys.Data.IO
 {
@@ -24,6 +25,15 @@ namespace Sys.Data.IO
         public bool Exists
         {
             get { return exists(); }
+        }
+        public string Name
+        {
+            get
+            {
+                Uri uri = new Uri(url);
+                string path = uri.LocalPath;
+                return Path.GetFileNameWithoutExtension(path);
+            }
         }
 
         public bool IsLocalLink

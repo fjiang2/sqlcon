@@ -92,7 +92,6 @@
     <Compile Include="Compare\TableCompare.cs" />
     <Compile Include="Compare\TableSchemaCompare.cs" />
     <Compile Include="Compiler\CSharpCompiler.cs" />
-    <Compile Include="Compiler\DataSetBuilder.cs" />
     <Compile Include="Const.cs" />
     <Compile Include="Data.Manager\DpoGenerate\ClassName.cs" />
     <Compile Include="Data.Manager\DpoGenerate\ClassTableName.cs" />
@@ -148,6 +147,7 @@
     <Compile Include="Data\DataContract\IDataContractRow.cs" />
     <Compile Include="Data\DataLake\DataLakeExtension.cs" />
     <Compile Include="Data\DataLake\DataLake.cs" />
+    <Compile Include="Data\DbProvider\FileDb\DbDriver\File\CSharpFile.cs" />
     <Compile Include="Data\DbProvider\OleDb\OleDbServer.cs" />
     <Compile Include="Data\DbProvider\DbSchemaProvider.cs" />
     <Compile Include="Data\DbProvider\OleDb\OleDbSchemaProvider.cs" />

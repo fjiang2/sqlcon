@@ -38,6 +38,9 @@ namespace Sys.Data
 
                 case DbFileType.XmlDataSet:
                     return new DataSetFile();
+
+                case DbFileType.CSharp:
+                    return new CSharpFile();
             }
 
             return null;
