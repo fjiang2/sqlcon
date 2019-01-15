@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Sys.Data.IO;
-using System.Reflection;
 
 namespace Sys.Data
 {
@@ -24,7 +24,7 @@ namespace Sys.Data
             {
                 string code = link.ReadAllText();
                 Assembly assembly = Compile(link.Name, code);
-                this.data = GetDataSet(assembly);
+                this.data = CreateSchema(assembly);
 
                 var schema = new DbSchemaBuilder(dbSchema);
                 schema.AddSchema(data);
@@ -64,7 +64,7 @@ namespace Sys.Data
             return csc.GetAssembly();
         }
 
-        private static DataSet GetDataSet(Assembly assembly)
+        private static DataSet CreateSchema(Assembly assembly)
         {
             var classes = assembly.GetTypes().Where(type => type.IsClass).ToArray();
 
@@ -83,7 +83,19 @@ namespace Sys.Data
                 ds.Tables.Add(dt);
                 foreach (var propertyInfo in clss.GetProperties())
                 {
-                    dt.Columns.Add(new DataColumn(propertyInfo.Name, propertyInfo.PropertyType));
+                    Type type = propertyInfo.PropertyType;
+                    bool isNullable = Nullable.GetUnderlyingType(type) != null;
+                    if (isNullable)
+                        type = Nullable.GetUnderlyingType(type);
+
+                    DataColumn column = new DataColumn(propertyInfo.Name, type)
+                    {
+                        AllowDBNull = isNullable,
+                        Unique = false,
+                        AutoIncrement = false,
+                    };
+
+                    dt.Columns.Add(column);
                 }
             }
 

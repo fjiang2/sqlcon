@@ -80,42 +80,6 @@ namespace Sys.Data
                 AddSchema(ds);
             }
         }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="assembly"></param>
-        public void AddSchema(Assembly assembly)
-        {
-            DataSet ds = GetDataSet(assembly);
-
-            AddSchema(ds);
-        }
-
-        private static DataSet GetDataSet(Assembly assembly)
-        {
-            var classes = assembly.GetTypes().Where(type => type.IsClass).ToArray();
-            DataSet ds = new DataSet
-            {
-                DataSetName = assembly.FullName
-            };
-
-            foreach (var clss in classes)
-            {
-                DataTable dt = new DataTable
-                {
-                    TableName = clss.Name,
-                };
-
-                ds.Tables.Add(dt);
-                foreach (var propertyInfo in clss.GetProperties())
-                {
-                    dt.Columns.Add(new DataColumn(propertyInfo.Name, propertyInfo.PropertyType));
-                }
-            }
-
-            return ds;
-        }
+      
     }
 }
