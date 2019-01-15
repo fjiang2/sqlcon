@@ -1098,6 +1098,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("  mount ip100=192.168.0.100\\sqlexpress /u:sa /p:p@ss");
                 cout.WriteLine("  mount web=http://192.168.0.100/db/northwind.xml /u:sa /p:p@ss");
                 cout.WriteLine("  mount xml=file://c:\\db\\northwind.xml");
+                cout.WriteLine("  mount cs=file://c:\\db\\northwind.cs /pvd:file/c#");
                 return;
             }
 
@@ -1120,11 +1121,12 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             string pvd = cmd.GetValue("pvd");
             if (pvd != null)
             {
-                if (pvd != "sqloledb" && pvd != "xmlfile")
+                if (pvd != "sqloledb" && pvd != "xmlfile" && !pvd.StartsWith("file/"))
                 {
                     cerr.WriteLine($"provider={pvd} is not supported");
                     return;
                 }
+
                 builder.AppendFormat("provider={0};", pvd);
             }
             else
