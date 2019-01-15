@@ -9,7 +9,7 @@ using Sys.Data.IO;
 
 namespace Sys.Data
 {
-    public class DataSetFile : DbFile
+    class DataSetFile : DbFile
     {
         private const string EXT = "xml";
         DataSet data = new DataSet();
@@ -38,8 +38,9 @@ namespace Sys.Data
 
         }
 
-        public override int ReadData(FileLink root, TableName tname, DataSet ds, string where)
+        public override int ReadData(FileLink link, SelectClause select, DataSet ds)
         {
+            TableName tname = select.TableName;
             if (!data.Tables.Contains(tname.ShortName))
                 return -1;
 
@@ -47,7 +48,7 @@ namespace Sys.Data
             ds.Clear();
 
             DataTable dt2;
-
+            string where = select.Where;
             if (where != null)
             {
                 dt2 = dt.Clone();

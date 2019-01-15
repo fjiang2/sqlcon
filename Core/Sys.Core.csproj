@@ -256,6 +256,7 @@
     <Compile Include="Data\Persistence\TableReader`2.cs" />
     <Compile Include="Data\Persistence\TableWriter.cs" />
     <Compile Include="Data\Persistence\TableWriter`1.cs" />
+    <Compile Include="Data\SQL\SelectClause.cs" />
     <Compile Include="Data\UniqueTable.cs" />
     <Compile Include="EventArgs\EventArgs`1.cs" />
     <Compile Include="EventArgs\EventArgs`2.cs" />

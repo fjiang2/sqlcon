@@ -5,16 +5,15 @@ namespace Sys.Data
 {
     public interface IDbFile
     {
-        
+
         /// <summary>
         /// read table's data from data file with filtering
         /// </summary>
         /// <param name="link">data file</param>
-        /// <param name="tname">table to be wanted to read</param>
+        /// <param name="select">Sql select statement</param>
         /// <param name="ds">read result</param>
-        /// <param name="where">filter expression</param>
-        /// <returns></returns>
-        int ReadData(FileLink link, TableName tname, DataSet ds, string where);
+        /// <returns>number of rows retrieved</returns>
+        int ReadData(FileLink link, SelectClause select, DataSet ds);
 
         /// <summary>
         /// write data into a file

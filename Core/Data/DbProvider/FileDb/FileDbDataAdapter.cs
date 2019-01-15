@@ -48,7 +48,13 @@ namespace Sys.Data
 
             var file = (provider as FileDbConnectionProvider).DataFile;
 
-            return file.ReadData(connection.FileLink, tname, ds, where);
+            SelectClause select = new SelectClause
+            {
+                TableName = tname,
+                Where = where,
+            };
+
+            return file.ReadData(connection.FileLink, select, ds);
         }
 
         private static string ToUpperCase(string sql)
