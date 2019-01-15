@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data.Common;
-using System.Data;
-
+using Sys.Data.IO;
 
 namespace Sys.Data
 {
@@ -26,7 +26,7 @@ namespace Sys.Data
             this.CommandText = cmdText;
             this.CommandType = CommandType.Text;
             this.DbConnection = connection;
-        
+
         }
 
         public override void Cancel()
@@ -35,6 +35,12 @@ namespace Sys.Data
 
         public override int ExecuteNonQuery()
         {
+            FileDbConnection connection = DbConnection as FileDbConnection;
+            FileLink link = connection.FileLink;
+
+            var parser = new SqlClauseParser(connection.Provider, CommandText);
+            SqlClause clause = parser.Parse();
+
             return -1;
         }
 

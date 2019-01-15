@@ -256,7 +256,12 @@
     <Compile Include="Data\Persistence\TableReader`2.cs" />
     <Compile Include="Data\Persistence\TableWriter.cs" />
     <Compile Include="Data\Persistence\TableWriter`1.cs" />
-    <Compile Include="Data\SQL\SelectClause.cs" />
+    <Compile Include="Data\SqlClause\SqlClause.cs" />
+    <Compile Include="Data\SqlClause\InsertClause.cs" />
+    <Compile Include="Data\SqlClause\DeleteClause.cs" />
+    <Compile Include="Data\SqlClause\SelectClause.cs" />
+    <Compile Include="Data\SqlClause\SqlClauseParser.cs" />
+    <Compile Include="Data\SqlClause\UpdateClause.cs" />
     <Compile Include="Data\UniqueTable.cs" />
     <Compile Include="EventArgs\EventArgs`1.cs" />
     <Compile Include="EventArgs\EventArgs`2.cs" />

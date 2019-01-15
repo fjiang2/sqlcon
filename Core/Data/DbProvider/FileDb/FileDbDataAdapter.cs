@@ -31,46 +31,12 @@ namespace Sys.Data
 
         private int FillTable(string sql, DataSet ds)
         {
-            sql = ToUpperCase(sql);
-            string[] items = sql.Split(new string[] { "SELECT", "FROM", "WHERE" }, StringSplitOptions.RemoveEmptyEntries);
+            SqlClauseParser parset = new SqlClauseParser(connection.Provider, sql);
+            SelectClause select = parset.ParseSelect();
 
-            string name = null;
-            string where = null;
-            if (items.Length > 1)
-                name = items[1].Trim();
-            else
-                throw new InvalidDataException($"cannot extract table name from SQL:{sql}");
-
-            if (items.Length > 2)
-                where = items[2].Trim();
-
-            var tname = new TableName(connection.Provider, name);
-
-            var file = (provider as FileDbConnectionProvider).DataFile;
-
-            SelectClause select = new SelectClause
-            {
-                TableName = tname,
-                Where = where,
-            };
-
-            return file.ReadData(connection.FileLink, select, ds);
+            var dataFile = (provider as FileDbConnectionProvider).DataFile;
+            return dataFile.ReadData(connection.FileLink, select, ds);
         }
-
-        private static string ToUpperCase(string sql)
-        {
-            string[] keywords = new string[] { "SELECT", "FROM", "WHERE" };
-            string[] items = sql.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            for (int i = 0; i < items.Length; i++)
-            {
-                foreach (string keyword in keywords)
-                {
-                    if (string.Compare(items[i], keyword, ignoreCase: true) == 0)
-                        items[i] = keyword;
-                }
-            }
-
-            return string.Join(" ", items);
-        }
+        
     }
 }
