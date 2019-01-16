@@ -39,6 +39,13 @@ namespace Sys.Data.IO
             return "file://" + Path.Combine(root, path1, path2);
         }
 
+        public override void ReadXml(DataLake lake)
+        {
+            using (var reader = new StreamReader(fileName))
+            {
+                lake.ReadXml(reader);
+            }
+        }
 
 
         public override void ReadXml(DataSet ds)

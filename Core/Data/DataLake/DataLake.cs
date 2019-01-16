@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data;
+using System.Xml;
 
 namespace Sys.Data
 {
@@ -35,6 +37,44 @@ namespace Sys.Data
             }
 
             return null;
+        }
+
+        public XmlReadMode ReadXml(TextReader reader)
+        {
+            return ReadXml(reader, XmlReadMode.ReadSchema);
+        }
+
+        public XmlReadMode ReadXml(TextReader reader, XmlReadMode mode)
+        {
+            if (reader is StreamReader)
+            {
+                StreamReader sreader = (StreamReader)reader;
+                return ReadXml(sreader.BaseStream, mode);
+            }
+
+            throw new Exception($"{nameof(DataLake)} reader({reader.GetType().FullName}) is not {nameof(StreamReader)}");
+        }
+
+        public XmlReadMode ReadXml(Stream stream, XmlReadMode mode)
+        {
+            using (XmlReader reader = XmlReader.Create(stream))
+            {
+                this.Clear();
+
+                while (reader.Read())
+                {
+                    if (reader.IsStartElement())
+                    {
+                        this.DataLakeName = reader.Name;
+                    }
+
+                    DataSet ds = new DataSet();
+                    ds.ReadXml(reader, mode);
+                    this.Add(ds.DataSetName, ds);
+                }
+            }
+
+            return mode;
         }
 
         public override string ToString()

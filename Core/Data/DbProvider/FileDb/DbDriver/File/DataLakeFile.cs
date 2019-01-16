@@ -9,11 +9,11 @@ using Sys.Data.IO;
 
 namespace Sys.Data
 {
-    class DataSetFile : DbFile
+    class DataLakeFile : DbFile
     {
-        DataSet data = new DataSet();
+        DataLake data = new DataLake();
 
-        public DataSetFile(FileLink link)
+        public DataLakeFile(FileLink link)
             : base(link)
         {
         }
@@ -40,7 +40,13 @@ namespace Sys.Data
 
         public override int SelectData(SelectClause select, DataSet result)
         {
-            return QueryData(data, select, result);
+            string key = select.TableName.DatabaseName.Name;
+
+            if (!data.ContainsKey(key))
+                return -1;
+
+            DataSet _ds = data[key];
+            return QueryData(_ds, select, result);
         }
 
     }

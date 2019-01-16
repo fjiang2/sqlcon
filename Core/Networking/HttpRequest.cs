@@ -8,6 +8,7 @@ using System.Xml;
 using System.Net;
 using System.IO;
 using System.Data;
+using Sys.Data;
 
 namespace Sys.Networking
 {
@@ -99,6 +100,14 @@ namespace Sys.Networking
                 DataSet ds = new DataSet();
                 ds.ReadXml(reader, XmlReadMode.ReadSchema);
                 return ds;
+            });
+        }
+        public static void ReadXml(Uri uri, DataLake lake)
+        {
+            HttpGetReader<DataLake>(uri, reader =>
+            {
+                lake.ReadXml(reader, XmlReadMode.ReadSchema);
+                return lake;
             });
         }
 

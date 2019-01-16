@@ -18,9 +18,9 @@ namespace Sys.Data
         /// </summary>
         /// <param name="link">data file</param>
         /// <param name="select">Sql select statement</param>
-        /// <param name="ds">read result</param>
+        /// <param name="result">read result</param>
         /// <returns>number of rows retrieved</returns>
-        int SelectData(SelectClause select, DataSet ds);
+        int SelectData(SelectClause select, DataSet result);
 
         /// <summary>
         /// 

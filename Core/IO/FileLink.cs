@@ -45,6 +45,8 @@ namespace Sys.Data.IO
 
         public abstract string PathCombine(string path1, string path2);
 
+        public abstract void ReadXml(DataLake lake);
+
         public abstract void ReadXml(DataSet ds);
 
         public abstract string ReadAllText();

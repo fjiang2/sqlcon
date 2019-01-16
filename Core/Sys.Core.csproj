@@ -150,6 +150,7 @@
     <Compile Include="Data\DbProvider\FileDb\DbDriver\File\CSharpFile.cs" />
     <Compile Include="Data\DbProvider\FileDb\DbDriver\DbCreator\XmlDbCreator.cs" />
     <Compile Include="Data\DbProvider\FileDb\DbDriver\DbCreator\IDbCreator.cs" />
+    <Compile Include="Data\DbProvider\FileDb\DbDriver\File\DataLakeFile.cs" />
     <Compile Include="Data\DbProvider\OleDb\OleDbServer.cs" />
     <Compile Include="Data\DbProvider\DbSchemaProvider.cs" />
     <Compile Include="Data\DbProvider\OleDb\OleDbSchemaProvider.cs" />

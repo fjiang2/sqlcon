@@ -37,19 +37,19 @@ namespace Sys.Data
 
         }
 
-        public override int SelectData(SelectClause select, DataSet ds)
+        public override int SelectData(SelectClause select, DataSet result)
         {
             TableName tname = select.TableName;
             if (!data.Tables.Contains(tname.ShortName))
                 return -1;
 
             DataTable dt = data.Tables[tname.ShortName];
-            ds.Clear();
+            result.Clear();
 
             DataTable dt2;
             dt2 = dt.Copy();
 
-            ds.Tables.Add(dt2);
+            result.Tables.Add(dt2);
             return dt2.Rows.Count;
         }
 

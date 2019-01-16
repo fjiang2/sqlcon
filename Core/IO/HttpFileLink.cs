@@ -26,6 +26,10 @@ namespace Sys.Data.IO
             return string.Format("{0}/{1}/{2}", root, path1, path2);
         }
 
+        public override void ReadXml(DataLake lake)
+        {
+            HttpRequest.ReadXml(new Uri(url), lake);
+        }
 
         public override void ReadXml(DataSet ds)
         {

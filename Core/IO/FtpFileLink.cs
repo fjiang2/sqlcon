@@ -65,6 +65,10 @@ namespace Sys.Data.IO
             return string.Format("{0}/{1}/{2}", root, path1, path2);
         }
 
+        public override void ReadXml(DataLake lake)
+        {
+            client.Download(fileName, reader => lake.ReadXml(reader, XmlReadMode.ReadSchema));
+        }
 
         public override void ReadXml(DataSet ds)
         {
