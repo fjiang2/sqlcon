@@ -17,9 +17,7 @@ namespace Sys.Data
                     : base(provider)
         {
             this.dbFile = provider.DataFile;
-
-            var link = FileLink.CreateLink(provider.DataSource, provider.UserId, provider.Password);
-            dbFile.ReadSchema(link, dbSchema);
+            dbFile.ReadSchema(dbSchema);
         }
 
 

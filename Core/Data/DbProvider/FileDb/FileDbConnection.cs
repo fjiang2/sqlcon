@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
-using System.Data.Common;
-using System.Data;
 using Sys.Data.IO;
 
 namespace Sys.Data
@@ -29,7 +29,7 @@ namespace Sys.Data
             this.DataSource = Provider.DataSource;
             this.database = Provider.InitialCatalog;
 
-            this.FileLink = FileLink.CreateLink(provider.DataSource, provider.UserId, provider.Password);
+            this.FileLink = (Provider as FileDbConnectionProvider).FileLink;
         }
 
         public DatabaseName DatabaseName

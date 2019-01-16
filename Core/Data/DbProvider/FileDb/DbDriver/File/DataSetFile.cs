@@ -13,31 +13,32 @@ namespace Sys.Data
     {
         DataSet data = new DataSet();
 
-        public DataSetFile()
+        public DataSetFile(FileLink link)
+            : base(link)
         {
         }
 
-        public override void ReadSchema(FileLink link, DataSet dbSchema)
+        public override void ReadSchema(DataSet dbSchema)
         {
             try
             {
-                link.ReadXml(data);
+                fileLink.ReadXml(data);
 
                 var schema = new DbSchemaBuilder(dbSchema);
                 schema.AddSchema(data);
 
                 if (dbSchema.Tables.Count == 0)
-                    throw new Exception($"error in creating schema: {link}");
+                    throw new Exception($"error in creating schema: {fileLink}");
 
             }
             catch (Exception)
             {
-                throw new Exception($"bad data source defined {link}");
+                throw new Exception($"bad data source defined {fileLink}");
             }
 
         }
 
-        public override int ReadData(FileLink link, SelectClause select, DataSet ds)
+        public override int SelectData(SelectClause select, DataSet ds)
         {
             TableName tname = select.TableName;
             if (!data.Tables.Contains(tname.ShortName))

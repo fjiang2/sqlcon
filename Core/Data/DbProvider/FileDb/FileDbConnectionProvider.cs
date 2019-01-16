@@ -14,16 +14,20 @@ namespace Sys.Data
     {
         public DbFileType DbFileType { get; }
         public IDbFile DataFile { get; }
+
+        public FileLink FileLink { get; }
+
         public FileDbConnectionProvider(string name, string connectionString, DbFileType fileType)
             : base(name, ConnectionProviderType.XmlFile, connectionString)
         {
             this.DbFileType = fileType;
-            this.DataFile = DbFile.Create(DbFileType);
+            this.FileLink = FileLink.CreateLink(DataSource, this.UserId, this.Password);
+            this.DataFile = DbFile.Create(DbFileType, FileLink);
         }
 
         public override bool CheckConnection()
         {
-            return FileLink.CreateLink(DataSource, this.UserId, this.Password).Exists;
+            return FileLink.Exists;
         }
 
 

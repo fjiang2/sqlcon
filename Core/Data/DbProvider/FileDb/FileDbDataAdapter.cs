@@ -35,7 +35,7 @@ namespace Sys.Data
             SelectClause select = parset.ParseSelect();
 
             var dataFile = (provider as FileDbConnectionProvider).DataFile;
-            return dataFile.ReadData(connection.FileLink, select, ds);
+            return dataFile.SelectData(select, ds);
         }
         
     }

@@ -7,23 +7,43 @@ namespace Sys.Data
     {
 
         /// <summary>
+        /// read db schema
+        /// </summary>
+        /// <param name="link"></param>
+        /// <param name="dbSchema"></param>
+        void ReadSchema(DataSet dbSchema);
+
+        /// <summary>
         /// read table's data from data file with filtering
         /// </summary>
         /// <param name="link">data file</param>
         /// <param name="select">Sql select statement</param>
         /// <param name="ds">read result</param>
         /// <returns>number of rows retrieved</returns>
-        int ReadData(FileLink link, SelectClause select, DataSet ds);
-
-     
+        int SelectData(SelectClause select, DataSet ds);
 
         /// <summary>
-        /// read db schema
+        /// 
         /// </summary>
-        /// <param name="link"></param>
-        /// <param name="dbSchema"></param>
-        void ReadSchema(FileLink link, DataSet dbSchema);
+        /// <param name="insertt"></param>
+        /// <returns></returns>
+        int InsertData(InsertClause insertt);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="update"></param>
+        /// <returns></returns>
+        int UpdateData(UpdateClause update);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="delete"></param>
+        /// <returns></returns>
+        int DeleteData(DeleteClause delete);
+
     }
 
-    
+
 }

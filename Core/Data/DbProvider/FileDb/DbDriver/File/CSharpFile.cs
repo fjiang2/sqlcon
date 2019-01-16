@@ -14,16 +14,17 @@ namespace Sys.Data
     {
         DataSet data = new DataSet();
 
-        public CSharpFile()
+        public CSharpFile(FileLink link)
+            : base(link)
         {
         }
 
-        public override void ReadSchema(FileLink link, DataSet dbSchema)
+        public override void ReadSchema(DataSet dbSchema)
         {
             try
             {
-                string code = link.ReadAllText();
-                Assembly assembly = Compile(link.Name, code);
+                string code = fileLink.ReadAllText();
+                Assembly assembly = Compile(fileLink.Name, code);
                 this.data = CreateSchema(assembly);
 
                 var schema = new DbSchemaBuilder(dbSchema);
@@ -31,12 +32,12 @@ namespace Sys.Data
             }
             catch (Exception ex)
             {
-                throw new Exception($"bad data source defined {link}, {ex.Message}");
+                throw new Exception($"bad data source defined {fileLink}, {ex.Message}");
             }
 
         }
 
-        public override int ReadData(FileLink link, SelectClause select, DataSet ds)
+        public override int SelectData(SelectClause select, DataSet ds)
         {
             TableName tname = select.TableName;
             if (!data.Tables.Contains(tname.ShortName))

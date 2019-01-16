@@ -13,32 +13,33 @@ namespace Sys.Data
     {
         private const string EXT = "xml";
 
-        public XmlDbFile()
+        public XmlDbFile(FileLink link)
+            : base(link)
         {
         }
 
-        public override void ReadSchema(FileLink link, DataSet dbSchema)
+        public override void ReadSchema(DataSet dbSchema)
         {
             try
             {
-                link.ReadXml(dbSchema);
+                fileLink.ReadXml(dbSchema);
 
                 if (dbSchema.Tables.Count == 0)
-                    throw new Exception($"error in xml schema file: {link}");
+                    throw new Exception($"error in xml schema file: {fileLink}");
 
             }
             catch (Exception)
             {
-                throw new Exception($"bad data source defined {link}");
+                throw new Exception($"bad data source defined {fileLink}");
             }
 
         }
 
 
-        public override int ReadData(FileLink root, SelectClause select, DataSet ds)
+        public override int SelectData(SelectClause select, DataSet ds)
         {
             TableName tname = select.TableName;
-            var file = root.PathCombine(tname.DatabaseName.Name, tname.ShortName);
+            var file = fileLink.PathCombine(tname.DatabaseName.Name, tname.ShortName);
             file = string.Format("{0}.{1}", file, EXT);
 
             var link = FileLink.CreateLink(file, tname.Provider.UserId, tname.Provider.Password);

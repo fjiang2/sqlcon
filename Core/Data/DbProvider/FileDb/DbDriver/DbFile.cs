@@ -10,33 +10,44 @@ namespace Sys.Data
 {
     public abstract class DbFile : IDbFile
     {
-        public DbFile()
-        {
+        protected readonly FileLink fileLink;
 
+        public DbFile(FileLink link)
+        {
+            this.fileLink = link;
         }
 
-        public abstract int ReadData(FileLink link, SelectClause select, DataSet ds);
-        
+        public abstract void ReadSchema(DataSet dbSchema);
 
-        public virtual string WriteData(TableName tname, DataTable dt)
+        public abstract int SelectData(SelectClause select, DataSet ds);
+
+        public virtual int InsertData(InsertClause insertt)
         {
-            return null;
+            return -1;
         }
 
-        public abstract void ReadSchema(FileLink link, DataSet dbSchema);
+        public virtual int UpdateData(UpdateClause update)
+        {
+            return -1;
+        }
 
-        public static IDbFile Create(DbFileType type)
+        public virtual int DeleteData(DeleteClause delete)
+        {
+            return -1;
+        }
+
+        public static IDbFile Create(DbFileType type, FileLink link)
         {
             switch (type)
             {
                 case DbFileType.XmlDb:
-                    return new XmlDbFile();
+                    return new XmlDbFile(link);
 
                 case DbFileType.XmlDataSet:
-                    return new DataSetFile();
+                    return new DataSetFile(link);
 
                 case DbFileType.CSharp:
-                    return new CSharpFile();
+                    return new CSharpFile(link);
             }
 
             return null;
