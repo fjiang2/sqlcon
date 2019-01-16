@@ -15,7 +15,7 @@ namespace Sys.Data
         public SqlClauseParser(ConnectionProvider provider, string sql)
         {
             this.provider = provider;
-            sql = ToUpperCase(sql);
+            this.sql = ToUpperCase(sql);
         }
 
         public SqlClause Parse()
