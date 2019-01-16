@@ -14,7 +14,7 @@ namespace Sys.Data
         public string DataLakeName { get; set; }
         public DataLake()
         {
-            DataLakeName = nameof(DataLake);
+            DataLakeName = string.Empty;
         }
 
         public DataSet GetDataSet(string dataSetName)
@@ -57,24 +57,65 @@ namespace Sys.Data
 
         public XmlReadMode ReadXml(Stream stream, XmlReadMode mode)
         {
-            using (XmlReader reader = XmlReader.Create(stream))
-            {
-                this.Clear();
-
-                while (reader.Read())
-                {
-                    if (reader.IsStartElement())
-                    {
-                        this.DataLakeName = reader.Name;
-                    }
-
-                    DataSet ds = new DataSet();
-                    ds.ReadXml(reader, mode);
-                    this.Add(ds.DataSetName, ds);
-                }
-            }
+            XmlReader reader = XmlReader.Create(stream);
+            this.Clear();
+            ReadXml(reader);
 
             return mode;
+        }
+
+        public void ReadXml(XmlReader reader)
+        {
+            this.Clear();
+            this.DataLakeName = string.Empty;
+
+            bool isEmpty = reader.IsEmptyElement;
+            if (isEmpty)
+                return;
+
+            reader.MoveToContent(); //Move to <DataLake>
+                                    //reader.ReadStartElement(nameof(DataLake));
+
+            if (reader.MoveToAttribute(nameof(DataLakeName)))
+                this.DataLakeName = reader.ReadContentAsString();
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (reader.Name == nameof(DataLake))
+                        return;
+                }
+
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+
+                    reader.ReadStartElement(nameof(DataSet));
+
+                    DataSet ds = new DataSet();
+                    ds.ReadXml(reader, XmlReadMode.ReadSchema);
+                    this.Add(ds.DataSetName, ds);
+
+                    reader.ReadEndElement();
+                }
+            }
+        }
+
+        public void WriteXml(XmlWriter writer)
+        {
+            writer.WriteStartElement(nameof(DataLake));
+            writer.WriteAttributeString(nameof(DataLakeName), DataLakeName);
+
+            foreach (var kvp in this)
+            {
+                DataSet ds = kvp.Value;
+                ds.DataSetName = kvp.Key;
+                writer.WriteStartElement(nameof(DataSet));
+                ds.WriteXml(writer, XmlWriteMode.WriteSchema);
+                writer.WriteEndElement();
+            }
+
+            writer.WriteEndElement();
         }
 
         public override string ToString()
@@ -84,3 +125,4 @@ namespace Sys.Data
 
     }
 }
+
