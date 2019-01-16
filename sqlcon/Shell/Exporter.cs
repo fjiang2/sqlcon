@@ -23,14 +23,14 @@ namespace sqlcon
         private DatabaseName dname;
         private ServerName sname;
 
-        XmlDbFile xmlDbFile;
+        XmlDbCreator xmlDbFile;
         public Exporter(PathManager mgr, TreeNode<IDataPath> pt, Command cmd)
         {
             this.mgr = mgr;
             this.cmd = cmd;
             this.cfg = cmd.Configuration;
 
-            this.xmlDbFile = new XmlDbFile
+            this.xmlDbFile = new XmlDbCreator
             {
                 XmlDbFolder = cfg.XmlDbDirectory
             };

@@ -10,24 +10,20 @@ namespace Sys.Data
 {
     public abstract class DbFile : IDbFile
     {
-        public abstract int ReadData(FileLink link, SelectClause select, DataSet ds);
-        public abstract void ReadSchema(FileLink link, DataSet dbSchema);
+        public DbFile()
+        {
 
+        }
+
+        public abstract int ReadData(FileLink link, SelectClause select, DataSet ds);
+        
 
         public virtual string WriteData(TableName tname, DataTable dt)
         {
             return null;
         }
 
-        public virtual string WriteSchema(DatabaseName dname)
-        {
-            return null;
-        }
-
-        public virtual string WriteSchema(ServerName sname)
-        {
-            return null;
-        }
+        public abstract void ReadSchema(FileLink link, DataSet dbSchema);
 
         public static IDbFile Create(DbFileType type)
         {

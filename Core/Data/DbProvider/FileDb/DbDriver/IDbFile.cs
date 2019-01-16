@@ -15,13 +15,7 @@ namespace Sys.Data
         /// <returns>number of rows retrieved</returns>
         int ReadData(FileLink link, SelectClause select, DataSet ds);
 
-        /// <summary>
-        /// write data into a file
-        /// </summary>
-        /// <param name="tname"></param>
-        /// <param name="dt"></param>
-        /// <returns>data file name</returns>
-        string WriteData(TableName tname, DataTable dt);
+     
 
         /// <summary>
         /// read db schema
@@ -29,21 +23,6 @@ namespace Sys.Data
         /// <param name="link"></param>
         /// <param name="dbSchema"></param>
         void ReadSchema(FileLink link, DataSet dbSchema);
-
-        /// <summary>
-        /// write database schema
-        /// </summary>
-        /// <param name="dname"></param>
-        /// <returns>schema file name</returns>
-        string WriteSchema(DatabaseName dname);
-
-
-        /// <summary>
-        /// write db server schema
-        /// </summary>
-        /// <param name="sname"></param>
-        /// <returns>schema file anme</returns>
-        string WriteSchema(ServerName sname);
     }
 
     

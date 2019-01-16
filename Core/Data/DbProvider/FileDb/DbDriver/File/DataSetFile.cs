@@ -11,7 +11,6 @@ namespace Sys.Data
 {
     class DataSetFile : DbFile
     {
-        private const string EXT = "xml";
         DataSet data = new DataSet();
 
         public DataSetFile()
