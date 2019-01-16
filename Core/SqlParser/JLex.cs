@@ -22,39 +22,11 @@ using System.IO;
 
 namespace Sys.Data.SqlParser
 {
-    enum CodeSource
+
+
+    class JLex
     {
-        STRING,
-        FILE
-    }
-
-    class JKey
-    {
-        public string key;		// key word string
-        public SYMBOL ksy;		// key work symbol
-
-        public JKey(string key, SYMBOL ksy)
-        {
-            this.key = key;
-            this.ksy = ksy;
-        }
-    }
-
-
-    class Lex
-    {
-        protected char ch;
-        public static JKey[] Key;
-        private Token tok;
-        private Error error;			//the positon of cursor in file
-
-        public Lex(Error err)
-        {
-            this.error = err;
-
-            tok = new Token();
-
-            Key = new JKey[]
+        public readonly static JKey[] Keys = new JKey[]
             {
                 new JKey("ADD",SYMBOL.ADD),
                 new JKey("ALL",SYMBOL.ALL),
@@ -243,6 +215,18 @@ namespace Sys.Data.SqlParser
                 new JKey("WRITETEXT",SYMBOL.WRITETEXT)
             };
 
+        protected char ch;
+
+        private JToken tok;
+        private JError error;			//the positon of cursor in file
+
+        public JLex(JError err)
+        {
+            this.error = err;
+
+            tok = new JToken();
+
+
         }
 
         public virtual void Close()
@@ -297,13 +281,13 @@ namespace Sys.Data.SqlParser
                 do
                 {
                     k = (i + j) / 2;
-                    if (strcmp(ident, tok.sym.len, Key[k].key) <= 0) j = k - 1;
-                    if (strcmp(ident, tok.sym.len, Key[k].key) >= 0) i = k + 1;
+                    if (strcmp(ident, tok.sym.len, Keys[k].key) <= 0) j = k - 1;
+                    if (strcmp(ident, tok.sym.len, Keys[k].key) >= 0) i = k + 1;
                 } while (i <= j);
 
                 if (i - 1 > j)
                 {
-                    tok.sy = Key[k].ksy;
+                    tok.sy = Keys[k].ksy;
                 }
                 else
                 {
@@ -824,7 +808,7 @@ namespace Sys.Data.SqlParser
             }
         }
 
-        public Token token
+        public JToken token
         {
             get { return this.tok; }
         }
@@ -839,7 +823,7 @@ namespace Sys.Data.SqlParser
             return -1;
         }
 
-        public void Traceback(int index, Token token)
+        public void Traceback(int index, JToken token)
         {
             set_index(index);
             this.tok = token;
@@ -851,51 +835,6 @@ namespace Sys.Data.SqlParser
             set_index(index);
             return InSymbol();
         }
-    }
-
-
-
-    class StringLex : Lex
-    {
-        private StringBuilder buffer;
-        private int index;
-
-        public StringLex(string sourceCode, Error error)
-            : base(error)
-        {
-            buffer = new StringBuilder(sourceCode);
-            index = 0;
-            NextCh();
-        }
-
-        public override void Close()
-        {
-        }
-
-        protected override char NextCh()
-        {
-
-            if (!(index < buffer.Length))
-                return ch = (char)0;
-
-            ch = buffer[index++];
-            base.NextCh();
-            return ch;
-        }
-
-        protected override void set_index(int index)
-        {
-            this.index = index;
-            ch = buffer[index - 1];
-        }
-
-
-        public override int Index()
-        {
-            return this.index;
-        }
-
-
     }
 
 

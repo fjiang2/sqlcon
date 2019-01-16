@@ -23,7 +23,7 @@ using System.IO;
 namespace Sys.Data.SqlParser
 {
 
-    class Error
+    class JError
     {
         #region Message Defintion
 
@@ -121,7 +121,7 @@ namespace Sys.Data.SqlParser
 
         private Position pos;
 
-        public Error(Position pos)
+        public JError(Position pos)
         {
             this.pos = pos;
         }

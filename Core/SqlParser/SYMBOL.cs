@@ -16,77 +16,9 @@
 //--------------------------------------------------------------------------------------------------//
 
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
 
 namespace Sys.Data.SqlParser
 {
-    /// <summary>
-    /// Token Type used on Tokenizer
-    /// </summary>
-    public enum tokty
-    {
-        /// <summary>
-        /// number is int, double, float,...
-        /// </summary>
-        number,
-
-        /// <summary>
-        /// like variable name
-        /// </summary>
-        identsy,
-
-        /// <summary>
-        /// string constant
-        /// </summary>
-        stringcon,
-
-        /// <summary>
-        /// symbol like: +,-,++,>=
-        /// </summary>
-        symbol,
-
-        /// <summary>
-        /// reserved keywords in c/c++
-        /// </summary>
-        keyword
-    }
-
-    /// <summary>
-    /// define a token 
-    /// </summary>
-    public struct token
-    {
-        /// <summary>
-        /// token type
-        /// </summary>
-        public readonly tokty ty;
-
-        /// <summary>
-        /// token itself
-        /// </summary>
-        public readonly string tok;
-
-        internal token(string tok, tokty ty)
-        {
-            this.ty = ty;
-            this.tok = tok;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            return string.Format("{0}:{1}", ty, tok);
-        }
-    }
-
-
-
     // a Token
     enum SYMBOL
     {
@@ -290,66 +222,5 @@ namespace Sys.Data.SqlParser
         NOP     //最后一个token
 
     }
-
-    enum SYMBOL2
-    {
-        EQL, NEQ,
-        GTR, GEQ, LSS, LEQ,
-        ADR, VLU,                    // &var, *adr
-
-        ePLUS, eMINUS, eSTAR, eDIV, eMOD,       // +=
-        eSHR, eSHL,
-        eAND, eOR, eXOR,
-
-        NOT, BNOT, NEG,
-
-        PPLUS, MMINUS,                                  // ++, --
-        SHL, SHR,                                       // <<,	>>
-        DOT, ARROW
-    }								// .	->
-
-    class Sym
-    {
-        public double fnum;				// real number from insymbol 
-        public int inum;				// integer from insymbol 
-        public string id;
-
-        public int len;			        // string length 
-        public string stab;		        // string table
-
-
-        public Sym()
-        {
-
-        }
-    };
-
-
-    class Token
-    {
-
-        public SYMBOL sy;
-        public Sym sym;
-        public SYMBOL2 opr;
-
-
-        public Token()
-        {
-            sym = new Sym();
-
-        }
-
-        public Token(SYMBOL sy, SYMBOL2 opr)
-            : this()
-        {
-            this.sy = sy;
-            this.opr = opr;
-        }
-
-
-    }
-
-
-
 
 }

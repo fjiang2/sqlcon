@@ -310,10 +310,15 @@
     <Compile Include="SqlBuilder\SqlValue.cs" />
     <Compile Include="SqlParser\CompilingException.cs" />
     <Compile Include="SqlParser\Constant.cs" />
-    <Compile Include="SqlParser\Error.cs" />
+    <Compile Include="SqlParser\JError.cs" />
+    <Compile Include="SqlParser\JKey.cs" />
     <Compile Include="SqlParser\JLex.cs" />
+    <Compile Include="SqlParser\JToken.cs" />
     <Compile Include="SqlParser\Position.cs" />
-    <Compile Include="SqlParser\Token.cs" />
+    <Compile Include="SqlParser\StringLex.cs" />
+    <Compile Include="SqlParser\Sym.cs" />
+    <Compile Include="SqlParser\SYMBOL.cs" />
+    <Compile Include="SqlParser\SYMBOL2.cs" />
     <Compile Include="Sys\BackgroundTask.cs" />
     <Compile Include="Networking\FtpClient.cs" />
     <Compile Include="Networking\HttpRequest.cs" />

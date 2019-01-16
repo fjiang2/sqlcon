@@ -47,19 +47,10 @@ namespace Sys.Data
             DataTable dt = data.Tables[tname.ShortName];
             ds.Clear();
 
-            DataView dv;
-            if (select.Where != null)
+            DataView dv = new DataView(dt)
             {
-                dv = new DataView(dt)
-                {
-                    RowFilter = select.Where,
-                };
-            }
-            else
-            {
-                dv = new DataView(dt);
-            }
-
+                RowFilter = select.Where,
+            };
 
             DataTable dt2;
             if (select.Columns != null)
