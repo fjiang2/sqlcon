@@ -56,6 +56,11 @@ namespace Sys.Data
 
             string name = null;
             string where = null;
+            string columns = null;
+
+            if (items.Length > 0)
+                columns = items[0].Trim();
+
             if (items.Length > 1)
                 name = items[1].Trim();
             else
@@ -80,6 +85,7 @@ namespace Sys.Data
         {
             "SELECT",
             "TOP",
+            "AS",
             "FROM",
             "WHERE",
 

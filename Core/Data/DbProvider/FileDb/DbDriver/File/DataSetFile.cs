@@ -47,23 +47,25 @@ namespace Sys.Data
             DataTable dt = data.Tables[tname.ShortName];
             ds.Clear();
 
-            DataTable dt2;
-            string where = select.Where;
-            if (where != null)
+            DataView dv;
+            if (select.Where != null)
             {
-                dt2 = dt.Clone();
-                DataRow[] rows = dt.Select(where);
-                foreach (DataRow row in rows)
+                dv = new DataView(dt)
                 {
-                    var newRow = dt2.NewRow();
-                    newRow.ItemArray = (object[])row.ItemArray.Clone();
-                    dt2.Rows.Add(newRow);
-                }
+                    RowFilter = select.Where,
+                };
             }
             else
             {
-                dt2 = dt.Copy();
+                dv = new DataView(dt);
             }
+
+
+            DataTable dt2;
+            if (select.Columns != null)
+                dt2 = dv.ToTable(dt.TableName, false, select.Columns);
+            else
+                dt2 = dv.ToTable(dt.TableName);
 
             ds.Tables.Add(dt2);
             return dt2.Rows.Count;
