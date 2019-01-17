@@ -32,10 +32,20 @@ namespace sqlcon
             if (string.IsNullOrEmpty(line))
                 return;
 
-            if (!eval(line, out string _line))
+            string _line;
+
+            //skip command "let" becuase "let" is Tie script code
+            if (line.StartsWith("let"))
             {
-                badcommand = true;
-                return;
+                _line = line;
+            }
+            else
+            {
+                if (!eval(line, out _line))
+                {
+                    badcommand = true;
+                    return;
+                }
             }
 
             int k = parseAction(_line, out Action);
