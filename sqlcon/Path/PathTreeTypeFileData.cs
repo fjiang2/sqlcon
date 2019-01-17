@@ -31,6 +31,30 @@ namespace sqlcon
 
         private bool TypeFileData(TreeNode<IDataPath> pt, Command cmd)
         {
+            if (pt.Item is ServerName)
+            {
+                ServerName sname = (ServerName)pt.Item;
+
+                //display all tables in the database server, when type of server is DbFile
+                if (sname.Provider.Type == ConnectionProviderType.DbFile)
+                {
+                    int index = 1;
+                    foreach (DatabaseName dname in sname.GetDatabaseNames())
+                    {
+                        cout.WriteLine();
+                        cout.WriteLine($"({index++}) {dname.Name}");
+                        foreach (TableName tname in dname.GetTableNames())
+                        {
+                            cout.WriteLine($"[{tname.ShortName}]");
+                            tout = new TableOut(tname);
+                            tout.Display(cmd);
+                        }
+                    }
+
+                    return true;
+                }
+            }
+
             if (pt.Item is DatabaseName)
             {
                 DatabaseName dname = (DatabaseName)pt.Item;

@@ -18,7 +18,7 @@ namespace Sys.Data
         public FileLink FileLink { get; }
 
         public FileDbConnectionProvider(string name, string connectionString, DbFileType fileType)
-            : base(name, ConnectionProviderType.XmlFile, connectionString)
+            : base(name, ConnectionProviderType.DbFile, connectionString)
         {
             this.DbFileType = fileType;
             this.FileLink = FileLink.CreateLink(DataSource, this.UserId, this.Password);

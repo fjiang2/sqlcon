@@ -36,11 +36,16 @@ namespace Sys.Data
 
             string databaseName = "";
             this.tableName = "";
-            if (t.Length > 1)
+            if (t.Length > 2)
             {
                 databaseName = t[0];
                 this.schema = t[1];
                 this.tableName = t[2];
+            }
+            else if (t.Length > 1)
+            {
+                this.schema = t[0];
+                this.tableName = t[1];
             }
             else
                 this.tableName = fullTableName;

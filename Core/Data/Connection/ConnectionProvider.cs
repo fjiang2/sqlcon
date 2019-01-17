@@ -46,7 +46,7 @@ namespace Sys.Data
         public string Name { get; private set; }
 
         internal int Handle { get; set; } = DEFAULT_HANDLE;
-        internal ConnectionProviderType Type { get; private set; }
+        public ConnectionProviderType Type { get; private set; }
 
         internal string ConnectionString
         {
