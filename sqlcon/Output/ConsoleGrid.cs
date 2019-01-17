@@ -114,10 +114,13 @@ namespace sqlcon
 
         }
 
-        public static void ToConsole(this DataTable dt, bool vertical = false, bool more = false)
+        public static void ToConsole(this DataTable dt, bool vertical = false, bool more = false, bool outputDbNull = true)
         {
             ShellHistory.SetLastResult(dt);
-            OutputDataTable odt = new OutputDataTable(dt, cout.TrimWriteLine, vertical);
+            OutputDataTable odt = new OutputDataTable(dt, cout.TrimWriteLine, vertical)
+            {
+                OutputDbNull = outputDbNull,
+            };
             odt.Output();
 
             cout.WriteLine("<{0}{1} row{2}>", more ? "top " : "", dt.Rows.Count, dt.Rows.Count > 1 ? "s" : "");

@@ -12,12 +12,28 @@ namespace sqlcon
 {
     static class Tools
     {
-        public static void FindName(this Side side, string match)
+        public static void FindName(this ConnectionProvider provider, DatabaseName[] dnames, string match)
+        {
+            switch (provider.Type)
+            {
+                case ConnectionProviderType.SqlServer:
+                    FindNameOnSqlServer(provider, match);
+                    return;
+
+                case ConnectionProviderType.DbFile:
+                    FindNameOnDbFile(provider, dnames, match);
+                    return;
+            }
+
+            cout.WriteLine("command find is not supported on the current database server type.");
+        }
+
+        private static void FindNameOnSqlServer(ConnectionProvider provider, string match)
         {
             bool found = false;
 
             string sql = "SELECT name AS TableName FROM sys.tables";
-            var dt = new SqlCmd(side.Provider, sql).FillDataTable();
+            var dt = new SqlCmd(provider, sql).FillDataTable();
             Search(match, dt, "TableName");
             if (dt.Rows.Count != 0)
             {
@@ -42,7 +58,7 @@ FROM sys.tables t
 	 INNER JOIN sys.schemas s ON s.schema_id=t.schema_id
 ORDER BY c.name, c.column_id
 ";
-            dt = new SqlCmd(side.Provider, sql).FillDataTable();
+            dt = new SqlCmd(provider, sql).FillDataTable();
             Search(match, dt, "ColumnName");
             if (dt.Rows.Count != 0)
             {
@@ -53,7 +69,7 @@ ORDER BY c.name, c.column_id
 
 
             sql = @"SELECT  SCHEMA_NAME(schema_id) SchemaName, name AS ViewName FROM sys.views ORDER BY name";
-            dt = new SqlCmd(side.Provider, sql).FillDataTable();
+            dt = new SqlCmd(provider, sql).FillDataTable();
             Search(match, dt, "ViewName");
             if (dt.Rows.Count != 0)
             {
@@ -75,7 +91,7 @@ ORDER BY c.name, c.column_id
 	            AND COL.TABLE_NAME    = VCU.TABLE_NAME
 	            AND COL.COLUMN_NAME   = VCU.COLUMN_NAME";
 
-            dt = new SqlCmd(side.Provider, sql).FillDataTable();
+            dt = new SqlCmd(provider, sql).FillDataTable();
             Search(match, dt, "ColumnName");
             if (dt.Rows.Count != 0)
             {
@@ -89,13 +105,93 @@ ORDER BY c.name, c.column_id
         }
 
 
+        private static void FindNameOnDbFile(ConnectionProvider provider, DatabaseName[] dnames, string match)
+        {
+            const string DATABASE_NAME = "Database";
+            const string SCHEMA_NAME = "Schema";
+            const string TABLE_NAME = "Table";
+            const string COLUMN_NAME = "Column";
 
-        public static DataTable Search(string pattern, DataTable table, string columnName)
+            var schema = provider.Schema;
+            Regex regex = match.WildcardRegex();
+
+            DataTable dt = new DataTable();
+            dt.Columns.Add(DATABASE_NAME, typeof(string));
+            dt.Columns.Add(SCHEMA_NAME, typeof(string));
+            dt.Columns.Add(TABLE_NAME, typeof(string));
+            dt.Columns.Add(COLUMN_NAME, typeof(string));
+            dt.Columns.Add("DataType", typeof(string));
+            dt.Columns.Add("Length", typeof(int));
+            dt.Columns.Add("Nullable", typeof(string));
+
+            foreach (DatabaseName dname in dnames)
+            {
+                TableName[] tnames = schema.GetTableNames(dname);
+                if (regex.IsMatch(dname.Name))
+                {
+                    var newRow = dt.NewRow();
+                    newRow[DATABASE_NAME] = dname.Name;
+                    dt.Rows.Add(newRow);
+                }
+
+                foreach (var tname in tnames)
+                {
+                    bool found = false;
+                    var newRow = dt.NewRow();
+                    newRow[DATABASE_NAME] = dname.Name;
+                    if (regex.IsMatch(tname.SchemaName))
+                    {
+                        found = true;
+                        newRow[SCHEMA_NAME] = tname.ShortName;
+                    }
+                    if (regex.IsMatch(tname.ShortName))
+                    {
+                        found = true;
+                        newRow[TABLE_NAME] = tname.ShortName;
+                    }
+
+                    if (found)
+                        dt.Rows.Add(newRow);
+
+                    TableSchema tschema = new TableSchema(tname);
+                    foreach (var column in tschema.Columns)
+                    {
+                        if (regex.IsMatch(column.ColumnName))
+                        {
+                            newRow = dt.NewRow();
+                            newRow[DATABASE_NAME] = dname.Name;
+                            newRow[SCHEMA_NAME] = tname.SchemaName;
+                            newRow[TABLE_NAME] = tname.Name;
+                            newRow[COLUMN_NAME] = column.ColumnName;
+                            newRow["DataType"] = column.DataType.ToString();
+                            if (column.Length != -1)
+                                newRow["Length"] = column.Length;
+
+                            newRow["Nullable"] = column.Nullable ? "NULL" : "NOT NULL";
+                            dt.Rows.Add(newRow);
+                        }
+                    }
+                }
+            }
+
+            if (dt.Rows.Count != 0)
+            {
+                //cout.WriteLine(ConsoleColor.Cyan, "Table Columns");
+                dt.ToConsole(vertical: false, more: false, outputDbNull: false);
+            }
+            else
+            {
+                cout.WriteLine("nothing is found");
+            }
+        }
+
+
+        private static DataTable Search(string pattern, DataTable table, string columnName)
         {
             Regex regex = pattern.WildcardRegex();
             foreach (DataRow row in table.Rows)
             {
-                if(!regex.IsMatch(row[columnName].ToString()))
+                if (!regex.IsMatch(row[columnName].ToString()))
                     row.Delete();
             }
 

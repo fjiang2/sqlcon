@@ -273,7 +273,7 @@ namespace sqlcon
 
                 case "find":
                     if (cmd.arg1 != null)
-                        theSide.FindName(cmd.arg1);
+                        commandee.find(cmd, cmd.arg1);
                     else
                         cerr.WriteLine("find object undefined");
                     return NextStep.COMPLETED;

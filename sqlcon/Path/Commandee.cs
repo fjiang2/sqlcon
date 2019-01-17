@@ -1861,6 +1861,31 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             return;
         }
 
+        public void find(Command cmd, string match)
+        {
+            if (cmd.HasHelp)
+            {
+                cout.WriteLine("find command searches table name, view name, and column name");
+                cout.WriteLine("example:");
+                cout.WriteLine("  find *ID*           : search any string contains ID");
+                return;
+            }
+
+            if (!Navigate(cmd.Path1))
+                return;
+
+            if (pt.Item is ServerName)
+            {
+                ServerName sname = (ServerName)pt.Item;
+                Tools.FindName(sname.Provider, sname.GetDatabaseNames(), match);
+            }
+            else if (pt.Item is DatabaseName)
+            {
+                DatabaseName dname = (DatabaseName)pt.Item;
+                Tools.FindName(dname.Provider, new DatabaseName[] { dname }, match);
+            }
+
+        }
 
     }
 }
