@@ -34,19 +34,12 @@ namespace sqlcon
 
             string _line;
 
-            //skip command "let" becuase "let" is Tie script code
-            if (line.StartsWith("let"))
+            if (!eval(line, out _line))
             {
-                _line = line;
+                badcommand = true;
+                return;
             }
-            else
-            {
-                if (!eval(line, out _line))
-                {
-                    badcommand = true;
-                    return;
-                }
-            }
+
 
             int k = parseAction(_line, out Action);
             this.args = _line.Substring(k);
@@ -233,19 +226,26 @@ namespace sqlcon
                     }
 
                     string code = new string(expr, 0, index);
-                    string text = string.Empty;
-                    try
+                    if (IsFormatString(code))
                     {
-                        VAL val = Script.Evaluate(code, Context.DS);
-                        text = val.ToSimpleString();
+                        buf[i++] = '{';
+                        foreach (char ch in code) buf[i++] = ch;
+                        buf[i++] = '}';
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        cerr.WriteLine($"error in {code}, {ex.Message}");
-                    }
-                    foreach (char ch in text)
-                    {
-                        buf[i++] = ch;
+                        string text = string.Empty;
+                        try
+                        {
+                            VAL val = Script.Evaluate(code, Context.DS);
+                            text = val.ToSimpleString();
+                        }
+                        catch (Exception ex)
+                        {
+                            cerr.WriteLine($"error in {code}, {ex.Message}");
+                        }
+
+                        foreach (char ch in text) buf[i++] = ch;
                     }
                 }
                 else if (args[k] == '}')
@@ -261,8 +261,19 @@ namespace sqlcon
             }
 
             result = new string(buf, 0, i);
+
             return true;
         }
 
+        private static bool IsFormatString(string format)
+        {
+            foreach (char ch in format)
+            {
+                if (!char.IsNumber(ch) && ch != ':' && ch != ',')
+                    return false;
+            }
+
+            return true;
+        }
     }
 }

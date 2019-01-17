@@ -51,7 +51,7 @@ namespace Sys.Data
                         Nullable = column.AllowDBNull,
                         precision = 10,
                         scale = 0,
-                        IsPrimary = column.Unique,
+                        IsPrimary = dt.PrimaryKey.Contains(column),
                         IsIdentity = column.AutoIncrement,
                         IsComputed = false,
                         definition = null,
