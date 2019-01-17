@@ -28,19 +28,34 @@ namespace sqlcon
             get { return this.tout; }
         }
 
-     
+
         private bool TypeFileData(TreeNode<IDataPath> pt, Command cmd)
         {
-            if (!(pt.Item is TableName))
-                return false;
+            if (pt.Item is DatabaseName)
+            {
+                DatabaseName dname = (DatabaseName)pt.Item;
+                foreach (TableName tname in dname.GetTableNames())
+                {
+                    cout.WriteLine();
+                    cout.WriteLine($"[{tname.ShortName}]");
+                    tout = new TableOut(tname);
+                    tout.Display(cmd);
+                }
+                return true;
+            }
 
-            TableName tname = (TableName)pt.Item;
+            if (pt.Item is TableName)
+            {
+                TableName tname = (TableName)pt.Item;
 
-            tout = new TableOut(tname);
-            return tout.Display(cmd);
+                tout = new TableOut(tname);
+                return tout.Display(cmd);
+            }
+
+            return false;
         }
 
-      
+
         private bool TypeLocatorData(TreeNode<IDataPath> pt, Command cmd)
         {
             if (!(pt.Item is Locator))
