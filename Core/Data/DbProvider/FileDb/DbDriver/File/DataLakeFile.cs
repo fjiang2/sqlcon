@@ -31,9 +31,9 @@ namespace Sys.Data
                     throw new Exception($"error in creating schema: {fileLink}");
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new Exception($"bad data source defined {fileLink}");
+                throw new Exception($"bad data source defined {fileLink}, {ex.Message}");
             }
 
         }
