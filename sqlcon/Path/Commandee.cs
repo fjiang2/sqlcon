@@ -1865,9 +1865,16 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         {
             if (cmd.HasHelp)
             {
-                cout.WriteLine("find command searches table name, view name, and column name");
+                cout.WriteLine("find command searches name of database, schema, table, view, or column");
                 cout.WriteLine("example:");
                 cout.WriteLine("  find *ID*           : search any string contains ID");
+                cout.WriteLine("  find *na?e          : search string ends with na?e");
+                return;
+            }
+
+            if (match == null)
+            {
+                cerr.WriteLine("find pattern is undefined");
                 return;
             }
 

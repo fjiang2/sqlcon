@@ -59,7 +59,7 @@ namespace sqlcon
             cout.WriteLine("execute [path]file      : execute sql script(.sql)");
             cout.WriteLine();
             cout.WriteLine("<Schema Commands>");
-            cout.WriteLine("find pattern            : find table name or column name");
+            cout.WriteLine("find /?                 : see more info");
             cout.WriteLine("show view               : show all views");
             cout.WriteLine("show proc               : show all stored proc and func");
             cout.WriteLine("show index              : show all indices");

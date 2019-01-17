@@ -272,10 +272,7 @@ namespace sqlcon
                     return NextStep.COMPLETED;
 
                 case "find":
-                    if (cmd.arg1 != null)
-                        commandee.find(cmd, cmd.arg1);
-                    else
-                        cerr.WriteLine("find object undefined");
+                    commandee.find(cmd, cmd.arg1);
                     return NextStep.COMPLETED;
 
                 case "save":
