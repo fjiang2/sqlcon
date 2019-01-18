@@ -1,5 +1,13 @@
 ﻿sqlcon release notes
 
+1/20/2019 v2.0.0.0
+	New Features:
+	1. open an Xml file of .net DataSet as database file. The connection string provider is "file/dataset/xml"
+	2. open an Xml file of a list of .net DataSet as database server file. The connection string provider is "file/datalake/xml"
+	3. open a Json file as database file. The connection string provider is "file/dataset/json"
+	4. open a Json file as database server file. The connection string provider is "file/datalake/json"
+	5. open data contract C# source code file as database file. The connection string provider is "file/c#"
+
 1/10/2019 v1.9.8.0
 	Improvements/Enhancements:
 	1. command "call" can dump memory to output file when option /dump used.
