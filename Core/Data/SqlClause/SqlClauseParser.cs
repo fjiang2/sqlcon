@@ -58,8 +58,12 @@ namespace Sys.Data
             string where = null;
             string columns = null;
 
+            int top = 0;
             if (items.Length > 0)
+            {
                 columns = items[0].Trim();
+                top = ParseColumns(columns);
+            }
 
             if (items.Length > 1)
                 name = items[1].Trim();
@@ -73,13 +77,32 @@ namespace Sys.Data
 
             SelectClause select = new SelectClause
             {
-                Top = 0,
+                Top = top,
+                Descriptors = new ColumnDescriptor[] { },
                 TableName = tname,
-                Where = where,
+                Locator = new Locator(where),
             };
 
             return select;
         }
+
+        private int ParseColumns(string columns)
+        {
+            int top = 0;
+            var lexer = new SqlTokenizer(columns);
+
+            string token = lexer.GetNextToken();
+            if (token == "TOP")
+            {
+                if (!lexer.ExpectInt32(out top))
+                    throw new Exception($"integer expected after keyword TOP, {columns}");
+            }
+
+
+            return top;
+        }
+
+
 
         private static readonly string[] keywords = new string[]
         {

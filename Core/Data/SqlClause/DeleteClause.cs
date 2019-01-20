@@ -8,6 +8,6 @@ namespace Sys.Data
 {
     public class DeleteClause : SqlClause
     {
-        public string Where { get; set; }
+        public Locator Locator { get; set; }
     }
 }

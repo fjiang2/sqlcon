@@ -9,7 +9,20 @@ namespace Sys.Data
     public class SelectClause : SqlClause
     {
         public int Top { get; set; }
-        public string[] Columns { get; set; }
-        public string Where { get; set; }
+        public ColumnDescriptor[] Descriptors { get; set; }
+        public Locator Locator { get; set; }
+
+        public SelectClause()
+        {
+        }
+
+        public string[] Columns => Descriptors.Select(x => x.ColumnName).ToArray();
     }
+
+    public class ColumnDescriptor
+    {
+        public string ColumnName { get; set; }
+        public string ColumnCaption { get; set; }
+    }
+
 }

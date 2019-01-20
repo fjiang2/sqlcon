@@ -8,7 +8,7 @@ namespace Sys.Data
 {
     public class UpdateClause : SqlClause
     {
-        public string[] Columns { get; set; }
-        public string Where { get; set; }
+        public ColumnDescriptor[] Columns { get; set; }
+        public Locator Locator { get; set; }
     }
 }

@@ -9,5 +9,6 @@ namespace Sys.Data
     public class InsertClause : SqlClause
     {
         public string[] Columns { get; set; }
+        public object[] Values { get; set; }
     }
 }

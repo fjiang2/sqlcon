@@ -71,11 +71,11 @@ namespace Sys.Data
 
             DataView dv = new DataView(dt)
             {
-                RowFilter = select.Where,
+                RowFilter = select.Locator.Where,
             };
 
             DataTable dt2;
-            if (select.Columns != null)
+            if (select.Columns != null && select.Columns.Length != 0)
                 dt2 = dv.ToTable(dt.TableName, false, select.Columns);
             else
                 dt2 = dv.ToTable(dt.TableName);
