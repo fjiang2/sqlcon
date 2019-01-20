@@ -65,16 +65,7 @@ namespace Sys.Data.SqlParser
 
         public int inum => (int)sym;				// integer from insymbol 
 
-        public string id
-        {
-            get
-            {
-                if (sy == Symbol.identsy)
-                    return (string)sym;
-
-                return null;
-            }
-        }
+        public string id => (string)sym;
 
 
         public string stab          // string table
@@ -90,9 +81,6 @@ namespace Sys.Data.SqlParser
 
         private string encode()
         {
-            bool quotationMark = true;
-            bool persistent = true;
-
             //search keyword
             for (int i = 0; i < Keywords.Keys.Length; i++)
             {
@@ -116,17 +104,11 @@ namespace Sys.Data.SqlParser
                     break;
 
                 case Symbol.stringcon:
-                    if (quotationMark)
-                        o.Write("\"{0}\"", stab);
-                    else
-                        o.Write("{0}", stab);
+                    o.Write("\"{0}\"", stab);
                     break;
 
                 case Symbol.identsy:
-                    if (persistent)
-                        o.Write("${0}", id);
-                    else
-                        o.Write("{0}", id);
+                    o.Write("{0}", id);
                     break;
 
                 //---------------------------------------------------------------------

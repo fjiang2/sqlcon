@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Sys.Data;
+using System.Diagnostics;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using Sys.Data;
 using Sys.Data.SqlParser;
 
 namespace UnitTestProject
@@ -12,23 +16,26 @@ namespace UnitTestProject
         [TestMethod]
         public void TestSelectClause1()
         {
-            string query = "SELECT TOP 1000 %%physloc%% AS [%%physloc%%],0 AS [%%RowId%%],* FROM Northwind.dbo.[Products]";
+            string query = "Select TOP 1000 %%physloc%% AS [%%physloc%%],0 AS [%%RowId%%],* FROM Northwind.dbo.[Products]";
 
             Position pos = new Position("select", query);
             Error error = new Error(pos);
             StringLex lex = new StringLex(query, error);
 
+            List<string> tokens = new List<string>();
             while (!lex.EOF())
             {
                 lex.InSymbol();
 
-                Console.Write(lex.sy);
-                Console.Write(lex.token);
-
-                Console.WriteLine();
+                tokens.Add(lex.token.ToString());
             }
 
-            Console.ReadKey();
+            string[] L = tokens.ToArray();
+
+            string code = string.Join("|", L);
+            string result = "SELECT|TOP|1000|%|%|physloc|%|%|AS|[|%|%|physloc|%|%|]|,|0|AS|[|%|%|RowId|%|%|]|,|*|FROM|Northwind|.|dbo|.|[|Products|]";
+
+            Debug.Assert(code == result, "error");
         }
     }
 }
