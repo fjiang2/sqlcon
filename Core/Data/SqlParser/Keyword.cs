@@ -16,40 +16,19 @@
 //--------------------------------------------------------------------------------------------------//
 
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-
 namespace Sys.Data.SqlParser
 {
-
-
-    class JToken
+    class Keyword
     {
+        public string key;		// key word string
+        public Symbol ksy;		// key work symbol
 
-        public SYMBOL sy;
-        public Sym sym;
-        public SYMBOL2 opr;
-
-
-        public JToken()
+        public Keyword(string key, Symbol ksy)
         {
-            sym = new Sym();
-
+            this.key = key;
+            this.ksy = ksy;
         }
 
-        public JToken(SYMBOL sy, SYMBOL2 opr)
-            : this()
-        {
-            this.sy = sy;
-            this.opr = opr;
-        }
-
-
+        public override string ToString() => key;
     }
-
-
-
-
 }

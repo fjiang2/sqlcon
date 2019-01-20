@@ -19,12 +19,12 @@ using System.Text;
 
 namespace Sys.Data.SqlParser
 {
-    class StringLex : JLex
+    class StringLex : Lexer
     {
         private StringBuilder buffer;
         private int index;
 
-        public StringLex(string sourceCode, JError error)
+        public StringLex(string sourceCode, Error error)
             : base(error)
         {
             buffer = new StringBuilder(sourceCode);

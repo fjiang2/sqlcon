@@ -27,7 +27,6 @@ namespace Sys.Data.SqlParser
     /// </summary>
     public static class Constant
     {
-        internal const int NKW = 39;                        // no. of key words 
         internal const int ALNG = 64;                        // no. of significant chars in identifiers 
 
         internal const int EMAX = 322;                       // max exponent of real numbers 
@@ -68,11 +67,6 @@ namespace Sys.Data.SqlParser
         internal const string VOLATILE_MODULE_NAME = "volatile"; //temp module
         internal const string DEFAULT_MODULE_NAME = "unknown"; // default module in Library
 
-       
-
-      
-        
     }
-    
 
 }

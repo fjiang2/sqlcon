@@ -16,19 +16,24 @@
 //--------------------------------------------------------------------------------------------------//
 
 
+
 namespace Sys.Data.SqlParser
 {
-    class JKey
+    enum OperatorSymbol
     {
-        public string key;		// key word string
-        public SYMBOL ksy;		// key work symbol
+        EQL, NEQ,
+        GTR, GEQ, LSS, LEQ,
+        ADR, VLU,                    // &var, *adr
 
-        public JKey(string key, SYMBOL ksy)
-        {
-            this.key = key;
-            this.ksy = ksy;
-        }
+        ePLUS, eMINUS, eSTAR, eDIV, eMOD,       // +=
+        eSHR, eSHL,
+        eAND, eOR, eXOR,
 
-        public override string ToString() => key;
-    }
+        NOT, BNOT, NEG,
+
+        PPLUS, MMINUS,                                  // ++, --
+        SHL, SHR,                                       // <<,	>>
+        DOT, ARROW
+    }								// .	->
+
 }
