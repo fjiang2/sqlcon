@@ -35,3 +35,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.9.8.0")]
 [assembly: AssemblyFileVersion("1.9.8.0")]
 
+#if DEBUG
+[assembly: InternalsVisibleTo("UnitTestProject")]
+#endif
