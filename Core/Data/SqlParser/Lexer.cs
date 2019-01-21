@@ -98,7 +98,7 @@ namespace Sys.Data.SqlParser
                 }
                 else
                 {
-                    tok.sy = Symbol.identsy;
+                    tok.sy = SYMBOL.identsy;
                 }
 
                 return true;
@@ -153,7 +153,7 @@ namespace Sys.Data.SqlParser
                 int e;
                 k = 0;
                 tok.SetInt32(inum: 0);
-                tok.sy = Symbol.intcon;
+                tok.sy = SYMBOL.intcon;
 
                 do
                 {
@@ -173,7 +173,7 @@ namespace Sys.Data.SqlParser
                 if (ch == '.')
                 {
                     NextCh();
-                    tok.sy = Symbol.floatcon;
+                    tok.sy = SYMBOL.floatcon;
                     tok.SetDouble(fnum: tok.inum);
                     e = 0;
 
@@ -192,7 +192,7 @@ namespace Sys.Data.SqlParser
                 else
                     if (ch == 'e' || ch == 'E') //expoent
                 {
-                    tok.sy = Symbol.floatcon;
+                    tok.sy = SYMBOL.floatcon;
                     tok.SetDouble(fnum: tok.inum);
                     e = 0;
                     ReadScale(ref e);
@@ -259,7 +259,7 @@ namespace Sys.Data.SqlParser
             }
 
             NextCh();
-            tok.sy = Symbol.stringcon;
+            tok.sy = SYMBOL.stringcon;
             stab[k] = (char)0;
             tok.SetString(new string(stab, 0, k));
         }
@@ -285,7 +285,7 @@ namespace Sys.Data.SqlParser
             }
 
             NextCh();
-            tok.sy = Symbol.stringcon;
+            tok.sy = SYMBOL.stringcon;
             stab[k] = (char)0;
             tok.SetString(new string(stab, 0, k));
         }
@@ -305,7 +305,7 @@ namespace Sys.Data.SqlParser
             L1:
             if (ch == 0)
             {
-                tok.sy = Symbol.NOP;
+                tok.sy = SYMBOL.NOP;
                 return false;
             }
 
@@ -314,7 +314,7 @@ namespace Sys.Data.SqlParser
                 NextCh();  //space & h-tab
                 if (ch == 0)
                 {
-                    tok.sy = Symbol.NOP;
+                    tok.sy = SYMBOL.NOP;
                     return false;
                 }
             }
@@ -339,7 +339,7 @@ namespace Sys.Data.SqlParser
                         goto L1;
                     }
                     else
-                        tok.sy = Symbol.DIV;
+                        tok.sy = SYMBOL.DIV;
                     break;
 
                 //string	
@@ -363,26 +363,26 @@ namespace Sys.Data.SqlParser
                     NextCh();
                     switch (ch)
                     {
-                        case '=': tok.sy = Symbol.RELOP; tok.opr = OperatorSymbol.LEQ; NextCh(); break;
-                        case '<': tok.sy = Symbol.SHIFTOP; tok.opr = OperatorSymbol.SHL; NextCh(); break;
-                        default: tok.sy = Symbol.RELOP; tok.opr = OperatorSymbol.LSS; break;
+                        case '=': tok.sy = SYMBOL.RELOP; tok.opr = SYMBOL2.LEQ; NextCh(); break;
+                        case '<': tok.sy = SYMBOL.SHIFTOP; tok.opr = SYMBOL2.SHL; NextCh(); break;
+                        default: tok.sy = SYMBOL.RELOP; tok.opr = SYMBOL2.LSS; break;
                     }
                     break;
                 case '>':
                     NextCh();
                     switch (ch)
                     {
-                        case '=': tok.sy = Symbol.RELOP; tok.opr = OperatorSymbol.GEQ; NextCh(); break;
-                        case '>': tok.sy = Symbol.SHIFTOP; tok.opr = OperatorSymbol.SHR; NextCh(); break;
-                        default: tok.sy = Symbol.RELOP; tok.opr = OperatorSymbol.GTR; break;
+                        case '=': tok.sy = SYMBOL.RELOP; tok.opr = SYMBOL2.GEQ; NextCh(); break;
+                        case '>': tok.sy = SYMBOL.SHIFTOP; tok.opr = SYMBOL2.SHR; NextCh(); break;
+                        default: tok.sy = SYMBOL.RELOP; tok.opr = SYMBOL2.GTR; break;
                     }
                     break;
                 case '!':
                     NextCh();
                     switch (ch)
                     {
-                        case '=': tok.sy = Symbol.EQUOP; tok.opr = OperatorSymbol.NEQ; NextCh(); break;
-                        default: tok.sy = Symbol.UNOP; tok.opr = OperatorSymbol.NOT; break;
+                        case '=': tok.sy = SYMBOL.EQUOP; tok.opr = SYMBOL2.NEQ; NextCh(); break;
+                        default: tok.sy = SYMBOL.UNOP; tok.opr = SYMBOL2.NOT; break;
                     }
                     break;
 
@@ -390,8 +390,8 @@ namespace Sys.Data.SqlParser
                     NextCh();
                     switch (ch)
                     {
-                        case '=': tok.sy = Symbol.ASSIGNOP; tok.opr = OperatorSymbol.eOR; NextCh(); break;
-                        default: tok.sy = Symbol.OR; break;
+                        case '=': tok.sy = SYMBOL.ASSIGNOP; tok.opr = SYMBOL2.eOR; NextCh(); break;
+                        default: tok.sy = SYMBOL.OR; break;
                     }
                     break;
 
@@ -399,16 +399,16 @@ namespace Sys.Data.SqlParser
                     NextCh();
                     switch (ch)
                     {
-                        case '=': tok.sy = Symbol.ASSIGNOP; tok.opr = OperatorSymbol.eAND; NextCh(); break;
-                        default: tok.sy = Symbol.AND; tok.opr = OperatorSymbol.ADR; break;
+                        case '=': tok.sy = SYMBOL.ASSIGNOP; tok.opr = SYMBOL2.eAND; NextCh(); break;
+                        default: tok.sy = SYMBOL.AND; tok.opr = SYMBOL2.ADR; break;
                     }
                     break;
                 case '=':
                     NextCh();
                     switch (ch)
                     {
-                        case '=': tok.sy = Symbol.EQUOP; tok.opr = OperatorSymbol.EQL; NextCh(); break;
-                        default: tok.sy = Symbol.EQUAL; break;
+                        case '=': tok.sy = SYMBOL.EQUOP; tok.opr = SYMBOL2.EQL; NextCh(); break;
+                        default: tok.sy = SYMBOL.EQUAL; break;
                     }
                     break;
 
@@ -417,9 +417,9 @@ namespace Sys.Data.SqlParser
                     NextCh();
                     switch (ch)
                     {
-                        case '+': tok.sy = Symbol.INCOP; tok.opr = OperatorSymbol.PPLUS; NextCh(); break;
-                        case '=': tok.sy = Symbol.ASSIGNOP; tok.opr = OperatorSymbol.ePLUS; NextCh(); break;
-                        default: tok.sy = Symbol.PLUS; tok.opr = OperatorSymbol.NEG; break;
+                        case '+': tok.sy = SYMBOL.INCOP; tok.opr = SYMBOL2.PPLUS; NextCh(); break;
+                        case '=': tok.sy = SYMBOL.ASSIGNOP; tok.opr = SYMBOL2.ePLUS; NextCh(); break;
+                        default: tok.sy = SYMBOL.PLUS; tok.opr = SYMBOL2.NEG; break;
                     }
                     break;
                 case '-':
@@ -430,51 +430,51 @@ namespace Sys.Data.SqlParser
                             while (ch != '\n' && ch != '\0')
                                 NextCh();
                             goto L1;
-                        case '=': tok.sy = Symbol.ASSIGNOP; tok.opr = OperatorSymbol.eMINUS; NextCh(); break;
-                        case '>': tok.sy = Symbol.STRUCTOP; tok.opr = OperatorSymbol.ARROW; NextCh(); break;
-                        default: tok.sy = Symbol.MINUS; tok.opr = OperatorSymbol.NEG; break;
+                        case '=': tok.sy = SYMBOL.ASSIGNOP; tok.opr = SYMBOL2.eMINUS; NextCh(); break;
+                        case '>': tok.sy = SYMBOL.STRUCTOP; tok.opr = SYMBOL2.ARROW; NextCh(); break;
+                        default: tok.sy = SYMBOL.MINUS; tok.opr = SYMBOL2.NEG; break;
                     }
                     break;
                 case '*':
                     NextCh();
                     switch (ch)
                     {
-                        case '=': tok.sy = Symbol.ASSIGNOP; tok.opr = OperatorSymbol.eSTAR; NextCh(); break;
-                        default: tok.sy = Symbol.STAR; tok.opr = OperatorSymbol.VLU; break;
+                        case '=': tok.sy = SYMBOL.ASSIGNOP; tok.opr = SYMBOL2.eSTAR; NextCh(); break;
+                        default: tok.sy = SYMBOL.STAR; tok.opr = SYMBOL2.VLU; break;
                     }
                     break;
                 case '%':
                     NextCh();
                     switch (ch)
                     {
-                        case '=': tok.sy = Symbol.ASSIGNOP; tok.opr = OperatorSymbol.eMOD; NextCh(); break;
-                        default: tok.sy = Symbol.MOD; break;
+                        case '=': tok.sy = SYMBOL.ASSIGNOP; tok.opr = SYMBOL2.eMOD; NextCh(); break;
+                        default: tok.sy = SYMBOL.MOD; break;
                     }
                     break;
                 case ':':
                     NextCh();
                     switch (ch)
                     {
-                        default: tok.sy = Symbol.COLON; break;
+                        default: tok.sy = SYMBOL.COLON; break;
                     }
                     break;
 
 
                 //------------------------------------------------------------------------------------
 
-                case '(': tok.sy = Symbol.LP; NextCh(); break;
-                case ')': tok.sy = Symbol.RP; NextCh(); break;
-                case '[': tok.sy = Symbol.LB; NextCh(); break;
-                case ']': tok.sy = Symbol.RB; NextCh(); break;
-                case '{': tok.sy = Symbol.LC; NextCh(); break;
-                case '}': tok.sy = Symbol.RC; NextCh(); break;
+                case '(': tok.sy = SYMBOL.LP; NextCh(); break;
+                case ')': tok.sy = SYMBOL.RP; NextCh(); break;
+                case '[': tok.sy = SYMBOL.LB; NextCh(); break;
+                case ']': tok.sy = SYMBOL.RB; NextCh(); break;
+                case '{': tok.sy = SYMBOL.LC; NextCh(); break;
+                case '}': tok.sy = SYMBOL.RC; NextCh(); break;
 
-                case '?': tok.sy = Symbol.QUEST; NextCh(); break;
-                case ',': tok.sy = Symbol.COMMA; NextCh(); break;
-                case ';': tok.sy = Symbol.SEMI; NextCh(); break;
-                case '.': tok.sy = Symbol.STRUCTOP; tok.opr = OperatorSymbol.DOT; NextCh(); break;
+                case '?': tok.sy = SYMBOL.QUEST; NextCh(); break;
+                case ',': tok.sy = SYMBOL.COMMA; NextCh(); break;
+                case ';': tok.sy = SYMBOL.SEMI; NextCh(); break;
+                case '.': tok.sy = SYMBOL.STRUCTOP; tok.opr = SYMBOL2.DOT; NextCh(); break;
 
-                case '~': tok.sy = Symbol.UNOP; tok.opr = OperatorSymbol.BNOT; NextCh(); break;
+                case '~': tok.sy = SYMBOL.UNOP; tok.opr = SYMBOL2.BNOT; NextCh(); break;
 
 
                 default:
@@ -586,9 +586,9 @@ namespace Sys.Data.SqlParser
         }
 
 
-        public Symbol sy => tok.sy;
+        public SYMBOL sy => tok.sy;
 
-        public OperatorSymbol opr => tok.opr;
+        public SYMBOL2 opr => tok.opr;
 
         public Token token => this.tok;
 

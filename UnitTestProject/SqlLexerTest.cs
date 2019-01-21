@@ -16,7 +16,14 @@ namespace UnitTestProject
         [TestMethod]
         public void TestSelectClause1()
         {
-            string query = "Select TOP 1000 %%physloc%% AS [%%physloc%%],0 AS [%%RowId%%],* FROM Northwind.dbo.[Products]";
+            string query = @"
+--Notes
+Select TOP 1000 
+%%physloc%% AS [%%physloc%%],
+0 AS [%%RowId%%],
+* 
+FROM 
+Northwind.dbo.[Products]";
 
             Position pos = new Position("select", query);
             Error error = new Error(pos);

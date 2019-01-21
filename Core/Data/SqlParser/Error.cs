@@ -150,24 +150,24 @@ namespace Sys.Data.SqlParser
 
         }
 
-        public void OnError(Symbol sy)
+        public void OnError(SYMBOL sy)
         {
             switch (sy)
             {
-                case Symbol.CASE: OnError(15); break;
-                case Symbol.WHILE: OnError(17); break;
-                case Symbol.RETURN: OnError(52); break;
+                case SYMBOL.CASE: OnError(15); break;
+                case SYMBOL.WHILE: OnError(17); break;
+                case SYMBOL.RETURN: OnError(52); break;
 
                 //---------------------------------------------------------------------
-                case Symbol.SEMI: OnError(14); break;
-                case Symbol.COLON: OnError(5); break;
-                case Symbol.LP: OnError(9); break;
-                case Symbol.RP: OnError(4); break;
-                case Symbol.RB: OnError(12); break;
-                case Symbol.LC: OnError(8); break;
-                case Symbol.RC: OnError(13); break;
-                case Symbol.IN: OnError(62); break;
-                case Symbol.identsy: OnError(2); break;
+                case SYMBOL.SEMI: OnError(14); break;
+                case SYMBOL.COLON: OnError(5); break;
+                case SYMBOL.LP: OnError(9); break;
+                case SYMBOL.RP: OnError(4); break;
+                case SYMBOL.RB: OnError(12); break;
+                case SYMBOL.LC: OnError(8); break;
+                case SYMBOL.RC: OnError(13); break;
+                case SYMBOL.IN: OnError(62); break;
+                case SYMBOL.identsy: OnError(2); break;
 
                 default:
                     throw new CompilingException(string.Format("Error: unknown symbol:{0} expected", sy), pos);

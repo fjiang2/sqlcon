@@ -19,7 +19,7 @@
 
 namespace Sys.Data.SqlParser
 {
-    enum OperatorSymbol
+    enum SYMBOL2
     {
         EQL, NEQ,
         GTR, GEQ, LSS, LEQ,

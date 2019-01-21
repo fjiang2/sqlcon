@@ -321,8 +321,8 @@
     <Compile Include="Data\SqlParser\Keywords.cs" />
     <Compile Include="Data\SqlParser\Position.cs" />
     <Compile Include="Data\SqlParser\StringLex.cs" />
-    <Compile Include="Data\SqlParser\Symbol.cs" />
-    <Compile Include="Data\SqlParser\OperatorSymbol.cs" />
+    <Compile Include="Data\SqlParser\SYMBOL.cs" />
+    <Compile Include="Data\SqlParser\SYMBOL2.cs" />
     <Compile Include="Sys\BackgroundTask.cs" />
     <Compile Include="Networking\FtpClient.cs" />
     <Compile Include="Networking\HttpRequest.cs" />

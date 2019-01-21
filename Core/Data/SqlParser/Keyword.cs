@@ -21,9 +21,9 @@ namespace Sys.Data.SqlParser
     class Keyword
     {
         public string key;		// key word string
-        public Symbol ksy;		// key work symbol
+        public SYMBOL ksy;		// key work symbol
 
-        public Keyword(string key, Symbol ksy)
+        public Keyword(string key, SYMBOL ksy)
         {
             this.key = key;
             this.ksy = ksy;

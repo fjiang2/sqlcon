@@ -20,7 +20,7 @@
 namespace Sys.Data.SqlParser
 {
     // a Token
-    enum Symbol
+    enum SYMBOL
     {
         intcon, floatcon, boolcon, stringcon, identsy,      // constance number 31,3.14,'c',"STRING"
         nullsy, truesy, falsesy,

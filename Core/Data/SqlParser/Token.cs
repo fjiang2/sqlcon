@@ -26,15 +26,15 @@ namespace Sys.Data.SqlParser
 
     class Token
     {
-        public Symbol sy;
-        public OperatorSymbol opr;
+        public SYMBOL sy;
+        public SYMBOL2 opr;
         private object sym;
 
         public Token()
         {
         }
 
-        public Token(Symbol sy, OperatorSymbol opr)
+        public Token(SYMBOL sy, SYMBOL2 opr)
             : this()
         {
             this.sy = sy;
@@ -72,7 +72,7 @@ namespace Sys.Data.SqlParser
         {
             get
             {
-                if (sy == Symbol.stringcon)
+                if (sy == SYMBOL.stringcon)
                     return (string)sym;
 
                 return null;
@@ -93,112 +93,112 @@ namespace Sys.Data.SqlParser
             StringWriter o = new StringWriter();
             switch (sy)
             {
-                case Symbol.intcon:
+                case SYMBOL.intcon:
                     o.Write(inum);
                     break;
 
-                case Symbol.floatcon:
+                case SYMBOL.floatcon:
                     o.Write(fnum);
                     if (Math.Ceiling(fnum) == fnum)
                         o.Write(".0");
                     break;
 
-                case Symbol.stringcon:
+                case SYMBOL.stringcon:
                     o.Write("\"{0}\"", stab);
                     break;
 
-                case Symbol.identsy:
+                case SYMBOL.identsy:
                     o.Write("{0}", id);
                     break;
 
                 //---------------------------------------------------------------------
-                case Symbol.PLUS: o.Write('+'); break;
-                case Symbol.MINUS: o.Write('-'); break;
-                case Symbol.STAR: o.Write('*'); break;
-                case Symbol.DIV: o.Write('/'); break;
-                case Symbol.MOD: o.Write('%'); break;
+                case SYMBOL.PLUS: o.Write('+'); break;
+                case SYMBOL.MINUS: o.Write('-'); break;
+                case SYMBOL.STAR: o.Write('*'); break;
+                case SYMBOL.DIV: o.Write('/'); break;
+                case SYMBOL.MOD: o.Write('%'); break;
 
-                case Symbol.INCOP:
+                case SYMBOL.INCOP:
                     switch (opr)
                     {
-                        case OperatorSymbol.PPLUS: o.Write("++"); break;
-                        case OperatorSymbol.MMINUS: o.Write("--"); break;
+                        case SYMBOL2.PPLUS: o.Write("++"); break;
+                        case SYMBOL2.MMINUS: o.Write("--"); break;
                     }
                     break;
 
-                case Symbol.ASSIGNOP:
+                case SYMBOL.ASSIGNOP:
                     switch (opr)
                     {
-                        case OperatorSymbol.ePLUS: o.Write("+="); break;
-                        case OperatorSymbol.eMINUS: o.Write("-="); break;
-                        case OperatorSymbol.eSTAR: o.Write("*="); break;
-                        case OperatorSymbol.eDIV: o.Write("/="); break;
-                        case OperatorSymbol.eMOD: o.Write("%="); break;
-                        case OperatorSymbol.eAND: o.Write("&="); break;
-                        case OperatorSymbol.eOR: o.Write("|="); break;
-                        case OperatorSymbol.eXOR: o.Write("^="); break;
-                        case OperatorSymbol.eSHL: o.Write("<<="); break;
-                        case OperatorSymbol.eSHR: o.Write(">>="); break;
+                        case SYMBOL2.ePLUS: o.Write("+="); break;
+                        case SYMBOL2.eMINUS: o.Write("-="); break;
+                        case SYMBOL2.eSTAR: o.Write("*="); break;
+                        case SYMBOL2.eDIV: o.Write("/="); break;
+                        case SYMBOL2.eMOD: o.Write("%="); break;
+                        case SYMBOL2.eAND: o.Write("&="); break;
+                        case SYMBOL2.eOR: o.Write("|="); break;
+                        case SYMBOL2.eXOR: o.Write("^="); break;
+                        case SYMBOL2.eSHL: o.Write("<<="); break;
+                        case SYMBOL2.eSHR: o.Write(">>="); break;
                     }
                     break;
-                case Symbol.EQUOP:
+                case SYMBOL.EQUOP:
                     switch (opr)
                     {
-                        case OperatorSymbol.EQL: o.Write("=="); break;
-                        case OperatorSymbol.NEQ: o.Write("!="); break;
+                        case SYMBOL2.EQL: o.Write("=="); break;
+                        case SYMBOL2.NEQ: o.Write("!="); break;
                     }
                     break;
-                case Symbol.RELOP:
+                case SYMBOL.RELOP:
                     switch (opr)
                     {
-                        case OperatorSymbol.GTR: o.Write(">"); break;
-                        case OperatorSymbol.GEQ: o.Write(">="); break;
-                        case OperatorSymbol.LSS: o.Write("<"); break;
-                        case OperatorSymbol.LEQ: o.Write("<="); break;
-                    }
-                    break;
-
-                case Symbol.SHIFTOP:
-                    switch (opr)
-                    {
-                        case OperatorSymbol.SHL: o.Write("<<"); break;
-                        case OperatorSymbol.SHR: o.Write(">>"); break;
+                        case SYMBOL2.GTR: o.Write(">"); break;
+                        case SYMBOL2.GEQ: o.Write(">="); break;
+                        case SYMBOL2.LSS: o.Write("<"); break;
+                        case SYMBOL2.LEQ: o.Write("<="); break;
                     }
                     break;
 
-                case Symbol.EQUAL: o.Write('='); break;
-
-                case Symbol.LP: o.Write('('); break;
-                case Symbol.RP: o.Write(')'); break;
-                case Symbol.LB: o.Write('['); break;
-                case Symbol.RB: o.Write(']'); break;
-                case Symbol.LC: o.Write('{'); break;
-                case Symbol.RC: o.Write('}'); break;
-
-                case Symbol.AND: o.Write("AND"); break;
-                case Symbol.OR: o.Write("OR"); break;
-
-                case Symbol.UNOP:
+                case SYMBOL.SHIFTOP:
                     switch (opr)
                     {
-                        case OperatorSymbol.BNOT: o.Write('~'); break;
-                        case OperatorSymbol.NOT: o.Write("!"); break;
-                        case OperatorSymbol.NEG: o.Write("-"); break;
+                        case SYMBOL2.SHL: o.Write("<<"); break;
+                        case SYMBOL2.SHR: o.Write(">>"); break;
                     }
                     break;
 
-                case Symbol.STRUCTOP:
+                case SYMBOL.EQUAL: o.Write('='); break;
+
+                case SYMBOL.LP: o.Write('('); break;
+                case SYMBOL.RP: o.Write(')'); break;
+                case SYMBOL.LB: o.Write('['); break;
+                case SYMBOL.RB: o.Write(']'); break;
+                case SYMBOL.LC: o.Write('{'); break;
+                case SYMBOL.RC: o.Write('}'); break;
+
+                case SYMBOL.AND: o.Write("AND"); break;
+                case SYMBOL.OR: o.Write("OR"); break;
+
+                case SYMBOL.UNOP:
                     switch (opr)
                     {
-                        case OperatorSymbol.DOT: o.Write('.'); break;
-                        case OperatorSymbol.ARROW: o.Write("->"); break;
+                        case SYMBOL2.BNOT: o.Write('~'); break;
+                        case SYMBOL2.NOT: o.Write("!"); break;
+                        case SYMBOL2.NEG: o.Write("-"); break;
                     }
                     break;
 
-                case Symbol.QUEST: o.Write('?'); break;
-                case Symbol.COLON: o.Write(':'); break;
-                case Symbol.COMMA: o.Write(','); break;
-                case Symbol.SEMI: o.WriteLine(';'); break;
+                case SYMBOL.STRUCTOP:
+                    switch (opr)
+                    {
+                        case SYMBOL2.DOT: o.Write('.'); break;
+                        case SYMBOL2.ARROW: o.Write("->"); break;
+                    }
+                    break;
+
+                case SYMBOL.QUEST: o.Write('?'); break;
+                case SYMBOL.COLON: o.Write(':'); break;
+                case SYMBOL.COMMA: o.Write(','); break;
+                case SYMBOL.SEMI: o.WriteLine(';'); break;
 
 
                 default: o.Write("undefined symbol:{0} {1}", sy, id); break;
