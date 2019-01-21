@@ -21,19 +21,19 @@ namespace Sys.Data.SqlParser
 {
     enum SYMBOL2
     {
-        EQL, NEQ,
-        GTR, GEQ, LSS, LEQ,
-        ADR, VLU,                    // &var, *adr
+        EQL, NEQ,                           // ==, !=
+        GTR, GEQ, LSS, LEQ,                 // >, >=, <, <=
+        ADR, VLU,                           // &var, *adr
 
-        ePLUS, eMINUS, eSTAR, eDIV, eMOD,       // +=
-        eSHR, eSHL,
-        eAND, eOR, eXOR,
+        ePLUS, eMINUS, eSTAR, eDIV, eMOD,   // +=, -=, *=, /=, %=
+        eSHR, eSHL,                         // >>=, <<=
+        eAND, eOR, eXOR,                    // &=, |=, ^=
 
-        NOT, BNOT, NEG,
+        NOT, BNOT, NEG,                     // !, ~, ~=
 
-        PPLUS, MMINUS,                                  // ++, --
-        SHL, SHR,                                       // <<,	>>
-        DOT, ARROW
-    }								// .	->
+        PPLUS, MMINUS,                      // ++, --
+        SHL, SHR,                           // <<,	>>
+        DOT, ARROW,                         // .	->
+    }								
 
 }

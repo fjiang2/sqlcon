@@ -10,7 +10,6 @@ namespace Sys.Data
     {
         public SqlClauseType ClauseType { get; set; } = SqlClauseType.Select;
         public TableName TableName { get; set; }
-
     }
 
     public enum SqlClauseType

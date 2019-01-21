@@ -13,10 +13,7 @@ namespace UnitTestProject
     [TestClass]
     public class SqlLexerTest
     {
-        [TestMethod]
-        public void TestSelectClause1()
-        {
-            string query = @"
+        const string query = @"
 --Notes
 Select TOP 1000 
 %%physloc%% AS [%%physloc%%],
@@ -24,6 +21,10 @@ Select TOP 1000
 * 
 FROM 
 Northwind.dbo.[Products]";
+
+        [TestMethod]
+        public void TestSelectClause1()
+        {
 
             Position pos = new Position("select", query);
             Error error = new Error(pos);
@@ -43,6 +44,15 @@ Northwind.dbo.[Products]";
             string result = "SELECT|TOP|1000|%|%|physloc|%|%|AS|[|%|%|physloc|%|%|]|,|0|AS|[|%|%|RowId|%|%|]|,|*|FROM|Northwind|.|dbo|.|[|Products|]";
 
             Debug.Assert(code == result, "error");
+        }
+
+        [TestMethod]
+        public void TestParse1()
+        {
+            SqlCode code = new SqlCode(query);
+            code.Parse();
+
+
         }
     }
 }

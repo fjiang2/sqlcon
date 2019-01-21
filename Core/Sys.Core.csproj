@@ -264,6 +264,7 @@
     <Compile Include="Data\SqlClause\DeleteClause.cs" />
     <Compile Include="Data\SqlClause\SelectClause.cs" />
     <Compile Include="Data\SqlClause\SqlClauseParser.cs" />
+    <Compile Include="Data\SqlClause\SqlCode.cs" />
     <Compile Include="Data\SqlClause\SqlTokenizer.cs" />
     <Compile Include="Data\SqlClause\UpdateClause.cs" />
     <Compile Include="Data\UniqueTable.cs" />

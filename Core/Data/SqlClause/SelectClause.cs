@@ -9,7 +9,7 @@ namespace Sys.Data
     public class SelectClause : SqlClause
     {
         public int Top { get; set; }
-        public ColumnDescriptor[] Descriptors { get; set; }
+        public List<ColumnDescriptor> Descriptors { get; } = new List<ColumnDescriptor>();
         public Locator Locator { get; set; }
 
         public SelectClause()

@@ -78,7 +78,6 @@ namespace Sys.Data
             SelectClause select = new SelectClause
             {
                 Top = top,
-                Descriptors = new ColumnDescriptor[] { },
                 TableName = tname,
                 Locator = new Locator(where),
             };
