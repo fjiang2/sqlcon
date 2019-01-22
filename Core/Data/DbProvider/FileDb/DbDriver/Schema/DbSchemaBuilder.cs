@@ -36,6 +36,7 @@ namespace Sys.Data
             dbSchema.Tables.Add(dtSchema);
 
             dtSchema.TableName = ds.DataSetName;
+            dtSchema.Namespace = ds.Namespace;
 
             foreach (DataTable dt in ds.Tables)
             {

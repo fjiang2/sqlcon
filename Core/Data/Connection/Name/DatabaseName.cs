@@ -25,6 +25,7 @@ namespace Sys.Data
     {
         private ConnectionProvider provider;
         private string name;
+        public string NameSpace { get; set; }
 
         public DatabaseName(ConnectionProvider provider, string databaseName)
         {

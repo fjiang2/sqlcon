@@ -237,7 +237,7 @@ namespace Sys.Networking
             bool exists = false;
             HttpWebResponse response = null;
             var request = (HttpWebRequest)WebRequest.Create(uri);
-            request.Method = "HEAD";
+            request.Method = "GET";
             request.Timeout = 3000; // milliseconds
             request.AllowAutoRedirect = false;
 

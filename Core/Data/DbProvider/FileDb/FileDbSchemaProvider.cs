@@ -36,7 +36,11 @@ namespace Sys.Data
             List<DatabaseName> dnames = new List<DatabaseName>();
             foreach (DataTable table in dbSchema.Tables)
             {
-                DatabaseName dname = new DatabaseName(provider, table.TableName);
+                DatabaseName dname = new DatabaseName(provider, table.TableName)
+                {
+                    NameSpace = table.Namespace,
+                };
+
                 dnames.Add(dname);
             }
 

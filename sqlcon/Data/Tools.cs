@@ -107,6 +107,7 @@ ORDER BY c.name, c.column_id
 
         private static void FindNameOnDbFile(ConnectionProvider provider, DatabaseName[] dnames, string match)
         {
+            const string NAME_SPACE = "NameSpace";
             const string DATABASE_NAME = "Database";
             const string SCHEMA_NAME = "Schema";
             const string TABLE_NAME = "Table";
@@ -123,6 +124,7 @@ ORDER BY c.name, c.column_id
             dt.Columns.Add("DataType", typeof(string));
             dt.Columns.Add("Length", typeof(int));
             dt.Columns.Add("Nullable", typeof(string));
+            dt.Columns.Add(NAME_SPACE, typeof(string));
 
             foreach (DatabaseName dname in dnames)
             {
@@ -131,6 +133,7 @@ ORDER BY c.name, c.column_id
                 {
                     var newRow = dt.NewRow();
                     newRow[DATABASE_NAME] = dname.Name;
+                    newRow[NAME_SPACE] = dname.NameSpace;
                     dt.Rows.Add(newRow);
                 }
 
@@ -138,12 +141,16 @@ ORDER BY c.name, c.column_id
                 {
                     bool found = false;
                     var newRow = dt.NewRow();
+
                     newRow[DATABASE_NAME] = dname.Name;
+                    newRow[NAME_SPACE] = dname.NameSpace;
+
                     if (regex.IsMatch(tname.SchemaName))
                     {
                         found = true;
                         newRow[SCHEMA_NAME] = tname.ShortName;
                     }
+
                     if (regex.IsMatch(tname.ShortName))
                     {
                         found = true;
@@ -168,6 +175,7 @@ ORDER BY c.name, c.column_id
                                 newRow["Length"] = column.Length;
 
                             newRow["Nullable"] = column.Nullable ? "NULL" : "NOT NULL";
+                            newRow[NAME_SPACE] = dname.NameSpace;
                             dt.Rows.Add(newRow);
                         }
                     }
