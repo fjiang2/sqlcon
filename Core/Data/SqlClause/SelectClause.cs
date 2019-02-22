@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 
 namespace Sys.Data
 {
@@ -23,6 +24,8 @@ namespace Sys.Data
     {
         public string ColumnName { get; set; }
         public string ColumnCaption { get; set; }
+
+        public Expression Expression { get; set; }
     }
 
 }

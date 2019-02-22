@@ -1,10 +1,10 @@
-﻿using Sys.Data.Comparison;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
+using Sys.Data.Comparison;
 
 namespace Sys.Data
 {
@@ -234,13 +234,19 @@ namespace Sys.Data
                 string val = string.Empty;
                 try
                 {
-                    object obj = Activator.CreateInstance(type);
+                    object obj;
+                    if (type == typeof(string))  //class string doesn't have default constructor
+                        obj = string.Empty;
+                    else
+                        obj = Activator.CreateInstance(type);
+
                     val = new ColumnValue(obj).ToScript();
                 }
                 catch (Exception ex)
                 {
                     throw new Exception($"doesn't support to get default value of type:{type}, {ex.Message}");
                 }
+
                 builder.AppendLine($"UPDATE {tableName.FormalName} SET {column.ColumnName} = {val}");
 
                 //Change column type to NOT NULL

@@ -118,13 +118,13 @@ ORDER BY c.name, c.column_id
 
             DataTable dt = new DataTable();
             dt.Columns.Add(DATABASE_NAME, typeof(string));
+            dt.Columns.Add(NAME_SPACE, typeof(string));
             dt.Columns.Add(SCHEMA_NAME, typeof(string));
             dt.Columns.Add(TABLE_NAME, typeof(string));
             dt.Columns.Add(COLUMN_NAME, typeof(string));
             dt.Columns.Add("DataType", typeof(string));
             dt.Columns.Add("Length", typeof(int));
             dt.Columns.Add("Nullable", typeof(string));
-            dt.Columns.Add(NAME_SPACE, typeof(string));
 
             foreach (DatabaseName dname in dnames)
             {
