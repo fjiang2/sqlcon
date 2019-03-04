@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data;
-
+using Sys.CodeBuilder;
 using Sys.Data;
 using Sys.Data.Manager;
-using Sys.CodeBuilder;
 
 namespace sqlcon
 {
@@ -299,7 +298,7 @@ namespace sqlcon
 
             string cname = ClassName;
             if (count > 2)
-                builder.AddUsing("Sys.Data");
+                builder.AddUsing("System.ComponentModel");
 
             DataColumn _feature = null;     //1st string column as property name
             DataColumn _value = null;       //1st int column as property value
@@ -351,7 +350,7 @@ namespace sqlcon
                 {
                     var _enum = new Sys.CodeBuilder.Enum(group.First().Category);
                     foreach (var row in group)
-                        _enum.Add(row.Feature, row.Value, row.Label);
+                        _enum.Add(row.Feature, row.Value, $"\"{row.Label}\"");
 
                     builder.AddEnum(_enum);
                 }
@@ -360,7 +359,7 @@ namespace sqlcon
             {
                 var _enum = new Sys.CodeBuilder.Enum(cname);
                 foreach (var row in rows)
-                    _enum.Add(row.Feature, row.Value, row.Label);
+                    _enum.Add(row.Feature, row.Value, $"\"{row.Label}\"");
 
                 builder.AddEnum(_enum);
             }

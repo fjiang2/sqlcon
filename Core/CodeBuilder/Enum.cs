@@ -52,7 +52,7 @@ namespace Sys.CodeBuilder
             var _feature = new Feature(feature) { value = value };
             if (label != null)
             {
-                _feature.AddAttribute(new AttributeInfo("DataEnum") { args = new string[] { label } });
+                _feature.AddAttribute(new AttributeInfo("Description") { args = new string[] { label } });
             }
 
             features.Add(_feature);
