@@ -121,10 +121,18 @@ namespace sqlcon
                 string expr = L[0].Trim();
                 string label = L[1].Trim();
 
-                VAL result = Script.Evaluate(expr, Context.DS);
-                if (result.IsBool && result.Boolcon || result.IsInt && result.Intcon != 0)
+                try
                 {
-                    return Goto(label);
+                    VAL result = Script.Evaluate(expr, Context.DS);
+                    if (result.IsBool && result.Boolcon || result.IsInt && result.Intcon != 0)
+                    {
+                        return Goto(label);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    cerr.WriteLine($"error on: {expr},  {ex.Message}");
+                    return NextStep.ERROR;
                 }
 
                 SP++;
@@ -136,6 +144,12 @@ namespace sqlcon
 
         private NextStep Goto(string label)
         {
+            if (label.IndexOf(' ') >= 0)
+            {
+                cerr.WriteLine($"invalid goto label: {label}");
+                return NextStep.ERROR;
+            }
+
             if (anchors.ContainsKey(label))
             {
                 SP = anchors[label];
@@ -143,7 +157,7 @@ namespace sqlcon
             }
             else
             {
-                cerr.WriteLine($"invalid label: {label}");
+                cerr.WriteLine($"undefined goto label: {label}");
                 return NextStep.ERROR;
             }
         }
