@@ -9,8 +9,10 @@ namespace sqlcon
 {
     class FlowControl
     {
+        private const string COLON = ":";
         private const string GOTO = "goto";
         private const string IF = "if";
+
 
         private string[] lines;
         private Dictionary<string, int> anchors = new Dictionary<string, int>();
@@ -25,38 +27,40 @@ namespace sqlcon
 
         public NextStep Execute(Func<string, NextStep> run)
         {
+            NextStep next;
+
             while (SP < lines.Length)
             {
-                cout.WriteLine(ConsoleColor.DarkGray, lines[SP]);
-                var next = Execute();
+                string line = GetLine();
+                if (line.StartsWith(COLON) || line.StartsWith(IF) || line.StartsWith(GOTO))
+                {
+                    //ERROR|COMPLETED|NEXT
+                    next = Execute();
+                }
+                else
+                {
+                //ERROR|COMPLETED|CONTINUE|EXIT
+                L2:
+                    next = run(line);
+                    ++SP;
+                    if (next == NextStep.CONTINUE)
+                    {
+                        line = GetLine();
+                        goto L2;
+                    }
+                }
+
                 switch (next)
                 {
-                    case NextStep.ERROR:
-                        if (!cin.YesOrNo($"continue to run \"{lines[SP]}\" (y/n)?"))
-                        {
-                            cerr.WriteLine("interupted.");
-                            return NextStep.ERROR;
-                        }
-                        return NextStep.ERROR;
-
                     case NextStep.COMPLETED:
                         break;
 
-                    case NextStep.NEXT:
-                        {
-                        L2:
-                            next = run(lines[SP]);
-                            SP++;
-                            switch (next)
-                            {
-                                case NextStep.EXIT:
-                                    return NextStep.EXIT;
+                    case NextStep.EXIT:
+                        return NextStep.EXIT;
 
-                                case NextStep.CONTINUE:
-                                    cout.WriteLine(ConsoleColor.DarkGray, lines[SP]);
-                                    goto L2;
-                            }
-                        }
+                    case NextStep.ERROR:
+                        if (OnError())
+                            return NextStep.ERROR;
                         break;
                 }
             }
@@ -64,12 +68,29 @@ namespace sqlcon
             return NextStep.EXIT;
         }
 
+        private string GetLine()
+        {
+            string line = lines[SP];
+            cout.WriteLine(ConsoleColor.DarkGray, line);
+            return line;
+        }
+
+        private bool OnError()
+        {
+            if (!cin.YesOrNo($"continue to run \"{lines[SP]}\" (y/n)?"))
+            {
+                cerr.WriteLine("interupted.");
+                return true;
+            }
+
+            return false;
+        }
 
         private NextStep Execute()
         {
             string line = lines[SP];
 
-            if (line.StartsWith(":"))
+            if (line.StartsWith(COLON))
             {
                 string label = line.Substring(1).Trim();
                 if (anchors.ContainsKey(label))
