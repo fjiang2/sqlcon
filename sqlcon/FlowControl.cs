@@ -25,6 +25,11 @@ namespace sqlcon
             this.lines = lines;
         }
 
+        public static bool IsFlowStatement(string line)
+        {
+            return line.StartsWith(COLON) || line.StartsWith(IF) || line.StartsWith(GOTO);
+        }
+
         public NextStep Execute(Func<string, NextStep> run)
         {
             NextStep next;
@@ -32,7 +37,7 @@ namespace sqlcon
             while (SP < lines.Length)
             {
                 string line = GetLine();
-                if (line.StartsWith(COLON) || line.StartsWith(IF) || line.StartsWith(GOTO))
+                if (IsFlowStatement(line))
                 {
                     //ERROR|COMPLETED|NEXT
                     next = Execute();

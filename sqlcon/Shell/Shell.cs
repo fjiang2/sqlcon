@@ -37,7 +37,13 @@ namespace sqlcon
 
             //ctrl-c captured
             if (line == null)
-                return;
+                goto L1;
+
+            if (FlowControl.IsFlowStatement(line))
+            {
+                cerr.WriteLine($"use \"{line}\" on batch script file only");
+                goto L1;
+            }
 
             switch (Run(line))
             {
