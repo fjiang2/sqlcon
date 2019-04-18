@@ -58,7 +58,7 @@ namespace sqlcon
         /// parameters: %1 %2 %3 ...
         /// </summary>
         /// <param name="args"></param>
-        private List<string> ReadLines(string[] args)
+        private string[] ReadLines(string[] args)
         {
             string[] lines = File.ReadAllLines(path);
 
@@ -77,7 +77,7 @@ namespace sqlcon
                 L.Add(cmd);
             }
 
-            return L;
+            return L.ToArray();
         }
 
         public bool Exists => File.Exists(path);

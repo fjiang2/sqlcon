@@ -27,9 +27,9 @@ namespace sqlcon
 
             string line = null;
 
-            L1:
+        L1:
             cout.Write($"{mgr}> ");
-            L2:
+        L2:
             line = cin.ReadLine();
 
             if (Console.IsOutputRedirected)
@@ -59,30 +59,14 @@ namespace sqlcon
         /// process command batch file
         /// </summary>
         /// <param name="lines"></param>
-        public void DoBatch(IEnumerable<string> lines)
+        public void DoBatch(string[] lines)
         {
-            NextStep next = NextStep.NEXT;
-            foreach (string line in lines)
-            {
-                if (next == NextStep.EXIT)
-                    return;
+            FlowControl flow = new FlowControl(lines);
+            NextStep next = flow.Execute(Run);
+            if (next == NextStep.EXIT)
+                cout.WriteLine(ConsoleColor.Green, "completed.");
 
-                if (next == NextStep.COMPLETED || next == NextStep.NEXT)
-                {
-                    cout.Write($"{mgr}> ");
-                }
-                else if (next == NextStep.ERROR)
-                {
-                    if (!cin.YesOrNo($"continue to run \"{line}\" (y/n)?"))
-                    {
-                        cerr.WriteLine("interupted.");
-                        return;
-                    }
-                }
-
-                cout.WriteLine(line);
-                next = Run(line);
-            }
+            cout.Write($"{mgr}> ");
         }
 
         private bool multipleLineMode = false;
