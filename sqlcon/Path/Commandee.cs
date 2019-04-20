@@ -1,26 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data.SqlClient;
-using System.Data;
-using System.Threading;
-using System.IO;
-using Sys;
+﻿using Sys;
 using Sys.Data;
 using Sys.Data.Comparison;
 using Sys.Data.IO;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Tie;
 
 namespace sqlcon
 {
-    interface ITabCompletion
+    internal interface ITabCompletion
     {
         string[] TabCandidates(string argument);
     }
 
-    class Commandee : ITabCompletion
+    internal class Commandee : ITabCompletion
     {
         private PathManager mgr;
         private TreeNode<IDataPath> pt;
@@ -1093,7 +1093,17 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("   /db:database           : initial catalog, default is 'master'");
                 cout.WriteLine("   /u:username            : user id, default is 'sa'");
                 cout.WriteLine("   /p:password            : password, default is empty, use Windows Security when /u /p not setup");
-                cout.WriteLine("   /pvd:provider          : sqloledb, xmlfile, default is SQL client");
+                cout.WriteLine("   /pvd:provider          : default is SQL Server client");
+                cout.WriteLine("        sqldb               SQL Server");
+                cout.WriteLine("        sqloledb            ODBC Database Server");
+                cout.WriteLine("        file/db/xml         sqlcon Database Schema");
+                cout.WriteLine("        file/dataset/json   System.Data.DataSet");
+                cout.WriteLine("        file/datalake/json  System.Data.DataLake");
+                cout.WriteLine("        file/dataset/xml    System.Data.DataSet");
+                cout.WriteLine("        file/datalake/xml   System.Data.DataLake");
+                cout.WriteLine("        file/assembly       .Net assembly dll");
+                cout.WriteLine("        file/c#             C# data contract classes");
+                cout.WriteLine("        riadb               Remote Invoke Agent");
                 cout.WriteLine("example:");
                 cout.WriteLine("  mount ip100=192.168.0.100\\sqlexpress /u:sa /p:p@ss");
                 cout.WriteLine("  mount web=http://192.168.0.100/db/northwind.xml /u:sa /p:p@ss");
