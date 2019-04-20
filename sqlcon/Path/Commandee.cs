@@ -1094,13 +1094,13 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("   /u:username            : user id, default is 'sa'");
                 cout.WriteLine("   /p:password            : password, default is empty, use Windows Security when /u /p not setup");
                 cout.WriteLine("   /pvd:provider          : default is SQL Server client");
-                cout.WriteLine("        sqldb               SQL Server");
+                cout.WriteLine("        sqldb               SQL Server, default provider");
                 cout.WriteLine("        sqloledb            ODBC Database Server");
-                cout.WriteLine("        file/db/xml         sqlcon Database Schema");
+                cout.WriteLine("        file/db/xml         sqlcon Database Schema, default provider for xml file");
                 cout.WriteLine("        file/dataset/json   System.Data.DataSet");
-                cout.WriteLine("        file/datalake/json  System.Data.DataLake");
                 cout.WriteLine("        file/dataset/xml    System.Data.DataSet");
-                cout.WriteLine("        file/datalake/xml   System.Data.DataLake");
+                cout.WriteLine("        file/datalake/json  Dictionary<string, System.Data.DataSet>");
+                cout.WriteLine("        file/datalake/xml   Dictionary<string, System.Data.DataSet>");
                 cout.WriteLine("        file/assembly       .Net assembly dll");
                 cout.WriteLine("        file/c#             C# data contract classes");
                 cout.WriteLine("        riadb               Remote Invoke Agent");
@@ -1233,6 +1233,13 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 var node = mgr.RootNode.Nodes.FirstOrDefault(row => row.Item.Path == serverName);
                 if (node != null)
                     mgr.RootNode.Nodes.Remove(node);
+
+                cout.WriteLine($"umount server \"{serverName}\" done");
+            }
+            else
+            {
+                cerr.WriteLine($"server \"{serverName}\" doesn't exist");
+                return;
             }
 
             var sname = mgr.GetCurrentPath<ServerName>();
@@ -1289,8 +1296,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("       /col:c1[=d1],c2[=d2],...         copy selected columns (mapping)");
                 cout.WriteLine("       /s                               compare table schema");
                 cout.WriteLine("note that: to xcopy selected records of table, mkdir locator first, example:");
-                cout.WriteLine(@"  \local\NorthWind\Products> md ProductId<2000");
-                cout.WriteLine(@"  \local\NorthWind\Products> xcopy 1 \local\db");
+                cout.WriteLine(@"  \local\NorthWind\Products> md ProductId<200 /name:p200");
+                cout.WriteLine(@"  \local\NorthWind\Products> xcopy p200 \local\db");
                 return;
             }
 
