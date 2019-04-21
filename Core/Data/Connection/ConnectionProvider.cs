@@ -233,13 +233,27 @@ namespace Sys.Data
 
         internal abstract DbProvider CreateDbProvider(string script);
 
+        public const string PROVIDER_FILE_DB_XML = "file/db/xml";
+
+        public const string PROVIDER_FILE_DATASET_JSON = "file/dataset/json";
+        public const string PROVIDER_FILE_DATASET_XML = "file/dataset/xml";
+        public const string PROVIDER_FILE_DATALAKE_JSON = "file/datalake/json";
+        public const string PROVIDER_FILE_DATALAKE_XML = "file/datalake/xml";
+
+        public const string PROVIDER_FILE_ASSEMBLY = "file/assembly";
+        public const string PROVIDER_FILE_CSHARP = "file/c#";
+
+        public const string PROVIDER_REMOTE_INVOKE_AGENT = "riadb";
+        public const string PROVIDER_SQL_OLE_DB = "sqloledb";
+        public const string PROVIDER_SQL_DB = "sqldb";
+
 
         public static ConnectionProvider CreateProvider(string serverName, string connectionString)
         {
             DbConnectionStringBuilder conn = new DbConnectionStringBuilder();
             conn.ConnectionString = connectionString.ToLower();
 
-            string providerName = "sqldb";
+            string providerName = PROVIDER_SQL_DB;
             object value;
             if (conn.TryGetValue("provider", out value))
             {
@@ -252,28 +266,28 @@ namespace Sys.Data
             switch (providerName)
             {
                 case "xmlfile":
-                case "file/db/xml":
+                case PROVIDER_FILE_DB_XML:
                     return new FileDbConnectionProvider(serverName, connectionString, DbFileType.XmlDb);
 
-                case "file/dataset/json":
+                case PROVIDER_FILE_DATASET_JSON:
                     return new FileDbConnectionProvider(serverName, connectionString, DbFileType.JsonDataSet);
 
-                case "file/datalake/json":
+                case PROVIDER_FILE_DATALAKE_JSON:
                     return new FileDbConnectionProvider(serverName, connectionString, DbFileType.JsonDataLake);
 
-                case "file/dataset/xml":
+                case PROVIDER_FILE_DATASET_XML:
                     return new FileDbConnectionProvider(serverName, connectionString, DbFileType.XmlDataSet);
 
-                case "file/datalake/xml":
+                case PROVIDER_FILE_DATALAKE_XML:
                     return new FileDbConnectionProvider(serverName, connectionString, DbFileType.XmlDataLake);
 
-                case "file/assembly":
+                case PROVIDER_FILE_ASSEMBLY:
                     return new FileDbConnectionProvider(serverName, connectionString, DbFileType.Assembly);
 
-                case "file/c#":
+                case PROVIDER_FILE_CSHARP:
                     return new FileDbConnectionProvider(serverName, connectionString, DbFileType.CSharp);
 
-                case "riadb":                   //Remote Invoke Agent
+                case PROVIDER_REMOTE_INVOKE_AGENT:                   //Remote Invoke Agent
                     pvd = new RiaDbConnectionProvider(serverName, connectionString);
                     break;
 
@@ -281,11 +295,11 @@ namespace Sys.Data
                 case "Microsoft.Jet.OLEDB.4.0":  //Excel 2007 or Access
                 case "MySqlProv":                //MySql
                 case "MSDAORA":                  //Oracle
-                case "sqloledb":
+                case PROVIDER_SQL_OLE_DB:
                     pvd = new OleDbConnectionProvider(serverName, connectionString);
                     break;
 
-                case "sqldb":                   //Sql Server
+                case PROVIDER_SQL_DB:                   //Sql Server
                     pvd = new SqlDbConnectionProvider(serverName, connectionString);
                     break;
             }

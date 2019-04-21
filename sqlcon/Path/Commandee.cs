@@ -569,6 +569,54 @@ namespace sqlcon
             });
         }
 
+        public void compare(Command cmd)
+        {
+            if (cmd.HasHelp)
+            {
+                cout.WriteLine("compare table schema or records");
+                cout.WriteLine("compare path1 [path2]  : compare data");
+                cout.WriteLine("compare [/s]           : compare schema");
+                cout.WriteLine("compare [/e]           : find common existing table names");
+                cout.WriteLine();
+                return;
+            }
+
+            Configuration cfg = cmd.Configuration;
+            PathBothSide both = new PathBothSide(mgr, cmd);
+            string fileName = cmd.OutputFile();
+            using (var writer = fileName.NewStreamWriter())
+            {
+                ActionType type;
+                if (cmd.IsSchema)
+                    type = ActionType.CompareSchema;
+                else
+                    type = ActionType.CompareData;
+
+                if (both.Invalid)
+                {
+                    return;
+                }
+
+                var adapter = new CompareAdapter(both.ps1.side, both.ps2.side);
+                var T1 = both.ps1.MatchedTables;
+                var T2 = both.ps2.MatchedTables;
+
+                if (cmd.Has("e"))   //find common existing table names
+                {
+                    var L1 = T1.Select(t => t.ShortName.ToUpper());
+                    var L2 = T2.Select(t => t.ShortName.ToUpper());
+                    var C = L1.Intersect(L2).ToArray();
+
+                    T1 = T1.Where(t => C.Contains(t.ShortName.ToUpper())).ToArray();
+                    T2 = T2.Where(t => C.Contains(t.ShortName.ToUpper())).ToArray();
+                }
+
+                var sql = adapter.Run(type, T1, T2, cfg, cmd.Columns);
+                writer.Write(sql);
+            }
+            cout.WriteLine($"result in \"{fileName}\"");
+        }
+
         public void rename(Command cmd)
         {
             if (cmd.HasHelp)
