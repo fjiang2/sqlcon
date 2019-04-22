@@ -103,8 +103,10 @@ namespace Sys.Data
                         DataColumn _column = table.Columns[column.ColumnName];
                         _column.AllowDBNull = column.Nullable;
                         _column.AutoIncrement = column.IsIdentity;
-                        if (_column.DataType == typeof(string))
-                            _column.MaxLength = column.Length;
+
+                        //because string supports Unicode
+                        if (column.CType == CType.NVarChar || column.CType == CType.NText || column.CType == CType.NChar) 
+                            _column.MaxLength = column.Length / 2;
                     }
                 }
 
