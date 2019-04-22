@@ -144,17 +144,29 @@ namespace Sys.Data
         {
             get
             {
+                string _schema = this.schema;
+                if (_schema != dbo)
+                {
+                    _schema = $"[{schema}]";
+                }
+
                 if (this.baseName.Name != "")
                 {
                     if (baseName.Provider.DataSource.ToLower().StartsWith("(localdb)"))
                     {
-                        return string.Format("[{0}].{1}.[{2}]", this.baseName.Name, this.schema, this.tableName);
+                        return $"[{baseName.Name}].{_schema}.[{tableName}]";
                     }
                     else if (baseName.Provider.DpType != DbProviderType.SqlCe) //Visual Studio 2010 Windows Form Design Mode, does not support format [database]..[table]
-                        return string.Format("{0}.{1}.[{2}]", this.baseName.Name, this.schema, this.tableName);
+                    {
+                        return $"[{baseName.Name}].{_schema}.[{tableName}]";
+                    }
                     else
-                        return string.Format("[{0}]", this.tableName);
+                    {
+                        return $"[{tableName}]";
+                    }
                 }
+                else if (schema != string.Empty)
+                    return $"{_schema}.[{tableName}]";
                 else
                     return this.tableName;
             }

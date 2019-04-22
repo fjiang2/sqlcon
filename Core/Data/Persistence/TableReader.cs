@@ -95,6 +95,17 @@ namespace Sys.Data
                 if (table == null)
                 {
                     this.table = cmd.FillDataTable();
+                    var schema = new TableSchema(tableName);
+                    string[] keys = schema.PrimaryKeys.Keys;
+                    this.table.PrimaryKey = table.Columns.OfType<DataColumn>().Where(column => keys.Contains(column.ColumnName)).ToArray();
+                    foreach (IColumn column in schema.Columns)
+                    {
+                        DataColumn _column = table.Columns[column.ColumnName];
+                        _column.AllowDBNull = column.Nullable;
+                        _column.AutoIncrement = column.IsIdentity;
+                        if (_column.DataType == typeof(string))
+                            _column.MaxLength = column.Length;
+                    }
                 }
 
                 return this.table;
