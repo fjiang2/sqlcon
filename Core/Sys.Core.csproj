@@ -277,6 +277,7 @@
     <Compile Include="Extension\Iteratable.cs" />
     <Compile Include="Extension\JsonExtension.cs" />
     <Compile Include="IO\Deployment\Deployment.cs" />
+    <Compile Include="IO\Deployment\InstallWebApplication.cs" />
     <Compile Include="IO\DiskFileLink.cs" />
     <Compile Include="IO\FileLink.cs" />
     <Compile Include="IO\FtpFileLink.cs" />
