@@ -28,7 +28,7 @@ namespace Sys.Data
 {
 
 
-    public class TableSchema : ITable
+    public class TableSchema : ITableSchema
     {
         protected TableName tableName;
 

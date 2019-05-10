@@ -108,7 +108,7 @@ namespace Sys.Data.Comparison
             return sql;
         }
 
-        public static string TableDifference(CompareSideType sideType, TableSchema schema1, TableSchema schema2, string[] primaryKeys, string[] exceptColumns)
+        public static string TableDifference(CompareSideType sideType, ITableSchema schema1, ITableSchema schema2, string[] primaryKeys, string[] exceptColumns)
         {
             //don't compare identity column or computed column
             exceptColumns = schema1.Columns
@@ -134,7 +134,7 @@ namespace Sys.Data.Comparison
         #region create all rows
 
 
-        private static string GenerateRows(TableSchema schema, TableReader reader)
+        private static string GenerateRows(ITableSchema schema, TableReader reader)
         {
 
             var table = reader.Table;
@@ -151,7 +151,7 @@ namespace Sys.Data.Comparison
             return builder.ToString();
         }
 
-        public static int GenerateRows(StreamWriter writer, TableSchema schema, Locator where, bool hasIfExists)
+        public static int GenerateRows(StreamWriter writer, ITableSchema schema, Locator where, bool hasIfExists)
         {
             TableName tableName = schema.TableName;
             string sql = string.Format("SELECT * FROM {0}", tableName);
@@ -195,7 +195,7 @@ namespace Sys.Data.Comparison
             return count;
         }
 
-        public static string GenerateTemplate(TableSchema schema, SqlScriptType type, bool ifExists)
+        public static string GenerateTemplate(ITableSchema schema, SqlScriptType type, bool ifExists)
         {
             TableName tableName = schema.TableName;
             TableClause script = new TableClause(schema);

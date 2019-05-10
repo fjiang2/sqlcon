@@ -29,7 +29,7 @@ namespace Sys.Data
     public class TableWriter
     {
         private Locator locator;
-        private TableSchema schema;
+        private ITableSchema schema;
 
         /// <summary>
         /// use default locator to save records into database, primary keys must be defined

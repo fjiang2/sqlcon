@@ -48,7 +48,7 @@ namespace Sys.Data.Manager
 
             ClassName cname = new ClassName(Option.NameSpace, Option.Modifier, ctname);
 
-            ITable schema = new TableSchema(tableName);
+            ITableSchema schema = new TableSchema(tableName);
 
             var dpoClass = new DpoClass(schema, cname, Option);
 

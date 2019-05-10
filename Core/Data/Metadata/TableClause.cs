@@ -12,10 +12,10 @@ namespace Sys.Data
     {
         public static readonly string GO = "GO";
 
-        private TableSchema schema;
+        private ITableSchema schema;
         private TableName tableName;
 
-        public TableClause(TableSchema schema)
+        public TableClause(ITableSchema schema)
         {
             this.schema = schema;
             this.tableName = schema.TableName;
@@ -383,7 +383,7 @@ IF NOT EXISTS(SELECT * FROM @@0 WHERE @@1)
 
 
 
-        internal static string GenerateCREATE_TABLE(ITable table)
+        internal static string GenerateCREATE_TABLE(ITableSchema table)
         {
             string fields = string.Join(",\r\n", table.Columns.Select(column => "\t" + column.GetSQLField()));
             return CREATE_TABLE(fields, table.PrimaryKeys);

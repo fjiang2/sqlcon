@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Sys.Data
 {
-    public interface ITable
+    public interface ITableSchema
     {
         TableName TableName { get; }
         int TableID { get; }

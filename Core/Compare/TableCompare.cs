@@ -9,7 +9,7 @@ using Sys.Data;
 namespace Sys.Data.Comparison
 {
 
-  
+
 
     class TableCompare
     {
@@ -19,10 +19,10 @@ namespace Sys.Data.Comparison
         private string[] compareColumns;
         public string[] ExceptColumns { get; set; }//don't compare these columns
 
-        private TableSchema schema1;
-        private TableSchema schema2;
+        private ITableSchema schema1;
+        private ITableSchema schema2;
 
-        public TableCompare(TableSchema schema1, TableSchema schema2)
+        public TableCompare(ITableSchema schema1, ITableSchema schema2)
         {
             this.SideType = CompareSideType.compare;
             this.ExceptColumns = new string[] { };
@@ -41,7 +41,6 @@ namespace Sys.Data.Comparison
 
             return Compare(pk, dt1, dt2);
         }
-
 
         public string[] CompareColumns
         {
@@ -103,11 +102,11 @@ namespace Sys.Data.Comparison
             return builder.ToString();
         }
 
-    
+
         #endregion
 
 
-       
+
 
     }
 }

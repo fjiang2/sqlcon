@@ -23,9 +23,9 @@ namespace Sys.Data
 {
     public class ColumnCollection : List<IColumn>
     {
-        ITable metaTable;
+        ITableSchema metaTable;
 
-        public ColumnCollection(ITable metaTable)
+        public ColumnCollection(ITableSchema metaTable)
         {
             this.metaTable = metaTable;
         }

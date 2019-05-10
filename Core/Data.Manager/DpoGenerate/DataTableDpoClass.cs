@@ -8,7 +8,7 @@ using Sys.Data;
 
 namespace Sys.Data.Manager
 {
-    class DataTableDpoClass : ITable
+    class DataTableDpoClass : ITableSchema
     {
 
         DataTable table;

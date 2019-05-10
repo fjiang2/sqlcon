@@ -34,7 +34,7 @@ namespace Sys.Data.Manager
         private string nameSpace;
         private string className;
 
-        private ITable metaTable;
+        private ITableSchema metaTable;
         private List<string> nonvalized;
         private List<string> nullableFields;
 
@@ -45,7 +45,7 @@ namespace Sys.Data.Manager
 
         public DpoOption option;
 
-        public DpoClass(ITable metaTable, ClassName cname, DpoOption option)
+        public DpoClass(ITableSchema metaTable, ClassName cname, DpoOption option)
         {
             this.metaTable = metaTable;
 
@@ -82,7 +82,7 @@ namespace Sys.Data.Manager
             get { return option.dict; }
         }
 
-        public ITable MetaTable
+        public ITableSchema MetaTable
         {
             get { return this.metaTable; }
         }
@@ -394,7 +394,7 @@ namespace Sys.Data.Manager
         /// </summary>
         /// <param name="level"></param>
         /// <returns></returns>
-        internal static void GetTableAttribute(AttributeInfo attr, ITable metaTable, ClassTableName ctname)
+        internal static void GetTableAttribute(AttributeInfo attr, ITableSchema metaTable, ClassTableName ctname)
         {
             attr.comment = new Comment(string.Format("Primary Keys = {0};  Identity = {1};", metaTable.PrimaryKeys, metaTable.Identity));
 
