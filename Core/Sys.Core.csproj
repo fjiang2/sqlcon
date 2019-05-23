@@ -277,12 +277,10 @@
     <Compile Include="Extension\Iteratable.cs" />
     <Compile Include="Extension\JsonExtension.cs" />
     <Compile Include="IO\Deployment\Deployment.cs" />
-    <Compile Include="IO\Deployment\InstallWebApplication.cs" />
     <Compile Include="IO\DiskFileLink.cs" />
     <Compile Include="IO\FileLink.cs" />
     <Compile Include="IO\FtpFileLink.cs" />
     <Compile Include="IO\HttpFileLink.cs" />
-    <Compile Include="IO\Deployment\InstallApplication.cs" />
     <Compile Include="IO\Deployment\Installation.cs" />
     <Compile Include="IO\Deployment\InstallSourceCode.cs" />
     <Compile Include="Log\ILogable.cs" />
