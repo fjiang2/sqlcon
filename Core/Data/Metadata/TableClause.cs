@@ -201,7 +201,7 @@ namespace Sys.Data
             if (ifExists)
             {
                 var builder = new StringBuilder();
-                builder.AppendLine($"IF OBJECT_ID('{tableName.Name}') IS NOT NULL")
+                builder.AppendLine($"IF OBJECT_ID('{tableName.FormalName}') IS NOT NULL")
                       .AppendLine($"  DROP TABLE {tableName.FormalName}")
                       .AppendLine("GO");
                 return builder.ToString();
@@ -377,7 +377,7 @@ IF NOT EXISTS(SELECT * FROM @@0 WHERE @@1)
   DROP TABLE {1}
 ";
             StringBuilder builder = new StringBuilder();
-            builder.AppendFormat(drop, tableName.Name, tableName.FormalName);
+            builder.AppendFormat(drop, tableName.FormalName, tableName.FormalName);
             return builder.ToString();
         }
 
