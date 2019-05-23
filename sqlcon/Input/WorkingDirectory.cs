@@ -33,6 +33,11 @@ namespace sqlcon
 
         public string GetFullPath(string path, string ext)
         {
+            if (path.StartsWith(@".\") || path.StartsWith(@"..\"))
+            {
+                return path;
+            }
+
             if (!Path.IsPathRooted(path))
             {
                 path = Path.Combine(CurrentDirectory, path);
