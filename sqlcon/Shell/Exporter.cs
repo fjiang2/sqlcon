@@ -371,7 +371,10 @@ namespace sqlcon
 
         public void ExportCsvFile()
         {
-            string path = cfg.GetValue<string>(ConfigKey._GENERATOR_CSV_PATH, $"{Configuration.MyDocuments}\\csv");
+            string path = this.cmd.OutputDirectory;
+
+            if (path == null)
+                path = cfg.GetValue<string>(ConfigKey._GENERATOR_CSV_PATH, $"{Configuration.MyDocuments}\\csv");
 
             string file;
             string fullName(TableName tname) => $"{path}\\{sname.Path}\\{dname.Name}\\{tname.ShortName}.csv";
@@ -379,7 +382,10 @@ namespace sqlcon
             if (tname != null)
             {
                 cout.WriteLine("start to generate {0} csv file", tname);
-                file = fullName(tname);
+                file = this.cmd.OutputFileName;
+                if (file == null)
+                    file = fullName(tname);
+
                 var dt = new SqlBuilder().SELECT.COLUMNS(cmd.Columns).FROM(tname).SqlCmd.FillDataTable();
                 using (var writer = file.NewStreamWriter())
                 {

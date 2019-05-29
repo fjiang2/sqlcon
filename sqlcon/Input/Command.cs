@@ -196,6 +196,28 @@ namespace sqlcon
             }
         }
 
+        public string OutputFileName
+        {
+            get
+            {
+                string path = OutputPath;
+                if (path == null)
+                    return null;
+
+                if (File.Exists(path))
+                    return path;
+
+                if (Directory.Exists(path))
+                    return null;
+
+                string directory = Path.GetDirectoryName(path);
+                if (!Directory.Exists(directory))
+                    Directory.CreateDirectory(directory);
+
+                return path;
+            }
+        }
+
         public string OutputPath
         {
             get
