@@ -508,8 +508,11 @@ namespace sqlcon
             {
                 PathBothSide both = new PathBothSide(mgr, cmd);
                 var dname2 = mgr.GetPathFrom<DatabaseName>(both.ps2.Node);
-                if (both.ps1.MatchedTables == null)
+                if (both.ps1.MatchedTables == null || both.ps1.MatchedTables.Length == 0)
+                {
+                    cout.WriteLine("no table found");
                     return;
+                }
 
                 foreach (var tname1 in both.ps1.MatchedTables)
                 {
