@@ -70,7 +70,7 @@ namespace sqlcon
                 cerr.WriteLine($"invalid path: {path}");
         }
 
-        public bool chdir(Command cmd)
+        public bool chdir(ApplicationCommand cmd)
         {
             if (cmd.HasHelp)
             {
@@ -101,7 +101,7 @@ namespace sqlcon
 
 
 
-        public void dir(Command cmd)
+        public void dir(ApplicationCommand cmd)
         {
             if (cmd.HasHelp)
             {
@@ -132,7 +132,7 @@ namespace sqlcon
 
         }
 
-        public void set(Command cmd)
+        public void set(ApplicationCommand cmd)
         {
             if (cmd.HasHelp)
             {
@@ -237,7 +237,7 @@ namespace sqlcon
         }
 
 
-        public void del(Command cmd)
+        public void del(ApplicationCommand cmd)
         {
             if (cmd.HasHelp)
             {
@@ -362,7 +362,7 @@ namespace sqlcon
         }
 
 
-        public void mkdir(Command cmd)
+        public void mkdir(ApplicationCommand cmd)
         {
             if (cmd.HasHelp)
             {
@@ -397,7 +397,7 @@ namespace sqlcon
             //}
         }
 
-        public void rmdir(Command cmd)
+        public void rmdir(ApplicationCommand cmd)
         {
             if (cmd.HasHelp)
             {
@@ -449,7 +449,7 @@ namespace sqlcon
             }
         }
 
-        public void type(Command cmd)
+        public void type(ApplicationCommand cmd)
         {
             if (cmd.HasHelp)
             {
@@ -480,7 +480,7 @@ namespace sqlcon
 
 
 
-        public void copy(Command cmd, CompareSideType sideType)
+        public void copy(ApplicationCommand cmd, CompareSideType sideType)
         {
             if (cmd.HasHelp)
             {
@@ -572,7 +572,7 @@ namespace sqlcon
             });
         }
 
-        public void compare(Command cmd)
+        public void compare(ApplicationCommand cmd)
         {
             if (cmd.HasHelp)
             {
@@ -620,7 +620,7 @@ namespace sqlcon
             cout.WriteLine($"result in \"{fileName}\"");
         }
 
-        public void rename(Command cmd)
+        public void rename(ApplicationCommand cmd)
         {
             if (cmd.HasHelp)
             {
@@ -640,7 +640,7 @@ namespace sqlcon
             }
         }
 
-        public void attrib(Command cmd)
+        public void attrib(ApplicationCommand cmd)
         {
             if (cmd.HasHelp)
             {
@@ -811,7 +811,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             return -1;
         }
 
-        public void let(Command cmd)
+        public void let(ApplicationCommand cmd)
         {
             if (cmd.HasHelp)
             {
@@ -839,7 +839,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void let1(Command cmd)
+        public void let1(ApplicationCommand cmd)
         {
             if (cmd.HasHelp)
             {
@@ -929,7 +929,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void clean(Command cmd, Configuration cfg)
+        public void clean(ApplicationCommand cmd, Configuration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1009,7 +1009,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             cerr.WriteLine("select database or table first");
         }
 
-        public void import(Command cmd, Configuration cfg, ShellContext context)
+        public void import(ApplicationCommand cmd, Configuration cfg, ShellContext context)
         {
             if (cmd.HasHelp)
             {
@@ -1114,7 +1114,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void export(Command cmd, Configuration cfg, ShellContext context)
+        public void export(ApplicationCommand cmd, Configuration cfg, ShellContext context)
         {
             if (cmd.HasHelp)
             {
@@ -1134,7 +1134,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cerr.WriteLine("select server, database or table first");
         }
 
-        public void mount(Command cmd, Configuration cfg)
+        public void mount(ApplicationCommand cmd, Configuration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1256,7 +1256,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void umount(Command cmd, Configuration cfg)
+        public void umount(ApplicationCommand cmd, Configuration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1336,7 +1336,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cerr.WriteLine($"{message} path not exist: {path}");
         }
 
-        public void xcopy(Command cmd)
+        public void xcopy(ApplicationCommand cmd)
         {
             if (cmd.HasHelp)
             {
@@ -1436,7 +1436,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             });
         }
 
-        public void execute(Command cmd, Side theSide)
+        public void execute(ApplicationCommand cmd, Side theSide)
         {
             if (cmd.HasHelp)
             {
@@ -1462,7 +1462,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 ErrorCode = CommandState.SQL_FAILS;
         }
 
-        public void edit(Command cmd, Side theSide)
+        public void edit(ApplicationCommand cmd, Side theSide)
         {
             if (cmd.HasHelp)
             {
@@ -1532,7 +1532,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void open(Command cmd, Configuration cfg)
+        public void open(ApplicationCommand cmd, Configuration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1607,7 +1607,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
         }
 
-        public void save(Command cmd, Configuration cfg)
+        public void save(ApplicationCommand cmd, Configuration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1641,7 +1641,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             return;
         }
 
-        public void echo(Command cmd)
+        public void echo(ApplicationCommand cmd)
         {
             if (cmd.HasHelp)
             {
@@ -1682,7 +1682,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         }
 
 
-        public void check(Command cmd, Side theSide)
+        public void check(ApplicationCommand cmd, Side theSide)
         {
             if (cmd.HasHelp)
             {
@@ -1748,7 +1748,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         }
 
 
-        public void last(Command cmd, Configuration cfg)
+        public void last(ApplicationCommand cmd, Configuration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1929,7 +1929,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             return;
         }
 
-        public void find(Command cmd, string match)
+        public void find(ApplicationCommand cmd, string match)
         {
             if (cmd.HasHelp)
             {

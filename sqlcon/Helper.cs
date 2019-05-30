@@ -14,7 +14,7 @@ namespace sqlcon
 {
     static class Helper
     {
-        public static string OutputFile(this Command cmd)
+        public static string OutputFile(this ApplicationCommand cmd)
         {
             string outputFile = cmd.OutputPath;
             if (!string.IsNullOrEmpty(outputFile))

@@ -184,7 +184,7 @@ namespace sqlcon
             if (line == string.Empty)
                 return NextStep.CONTINUE;
 
-            Command cmd = new Command(cfg, line);
+            ApplicationCommand cmd = new ApplicationCommand(cfg, line);
             if (cmd.badcommand)
                 return NextStep.ERROR;
 
@@ -436,7 +436,7 @@ namespace sqlcon
         static readonly string[] _SQL = new string[] { "ALTER", "CREATE", "DELETE", "DROP", "EXEC", "INSERT", "SELECT", "UPDATE", "USE" };
 
 
-        private void chdir(Command cmd)
+        private void chdir(ApplicationCommand cmd)
         {
             if (commandee.chdir(cmd))
             {

@@ -12,7 +12,7 @@ namespace sqlcon
     {
         protected CSharpBuilder builder;
 
-        public TheClassBuilder(Command cmd)
+        public TheClassBuilder(ApplicationCommand cmd)
             : base(cmd)
         {
             builder = new CSharpBuilder();

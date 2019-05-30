@@ -60,7 +60,7 @@ namespace sqlcon
             return new Locator(wildcard, columns);
         }
 
-        private static void _DisplayTable(UniqueTable udt, bool more, Command cmd)
+        private static void _DisplayTable(UniqueTable udt, bool more, ApplicationCommand cmd)
         {
             DataTable table = udt.Table;
 
@@ -84,7 +84,7 @@ namespace sqlcon
         }
 
 
-        private bool Display(Command cmd, SqlBuilder builder, TableName tname, int top)
+        private bool Display(ApplicationCommand cmd, SqlBuilder builder, TableName tname, int top)
         {
             try
             {
@@ -101,7 +101,7 @@ namespace sqlcon
             }
         }
 
-        private bool Display(Command cmd, DataTable table, int top)
+        private bool Display(ApplicationCommand cmd, DataTable table, int top)
         {
             try
             {
@@ -117,7 +117,7 @@ namespace sqlcon
             return true;
         }
 
-        public bool Display(Command cmd)
+        public bool Display(ApplicationCommand cmd)
         {
             SqlBuilder builder;
             int top = cmd.Top;
@@ -160,7 +160,7 @@ namespace sqlcon
         }
 
 
-        public bool Display(Command cmd, string columns, Locator locator)
+        public bool Display(ApplicationCommand cmd, string columns, Locator locator)
         {
             SqlBuilder builder;
             if (cmd.wildcard == null)

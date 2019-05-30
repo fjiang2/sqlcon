@@ -30,7 +30,7 @@ namespace sqlcon
 
         private DataTable dt;
 
-        public ConfClassBuilder(Command cmd, DataTable dt)
+        public ConfClassBuilder(ApplicationCommand cmd, DataTable dt)
             : base(cmd)
         {
             this.cmd = cmd;

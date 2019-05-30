@@ -23,7 +23,7 @@ namespace sqlcon
     {
         private DataTable dt;
 
-        public DataClassBuilder(Command cmd, DataTable dt)
+        public DataClassBuilder(ApplicationCommand cmd, DataTable dt)
             : base(cmd)
         {
             this.cmd = cmd;

@@ -13,8 +13,8 @@ namespace sqlcon
 {
     class Importer
     {
-        private Command cmd;
-        public Importer(Command cmd)
+        private ApplicationCommand cmd;
+        public Importer(ApplicationCommand cmd)
         {
             this.cmd = cmd;
         }

@@ -20,7 +20,7 @@ namespace sqlcon
         private const string _ToDataTable = "ToDataTable";
         private bool isReadOnly = false;
 
-        public DataContract1ClassBuilder(Command cmd, DataTable dt)
+        public DataContract1ClassBuilder(ApplicationCommand cmd, DataTable dt)
             : base(cmd)
         {
             this.dt = dt;

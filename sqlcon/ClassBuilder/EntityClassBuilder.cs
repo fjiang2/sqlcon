@@ -17,7 +17,7 @@ namespace sqlcon
         private TableName tname;
 
 
-        public EntityClassBuilder(Command cmd, TableName tname)
+        public EntityClassBuilder(ApplicationCommand cmd, TableName tname)
             : base(cmd)
         {
             this.tname = tname;

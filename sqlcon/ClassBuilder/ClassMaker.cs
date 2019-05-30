@@ -18,9 +18,9 @@ namespace sqlcon
         public string ns { get; set; }
         public string cname { get; set; }
 
-        protected Command cmd;
+        protected ApplicationCommand cmd;
 
-        public ClassMaker(Command cmd)
+        public ClassMaker(ApplicationCommand cmd)
         {
             this.cmd = cmd;
         }

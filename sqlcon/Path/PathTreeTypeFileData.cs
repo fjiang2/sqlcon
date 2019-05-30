@@ -14,7 +14,7 @@ namespace sqlcon
     {
         private TableOut tout = null;
 
-        public bool TypeFile(TreeNode<IDataPath> pt, Command cmd)
+        public bool TypeFile(TreeNode<IDataPath> pt, ApplicationCommand cmd)
         {
             if (TypeFileData(pt, cmd)) return true;
             if (TypeLocatorData(pt, cmd)) return true;
@@ -29,7 +29,7 @@ namespace sqlcon
         }
 
 
-        private bool TypeFileData(TreeNode<IDataPath> pt, Command cmd)
+        private bool TypeFileData(TreeNode<IDataPath> pt, ApplicationCommand cmd)
         {
             if (pt.Item is ServerName)
             {
@@ -80,7 +80,7 @@ namespace sqlcon
         }
 
 
-        private bool TypeLocatorData(TreeNode<IDataPath> pt, Command cmd)
+        private bool TypeLocatorData(TreeNode<IDataPath> pt, ApplicationCommand cmd)
         {
             if (!(pt.Item is Locator))
                 return false;
@@ -100,7 +100,7 @@ namespace sqlcon
 
         }
 
-        private bool TypeLocatorColumnData(TreeNode<IDataPath> pt, Command cmd)
+        private bool TypeLocatorColumnData(TreeNode<IDataPath> pt, ApplicationCommand cmd)
         {
             if (!(pt.Item is ColumnPath))
                 return false;

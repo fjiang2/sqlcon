@@ -19,7 +19,7 @@ namespace sqlcon
         public string mtd { get; set; }
 
 
-        public DataContractClassBuilder(Command cmd, DataTable dt)
+        public DataContractClassBuilder(ApplicationCommand cmd, DataTable dt)
             : base(cmd)
         {
             this.dt = dt;

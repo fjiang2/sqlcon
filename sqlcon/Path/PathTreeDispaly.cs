@@ -19,7 +19,7 @@ namespace sqlcon
     partial class PathManager
     {
 
-        public void Display(TreeNode<IDataPath> pt, Command cmd)
+        public void Display(TreeNode<IDataPath> pt, ApplicationCommand cmd)
         {
             if (DisplayServerNodes(pt, cmd)) return;
             if (DisplayDatabaseNodes(pt, cmd)) return;
@@ -29,7 +29,7 @@ namespace sqlcon
             if (DisplayViewNodes(pt, cmd)) return;
         }
 
-        private bool DisplayServerNodes(TreeNode<IDataPath> pt, Command cmd)
+        private bool DisplayServerNodes(TreeNode<IDataPath> pt, ApplicationCommand cmd)
         {
             if (pt != RootNode)
                 return false;
@@ -67,7 +67,7 @@ namespace sqlcon
             return true;
         }
 
-        private static bool DisplayDatabaseNodes(TreeNode<IDataPath> pt, Command cmd)
+        private static bool DisplayDatabaseNodes(TreeNode<IDataPath> pt, ApplicationCommand cmd)
         {
             if (!(pt.Item is ServerName))
                 return false;
@@ -105,7 +105,7 @@ namespace sqlcon
         }
 
 
-        private static bool DisplayTableNodes(TreeNode<IDataPath> pt, Command cmd)
+        private static bool DisplayTableNodes(TreeNode<IDataPath> pt, ApplicationCommand cmd)
         {
             if (!(pt.Item is DatabaseName))
                 return false;
@@ -143,7 +143,7 @@ namespace sqlcon
             return true;
         }
 
-        private static int PagePause(Command cmd, int h)
+        private static int PagePause(ApplicationCommand cmd, int h)
         {
             if (cmd.HasPage && h >= Console.WindowHeight - 1)
             {
@@ -157,7 +157,7 @@ namespace sqlcon
 
 
 
-        private static bool DisplayTableSubNodes(TreeNode<IDataPath> pt, Command cmd)
+        private static bool DisplayTableSubNodes(TreeNode<IDataPath> pt, ApplicationCommand cmd)
         {
             if (!(pt.Item is TableName))
                 return false;
@@ -237,7 +237,7 @@ namespace sqlcon
         }
 
 
-        private static void _DisplayColumnNodes(Command cmd, TableName tname)
+        private static void _DisplayColumnNodes(ApplicationCommand cmd, TableName tname)
         {
             TableSchema schema = new TableSchema(tname);
             cout.WriteLine("TABLE: {0}", tname.Path);
@@ -271,7 +271,7 @@ namespace sqlcon
             cout.WriteLine("\t{0} Column(s)", count);
         }
 
-        private static bool _DisplayLocatorNodes(TreeNode<IDataPath> pt, Command cmd)
+        private static bool _DisplayLocatorNodes(TreeNode<IDataPath> pt, ApplicationCommand cmd)
         {
             int i = 0;
             int count = 0;
@@ -302,7 +302,7 @@ namespace sqlcon
             return true;
         }
 
-        private static bool DisplayViewNodes(TreeNode<IDataPath> pt, Command cmd)
+        private static bool DisplayViewNodes(TreeNode<IDataPath> pt, ApplicationCommand cmd)
         {
             if (!(pt.Item is TableName))
                 return false;

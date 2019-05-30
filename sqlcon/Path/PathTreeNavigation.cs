@@ -164,7 +164,7 @@ namespace sqlcon
         }
 
 
-        public TreeNode<IDataPath> TryAddWhereOrColumns(TreeNode<IDataPath> pt, Command cmd)
+        public TreeNode<IDataPath> TryAddWhereOrColumns(TreeNode<IDataPath> pt, ApplicationCommand cmd)
         {
             if (!(pt.Item is Locator) && !(pt.Item is TableName))
             {

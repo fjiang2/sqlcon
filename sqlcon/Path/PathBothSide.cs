@@ -24,7 +24,7 @@ namespace sqlcon
 
         private bool valid = false;
 
-        public PathBothSide(PathManager mgr, Command cmd)
+        public PathBothSide(PathManager mgr, ApplicationCommand cmd)
         {
             this.mgr = mgr;
             ps1 = new PathSide(mgr);

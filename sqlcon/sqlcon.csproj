@@ -115,7 +115,7 @@
     <Compile Include="ClassBuilder\EntityClassBuilder.cs" />
     <Compile Include="ClassBuilder\TheClassBuilder.cs" />
     <Compile Include="FlowControl.cs" />
-    <Compile Include="Input\BaseCommand.cs" />
+    <Compile Include="Input\Command.cs" />
     <Compile Include="Data\DataExtension.cs" />
     <Compile Include="Output\OutputDataTable.cs" />
     <Compile Include="stdio\cerr.cs" />
@@ -150,7 +150,7 @@
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Output\OutputDataLine.cs" />
     <Compile Include="Shell\Context.cs" />
-    <Compile Include="Input\Command.cs" />
+    <Compile Include="Input\ApplicationCommand.cs" />
     <Compile Include="Path\PathLevel.cs" />
     <Compile Include="Path\PathNode.cs" />
     <Compile Include="Path\PathTreeDispaly.cs" />
