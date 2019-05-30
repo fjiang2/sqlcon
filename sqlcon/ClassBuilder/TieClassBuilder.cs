@@ -6,7 +6,7 @@ using System.IO;
 using Sys;
 using Sys.CodeBuilder;
 using Tie;
-
+using Sys.Stdio;
 
 namespace sqlcon
 {

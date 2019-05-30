@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Tie;
 
-namespace sqlcon
+namespace Sys.Stdio
 {
-    static class Context
+    public static class Context
     {
         public const string MAXROWS = "maxrows";
         public const string DATAREADER = "DataReader";
@@ -43,14 +43,7 @@ namespace sqlcon
                 return defaultValue;
         }
 
-        public static void ToConsole()
-        {
-            ((VAL)DS)
-                .Where(row => row[1].VALTYPE != VALTYPE.nullcon && row[1].VALTYPE != VALTYPE.voidcon && !row[0].Str.StartsWith("$"))
-                .Select(row => new { Variable = (string)row[0], Value = row[1] })
-                .ToConsole();
-        }
-
+      
         public static VAL binding
         {
             get
@@ -85,7 +78,7 @@ namespace sqlcon
 
                         if (line != null)
                         {
-                            Shell shell = DS["$SHELL"].Value as Shell;
+                            IShell shell = DS["$SHELL"].Value as IShell;
                             if (shell != null)
                             {
                                 int result = (int)shell.Run(line);

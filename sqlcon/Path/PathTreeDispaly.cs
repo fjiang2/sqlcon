@@ -7,9 +7,9 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Data.OleDb;
 using System.Data;
-using System.Text.RegularExpressions;
 using Sys;
 using Sys.Data;
+using Sys.Stdio;
 
 namespace sqlcon
 {

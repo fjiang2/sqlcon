@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 using System.Data.Common;
 using System.Windows.Media;
 using System.IO;
-using Sys.Data;
+using Sys.Stdio;
 
 namespace sqlcon
 {

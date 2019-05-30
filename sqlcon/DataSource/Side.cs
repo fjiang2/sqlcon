@@ -8,7 +8,7 @@ using Sys.Data.Comparison;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
-using System.Text.RegularExpressions;
+using Sys.Stdio;
 using Sys;
 
 namespace sqlcon

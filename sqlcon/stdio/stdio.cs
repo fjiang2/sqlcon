@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace sqlcon
+namespace Sys.Stdio
 {
     public sealed class stdio
     {

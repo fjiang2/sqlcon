@@ -8,10 +8,11 @@ using Sys;
 using Sys.Data;
 using Sys.Data.Comparison;
 using Tie;
+using Sys.Stdio;
 
 namespace sqlcon
 {
-    partial class Shell : ShellContext
+    partial class Shell : ShellContext, IShell
     {
 
         public Shell(Configuration cfg)
@@ -625,7 +626,12 @@ namespace sqlcon
                     break;
 
                 case "var":
-                    Context.ToConsole();
+                    {
+                        ((VAL)Context.DS)
+                            .Where(row => row[1].VALTYPE != VALTYPE.nullcon && row[1].VALTYPE != VALTYPE.voidcon && !row[0].Str.StartsWith("$"))
+                            .Select(row => new { Variable = (string)row[0], Value = row[1] })
+                            .ToConsole();
+                    }
                     break;
                 default:
                     cerr.WriteLine("invalid argument");

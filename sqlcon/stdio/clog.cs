@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace sqlcon
+namespace Sys.Stdio
 {
     public class clog
     {
@@ -14,14 +14,30 @@ namespace sqlcon
 
         static clog()
         {
-            string fileName = Context.GetValue<string>("log", "sqlcon.log");
-            writer = fileName.NewStreamWriter();
+            string fileName = Context.GetValue<string>("log", "clog.log");
+            writer = NewStreamWriter(fileName);
         }
 
         ~clog()
         {
             if (writer != null)
                 writer.Close();
+        }
+
+
+        private static StreamWriter NewStreamWriter(string fileName)
+        {
+            try
+            {
+                string folder = Path.GetDirectoryName(fileName);
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+            }
+            catch (ArgumentException)
+            {
+            }
+
+            return new StreamWriter(fileName);
         }
 
         public static void Write(string text)

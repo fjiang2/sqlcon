@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Data;
 using Sys;
 using Sys.Data;
-
+using Sys.Stdio;
 
 namespace sqlcon
 {

@@ -8,6 +8,7 @@ using System.Data;
 using Sys;
 using Sys.Data;
 using Sys.Data.Comparison;
+using Sys.Stdio;
 
 namespace sqlcon
 {

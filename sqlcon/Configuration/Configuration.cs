@@ -10,6 +10,7 @@ using System.Xml.Linq;
 using Sys.Data;
 using Sys.Data.IO;
 using Sys.Networking;
+using Sys.Stdio;
 using Tie;
 
 namespace sqlcon

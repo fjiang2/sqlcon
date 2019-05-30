@@ -15,7 +15,7 @@ using System.IO;
 using System.Data;
 using System.Data.SqlClient;
 using Sys.Data;
-using System.ComponentModel;
+using Sys.Stdio;
 using Sys;
 
 namespace sqlcon.Windows

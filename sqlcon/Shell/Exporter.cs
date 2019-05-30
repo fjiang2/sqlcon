@@ -9,6 +9,7 @@ using Sys;
 using Sys.Data;
 using Sys.Data.Comparison;
 using Sys.Data.Manager;
+using Sys.Stdio;
 
 namespace sqlcon
 {

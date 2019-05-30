@@ -1,4 +1,4 @@
-﻿namespace sqlcon
+﻿namespace Sys.Stdio
 {
     public interface ITabCompletion
     {

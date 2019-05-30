@@ -7,6 +7,7 @@ using Sys;
 using Sys.Data;
 using System.Text.RegularExpressions;
 using System.Data;
+using Sys.Stdio;
 
 namespace sqlcon
 {

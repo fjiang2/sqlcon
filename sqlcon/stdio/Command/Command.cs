@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Tie;
 
-namespace sqlcon
+namespace Sys.Stdio
 {
     public class Command
     {
@@ -25,6 +25,11 @@ namespace sqlcon
 
         public Command()
         {
+        }
+
+        public Command(string line)
+        {
+            ParseLine(line);
         }
 
         protected void ParseLine(string line)

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace sqlcon
+namespace Sys.Stdio
 {
     public class cout
     {

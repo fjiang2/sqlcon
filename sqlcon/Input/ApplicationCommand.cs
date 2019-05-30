@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-using Tie;
+using Sys.Stdio;
 
 namespace sqlcon
 {

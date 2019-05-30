@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Sys;
 using Sys.Data;
+using Sys.Stdio;
 using Tie;
 
 namespace sqlcon
