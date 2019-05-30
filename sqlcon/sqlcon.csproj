@@ -115,17 +115,9 @@
     <Compile Include="ClassBuilder\EntityClassBuilder.cs" />
     <Compile Include="ClassBuilder\TheClassBuilder.cs" />
     <Compile Include="FlowControl.cs" />
-    <Compile Include="stdio\Command\IShell.cs" />
-    <Compile Include="stdio\Command\Command.cs" />
     <Compile Include="Data\DataExtension.cs" />
     <Compile Include="Output\OutputDataTable.cs" />
-    <Compile Include="stdio\Command\ITabCompletion.cs" />
-    <Compile Include="stdio\cerr.cs" />
-    <Compile Include="stdio\cin.cs" />
-    <Compile Include="stdio\clog.cs" />
-    <Compile Include="stdio\cout.cs" />
     <Compile Include="Path\CommandState.cs" />
-    <Compile Include="stdio\Command\NextStep.cs" />
     <Compile Include="Shell\Importer.cs" />
     <Compile Include="Shell\ShellHelp.cs" />
     <Compile Include="Shell\ShellHistory.cs" />
@@ -133,8 +125,6 @@
     <Compile Include="Windows\SqlEditor.cs" />
     <Compile Include="Windows\TableEditor.cs" />
     <Compile Include="Input\KeyValueTable.cs" />
-    <Compile Include="stdio\Command\Options.cs" />
-    <Compile Include="stdio\Command\PathName.cs" />
     <Compile Include="Output\ProgressBar.cs" />
     <Compile Include="Path\PathBothSide.cs" />
     <Compile Include="Path\PathSide.cs" />
@@ -151,7 +141,6 @@
     <Compile Include="Main.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Output\OutputDataLine.cs" />
-    <Compile Include="stdio\Command\Context.cs" />
     <Compile Include="Input\ApplicationCommand.cs" />
     <Compile Include="Path\PathLevel.cs" />
     <Compile Include="Path\PathNode.cs" />
@@ -162,7 +151,6 @@
     <Compile Include="DataSource\MatchedDatabase.cs" />
     <Compile Include="Path\PathTreeExpand.cs" />
     <Compile Include="Path\PathTreeNavigation.cs" />
-    <Compile Include="stdio\stdio.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataSource\Side.cs" />

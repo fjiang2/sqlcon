@@ -11,7 +11,7 @@ namespace Sys.Stdio
     {
         public const string MAXROWS = "maxrows";
         public const string DATAREADER = "DataReader";
-        public const string THESIDE = "$TheSide";
+        public const string SHELL = "$SHELL";
 
         public static Memory DS = new Memory();
 
@@ -78,7 +78,7 @@ namespace Sys.Stdio
 
                         if (line != null)
                         {
-                            IShell shell = DS["$SHELL"].Value as IShell;
+                            IShell shell = DS[SHELL].Value as IShell;
                             if (shell != null)
                             {
                                 int result = (int)shell.Run(line);

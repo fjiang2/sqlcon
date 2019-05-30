@@ -75,7 +75,7 @@ namespace sqlcon
 
 
             Shell = new Shell(cfg);
-            Context.DS.AddHostObject("$SHELL", Shell);
+            Context.DS.AddHostObject(Context.SHELL, Shell);
             Shell.DoConsole();
         }
 

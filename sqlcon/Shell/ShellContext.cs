@@ -12,6 +12,7 @@ namespace sqlcon
         public Configuration cfg { get; }
         public PathManager mgr { get; }
         public Commandee commandee { get; }
+        public const string THESIDE = "$TheSide";
 
         public ShellContext(Configuration cfg)
         {
@@ -50,7 +51,7 @@ namespace sqlcon
             }
 
             this.theSide = side;
-            Context.DS.AddHostObject(Context.THESIDE, side);
+            Context.DS.AddHostObject(THESIDE, side);
 
             commandee.chdir(theSide.Provider.ServerName, theSide.DatabaseName);
         }

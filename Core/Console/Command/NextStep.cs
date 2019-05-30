@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Sys.Stdio
 {
-    enum NextStep
+    public enum NextStep
     {
         NEXT,
 

@@ -1,6 +1,6 @@
 ﻿namespace Sys.Stdio
 {
-    interface IShell
+    public interface IShell
     {
         NextStep Run(string line);
     }

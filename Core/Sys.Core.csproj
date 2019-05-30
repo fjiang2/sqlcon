@@ -92,6 +92,7 @@
     <Compile Include="Compare\TableCompare.cs" />
     <Compile Include="Compare\TableSchemaCompare.cs" />
     <Compile Include="Compiler\CSharpCompiler.cs" />
+    <Compile Include="Console\Command\OptionItem.cs" />
     <Compile Include="Const.cs" />
     <Compile Include="Data.Manager\DpoGenerate\ClassName.cs" />
     <Compile Include="Data.Manager\DpoGenerate\ClassTableName.cs" />
@@ -320,6 +321,18 @@
     <Compile Include="Data\SqlParser\StringLex.cs" />
     <Compile Include="Data\SqlParser\SYMBOL.cs" />
     <Compile Include="Data\SqlParser\SYMBOL2.cs" />
+    <Compile Include="Console\stdio\cerr.cs" />
+    <Compile Include="Console\stdio\cin.cs" />
+    <Compile Include="Console\stdio\clog.cs" />
+    <Compile Include="Console\Command\Command.cs" />
+    <Compile Include="Console\Command\Context.cs" />
+    <Compile Include="Console\Command\IShell.cs" />
+    <Compile Include="Console\Command\ITabCompletion.cs" />
+    <Compile Include="Console\Command\NextStep.cs" />
+    <Compile Include="Console\Command\Options.cs" />
+    <Compile Include="Console\Command\PathName.cs" />
+    <Compile Include="Console\stdio\cout.cs" />
+    <Compile Include="Console\stdio\stdio.cs" />
     <Compile Include="Sys\BackgroundTask.cs" />
     <Compile Include="Networking\FtpClient.cs" />
     <Compile Include="Networking\HttpRequest.cs" />

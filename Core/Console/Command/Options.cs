@@ -7,20 +7,16 @@ using System.Threading.Tasks;
 namespace Sys.Stdio
 {
 
-    public class OptionItem
-    {
-        public char Prefix { get; set; }
-
-        public string Name { get; set; }
-
-        public string Value { get; set; }
-    }
-
     public class Options
     {
-        List<OptionItem> list = new List<OptionItem>();
+        private List<OptionItem> list = new List<OptionItem>();
 
-        public void Add(string arg)
+        internal Options()
+        {
+
+        }
+
+        internal void Add(string arg)
         {
             OptionItem item = new OptionItem();
 
@@ -58,6 +54,7 @@ namespace Sys.Stdio
         {
             return list.Where(item => item.Prefix == prefix && item.Name == name).Count() > 0;
         }
+
         public bool HasOnly(char prefix, string name)
         {
             return list.Where(item => item.Prefix == prefix && item.Name == name && item.Value == null).Count() > 0;
