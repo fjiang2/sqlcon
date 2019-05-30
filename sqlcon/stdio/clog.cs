@@ -8,7 +8,7 @@ using System.IO;
 
 namespace sqlcon
 {
-    class clog
+    public class clog
     {
         private static StreamWriter writer = null;
 

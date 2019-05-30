@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace sqlcon
 {
 
-    class OptionItem
+    public class OptionItem
     {
         public char Prefix { get; set; }
 
@@ -16,7 +16,7 @@ namespace sqlcon
         public string Value { get; set; }
     }
 
-    class Options
+    public class Options
     {
         List<OptionItem> list = new List<OptionItem>();
 

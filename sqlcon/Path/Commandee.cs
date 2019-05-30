@@ -15,10 +15,6 @@ using Tie;
 
 namespace sqlcon
 {
-    internal interface ITabCompletion
-    {
-        string[] TabCandidates(string argument);
-    }
 
     internal class Commandee : ITabCompletion
     {

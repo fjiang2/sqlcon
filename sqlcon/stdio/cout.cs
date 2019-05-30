@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace sqlcon
 {
-    class cout
+    public class cout
     {
         /// <summary>
         /// turn command-echoing on/off on the screen

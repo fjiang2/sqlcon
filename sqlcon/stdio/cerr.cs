@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace sqlcon
 {
-    class cerr
+    public class cerr
     {
         public static void WriteLine(string text)
         {

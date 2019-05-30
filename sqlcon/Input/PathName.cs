@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace sqlcon
 {
-    class PathName
+    public class PathName
     {
         public readonly string wildcard = null;
         public readonly string where = null;

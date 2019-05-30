@@ -118,6 +118,7 @@
     <Compile Include="Input\Command.cs" />
     <Compile Include="Data\DataExtension.cs" />
     <Compile Include="Output\OutputDataTable.cs" />
+    <Compile Include="stdio\ITabCompletion.cs" />
     <Compile Include="stdio\cerr.cs" />
     <Compile Include="stdio\cin.cs" />
     <Compile Include="stdio\clog.cs" />

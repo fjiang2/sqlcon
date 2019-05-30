@@ -8,7 +8,7 @@ using Tie;
 
 namespace sqlcon
 {
-    class Command
+    public class Command
     {
         public bool badcommand { get; private set; }
         protected List<string> paths = new List<string>();

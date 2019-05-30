@@ -7,7 +7,7 @@ using System.IO;
 
 namespace sqlcon
 {
-    sealed class stdio
+    public sealed class stdio
     {
 
         static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)

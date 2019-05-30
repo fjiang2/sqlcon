@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace sqlcon
 {
-    class cin
+    public class cin
     {
 
         public static ConsoleKey ReadKey()
