@@ -1,5 +1,14 @@
 ﻿sqlcon release notes
 
+7/8/2019 v2.2.1.0
+	Improvements/Enhancements:
+	1. export data contract class from last DataSet requires option /last
+	Example:
+	   let output = @"C:\src\Solution1\Project1";
+       let ns = "Solution1.Project1";
+	   SELECT TOP 10 * FROM CtrlRom;
+	   export /ns:{ns} /using:Sys.Data /method:GetField /col:Cid,RomType /dc1 /out:{output} /class:CtrlRom /last
+
 5/29/2019 v2.2.0.0
 	Improvements/Enhancements:
 	1. make class Command to public API

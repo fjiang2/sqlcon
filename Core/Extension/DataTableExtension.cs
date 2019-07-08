@@ -9,20 +9,38 @@ namespace Sys.Data
 {
     public static class DataTableExtension
     {
-        public static DataColumn[] PrimaryKeys(this DataTable dt, PrimaryKeys pk)
+        public static DataColumn[] dentityKeys(this DataTable dt, IdentityKeys keys)
         {
-            return PrimaryKeys(dt, pk.Keys);
+            return GetDataColumns(dt, keys.ColumnNames);
+        }
+        public static DataColumn[] ForeignKeys(this DataTable dt, IForeignKeys keys)
+        {
+            return GetDataColumns(dt, keys.Keys.Select(x => x.FK_Column));
+        }
+
+        public static DataColumn[] PrimaryKeys(this DataTable dt, IPrimaryKeys keys)
+        {
+            return PrimaryKeys(dt, keys.Keys);
         }
 
         public static DataColumn[] PrimaryKeys(this DataTable dt, string[] keys)
         {
-            DataColumn[] primaryKey = dt.Columns
-                .Cast<DataColumn>()
-                .Where(column => keys.Select(key => key.ToUpper()).Contains(column.ColumnName.ToUpper()))
-                .ToArray();
+            DataColumn[] primaryKey = GetDataColumns(dt, keys);
 
             dt.PrimaryKey = primaryKey;
             return primaryKey;
+        }
+
+        public static DataColumn[] GetDataColumns(this DataTable dt, IEnumerable<string> columnNames)
+        {
+            var L = columnNames.Select(key => key.ToUpper());
+
+            DataColumn[] _columns = dt.Columns
+                .Cast<DataColumn>()
+                .Where(column => L.Contains(column.ColumnName.ToUpper()))
+                .ToArray();
+
+            return _columns;
         }
     }
 }
