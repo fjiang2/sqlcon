@@ -6,6 +6,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Sys.Data;
 
 namespace sqlcon
 {
@@ -89,13 +90,14 @@ namespace sqlcon
             }
 
             //primary keys
-            var pk = dt.Columns
-                .Cast<DataColumn>()
-                .Where(column => keys.Select(key => key.ToUpper()).Contains(column.ColumnName.ToUpper()))
-                .ToArray();
+            DataColumn[] pk = dt.PrimaryKey;
+            if (pk == null || pk.Length == 0)
+            {
+                pk = dt.PrimaryKeys(keys);
 
-            if (pk.Length == 0)
-                pk = new DataColumn[] { dt.Columns[0] };
+                if (pk.Length == 0)
+                    pk = new DataColumn[] { dt.Columns[0] };
+            }
 
             string pks = string.Join(", ", pk.Select(key => COLUMN(key)));
             field = new Field(new TypeInfo { type = typeof(string[]) }, "Keys")

@@ -271,6 +271,7 @@
     <Compile Include="Data\UniqueTable.cs" />
     <Compile Include="EventArgs\EventArgs`1.cs" />
     <Compile Include="EventArgs\EventArgs`2.cs" />
+    <Compile Include="Extension\DataTableExtension.cs" />
     <Compile Include="Extension\DateTimeExtension.cs" />
     <Compile Include="Extension\EnumExtension.cs" />
     <Compile Include="EventArgs\MessageExceptionEventArgs.cs" />

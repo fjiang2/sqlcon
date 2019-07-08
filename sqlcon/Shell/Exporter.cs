@@ -437,30 +437,37 @@ namespace sqlcon
             string path = cmd.OutputPath ?? cfg.GetValue<string>(ConfigKey._GENERATOR_DC_PATH, $"{Configuration.MyDocuments}\\dc");
             string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>(ConfigKey._GENERATOR_DC_NS, "Sys.DataModel.DataContract");
             string clss = cmd.GetValue("class");
+            bool last = cmd.Has("last");
 
-            DataSet ds = ShellHistory.LastDataSet();
             List<DataTable> list = new List<DataTable>();
 
-            if (ds != null)
+            if (last)
             {
-                string[] items = new string[] { };
-                if (clss != null)
-                    items = clss.Split(',');
+                DataSet ds = ShellHistory.LastDataSet();
 
-                int i = 0;
-                foreach (DataTable dt in ds.Tables)
+                if (ds != null)
                 {
-                    list.Add(dt);
-                    if (i < items.Length)
-                        dt.TableName = items[i];
+                    string[] items = new string[] { };
+                    if (clss != null)
+                        items = clss.Split(',');
 
-                    i++;
+                    int i = 0;
+                    foreach (DataTable dt in ds.Tables)
+                    {
+                        list.Add(dt);
+                        if (i < items.Length)
+                            dt.TableName = items[i];
+
+                        i++;
+                    }
                 }
             }
             else if (tname != null)
             {
                 var dt = new SqlCmd(tname.Provider, $"SELECT TOP 1 * FROM {tname.FormalName}").FillDataTable();
                 dt.TableName = tname.Name;
+                var schema = new TableSchema(tname);
+                dt.PrimaryKeys(schema.PrimaryKeys.Keys);
                 list.Add(dt);
             }
             else if (dname != null)
@@ -799,8 +806,9 @@ namespace sqlcon
             cout.WriteLine("   /dpo     : generate C# table class");
             cout.WriteLine("   /l2s     : generate C# Linq to SQL class");
             cout.WriteLine("   /dc      : generate C# data contract class");
-            cout.WriteLine("   /dc1     : generate C# data contract class and extension class from last result");
+            cout.WriteLine("   /dc1     : generate C# data contract class and extension class");
             cout.WriteLine("      [/readonly]: contract class for reading only");
+            cout.WriteLine("      [/last]: generate C# data contract from last result");
             cout.WriteLine("   /dc2     : generate C# data contract class from last result");
             cout.WriteLine("      [/method:name] default convert method is defined on the .cfg");
             cout.WriteLine("      [/col:pk1,pk2] default primary key is the first column");
