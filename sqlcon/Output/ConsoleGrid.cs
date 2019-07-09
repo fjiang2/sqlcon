@@ -114,12 +114,13 @@ namespace sqlcon
 
         }
 
-        public static void ToConsole(this DataTable dt, bool vertical = false, bool more = false, bool outputDbNull = true)
+        public static void ToConsole(this DataTable dt, bool vertical = false, bool more = false, bool outputDbNull = true, int maxColumnWidth = 0)
         {
             ShellHistory.SetLastResult(dt);
             OutputDataTable odt = new OutputDataTable(dt, cout.TrimWriteLine, vertical)
             {
                 OutputDbNull = outputDbNull,
+                MaxColumnWidth = maxColumnWidth,
             };
             odt.Output();
 

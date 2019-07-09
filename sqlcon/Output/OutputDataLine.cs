@@ -17,8 +17,8 @@ namespace sqlcon
 
         private int[] W;
         private Action<string> writeLine;
-        public int MaxWidth { get; set; } = -1;
-
+        public int MaxColumnWidth { get; set; } = -1;
+        
         public OutputDataLine(Action<string> writeLine, int numberOfColumns)
         {
             this.writeLine = writeLine;
@@ -92,7 +92,12 @@ namespace sqlcon
                 string item = Cell(columns[i]);
 
                 if (item.Length > W[i])
+                {
                     W[i] = item.Length;
+
+                    if (MaxColumnWidth > 0 && W[i] > MaxColumnWidth)
+                        W[i] = MaxColumnWidth;
+                }
             }
 
         }
@@ -121,10 +126,12 @@ namespace sqlcon
 
                 //when cell includes a big string with letter [\n]
                 if (result.Length > 200)
+                {
                     result = result
                         .Replace("\r\n", " ")
                         .Replace("\n", " ")
                         .Replace("\t", " ");
+                }
 
                 return result;
             }

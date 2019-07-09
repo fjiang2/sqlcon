@@ -42,6 +42,13 @@ namespace sqlcon
             }
         }
 
+        public int MaxColumnWidth
+        {
+            get { return line.MaxColumnWidth; }
+            set { line.MaxColumnWidth = value; }
+        }
+
+
         public bool OutputDbNull
         {
             get { return line.OutputDbNull; }

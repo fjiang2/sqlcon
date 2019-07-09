@@ -80,7 +80,9 @@ namespace sqlcon
                 return;
             }
 
-            table.ToConsole(vertical: cmd.IsVertical, more: more);
+            int maxColumnWidth = cmd.Configuration.GetValue<int>("gui.table.viewer.MaxColumnWidth");
+
+            table.ToConsole(vertical: cmd.IsVertical, more: more, outputDbNull: true, maxColumnWidth);
         }
 
 
