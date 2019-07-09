@@ -18,7 +18,7 @@ namespace sqlcon
         private int[] W;
         private Action<string> writeLine;
         public int MaxColumnWidth { get; set; } = -1;
-        
+
         public OutputDataLine(Action<string> writeLine, int numberOfColumns)
         {
             this.writeLine = writeLine;
@@ -109,32 +109,38 @@ namespace sqlcon
             if (cell == null)
                 return "null";
 
-            else if (cell == DBNull.Value)
+            if (cell == DBNull.Value)
             {
                 if (OutputDbNull)
                     return "NULL";
                 else
                     return string.Empty;
             }
-            else if (cell is byte[])
+
+            if (cell is DateTime)
+            {
+                return ((DateTime)cell).ToString("yyyy-MM-dd HH:mm:ss.fff");
+            }
+
+            if (cell is byte[])
             {
                 return "0x" + BitConverter.ToString((byte[])cell).Replace("-", "");
             }
-            else
+
+
+
+            string result = cell.ToString().Trim();
+
+            //when cell includes a big string with letter [\n]
+            if (result.Length > 200)
             {
-                string result = cell.ToString().Trim();
-
-                //when cell includes a big string with letter [\n]
-                if (result.Length > 200)
-                {
-                    result = result
-                        .Replace("\r\n", " ")
-                        .Replace("\n", " ")
-                        .Replace("\t", " ");
-                }
-
-                return result;
+                result = result
+                    .Replace("\r\n", " ")
+                    .Replace("\n", " ")
+                    .Replace("\t", " ");
             }
+
+            return result;
         }
 
 
