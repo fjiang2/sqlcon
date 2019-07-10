@@ -67,6 +67,46 @@ namespace Sys.Data
                 );
         }
 
+
+        public string IF_NOT_EXISTS_INSERT_ELSE_UPDATE(string[] columns, object[] values)
+        {
+            string[] keys = schema.PrimaryKeys.Keys;
+            var L1 = new List<ColumnPair>();
+            foreach (var key in keys)
+            {
+                for (int i = 0; i < columns.Length; i++)
+                    if (key == columns[i])
+                    {
+                        L1.Add(new ColumnPair(key, values[i]));
+                    }
+            }
+
+            string where = string.Join<ColumnPair>(" AND ", L1);
+            return string.Format(ifNotExistsInsertElseUpdateTemplate, where, INSERT(columns, values), UPDATE(columns, values));
+        }
+
+
+        public string UPDATE(string[] columnName, object[] values)
+        {
+            var direct = RowCompare.Direct(columnName, values).Where(column => !schema.Identity.ColumnNames.Contains(column.ColumnName));
+            return UPDATE(direct);
+        }
+
+        public string UPDATE(IEnumerable<ColumnPair> pairs)
+        {
+            var x1 = pairs.Select(p => $"[{p.ColumnName}] = {p.Value.ToScript()}");
+
+            string[] keys = schema.PrimaryKeys.Keys;
+            var L = pairs.Where(x => keys.Contains(x.ColumnName));
+            string where = string.Join<ColumnPair>(" AND ", L);
+
+            return string.Format(updateCommandTemplate,
+                string.Join(",", x1),
+                where
+                );
+        }
+
+
         public string UPDATE(RowCompare compare)
         {
             return string.Format(updateCommandTemplate, compare.Set, compare.Where);
@@ -318,11 +358,28 @@ namespace Sys.Data
             {
                 string ifExists = @"
 IF NOT EXISTS(SELECT * FROM @@0 WHERE @@1)
-   @@2";
+  @@2";
                 return ifExists
                     .Replace("@@0", tableName.FormalName)
                     .Replace("@@1", "{0}")
                     .Replace("@@2", "{1}");
+            }
+        }
+
+        private string ifNotExistsInsertElseUpdateTemplate
+        {
+            get
+            {
+                string ifExists = @"
+IF NOT EXISTS(SELECT * FROM @@0 WHERE @@1)
+  @@2
+ELSE 
+  @@3";
+                return ifExists
+                    .Replace("@@0", tableName.FormalName)
+                    .Replace("@@1", "{0}")
+                    .Replace("@@2", "{1}")
+                    .Replace("@@3", "{2}");
             }
         }
 

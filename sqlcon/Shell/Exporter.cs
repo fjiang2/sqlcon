@@ -167,38 +167,26 @@ namespace sqlcon
             cerr.WriteLine("warning: table or database is not seleted");
         }
 
-        public void ExportInsert()
+        public void ExportInsertOrUpdateData(SqlScriptType type)
         {
             if (tname != null)
             {
-                if (cmd.IsSchema)
-                {
-                    using (var writer = fileName.NewStreamWriter())
-                    {
-                        string sql = Compare.GenerateTemplate(new TableSchema(tname), SqlScriptType.INSERT, cmd.HasIfExists);
-                        cout.WriteLine(sql);
-                        writer.WriteLine(sql);
-                    }
-                }
-                else
-                {
-                    var node = mgr.GetCurrentNode<Locator>();
-                    int count;
+                var node = mgr.GetCurrentNode<Locator>();
+                int count;
 
-                    using (var writer = fileName.NewStreamWriter())
+                using (var writer = fileName.NewStreamWriter())
+                {
+                    if (node != null)
                     {
-                        if (node != null)
-                        {
-                            cout.WriteLine("start to generate {0} INSERT script to file: {1}", tname, fileName);
-                            Locator locator = mgr.GetCombinedLocator(node);
-                            count = Compare.GenerateRows(writer, new TableSchema(tname), locator, cmd.HasIfExists);
-                            cout.WriteLine("insert clauses (SELECT * FROM {0} WHERE {1}) generated to {2}", tname, locator, fileName);
-                        }
-                        else
-                        {
-                            count = Compare.GenerateRows(writer, new TableSchema(tname), null, cmd.HasIfExists);
-                            cout.WriteLine("insert clauses (SELECT * FROM {0}) generated to {1}", tname, fileName);
-                        }
+                        cout.WriteLine("start to generate {0} INSERT script to file: {1}", tname, fileName);
+                        Locator locator = mgr.GetCombinedLocator(node);
+                        count = Compare.GenerateRows(type, writer, new TableSchema(tname), locator, cmd.HasIfExists);
+                        cout.WriteLine($"{type} clauses (SELECT * FROM {tname} WHERE {locator}) generated to \"{fileName}\"");
+                    }
+                    else
+                    {
+                        count = Compare.GenerateRows(type, writer, new TableSchema(tname), null, cmd.HasIfExists);
+                        cout.WriteLine($"{type} clauses (SELECT * FROM {tname}) generated to \"{fileName}\"");
                     }
                 }
             }
@@ -228,13 +216,14 @@ namespace sqlcon
                                     }
                                 }
 
-                                count = Compare.GenerateRows(writer, new TableSchema(tn), null, cmd.HasIfExists);
-                                cout.WriteLine("{0,10} row(s) generated on {1}", count, tn.ShortName);
+                                count = Compare.GenerateRows(type, writer, new TableSchema(tn), null, cmd.HasIfExists);
+                                cout.WriteLine($"{count,10} row(s) generated on {tn.ShortName}");
                             }
                             else
                                 cout.WriteLine("{0,10} skipped", tn.ShortName);
                         }
-                        cout.WriteLine("completed");
+
+                        cout.WriteLine($"completed to generate {type} clauses to \"{fileName}\"");
 
                     });
                 }
@@ -788,10 +777,13 @@ namespace sqlcon
             cout.WriteLine("option:");
             cout.WriteLine("   /out:xxx : output path or file name");
             cout.WriteLine("option of SQL generation:");
-            cout.WriteLine("   /insert  : export INSERT INTO script on current table/database");
+            cout.WriteLine("   /INSERT  : export INSERT INTO script on current table/database");
+            cout.WriteLine("   /UPDATE  : export UPDATE SETscript on current table/database");
+            cout.WriteLine("   /SAVE    : export IF NOT EXISTS INSERT ELSE UPDATE script on current table/database");
             cout.WriteLine("   [/if]    : option /if generate if exists row then UPDATE else INSERT; or check existence of table when drop table");
             cout.WriteLine("   /create  : generate CREATE TABLE script on current table/database");
             cout.WriteLine("   /select  : generate SELECT FROM WHERE template");
+            cout.WriteLine("   /insert  : generate INSERT INTO template");
             cout.WriteLine("   /update  : generate UPDATE SET WHERE template");
             cout.WriteLine("   /save    : generate IF EXISTS UPDATE ELSE INSERT template");
             cout.WriteLine("   /delete  : generate DELETE FROM WHERE template, delete rows with foreign keys constraints");
@@ -851,12 +843,18 @@ namespace sqlcon
 
         public void Run()
         {
-            if (cmd.Has("insert"))
-                ExportInsert();
+            if (cmd.Has("INSERT"))
+                ExportInsertOrUpdateData(SqlScriptType.INSERT);
+            else if (cmd.Has("UPDATE"))
+                ExportInsertOrUpdateData(SqlScriptType.UPDATE);
+            else if (cmd.Has("SAVE"))
+                ExportInsertOrUpdateData(SqlScriptType.INSERT_OR_UPDATE);
             else if (cmd.Has("create"))
                 ExportCreate();
             else if (cmd.Has("select"))
                 ExportScud(SqlScriptType.SELECT);
+            else if (cmd.Has("insert"))
+                ExportScud(SqlScriptType.INSERT);
             else if (cmd.Has("delete"))
                 ExportScud(SqlScriptType.DELETE);
             else if (cmd.Has("drop"))

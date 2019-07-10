@@ -1,5 +1,10 @@
 ﻿sqlcon release notes
 
+7/10/2019 v2.2.2.0
+	Improvements/Enhancements:
+	1. export UPDATE script for data rows
+	1. export IF NOT EXISTS INSERT ELSE UPDATE script for data rows
+
 7/8/2019 v2.2.1.0
 	Improvements/Enhancements:
 	1. export data contract class from last DataSet requires option /last
