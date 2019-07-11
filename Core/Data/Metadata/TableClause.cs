@@ -88,22 +88,30 @@ namespace Sys.Data
 
         public string UPDATE(string[] columnName, object[] values)
         {
-            var direct = RowCompare.Direct(columnName, values).Where(column => !schema.Identity.ColumnNames.Contains(column.ColumnName));
+            var direct = RowCompare.Direct(columnName, values);
             return UPDATE(direct);
         }
 
         public string UPDATE(IEnumerable<ColumnPair> pairs)
         {
-            var x1 = pairs.Select(p => $"[{p.ColumnName}] = {p.Value.ToScript()}");
+            string[] ik = schema.Identity.ColumnNames;
+            string[] pk = schema.PrimaryKeys.Keys;
 
-            string[] keys = schema.PrimaryKeys.Keys;
-            var L = pairs.Where(x => keys.Contains(x.ColumnName));
-            string where = string.Join<ColumnPair>(" AND ", L);
+            var L1 = pairs
+                .Where(column => !ik.Contains(column.ColumnName))
+                .Where(column => !pk.Contains(column.ColumnName))
+                .Select(p => $"[{p.ColumnName}] = {p.Value.ToScript()}");
+            string update = string.Join(",", L1);
 
-            return string.Format(updateCommandTemplate,
-                string.Join(",", x1),
-                where
-                );
+            var L2 = pairs.Where(x => pk.Contains(x.ColumnName));
+            string where = string.Join<ColumnPair>(" AND ", L2);
+
+            if (where == string.Empty)
+            {
+                throw new Exception("primary key doesn't exist");
+            }
+
+            return string.Format(updateCommandTemplate, update, where);
         }
 
 
@@ -383,24 +391,10 @@ ELSE
             }
         }
 
-        private string selectCommandTemplate
-        {
-            get { return string.Format("SELECT {0} FROM {1} WHERE {2}", "{0}", tableName.FormalName, "{1}"); }
-        }
-        private string updateCommandTemplate
-        {
-            get { return string.Format("UPDATE {0} SET {1} WHERE {2}", tableName.FormalName, "{0}", "{1}"); }
-        }
-
-        private string insertCommandTemplate
-        {
-            get { return string.Format("INSERT INTO {0}({1}) VALUES({2})", tableName.FormalName, "{0}", "{1}"); }
-        }
-
-        private string deleteCommandTemplate
-        {
-            get { return string.Format("DELETE FROM {0} WHERE {1}", tableName.FormalName, "{0}"); }
-        }
+        private string selectCommandTemplate => $"SELECT {{0}} FROM {tableName.FormalName} WHERE {{1}}";
+        private string updateCommandTemplate => $"UPDATE {tableName.FormalName} SET {{0}} WHERE {{1}}";
+        private string insertCommandTemplate => $"INSERT INTO {tableName.FormalName}({{0}}) VALUES({{1}})";
+        private string deleteCommandTemplate => $"DELETE FROM {tableName.FormalName} WHERE {{0}}";
 
         #endregion
 
