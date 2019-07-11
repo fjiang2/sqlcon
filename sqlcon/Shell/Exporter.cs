@@ -90,7 +90,7 @@ namespace sqlcon
         {
             if (tname != null)
             {
-                using (var writer = fileName.NewStreamWriter())
+                using (var writer = fileName.CreateStreamWriter(cmd.Append))
                 {
                     string sql = Compare.GenerateTemplate(new TableSchema(tname), type, cmd.HasIfExists);
                     cout.WriteLine(sql);
@@ -109,7 +109,7 @@ namespace sqlcon
             if (tname != null)
             {
                 cout.WriteLine("start to generate CREATE TABLE script: {0}", dname);
-                using (var writer = fileName.NewStreamWriter())
+                using (var writer = fileName.CreateStreamWriter(cmd.Append))
                 {
                     writer.WriteLine(tname.GenerateIfDropClause());
                     writer.WriteLine(tname.GenerateClause());
@@ -136,7 +136,7 @@ namespace sqlcon
                             queue.Enqueue(tname.GenerateClause());
                         }
 
-                        using (var writer = fileName.NewStreamWriter())
+                        using (var writer = fileName.CreateStreamWriter(cmd.Append))
                         {
                             while (stack.Count > 0)
                                 writer.WriteLine(stack.Pop());
@@ -154,7 +154,7 @@ namespace sqlcon
                 else
                 {
                     cout.WriteLine("start to generate CREATE TABLE script: {0}", dname);
-                    using (var writer = fileName.NewStreamWriter())
+                    using (var writer = fileName.CreateStreamWriter(cmd.Append))
                     {
                         writer.WriteLine(dname.GenerateClause());
                     }
@@ -174,7 +174,7 @@ namespace sqlcon
                 var node = mgr.GetCurrentNode<Locator>();
                 int count;
 
-                using (var writer = fileName.NewStreamWriter())
+                using (var writer = fileName.CreateStreamWriter(cmd.Append))
                 {
                     if (node != null)
                     {
@@ -193,7 +193,7 @@ namespace sqlcon
             else if (dname != null)
             {
                 cout.WriteLine("start to generate {0} script to file: {1}", dname, fileName);
-                using (var writer = fileName.NewStreamWriter())
+                using (var writer = fileName.CreateStreamWriter(cmd.Append))
                 {
                     var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportIncludedTables);
                     TableName[] tnames = md.MatchedTableNames;
@@ -377,7 +377,7 @@ namespace sqlcon
                     file = fullName(tname);
 
                 var dt = new SqlBuilder().SELECT.COLUMNS(cmd.Columns).FROM(tname).SqlCmd.FillDataTable();
-                using (var writer = file.NewStreamWriter())
+                using (var writer = file.CreateStreamWriter(cmd.Append))
                 {
                     CsvFile.Write(dt, writer, true);
                 }
@@ -399,7 +399,7 @@ namespace sqlcon
                         {
                             file = fullName(tn);
                             var dt = new TableReader(tn).Table;
-                            using (var writer = file.NewStreamWriter())
+                            using (var writer = file.CreateStreamWriter(cmd.Append))
                             {
                                 CsvFile.Write(dt, writer, true);
                             }

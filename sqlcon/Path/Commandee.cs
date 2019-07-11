@@ -583,7 +583,7 @@ namespace sqlcon
             Configuration cfg = cmd.Configuration;
             PathBothSide both = new PathBothSide(mgr, cmd);
             string fileName = cmd.OutputFile();
-            using (var writer = fileName.NewStreamWriter())
+            using (var writer = fileName.CreateStreamWriter(cmd.Append))
             {
                 ActionType type;
                 if (cmd.IsSchema)

@@ -25,6 +25,7 @@ namespace sqlcon
         public bool HasDependency { get; private set; }
         public bool HasIndex { get; private set; }
         public bool HasStorage { get; private set; }
+        public bool Append { get; private set; }
         public int Top { get; private set; }
 
 
@@ -226,6 +227,7 @@ namespace sqlcon
                 if (path == null)
                     return null;
 
+                Append = Has("append");
                 return path;
             }
         }
@@ -241,6 +243,5 @@ namespace sqlcon
                 return path;
             }
         }
-
     }
 }

@@ -47,7 +47,7 @@ namespace sqlcon
         }
 
 
-        public static StreamWriter NewStreamWriter(this string fileName)
+        public static StreamWriter CreateStreamWriter(this string fileName, bool append = false)
         {
             try
             {
@@ -59,7 +59,7 @@ namespace sqlcon
             {
             }
 
-            return new StreamWriter(fileName);
+            return new StreamWriter(fileName, append);
         }
 
 
