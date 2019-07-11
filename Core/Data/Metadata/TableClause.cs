@@ -25,8 +25,7 @@ namespace Sys.Data
 
         #region SELECT/INSERT/UPDATE/DELETE
 
-
-        public string IF_NOT_EXISTS_INSERT(string[] columns, object[] values)
+        private string WHERE(string[] columns, object[] values)
         {
             string[] pk = schema.PrimaryKeys.Keys;
             var L1 = new List<ColumnPair>();
@@ -39,7 +38,12 @@ namespace Sys.Data
                     }
             }
 
-            string where = string.Join<ColumnPair>(" AND ", L1);
+            return string.Join<ColumnPair>(" AND ", L1);
+        }
+
+        public string IF_NOT_EXISTS_INSERT(string[] columns, object[] values)
+        {
+            string where = WHERE(columns, values);
             return string.Format(ifNotExistsInsertTemplate, where, INSERT(columns, values));
         }
 
@@ -65,7 +69,7 @@ namespace Sys.Data
               .Where(column => !ik.Contains(column.ColumnName))
               .Where(column => !ck.Contains(column.ColumnName));
 
-            var x1 = L1.Select(p => "[" + p.ColumnName + "]");
+            var x1 = L1.Select(p => p.ColumnName.ColumnName());
             var x2 = L1.Select(p => p.Value.ToScript());
 
             return string.Format(insertCommandTemplate,
@@ -77,18 +81,7 @@ namespace Sys.Data
 
         public string IF_NOT_EXISTS_INSERT_ELSE_UPDATE(string[] columns, object[] values)
         {
-            string[] pk = schema.PrimaryKeys.Keys;
-            var L1 = new List<ColumnPair>();
-            foreach (var key in pk)
-            {
-                for (int i = 0; i < columns.Length; i++)
-                    if (key == columns[i])
-                    {
-                        L1.Add(new ColumnPair(key, values[i]));
-                    }
-            }
-
-            string where = string.Join<ColumnPair>(" AND ", L1);
+            string where = WHERE(columns, values);
             return string.Format(ifNotExistsInsertElseUpdateTemplate, where, INSERT(columns, values), UPDATE(columns, values));
         }
 
@@ -109,7 +102,7 @@ namespace Sys.Data
                 .Where(column => !ik.Contains(column.ColumnName))
                 .Where(column => !pk.Contains(column.ColumnName))
                 .Where(column => !ck.Contains(column.ColumnName))
-                .Select(p => $"[{p.ColumnName}] = {p.Value.ToScript()}");
+                .Select(p => $"{p.ColumnName.ColumnName()} = {p.Value.ToScript()}");
             string update = string.Join(",", L1);
 
             var L2 = pairs.Where(x => pk.Contains(x.ColumnName));
@@ -369,36 +362,15 @@ namespace Sys.Data
 
         #region Insert/Update/Delete template
 
-        private string ifNotExistsInsertTemplate
-        {
-            get
-            {
-                string ifExists = @"
-IF NOT EXISTS(SELECT * FROM @@0 WHERE @@1)
-  @@2";
-                return ifExists
-                    .Replace("@@0", tableName.FormalName)
-                    .Replace("@@1", "{0}")
-                    .Replace("@@2", "{1}");
-            }
-        }
+        private string ifNotExistsInsertTemplate => $@"
+IF NOT EXISTS(SELECT * FROM {tableName.FormalName} WHERE {{0}})
+  {{1}}";
 
-        private string ifNotExistsInsertElseUpdateTemplate
-        {
-            get
-            {
-                string ifExists = @"
-IF NOT EXISTS(SELECT * FROM @@0 WHERE @@1)
-  @@2
+        private string ifNotExistsInsertElseUpdateTemplate => $@"
+IF NOT EXISTS(SELECT * FROM {tableName.FormalName} WHERE {{0}})
+  {{1}}
 ELSE 
-  @@3";
-                return ifExists
-                    .Replace("@@0", tableName.FormalName)
-                    .Replace("@@1", "{0}")
-                    .Replace("@@2", "{1}")
-                    .Replace("@@3", "{2}");
-            }
-        }
+  {{2}}";
 
         private string selectCommandTemplate => $"SELECT {{0}} FROM {tableName.FormalName} WHERE {{1}}";
         private string updateCommandTemplate => $"UPDATE {tableName.FormalName} SET {{0}} WHERE {{1}}";
