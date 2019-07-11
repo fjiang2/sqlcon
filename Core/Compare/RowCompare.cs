@@ -66,8 +66,8 @@ namespace Sys.Data.Comparison
 
 
         public static bool Compare(string[] columns, DataRow row1, DataRow row2)
-        { 
-            foreach(var column in columns)
+        {
+            foreach (var column in columns)
             {
                 if (row1[column] is byte[] && row2[column] is byte[])
                 {
@@ -94,7 +94,7 @@ namespace Sys.Data.Comparison
                         r2 = (r2 as string).Trim();
 
                     if (!r1.Equals(r2))
-                        return false ;
+                        return false;
                 }
                 else if (!row1[column].Equals(row2[column]))
                     return false;
@@ -108,8 +108,8 @@ namespace Sys.Data.Comparison
             List<ColumnPair> list = new List<ColumnPair>();
             foreach (DataColumn column in row.Table.Columns)
             {
-                if(row[column] != DBNull.Value)
-                    list.Add(new ColumnPair( column.ColumnName,  row[column] ));
+                if (row[column] != DBNull.Value)
+                    list.Add(new ColumnPair(column.ColumnName, row[column]));
             }
 
             return list;
@@ -122,7 +122,7 @@ namespace Sys.Data.Comparison
             for (int i = 0; i < columnName.Length; i++)
             {
                 if (values[i] != DBNull.Value)
-                    list.Add(new ColumnPair( columnName[i],  values[i] ));
+                    list.Add(new ColumnPair(columnName[i], values[i]));
             }
 
             return list;

@@ -28,9 +28,9 @@ namespace Sys.Data
 
         public string IF_NOT_EXISTS_INSERT(string[] columns, object[] values)
         {
-            string[] keys = schema.PrimaryKeys.Keys;
+            string[] pk = schema.PrimaryKeys.Keys;
             var L1 = new List<ColumnPair>();
-            foreach (var key in keys)
+            foreach (var key in pk)
             {
                 for (int i = 0; i < columns.Length; i++)
                     if (key == columns[i])
@@ -45,21 +45,28 @@ namespace Sys.Data
 
         public string INSERT(DataRow row)
         {
-            var direct = RowCompare.Direct(row).Where(column => !schema.Identity.ColumnNames.Contains(column.ColumnName));
+            var direct = RowCompare.Direct(row);
             return INSERT(direct);
         }
 
         public string INSERT(string[] columnName, object[] values)
         {
-            var direct = RowCompare.Direct(columnName, values).Where(column => !schema.Identity.ColumnNames.Contains(column.ColumnName));
+            var direct = RowCompare.Direct(columnName, values);
             return INSERT(direct);
         }
 
 
         public string INSERT(IEnumerable<ColumnPair> pairs)
         {
-            var x1 = pairs.Select(p => "[" + p.ColumnName + "]");
-            var x2 = pairs.Select(p => p.Value.ToScript());
+            string[] ik = schema.Identity.ColumnNames;
+            string[] ck = schema.Columns.Where(column => column.IsComputed).Select(column => column.ColumnName).ToArray();
+
+            var L1 = pairs
+              .Where(column => !ik.Contains(column.ColumnName))
+              .Where(column => !ck.Contains(column.ColumnName));
+
+            var x1 = L1.Select(p => "[" + p.ColumnName + "]");
+            var x2 = L1.Select(p => p.Value.ToScript());
 
             return string.Format(insertCommandTemplate,
                 string.Join(",", x1),
@@ -70,9 +77,9 @@ namespace Sys.Data
 
         public string IF_NOT_EXISTS_INSERT_ELSE_UPDATE(string[] columns, object[] values)
         {
-            string[] keys = schema.PrimaryKeys.Keys;
+            string[] pk = schema.PrimaryKeys.Keys;
             var L1 = new List<ColumnPair>();
-            foreach (var key in keys)
+            foreach (var key in pk)
             {
                 for (int i = 0; i < columns.Length; i++)
                     if (key == columns[i])
@@ -96,10 +103,12 @@ namespace Sys.Data
         {
             string[] ik = schema.Identity.ColumnNames;
             string[] pk = schema.PrimaryKeys.Keys;
+            string[] ck = schema.Columns.Where(column => column.IsComputed).Select(column => column.ColumnName).ToArray();
 
             var L1 = pairs
                 .Where(column => !ik.Contains(column.ColumnName))
                 .Where(column => !pk.Contains(column.ColumnName))
+                .Where(column => !ck.Contains(column.ColumnName))
                 .Select(p => $"[{p.ColumnName}] = {p.Value.ToScript()}");
             string update = string.Join(",", L1);
 
