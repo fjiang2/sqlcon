@@ -103,29 +103,5 @@ namespace Sys.Data.Comparison
             return true;
         }
 
-        public static IEnumerable<ColumnPair> Direct(DataRow row)
-        {
-            List<ColumnPair> list = new List<ColumnPair>();
-            foreach (DataColumn column in row.Table.Columns)
-            {
-                if (row[column] != DBNull.Value)
-                    list.Add(new ColumnPair(column.ColumnName, row[column]));
-            }
-
-            return list;
-        }
-
-
-        public static IEnumerable<ColumnPair> Direct(string[] columnName, object[] values)
-        {
-            List<ColumnPair> list = new List<ColumnPair>();
-            for (int i = 0; i < columnName.Length; i++)
-            {
-                if (values[i] != DBNull.Value)
-                    list.Add(new ColumnPair(columnName[i], values[i]));
-            }
-
-            return list;
-        }
     }
 }

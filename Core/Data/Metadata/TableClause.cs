@@ -10,7 +10,7 @@ namespace Sys.Data
 {
     class TableClause
     {
-        public static readonly string GO = "GO";
+        public const string GO = "GO";
 
         private ITableSchema schema;
         private TableName tableName;
@@ -20,122 +20,6 @@ namespace Sys.Data
             this.schema = schema;
             this.tableName = schema.TableName;
         }
-
-
-
-        #region SELECT/INSERT/UPDATE/DELETE
-
-        private string WHERE(string[] columns, object[] values)
-        {
-            string[] pk = schema.PrimaryKeys.Keys;
-            var L1 = new List<ColumnPair>();
-            foreach (var key in pk)
-            {
-                for (int i = 0; i < columns.Length; i++)
-                    if (key == columns[i])
-                    {
-                        L1.Add(new ColumnPair(key, values[i]));
-                    }
-            }
-
-            return string.Join<ColumnPair>(" AND ", L1);
-        }
-
-        public string IF_NOT_EXISTS_INSERT(string[] columns, object[] values)
-        {
-            string where = WHERE(columns, values);
-            return string.Format(ifNotExistsInsertTemplate, where, INSERT(columns, values));
-        }
-
-        public string INSERT(DataRow row)
-        {
-            var direct = RowCompare.Direct(row);
-            return INSERT(direct);
-        }
-
-        public string INSERT(string[] columnName, object[] values)
-        {
-            var direct = RowCompare.Direct(columnName, values);
-            return INSERT(direct);
-        }
-
-
-        public string INSERT(IEnumerable<ColumnPair> pairs)
-        {
-            string[] ik = schema.Identity.ColumnNames;
-            string[] ck = schema.Columns.Where(column => column.IsComputed).Select(column => column.ColumnName).ToArray();
-
-            var L1 = pairs
-              .Where(column => !ik.Contains(column.ColumnName))
-              .Where(column => !ck.Contains(column.ColumnName));
-
-            var x1 = L1.Select(p => p.ColumnName.ColumnName());
-            var x2 = L1.Select(p => p.Value.ToScript());
-
-            return string.Format(insertCommandTemplate,
-                string.Join(",", x1),
-                string.Join(",", x2)
-                );
-        }
-
-
-        public string IF_NOT_EXISTS_INSERT_ELSE_UPDATE(string[] columns, object[] values)
-        {
-            string where = WHERE(columns, values);
-            return string.Format(ifNotExistsInsertElseUpdateTemplate, where, INSERT(columns, values), UPDATE(columns, values));
-        }
-
-
-        public string UPDATE(string[] columnName, object[] values)
-        {
-            var direct = RowCompare.Direct(columnName, values);
-            return UPDATE(direct);
-        }
-
-        public string UPDATE(IEnumerable<ColumnPair> pairs)
-        {
-            string[] ik = schema.Identity.ColumnNames;
-            string[] pk = schema.PrimaryKeys.Keys;
-            string[] ck = schema.Columns.Where(column => column.IsComputed).Select(column => column.ColumnName).ToArray();
-
-            var L1 = pairs
-                .Where(column => !ik.Contains(column.ColumnName))
-                .Where(column => !pk.Contains(column.ColumnName))
-                .Where(column => !ck.Contains(column.ColumnName))
-                .Select(p => $"{p.ColumnName.ColumnName()} = {p.Value.ToScript()}");
-            string update = string.Join(",", L1);
-
-            var L2 = pairs.Where(x => pk.Contains(x.ColumnName));
-            string where = string.Join<ColumnPair>(" AND ", L2);
-
-            if (where == string.Empty)
-            {
-                throw new Exception("primary key doesn't exist");
-            }
-
-            return string.Format(updateCommandTemplate, update, where);
-        }
-
-
-        public string UPDATE(RowCompare compare)
-        {
-            return string.Format(updateCommandTemplate, compare.Set, compare.Where);
-        }
-
-
-
-        public string DELETE(DataRow row, IPrimaryKeys primaryKey)
-        {
-            var L1 = new List<ColumnPair>();
-            foreach (var column in primaryKey.Keys)
-            {
-                L1.Add(new ColumnPair(column, row[column]));
-            }
-
-            return string.Format(deleteCommandTemplate, string.Join<ColumnPair>(" AND ", L1));
-        }
-        #endregion
-
 
         #region SELECT/UPDATE/DELETE/INSERT template
 

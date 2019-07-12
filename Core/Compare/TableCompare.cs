@@ -61,7 +61,7 @@ namespace Sys.Data.Comparison
                 .ToArray();
 
             StringBuilder builder = new StringBuilder();
-            TableClause script = new TableClause(schema2);
+            TableDataClause script = new TableDataClause(schema2);
 
             List<DataRow> R2 = new List<DataRow>();
             foreach (DataRow row1 in table1.Rows)
@@ -80,7 +80,7 @@ namespace Sys.Data.Comparison
                 }
                 else
                 {
-                    builder.Append(script.INSERT(row1));
+                    builder.Append(script.INSERT(new ColumnPairCollection(row1)));
                     builder.AppendLine();
                 }
             }

@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
+using Sys.Data.Comparison;
 
 namespace Sys.Data
 {
@@ -62,13 +63,13 @@ namespace Sys.Data
         }
 
 
-        TableClause tableScript = null;
+        TableDataClause tableScript = null;
         public void Insert(DataRow row)
         {
             if (tableScript == null)
-                tableScript = new TableClause(schema);
+                tableScript = new TableDataClause(schema);
 
-            string sql = tableScript.INSERT(row);
+            string sql = tableScript.INSERT(new ColumnPairCollection(row));
 
             new SqlCmd(TableName.Provider, sql).ExecuteNonQuery();
         }

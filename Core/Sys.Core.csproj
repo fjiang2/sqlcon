@@ -83,6 +83,7 @@
     <Compile Include="CodeBuilder\UniqueNameMaker.cs" />
     <Compile Include="CodeBuilder\UtilsMethod.cs" />
     <Compile Include="CodeBuilder\Value.cs" />
+    <Compile Include="Compare\ColumnPairCollection.cs" />
     <Compile Include="Compare\ColumnPair.cs" />
     <Compile Include="Compare\ColumnValue.cs" />
     <Compile Include="Compare\Compare.cs" />
@@ -210,7 +211,7 @@
     <Compile Include="Data\Metadata\PrimaryKeys.cs" />
     <Compile Include="Data\Metadata\DatabaseClause.cs" />
     <Compile Include="Data\Metadata\TableSchema.cs" />
-    <Compile Include="Data\Metadata\TableClause.cs" />
+    <Compile Include="Data\Metadata\TableSchemaClause.cs" />
     <Compile Include="Data\Extension\DataExtension.cs" />
     <Compile Include="Data\Extension\InternalDataExtension.cs" />
     <Compile Include="Data\Persistence\Level0\DbCmd.cs" />
@@ -268,6 +269,7 @@
     <Compile Include="Data\SqlClause\SqlCode.cs" />
     <Compile Include="Data\SqlClause\SqlTokenizer.cs" />
     <Compile Include="Data\SqlClause\UpdateClause.cs" />
+    <Compile Include="Data\Metadata\TableDataClause.cs" />
     <Compile Include="Data\UniqueTable.cs" />
     <Compile Include="EventArgs\EventArgs`1.cs" />
     <Compile Include="EventArgs\EventArgs`2.cs" />

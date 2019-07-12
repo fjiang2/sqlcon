@@ -139,11 +139,14 @@ namespace Sys.Data.Comparison
 
             var table = reader.Table;
 
-            TableClause script = new TableClause(schema);
+            TableDataClause script = new TableDataClause(schema);
 
             StringBuilder builder = new StringBuilder();
             foreach (DataRow row in table.Rows)
-                builder.Append(script.INSERT(row)).AppendLine();
+            {
+                var pair = new ColumnPairCollection(row);
+                builder.Append(script.INSERT(pair)).AppendLine();
+            }
 
             if (table.Rows.Count > 0)
                 builder.AppendLine(TableClause.GO);
@@ -159,7 +162,7 @@ namespace Sys.Data.Comparison
                 sql = string.Format("SELECT * FROM {0} WHERE {1}", tableName, where);
 
             SqlCmd cmd = new SqlCmd(tableName.Provider, sql);
-            TableClause script = new TableClause(schema);
+            TableDataClause script = new TableDataClause(schema);
 
             int count = 0;
             cmd.Read(
@@ -175,21 +178,23 @@ namespace Sys.Data.Comparison
                         while (reader.Read())
                         {
                             reader.GetValues(values);
+                            var pairs = new ColumnPairCollection(columns, values);
+
                             switch (type)
                             {
                                 case SqlScriptType.INSERT:
                                     if (hasIfExists)
-                                        writer.WriteLine(script.IF_NOT_EXISTS_INSERT(columns, values));
+                                        writer.WriteLine(script.IF_NOT_EXISTS_INSERT(pairs));
                                     else
-                                        writer.WriteLine(script.INSERT(columns, values));
+                                        writer.WriteLine(script.INSERT(pairs));
                                     break;
 
                                 case SqlScriptType.UPDATE:
-                                    writer.WriteLine(script.UPDATE(columns, values));
+                                    writer.WriteLine(script.UPDATE(pairs));
                                     break;
 
                                 case SqlScriptType.INSERT_OR_UPDATE:
-                                    writer.WriteLine(script.IF_NOT_EXISTS_INSERT_ELSE_UPDATE(columns, values));
+                                    writer.WriteLine(script.IF_NOT_EXISTS_INSERT_ELSE_UPDATE(pairs));
                                     break;
                             }
 
