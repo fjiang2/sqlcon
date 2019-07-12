@@ -62,18 +62,6 @@ namespace Sys.Data
             get { return this.schema.TableName; }
         }
 
-
-        TableDataClause tableScript = null;
-        public void Insert(DataRow row)
-        {
-            if (tableScript == null)
-                tableScript = new TableDataClause(schema);
-
-            string sql = tableScript.INSERT(new ColumnPairCollection(row));
-
-            new SqlCmd(TableName.Provider, sql).ExecuteNonQuery();
-        }
-
         /// <summary>
         /// save records into database
         /// </summary>

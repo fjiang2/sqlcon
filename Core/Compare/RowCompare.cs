@@ -19,8 +19,6 @@ namespace Sys.Data.Comparison
             Difference(row1, row2);
         }
 
-
-
         private void Difference(DataRow row1, DataRow row2)
         {
 
@@ -48,22 +46,12 @@ namespace Sys.Data.Comparison
             }
         }
 
-        public string Where
+        public string UPDATE(TableName tableName)
         {
-            get
-            {
-                return string.Join<ColumnPair>(" AND ", L1);
-            }
+            string Set = string.Join<ColumnPair>(", ", L2);
+            string where = string.Join<ColumnPair>(" AND ", L1);
+            return new SqlTemplate(tableName).Update(Set, where);
         }
-
-        public string Set
-        {
-            get
-            {
-                return string.Join<ColumnPair>(", ", L2);
-            }
-        }
-
 
         public static bool Compare(string[] columns, DataRow row1, DataRow row2)
         {

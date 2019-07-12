@@ -74,7 +74,7 @@ namespace Sys.Data.Comparison
                     {
                         var compare = new RowCompare(this, row1, row2);
 
-                        builder.AppendLine(script.UPDATE(compare));
+                        builder.AppendLine(compare.UPDATE(schema2.TableName));
                     }
                     R2.Add(row2);
                 }

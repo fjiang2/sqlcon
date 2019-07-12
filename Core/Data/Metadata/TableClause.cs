@@ -14,11 +14,13 @@ namespace Sys.Data
 
         private ITableSchema schema;
         private TableName tableName;
+        private SqlTemplate template;
 
         public TableClause(ITableSchema schema)
         {
             this.schema = schema;
             this.tableName = schema.TableName;
+            this.template = new SqlTemplate(tableName);
         }
 
         #region SELECT/UPDATE/DELETE/INSERT template
@@ -26,7 +28,7 @@ namespace Sys.Data
         public string SELECT(IEnumerable<IColumn> columns)
         {
             var L = columns.Select(column => "[" + column.ColumnName + "]");
-            return string.Format(selectCommandTemplate, string.Join(",", L), primaryWhere(columns));
+            return template.Select(string.Join(",", L), primaryWhere(columns));
         }
 
         public string INSERT(IEnumerable<IColumn> columns, bool hasQuotationMark = true)
@@ -36,10 +38,7 @@ namespace Sys.Data
             if (!hasQuotationMark)
                 x2 = columns.Select(column => column.ColumnName).Select(c => c.SqlParameterName());
 
-            return string.Format(insertCommandTemplate,
-             string.Join(",", x1),
-             string.Join(",", x2)
-             );
+            return template.Insert(string.Join(",", x1), string.Join(",", x2));
         }
 
 
@@ -54,13 +53,13 @@ namespace Sys.Data
                 L.Add(string.Format("[{0}]={1}", c, c.SqlParameterName()));
             }
 
-            return string.Format(updateCommandTemplate, string.Join(",", L), primaryWhere(columns));
+            return template.Update(string.Join(",", L), primaryWhere(columns));
         }
 
         public string INSERT_OR_UPDATE(IEnumerable<IColumn> columns)
         {
             StringBuilder builder = new StringBuilder();
-            string exists = string.Format(selectCommandTemplate, "*", primaryWhere(columns));
+            string exists = template.Select("*", primaryWhere(columns));
             builder.AppendLine($"IF NOT EXISTS({exists})");
             builder.AppendLine("\t" + INSERT(schema.Columns, false));
             builder.AppendLine("ELSE");
@@ -100,7 +99,7 @@ namespace Sys.Data
 
         public string DELETE(IEnumerable<IColumn> columns)
         {
-            return string.Format(deleteCommandTemplate, primaryWhere(columns));
+            return template.Delete(primaryWhere(columns));
         }
 
         private string primaryWhere(IEnumerable<IColumn> columns)
@@ -200,7 +199,7 @@ namespace Sys.Data
 
         public string DROP_COLUMN(IColumn column)
         {
-            return string.Format("ALTER TABLE {0} DROP  COLUMN {1}", tableName.FormalName, column.ColumnName);
+            return string.Format("ALTER TABLE {0} DROP COLUMN {1}", tableName.FormalName, column.ColumnName);
         }
 
         #endregion
@@ -241,25 +240,6 @@ namespace Sys.Data
                 reference
                 );
         }
-
-        #endregion
-
-        #region Insert/Update/Delete template
-
-        private string ifNotExistsInsertTemplate => $@"
-IF NOT EXISTS(SELECT * FROM {tableName.FormalName} WHERE {{0}})
-  {{1}}";
-
-        private string ifNotExistsInsertElseUpdateTemplate => $@"
-IF NOT EXISTS(SELECT * FROM {tableName.FormalName} WHERE {{0}})
-  {{1}}
-ELSE 
-  {{2}}";
-
-        private string selectCommandTemplate => $"SELECT {{0}} FROM {tableName.FormalName} WHERE {{1}}";
-        private string updateCommandTemplate => $"UPDATE {tableName.FormalName} SET {{0}} WHERE {{1}}";
-        private string insertCommandTemplate => $"INSERT INTO {tableName.FormalName}({{0}}) VALUES({{1}})";
-        private string deleteCommandTemplate => $"DELETE FROM {tableName.FormalName} WHERE {{0}}";
 
         #endregion
 

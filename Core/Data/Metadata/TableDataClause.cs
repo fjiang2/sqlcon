@@ -12,7 +12,7 @@ namespace Sys.Data
     {
         private ITableSchema schema;
         private TableName tableName;
-
+        private SqlTemplate template;
         private string[] pk;
         private string[] ik;
         private string[] ck;
@@ -22,6 +22,7 @@ namespace Sys.Data
         {
             this.schema = schema;
             this.tableName = schema.TableName;
+            this.template = new SqlTemplate(tableName);
 
             this.pk = schema.PrimaryKeys.Keys;
             this.ik = schema.Identity.ColumnNames;
@@ -37,7 +38,7 @@ namespace Sys.Data
 
         public string IF_NOT_EXISTS_INSERT(IEnumerable<ColumnPair> pairs)
         {
-            return string.Format(ifNotExistsInsertTemplate, WHERE(pairs), INSERT(pairs));
+            return template.IfNotExistsInsert(WHERE(pairs), INSERT(pairs));
         }
 
         public string INSERT(IEnumerable<ColumnPair> pairs)
@@ -49,16 +50,13 @@ namespace Sys.Data
             var x1 = L1.Select(p => p.ColumnName.ColumnName());
             var x2 = L1.Select(p => p.Value.ToScript());
 
-            return string.Format(insertCommandTemplate,
-                string.Join(",", x1),
-                string.Join(",", x2)
-                );
+            return template.Select(string.Join(",", x1), string.Join(",", x2));
         }
 
 
         public string IF_NOT_EXISTS_INSERT_ELSE_UPDATE(IEnumerable<ColumnPair> pairs)
         {
-            return string.Format(ifNotExistsInsertElseUpdateTemplate, WHERE(pairs), INSERT(pairs), UPDATE(pairs));
+            return template.IfNotExistsInsertElseUpdate(WHERE(pairs), INSERT(pairs), UPDATE(pairs));
         }
 
         public string UPDATE(IEnumerable<ColumnPair> pairs)
@@ -70,13 +68,7 @@ namespace Sys.Data
                 .Select(p => $"{p.ColumnName.ColumnName()} = {p.Value.ToScript()}");
 
             string update = string.Join(",", L1);
-            return string.Format(updateCommandTemplate, update, WHERE(pairs));
-        }
-
-
-        public string UPDATE(RowCompare compare)
-        {
-            return string.Format(updateCommandTemplate, compare.Set, compare.Where);
+            return template.Update(update, WHERE(pairs));
         }
 
         public string DELETE(DataRow row, IPrimaryKeys primaryKey)
@@ -87,32 +79,8 @@ namespace Sys.Data
                 L1.Add(new ColumnPair(column, row[column]));
             }
 
-            return string.Format(deleteCommandTemplate, string.Join<ColumnPair>(" AND ", L1));
+            return template.Delete(string.Join<ColumnPair>(" AND ", L1));
         }
-
-        
-        #region Insert/Update/Delete template
-
-        private string ifNotExistsInsertTemplate => $@"
-IF NOT EXISTS(SELECT * FROM {tableName.FormalName} WHERE {{0}})
-  {{1}}";
-
-        private string ifNotExistsInsertElseUpdateTemplate => $@"
-IF NOT EXISTS(SELECT * FROM {tableName.FormalName} WHERE {{0}})
-  {{1}}
-ELSE 
-  {{2}}";
-
-        private string selectCommandTemplate => $"SELECT {{0}} FROM {tableName.FormalName} WHERE {{1}}";
-        private string updateCommandTemplate => $"UPDATE {tableName.FormalName} SET {{0}} WHERE {{1}}";
-        private string insertCommandTemplate => $"INSERT INTO {tableName.FormalName}({{0}}) VALUES({{1}})";
-        private string deleteCommandTemplate => $"DELETE FROM {tableName.FormalName} WHERE {{0}}";
-
-        #endregion
-
-
-
-
 
     }
 }
