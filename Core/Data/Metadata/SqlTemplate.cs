@@ -16,7 +16,7 @@ namespace Sys.Data
     {
         private TableName tableName;
         private SqlTemplateFormat format = SqlTemplateFormat.SingleLine;
-        private string delimiter = string.Empty;
+        private string NewLine = string.Empty;
 
         public SqlTemplate(TableName tableName)
         {
@@ -37,11 +37,11 @@ namespace Sys.Data
                 switch (format)
                 {
                     case SqlTemplateFormat.Indent:
-                        delimiter = Environment.NewLine + "  ";
+                        NewLine = Environment.NewLine + "  ";
                         break;
 
                     default:
-                        delimiter = string.Empty;
+                        NewLine = string.Empty;
                         break;
                 }
             }
@@ -49,29 +49,29 @@ namespace Sys.Data
 
 
         public string IfNotExistsInsert(string where, string insert) 
-            => $"IF NOT EXISTS(SELECT * FROM {tname} WHERE {where}) {insert}";
+            => $"IF NOT EXISTS(SELECT * FROM {tname} WHERE {where}) {NewLine}{insert}";
         public string IfNotExistsInsertElseUpdate(string where, string insert, string update) 
-            => $@"IF NOT EXISTS(SELECT * FROM {tname} WHERE {where}) {delimiter}{insert} {delimiter}ELSE {delimiter}{update}";
+            => $@"IF NOT EXISTS(SELECT * FROM {tname} WHERE {where}) {NewLine}{insert} {NewLine}ELSE {NewLine}{update}";
 
         public string IfExistsUpdate(string where, string update) 
-            => $"IF EXISTS(SELECT * FROM {tname} WHERE {where}) {update}";
+            => $"IF EXISTS(SELECT * FROM {tname} WHERE {where}) {NewLine}{update}";
         public string IfExistsUpdateElseInsert(string where, string update, string insert) 
             => $"IF EXISTS(SELECT * FROM {tname} WHERE {where}) {update} ELSE {insert}";
 
         public string Select(string select) 
-            => $"SELECT {select} {delimiter}FROM {tname}";
+            => $"SELECT {select} {NewLine}FROM {tname}";
         public string Select(string select, string where) 
-            => $"SELECT {select} {delimiter}FROM {tname} {delimiter}WHERE {where}";
+            => $"SELECT {select} {NewLine}FROM {tname} {NewLine}WHERE {where}";
 
         public string Update(string set, string where) 
-            => $"UPDATE {tname} {delimiter}SET {set} {delimiter}WHERE {where}";
+            => $"UPDATE {tname} {NewLine}SET {set} {NewLine}WHERE {where}";
         public string Insert(string columns, string values) 
-            => $"INSERT INTO {tname}({columns}) {delimiter}VALUES({values})";
+            => $"INSERT INTO {tname}({columns}) {NewLine}VALUES({values})";
 
         public string Delete(string where) 
-            => $"DELETE FROM {tname} {delimiter}WHERE {where}";
+            => $"DELETE FROM {tname} {NewLine}WHERE {where}";
         public string Delete() 
-            => $"DELETE FROM {tname} {delimiter}";
+            => $"DELETE FROM {tname} {NewLine}";
 
 
         public string AddPrimaryKey(string primaryKey) 
