@@ -50,7 +50,7 @@ namespace Sys.Data
             var x1 = L1.Select(p => p.ColumnName.ColumnName());
             var x2 = L1.Select(p => p.Value.ToScript());
 
-            return template.Select(string.Join(",", x1), string.Join(",", x2));
+            return template.Insert(string.Join(",", x1), string.Join(",", x2));
         }
 
 

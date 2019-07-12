@@ -169,7 +169,7 @@ namespace Sys.Data
 
         private static string dropTemplate(TableName tableName, bool ifExists)
         {
-            return TableClause.DROP_TABLE(tableName, ifExists);
+            return new SqlTemplate(tableName).DropTable(ifExists);
         }
 
         private string deleteTemplate(DependencyInfo row, string locator)

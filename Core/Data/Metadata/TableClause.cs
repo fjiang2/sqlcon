@@ -126,22 +126,10 @@ namespace Sys.Data
 
         public string DROP_TABLE(bool ifExists)
         {
-            return DROP_TABLE(tableName, ifExists);
+            return template.DropTable(ifExists);
         }
 
-        public static string DROP_TABLE(TableName tableName, bool ifExists)
-        {
-            if (ifExists)
-            {
-                var builder = new StringBuilder();
-                builder.AppendLine($"IF OBJECT_ID('{tableName.FormalName}') IS NOT NULL")
-                      .AppendLine($"  DROP TABLE {tableName.FormalName}")
-                      .AppendLine("GO");
-                return builder.ToString();
-            }
-
-            return $"DROP TABLE {tableName.FormalName}";
-        }
+     
 
         #endregion
 
@@ -187,19 +175,20 @@ namespace Sys.Data
                 return builder.ToString();
             }
         }
+
         private string _ADD_COLUMN(IColumn column)
         {
-            return string.Format("ALTER TABLE {0} ADD {1}", tableName.FormalName, column.GetSQLField());
+            return template.AddColumn(column.GetSQLField());
         }
 
         public string ALTER_COLUMN(IColumn column)
         {
-            return string.Format("ALTER TABLE {0} ALTER COLUMN {1}", tableName.FormalName, column.GetSQLField());
+            return template.AlterColumn(column.GetSQLField());
         }
 
         public string DROP_COLUMN(IColumn column)
         {
-            return string.Format("ALTER TABLE {0} DROP COLUMN {1}", tableName.FormalName, column.ColumnName);
+            return template.DropColumn(column.ColumnName.ToString());
         }
 
         #endregion
@@ -208,12 +197,12 @@ namespace Sys.Data
 
         public string ADD_PRIMARY_KEY(IPrimaryKeys primaryKey)
         {
-            return string.Format("ALTER TABLE {0} ADD PRIMARY KEY ({1})", tableName.FormalName, string.Join(",", primaryKey.Keys));
+            return template.AddPrimaryKey(string.Join(",", primaryKey.Keys));
         }
 
         public string DROP_PRIMARY_KEY(IPrimaryKeys primaryKey)
         {
-            return string.Format("ALTER TABLE {0} DROP CONSTRAINT ({1})", tableName.FormalName, primaryKey.ConstraintName);
+            return template.DropPrimaryKey(primaryKey.ConstraintName);
         }
 
         #endregion

@@ -47,7 +47,7 @@ namespace Sys.Data
             }
         }
 
-        
+
         public string IfNotExistsInsert(string where, string insert) => $@"
 IF NOT EXISTS(SELECT * FROM {tname} WHERE {where})
   {insert}";
@@ -63,6 +63,31 @@ ELSE
         public string Update(string set, string where) => $"UPDATE {tname} {delimiter}SET {set} {delimiter}WHERE {where}";
         public string Insert(string columns, string values) => $"INSERT INTO {tname}({columns}) {delimiter}VALUES({values})";
         public string Delete(string where) => $"DELETE FROM {tname} {delimiter}WHERE {where}";
+
+
+        public string AddPrimaryKey(string primaryKey) => $"ALTER TABLE {tname} ADD PRIMARY KEY ({primaryKey})";
+        public string DropPrimaryKey(string constraintName) => $"ALTER TABLE {tname} DROP CONSTRAINT ({constraintName})";
+
+        public string AddColumn(string column) => $"ALTER TABLE {tname} ADD {column}";
+
+        public string AlterColumn(string column) => $"ALTER TABLE {tname} ALTER COLUMN {column}";
+
+        public string DropColumn(string column) => $"ALTER TABLE {tname} DROP COLUMN {column}";
+
+
+        public string DropTable(bool ifExists)
+        {
+            if (ifExists)
+            {
+                var builder = new StringBuilder();
+                builder.AppendLine($"IF OBJECT_ID('{tname}') IS NOT NULL")
+                      .AppendLine($"  DROP TABLE {tname}")
+                      .AppendLine("GO");
+                return builder.ToString();
+            }
+
+            return $"DROP TABLE {tname}";
+        }
 
         public override string ToString()
         {
