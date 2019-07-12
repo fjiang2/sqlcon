@@ -48,31 +48,46 @@ namespace Sys.Data
         }
 
 
-        public string IfNotExistsInsert(string where, string insert) => $@"
-IF NOT EXISTS(SELECT * FROM {tname} WHERE {where})
-  {insert}";
+        public string IfNotExistsInsert(string where, string insert) 
+            => $"IF NOT EXISTS(SELECT * FROM {tname} WHERE {where}) {insert}";
+        public string IfNotExistsInsertElseUpdate(string where, string insert, string update) 
+            => $@"IF NOT EXISTS(SELECT * FROM {tname} WHERE {where}) {delimiter}{insert} {delimiter}ELSE {delimiter}{update}";
 
-        public string IfNotExistsInsertElseUpdate(string where, string insert, string update) => $@"
-IF NOT EXISTS(SELECT * FROM {tname} WHERE {where})
-  {insert}
-ELSE 
-  {update}";
+        public string IfExistsUpdate(string where, string update) 
+            => $"IF EXISTS(SELECT * FROM {tname} WHERE {where}) {update}";
+        public string IfExistsUpdateElseInsert(string where, string update, string insert) 
+            => $"IF EXISTS(SELECT * FROM {tname} WHERE {where}) {update} ELSE {insert}";
 
-        public string Select(string select) => $"SELECT {select} {delimiter}FROM {tname}";
-        public string Select(string select, string where) => $"SELECT {select} {delimiter}FROM {tname} {delimiter}WHERE {where}";
-        public string Update(string set, string where) => $"UPDATE {tname} {delimiter}SET {set} {delimiter}WHERE {where}";
-        public string Insert(string columns, string values) => $"INSERT INTO {tname}({columns}) {delimiter}VALUES({values})";
-        public string Delete(string where) => $"DELETE FROM {tname} {delimiter}WHERE {where}";
+        public string Select(string select) 
+            => $"SELECT {select} {delimiter}FROM {tname}";
+        public string Select(string select, string where) 
+            => $"SELECT {select} {delimiter}FROM {tname} {delimiter}WHERE {where}";
+
+        public string Update(string set, string where) 
+            => $"UPDATE {tname} {delimiter}SET {set} {delimiter}WHERE {where}";
+        public string Insert(string columns, string values) 
+            => $"INSERT INTO {tname}({columns}) {delimiter}VALUES({values})";
+
+        public string Delete(string where) 
+            => $"DELETE FROM {tname} {delimiter}WHERE {where}";
+        public string Delete() 
+            => $"DELETE FROM {tname} {delimiter}";
 
 
-        public string AddPrimaryKey(string primaryKey) => $"ALTER TABLE {tname} ADD PRIMARY KEY ({primaryKey})";
-        public string DropPrimaryKey(string constraintName) => $"ALTER TABLE {tname} DROP CONSTRAINT ({constraintName})";
+        public string AddPrimaryKey(string primaryKey) 
+            => $"ALTER TABLE {tname} ADD PRIMARY KEY ({primaryKey})";
+        public string DropPrimaryKey(string constraintName) 
+            => $"ALTER TABLE {tname} DROP CONSTRAINT ({constraintName})";
 
-        public string AddColumn(string column) => $"ALTER TABLE {tname} ADD {column}";
+        public string DropForeignKey(string constraintName) 
+            => $"ALTER TABLE {tname} DROP CONSTRAINT ({constraintName})";
 
-        public string AlterColumn(string column) => $"ALTER TABLE {tname} ALTER COLUMN {column}";
-
-        public string DropColumn(string column) => $"ALTER TABLE {tname} DROP COLUMN {column}";
+        public string AddColumn(string column) 
+            => $"ALTER TABLE {tname} ADD {column}";
+        public string AlterColumn(string column) 
+            => $"ALTER TABLE {tname} ALTER COLUMN {column}";
+        public string DropColumn(string column) 
+            => $"ALTER TABLE {tname} DROP COLUMN {column}";
 
 
         public string DropTable(bool ifExists)

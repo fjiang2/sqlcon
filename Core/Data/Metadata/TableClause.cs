@@ -129,7 +129,10 @@ namespace Sys.Data
             return template.DropTable(ifExists);
         }
 
-     
+        public string IF_EXISTS_DROP_TABLE()
+        {
+            return template.DropTable(ifExists: true);
+        }
 
         #endregion
 
@@ -211,7 +214,7 @@ namespace Sys.Data
 
         public string DROP_FOREIGN_KEY(IForeignKey foreignKey)
         {
-            return string.Format("ALTER TABLE {0} DROP CONSTRAINT ({1})", tableName.FormalName, foreignKey.Constraint_Name);
+            return template.DropForeignKey(foreignKey.Constraint_Name);
         }
 
         public string ADD_FOREIGN_KEY(IForeignKey foreignKey)
@@ -254,17 +257,6 @@ namespace Sys.Data
             return sql;
         }
 
-
-        public string IF_EXISTS_DROP_TABLE()
-        {
-            string drop =
-@"IF OBJECT_ID('{0}') IS NOT NULL
-  DROP TABLE {1}
-";
-            StringBuilder builder = new StringBuilder();
-            builder.AppendFormat(drop, tableName.FormalName, tableName.FormalName);
-            return builder.ToString();
-        }
 
 
 
