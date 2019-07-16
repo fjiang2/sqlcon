@@ -52,12 +52,14 @@ namespace Sys.CodeBuilder
         public CSharpBuilder AddClass(Class clss)
         {
             classes.Add(clss);
+            clss.Parent = this;
             return this;
         }
 
         public CSharpBuilder AddEnum(Enum _enum)
         {
             classes.Add(_enum);
+            _enum.Parent = this;
             return this;
         }
 

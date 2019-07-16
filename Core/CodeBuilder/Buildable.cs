@@ -9,6 +9,7 @@ namespace Sys.CodeBuilder
     public class Buildable : ICodeBlock
     {
         private CodeBlock block = null;
+        public Buildable Parent { get; set; }
 
         public CodeBlock GetBlock()
         {

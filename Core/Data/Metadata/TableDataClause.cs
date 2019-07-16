@@ -30,18 +30,18 @@ namespace Sys.Data
         }
 
 
-        private string WHERE(IEnumerable<ColumnPair> pairs)
+        private string WHERE(ColumnPairCollection pairs)
         {
             var L1 = pairs.Where(p => pk.Contains(p.ColumnName)).ToArray();
             return string.Join<ColumnPair>(" AND ", L1);
         }
 
-        public string IF_NOT_EXISTS_INSERT(IEnumerable<ColumnPair> pairs)
+        public string IF_NOT_EXISTS_INSERT(ColumnPairCollection pairs)
         {
             return template.IfNotExistsInsert(WHERE(pairs), INSERT(pairs));
         }
 
-        public string INSERT(IEnumerable<ColumnPair> pairs)
+        public string INSERT(ColumnPairCollection pairs)
         {
             var L1 = pairs
               .Where(column => !ik.Contains(column.ColumnName))
@@ -54,12 +54,12 @@ namespace Sys.Data
         }
 
 
-        public string IF_NOT_EXISTS_INSERT_ELSE_UPDATE(IEnumerable<ColumnPair> pairs)
+        public string IF_NOT_EXISTS_INSERT_ELSE_UPDATE(ColumnPairCollection pairs)
         {
             return template.IfNotExistsInsertElseUpdate(WHERE(pairs), INSERT(pairs), UPDATE(pairs));
         }
 
-        public string UPDATE(IEnumerable<ColumnPair> pairs)
+        public string UPDATE(ColumnPairCollection pairs)
         {
             var L1 = pairs
                 .Where(column => !ik.Contains(column.ColumnName))

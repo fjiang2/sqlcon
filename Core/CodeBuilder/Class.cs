@@ -53,6 +53,7 @@ namespace Sys.CodeBuilder
         public Class Add(Buildable code)
         {
             this.list.Add(code);
+            code.Parent = this;
             return this;
         }
 
@@ -68,7 +69,7 @@ namespace Sys.CodeBuilder
         {
             var constructor = new Constructor(base.name);
 
-            this.list.Add(constructor);
+            this.Add(constructor);
             return constructor;
         }
 
@@ -79,7 +80,7 @@ namespace Sys.CodeBuilder
                 modifier = modifier
             };
 
-            this.list.Add(field);
+            this.Add(field);
             return field;
         }
 
@@ -90,14 +91,14 @@ namespace Sys.CodeBuilder
                 modifier = modifier
             };
 
-            this.list.Add(property);
+            this.Add(property);
             return property;
         }
 
         public Buildable AppendLine()
         {
             var builder = new Buildable();
-            this.list.Add(builder);
+            this.Add(builder);
 
             return builder;
         }
@@ -105,7 +106,7 @@ namespace Sys.CodeBuilder
         public Member AddMember(string text)
         {
             var member = new Member(text);
-            list.Add(member);
+            this.Add(member);
             return member;
         }
 
