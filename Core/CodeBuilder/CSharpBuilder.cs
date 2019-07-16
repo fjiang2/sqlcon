@@ -99,5 +99,31 @@ namespace Sys.CodeBuilder
             string file = Path.ChangeExtension(Path.Combine(directory, cname), "cs");
             File.WriteAllText(file, code);
         }
+
+        public void Output(string directory)
+        {
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            foreach (Declare clss in classes)
+            {
+                CodeBlock block = new CodeBlock();
+                foreach (var name in usings)
+                    block.AppendFormat("using {0};", name);
+
+                block.AppendLine();
+                block.AppendFormat("namespace {0}", this.nameSpace);
+
+                var c = new CodeBlock();
+                c.Add(clss.GetBlock());
+                block.AddWithBeginEnd(c);
+
+                string code = block.ToString();
+                string file = Path.ChangeExtension(Path.Combine(directory, clss.name), "cs");
+                File.WriteAllText(file, code);
+            }
+        }
     }
 }
