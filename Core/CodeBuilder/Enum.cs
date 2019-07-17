@@ -34,17 +34,18 @@ namespace Sys.CodeBuilder
 
         public void Add(string feature)
         {
-            features.Add(new Feature(feature));
+            this.Add(new Feature(feature));
         }
 
         public void Add(string feature, int value)
         {
-            features.Add(new Feature(feature) { value = value });
+            this.Add(new Feature(feature) { value = value });
         }
 
         public void Add(Feature feature)
         {
             features.Add(feature);
+            feature.Parent = this;
         }
 
         public void Add(string feature, int value, string label)
@@ -55,7 +56,7 @@ namespace Sys.CodeBuilder
                 _feature.AddAttribute(new AttributeInfo("Description") { args = new string[] { label } });
             }
 
-            features.Add(_feature);
+            this.Add(_feature);
         }
 
         protected override void BuildBlock(CodeBlock block)

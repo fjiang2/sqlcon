@@ -32,7 +32,7 @@ namespace Sys.CodeBuilder
             var name = typeof(T).Name;
             name = name.Substring(0, name.Length - nameof(Attribute).Length);
             var attr = new AttributeInfo(name);
-            attributes.Add(attr);
+            this.AddAttribute(attr);
 
             return attr;
         }
