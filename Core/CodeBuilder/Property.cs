@@ -104,7 +104,10 @@ namespace Sys.CodeBuilder
             }
             else if (gets.Count == 0 && sets.Count == 0)
             {
-                block.AppendFormat("{0}{1}", $"{Signature} {{ {get}; {set}; }}", comment);
+                if (value != null)
+                    block.AppendFormat("{0}{1}", $"{Signature} {{ {get}; {set}; }} = {value};", comment);
+                else
+                    block.AppendFormat("{0}{1}", $"{Signature} {{ {get}; {set}; }}", comment);
             }
             else if (!IsLambda)
             {
