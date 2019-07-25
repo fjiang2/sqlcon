@@ -52,6 +52,9 @@ namespace sqlcon
                     if (next == NextStep.CONTINUE)
                     {
                         line = GetLine();
+                        if (string.IsNullOrEmpty(line))
+                            return NextStep.ERROR;
+
                         goto L2;
                     }
                 }
@@ -76,6 +79,12 @@ namespace sqlcon
 
         private string GetLine()
         {
+            if (SP >= lines.Length)
+            {
+                cerr.WriteLine("command is not completed. Letter ';' expected.");
+                return string.Empty;
+            }
+
             string line = lines[SP];
             cout.WriteLine(ConsoleColor.DarkGray, line);
             return line;
@@ -135,7 +144,7 @@ namespace sqlcon
                         return Goto(label);
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     cerr.WriteLine($"error on: {expr},  {ex.Message}");
                     return NextStep.ERROR;
