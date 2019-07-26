@@ -10,14 +10,28 @@ using System.Data;
 using Sys;
 using Sys.Data;
 using Sys.Stdio;
+using Tie;
 
 namespace sqlcon
 {
 
-
-
     partial class PathManager
     {
+        private static void Assign(ApplicationCommand cmd, IEnumerable<string> values)
+        {
+            string vname = cmd.GetValue("let");
+            if (vname == null)
+                return;
+
+            if (vname == string.Empty)
+            {
+                cerr.WriteLine("undefined variable name");
+                return;
+            }
+
+            string[] A = values.ToArray();
+            Context.DS.Add(vname, new VAL(A));
+        }
 
         public void Display(TreeNode<IDataPath> pt, ApplicationCommand cmd)
         {
@@ -39,6 +53,7 @@ namespace sqlcon
             int h = 0;
             CancelableWork.CanCancel(cts =>
             {
+                List<string> values = new List<string>();
                 foreach (var node in pt.Nodes)
                 {
                     if (cts.IsCancellationRequested)
@@ -57,11 +72,13 @@ namespace sqlcon
 
                         cout.WriteLine("{0,4} {1,26} <SVR> {2,10} Databases", sub(i), sname.Path, sname.Disconnected ? "?" : node.Nodes.Count.ToString());
                         h = PagePause(cmd, ++h);
+
+                        values.Add(sname.Path);
                     }
                 }
 
+                Assign(cmd, values);
                 cout.WriteLine("\t{0} Server(s)", count);
-
             });
 
             return true;
@@ -82,6 +99,8 @@ namespace sqlcon
                 int i = 0;
                 int count = 0;
                 int h = 0;
+
+                List<string> values = new List<string>();
                 foreach (var node in pt.Nodes)
                 {
                     DatabaseName dname = (DatabaseName)node.Item;
@@ -95,9 +114,12 @@ namespace sqlcon
 
                         cout.WriteLine("{0,4} {1,26} <DB> {2,10} Tables/Views", sub(i), dname.Name, node.Nodes.Count);
                         h = PagePause(cmd, ++h);
+
+                        values.Add(dname.Name);
                     }
                 }
 
+                Assign(cmd, values);
                 cout.WriteLine("\t{0} Database(s)", count);
             }
 
@@ -120,6 +142,8 @@ namespace sqlcon
             int i = 0;
             int[] count = new int[] { 0, 0 };
             int h = 0;
+
+            List<string> values = new List<string>();
             foreach (var node in pt.Nodes)
             {
                 TableName tname = (TableName)node.Item;
@@ -133,10 +157,12 @@ namespace sqlcon
                     cout.WriteLine("{0,5} {1,15}.{2,-37} <{3}>", sub(i), tname.SchemaName, tname.Name, tname.IsViewName ? "VIEW" : "TABLE");
 
                     h = PagePause(cmd, ++h);
+
+                    values.Add(tname.ShortName);
                 }
             }
 
-
+            Assign(cmd, values);
             cout.WriteLine("\t{0} Table(s)", count[0]);
             cout.WriteLine("\t{0} View(s)", count[1]);
 

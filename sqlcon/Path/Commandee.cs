@@ -112,6 +112,7 @@ namespace sqlcon
                 cout.WriteLine("   /ind        : display table index/indices");
                 cout.WriteLine("   /sto        : display table storage");
                 cout.WriteLine("   /refresh    : refresh table structure");
+                cout.WriteLine("   /let:var    : save output to variable \"var\"");
                 return;
             }
 
