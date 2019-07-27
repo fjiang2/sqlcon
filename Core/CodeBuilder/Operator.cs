@@ -21,32 +21,49 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    [Flags]
-    public enum Modifier
+    public class Operator : Declare, ICodeBlock
     {
-        Public = 0x01,
-        Internal = 0x02,
-        Protected = 0x04,
-        Private = 0x08,
+        public Arguments args { get; set; } = new Arguments();
 
-        Const = 0x10,
-        Static = 0x20,
-        Virtual = 0x40,
-        Override = 0x80,
+        public Statement statements { get; } = new Statement();
 
-        Abstract = 0x100,
-        Sealed = 0x200,
-        Readonly = 0x400,
-        Event = 0x800,
 
-        Extern = 0x1000,
-        Unsafe = 0x2000,
-        Volatile = 0x4000,
-        Partial = 0x8000,
+        public Operator(TypeInfo returnType, string operation)
+            : base("operator " + operation)
+        {
+            base.modifier = Modifier.Public | Modifier.Static;
+            base.type = returnType;
+        }
 
-        Operator = 0x10000,
-        Implicit = 0x20000,
-        Explicit = 0x80000,
+        public static Operator Implicit(TypeInfo operation, Argument arg)
+        {
+            Operator opr = new Operator(null, operation.ToString())
+            {
+                modifier = Modifier.Public | Modifier.Static | Modifier.Implicit,
+            };
+            opr.args.Add(arg);
 
+            return opr;
+        }
+
+        public static Operator Explicit(TypeInfo operation, Argument arg)
+        {
+            Operator opr = new Operator(null, operation.ToString())
+            {
+                modifier = Modifier.Public | Modifier.Static | Modifier.Explicit,
+            };
+            opr.args.Add(arg);
+
+            return opr;
+        }
+
+        protected override void BuildBlock(CodeBlock block)
+        {
+            base.BuildBlock(block);
+
+            block.AppendFormat("{0}({1})", Signature, args);
+
+            block.AddWithBeginEnd(statements);
+        }
     }
 }

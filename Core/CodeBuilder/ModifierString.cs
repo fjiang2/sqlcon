@@ -68,6 +68,14 @@ namespace Sys.CodeBuilder
             if ((modifier & Modifier.Event) == Modifier.Event)
                 s.Append("event ");
 
+
+            if ((modifier & Modifier.Implicit) == Modifier.Implicit)
+                s.Append("implicit ");
+            if ((modifier & Modifier.Explicit) == Modifier.Explicit)
+                s.Append("explicit ");
+            if ((modifier & Modifier.Operator) == Modifier.Operator)
+                s.Append("operator ");
+
             return s.ToString().TrimEnd();
         }
     }
