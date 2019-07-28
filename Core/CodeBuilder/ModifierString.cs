@@ -23,57 +23,62 @@ namespace Sys.CodeBuilder
 {
     sealed class ModifierString
     {
-        Modifier modifier;
+        private readonly Modifier modifier;
 
         public ModifierString(Modifier modifier)
         {
             this.modifier = modifier;
         }
 
+        private bool Has(Modifier feature)
+        {
+            return (this.modifier & feature) == feature;
+        }
 
         public override string ToString()
         {
             StringBuilder s = new StringBuilder();
 
-            if ((modifier & Modifier.Public) == Modifier.Public)
+            if (Has(Modifier.Public))
                 s.Append("public ");
-            else if ((modifier & Modifier.Private) == Modifier.Private)
+            else if (Has(Modifier.Private))
                 s.Append("private ");
-            else if ((modifier & Modifier.Internal) == Modifier.Internal)
+            else if (Has(Modifier.Internal))
                 s.Append("internal ");
-            else if ((modifier & Modifier.Protected) == Modifier.Protected)
+            else if (Has(Modifier.Protected))
                 s.Append("protected ");
 
-            if ((modifier & Modifier.Static) == Modifier.Static)
+            if (Has(Modifier.Static))
                 s.Append("static ");
-            if ((modifier & Modifier.Partial) == Modifier.Partial)
+            if (Has(Modifier.Partial))
                 s.Append("partial ");
 
 
-            if ((modifier & Modifier.Const) == Modifier.Const)
+            if (Has(Modifier.Const))
                 s.Append("const ");
-            else if ((modifier & Modifier.Readonly) == Modifier.Readonly)
+            else if (Has(Modifier.Readonly))
                 s.Append("readonly ");
 
-            if ((modifier & Modifier.Virtual) == Modifier.Virtual)
+            if (Has(Modifier.Virtual))
                 s.Append("virtual ");
-            else if ((modifier & Modifier.Override) == Modifier.Override)
+            else if (Has(Modifier.Override))
                 s.Append("override ");
 
-            if ((modifier & Modifier.Abstract) == Modifier.Abstract)
+            if (Has(Modifier.Abstract))
                 s.Append("abstract ");
-            else if ((modifier & Modifier.Sealed) == Modifier.Sealed)
+            else if (Has(Modifier.Sealed))
                 s.Append("sealed ");
 
-            if ((modifier & Modifier.Event) == Modifier.Event)
+            if (Has(Modifier.Event))
                 s.Append("event ");
 
 
-            if ((modifier & Modifier.Implicit) == Modifier.Implicit)
+            if (Has(Modifier.Implicit))
                 s.Append("implicit ");
-            if ((modifier & Modifier.Explicit) == Modifier.Explicit)
+            else if (Has(Modifier.Explicit))
                 s.Append("explicit ");
-            if ((modifier & Modifier.Operator) == Modifier.Operator)
+
+            if (Has(Modifier.Operator))
                 s.Append("operator ");
 
             return s.ToString().TrimEnd();
