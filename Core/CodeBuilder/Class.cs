@@ -23,7 +23,7 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Class : Declare
+    public class Class : Prototype
     {
         List<Buildable> list = new List<Buildable>();
 

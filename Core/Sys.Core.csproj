@@ -79,6 +79,7 @@
     <Compile Include="CodeBuilder\Modifier.cs" />
     <Compile Include="CodeBuilder\Property.cs" />
     <Compile Include="CodeBuilder\PropertyInfo.cs" />
+    <Compile Include="CodeBuilder\Prototype.cs" />
     <Compile Include="CodeBuilder\Statement.cs" />
     <Compile Include="CodeBuilder\TypeInfo.cs" />
     <Compile Include="CodeBuilder\UniqueNameMaker.cs" />

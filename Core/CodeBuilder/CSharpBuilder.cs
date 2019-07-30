@@ -28,7 +28,7 @@ namespace Sys.CodeBuilder
         public string nameSpace { get; set; } = "Sys.Unknown";
 
         List<string> usings = new List<string>();
-        List<Declare> classes = new List<Declare>();
+        List<Prototype> classes = new List<Prototype>();
 
         public CSharpBuilder()
         {
@@ -107,7 +107,7 @@ namespace Sys.CodeBuilder
                 Directory.CreateDirectory(directory);
             }
 
-            foreach (Declare clss in classes)
+            foreach (Prototype clss in classes)
             {
                 CodeBlock block = new CodeBlock();
                 foreach (var name in usings)
@@ -121,7 +121,16 @@ namespace Sys.CodeBuilder
                 block.AddWithBeginEnd(c);
 
                 string code = block.ToString();
-                string file = Path.ChangeExtension(Path.Combine(directory, clss.name), "cs");
+
+                string folder = directory;
+                if (!string.IsNullOrEmpty(clss.suffix))
+                {
+                    folder = Path.Combine(directory, clss.suffix);
+                    if (!Directory.Exists(folder))
+                        Directory.CreateDirectory(folder);
+                }
+
+                string file = Path.ChangeExtension(Path.Combine(folder, clss.name), "cs");
                 File.WriteAllText(file, code);
             }
         }

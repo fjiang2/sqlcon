@@ -14,72 +14,23 @@
 //                                                                                                  //
 //                                                                                                  //
 //--------------------------------------------------------------------------------------------------//
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
-    public class Enum : Prototype, ICodeBlock
+    public class Prototype : Declare
     {
-        public List<Feature> features { get; } = new List<Feature>();
+        public string prefix { get; set; }
+        public string suffix { get; set; }
 
-
-        public Enum(string enumName)
-            : base(enumName)
+        public Prototype(string name)
+            : base(name)
         {
-            type = new TypeInfo { userType = "enum" };
-        }
-
-        public void Add(string feature)
-        {
-            this.Add(new Feature(feature));
-        }
-
-        public void Add(string feature, int value)
-        {
-            this.Add(new Feature(feature) { value = value });
-        }
-
-        public void Add(Feature feature)
-        {
-            features.Add(feature);
-            feature.Parent = this;
-        }
-
-        public void Add(string feature, int value, string label)
-        {
-            var _feature = new Feature(feature) { value = value };
-            if (label != null)
-            {
-                _feature.AddAttribute(new AttributeInfo("Description") { args = new string[] { label } });
-            }
-
-            this.Add(_feature);
-        }
-
-        protected override void BuildBlock(CodeBlock block)
-        {
-            base.BuildBlock(block);
-
-            block.AppendLine(Signature);
-            var body = new CodeBlock();
-
-            features.ForEach(
-                    item => body.Add(item),
-                    item =>
-                    {
-                        if (item.Count == 1)
-                            return;
-
-                        body.AppendLine();
-                    }
-                    );
-
-            block.AddWithBeginEnd(body);
         }
     }
-
-
 }
