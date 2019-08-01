@@ -27,7 +27,7 @@ namespace Sys.CodeBuilder
     {
         List<Buildable> list = new List<Buildable>();
 
-        private TypeInfo[] inherits;
+        public TypeInfo[] inherits { get; set; }
         public bool Sorted { get; set; } = false;
 
         public Class(string className)
