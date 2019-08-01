@@ -37,14 +37,16 @@ namespace Sys.CodeBuilder
 
         public CSharpBuilder AddUsing(string name)
         {
-            this.usings.Add(name);
+            if (usings.IndexOf(name) < 0)
+                this.usings.Add(name);
+
             return this;
         }
 
         public CSharpBuilder AddUsingRange(IEnumerable<string> names)
         {
             foreach (var name in names)
-                this.usings.Add(name);
+                AddUsing(name);
 
             return this;
         }

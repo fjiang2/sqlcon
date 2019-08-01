@@ -44,6 +44,7 @@ namespace Sys.CodeBuilder
             base.modifier = Modifier.Public;
         }
 
+        public CSharpBuilder Builder => this.Parent as CSharpBuilder;
 
         public void Clear()
         {
