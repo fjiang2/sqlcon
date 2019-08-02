@@ -1,4 +1,21 @@
-﻿using System;
+﻿//--------------------------------------------------------------------------------------------------//
+//                                                                                                  //
+//        DPO(Data Persistent Object)                                                               //
+//                                                                                                  //
+//          Copyright(c) Datum Connect Inc.                                                         //
+//                                                                                                  //
+// This source code is subject to terms and conditions of the Datum Connect Software License. A     //
+// copy of the license can be found in the License.html file at the root of this distribution. If   //
+// you cannot locate the  Datum Connect Software License, please send an email to                   //
+// datconn@gmail.com. By using this source code in any fashion, you are agreeing to be bound        //
+// by the terms of the Datum Connect Software License.                                              //
+//                                                                                                  //
+// You must not remove this notice, or any other, from this software.                               //
+//                                                                                                  //
+//                                                                                                  //
+//--------------------------------------------------------------------------------------------------//
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +25,7 @@ namespace Sys.CodeBuilder
 {
     public class Arguments
     {
-        private List<Argument> args = new List<Argument>();
+        private readonly List<Argument> args = new List<Argument>();
 
         public Arguments()
         {
@@ -28,7 +45,7 @@ namespace Sys.CodeBuilder
 
         public Arguments Add(string userType, string name)
         {
-            var arg = new Argument(new TypeInfo { userType = userType }, name);
+            var arg = new Argument(new TypeInfo { UserType = userType }, name);
 
             args.Add(arg);
             return this;
@@ -36,7 +53,7 @@ namespace Sys.CodeBuilder
 
         public Arguments Add(Type type, string name)
         {
-            var arg = new Argument(new TypeInfo { type = type }, name);
+            var arg = new Argument(new TypeInfo { Type = type }, name);
 
             args.Add(arg);
             return this;
@@ -44,7 +61,7 @@ namespace Sys.CodeBuilder
 
         public Arguments Add<T>(string name)
         {
-            var arg = new Argument(new TypeInfo { type = typeof(T) }, name);
+            var arg = new Argument(new TypeInfo { Type = typeof(T) }, name);
             args.Add(arg);
 
             return this;

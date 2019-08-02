@@ -56,12 +56,14 @@
   <ItemGroup>
     <Compile Include="Account\ActiveAccount.cs" />
     <Compile Include="Account\IAccount.cs" />
+    <Compile Include="CodeBuilder\Alignment.cs" />
     <Compile Include="CodeBuilder\Argument.cs" />
     <Compile Include="CodeBuilder\Arguments.cs" />
     <Compile Include="CodeBuilder\AttributeInfoArg.cs" />
     <Compile Include="CodeBuilder\AttributeInfo.cs" />
     <Compile Include="CodeBuilder\Class.cs" />
     <Compile Include="CodeBuilder\CodeString.cs" />
+    <Compile Include="CodeBuilder\ICodeBlock.cs" />
     <Compile Include="CodeBuilder\Operator.cs" />
     <Compile Include="CodeBuilder\CSharpBuilder.cs" />
     <Compile Include="CodeBuilder\Buildable.cs" />

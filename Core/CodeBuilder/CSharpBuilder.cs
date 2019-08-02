@@ -25,10 +25,10 @@ namespace Sys.CodeBuilder
 {
     public class CSharpBuilder : Buildable
     {
-        public string nameSpace { get; set; } = "Sys.Unknown";
+        public string Namespace { get; set; } = "Sys.Unknown";
 
-        List<string> usings = new List<string>();
-        List<Prototype> classes = new List<Prototype>();
+        private readonly List<string> usings = new List<string>();
+        private readonly List<Prototype> classes = new List<Prototype>();
 
         public CSharpBuilder()
         {
@@ -72,7 +72,7 @@ namespace Sys.CodeBuilder
 
             block.AppendLine();
 
-            block.AppendFormat("namespace {0}", this.nameSpace);
+            block.AppendFormat("namespace {0}", this.Namespace);
 
             var c = new CodeBlock();
 
@@ -116,7 +116,7 @@ namespace Sys.CodeBuilder
                     block.AppendFormat("using {0};", name);
 
                 block.AppendLine();
-                block.AppendFormat("namespace {0}", this.nameSpace);
+                block.AppendFormat("namespace {0}", this.Namespace);
 
                 var c = new CodeBlock();
                 c.Add(clss.GetBlock());
@@ -125,14 +125,14 @@ namespace Sys.CodeBuilder
                 string code = block.ToString();
 
                 string folder = directory;
-                if (!string.IsNullOrEmpty(clss.suffix))
+                if (!string.IsNullOrEmpty(clss.Suffix))
                 {
-                    folder = Path.Combine(directory, clss.suffix);
+                    folder = Path.Combine(directory, clss.Suffix);
                     if (!Directory.Exists(folder))
                         Directory.CreateDirectory(folder);
                 }
 
-                string file = Path.ChangeExtension(Path.Combine(folder, clss.name), "cs");
+                string file = Path.ChangeExtension(Path.Combine(folder, clss.Name), "cs");
                 File.WriteAllText(file, code);
             }
         }

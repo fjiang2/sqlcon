@@ -106,7 +106,7 @@ namespace sqlcon
             foreach (var column in _columns)
             {
                 string[] kvp = column.Split('=');
-                TypeInfo ty = new TypeInfo { userType = kvp[1] };
+                TypeInfo ty = new TypeInfo { UserType = kvp[1] };
                 dict.Add(kvp[0], ty);
             }
 
@@ -123,14 +123,14 @@ namespace sqlcon
 
             string dataclass = cmd.GetValue("dataclass") ?? "DbReadOnly";
 
-            var builder = new CSharpBuilder { nameSpace = NameSpace };
+            var builder = new CSharpBuilder { Namespace = NameSpace };
             builder.AddUsing("System.Collections.Generic");
             string cname = ClassName;
 
             Dictionary<string, TypeInfo> codeColumns = CodeColumnDef();
             var clss = new Class(cname)
             {
-                modifier = Modifier.Public | Modifier.Partial
+                Modifier = Modifier.Public | Modifier.Partial
             };
 
             builder.AddClass(clss);
@@ -143,13 +143,13 @@ namespace sqlcon
                 if (codeColumns.ContainsKey(column.ColumnName))
                     ty = codeColumns[column.ColumnName];
 
-                prop = new Property(ty, column.ColumnName.ToFieldName()) { modifier = Modifier.Public };
+                prop = new Property(ty, column.ColumnName.ToFieldName()) { Modifier = Modifier.Public };
                 clss.Add(prop);
             }
 
             clss = new Class(dataclass)
             {
-                modifier = Modifier.Public | Modifier.Partial
+                Modifier = Modifier.Public | Modifier.Partial
             };
             builder.AddClass(clss);
 
@@ -186,9 +186,9 @@ namespace sqlcon
             var keyType = new TypeInfo(dt.Columns[0].DataType);
             var valueType = new TypeInfo(dt.Columns[1].DataType);
             if (dt.Columns.Count != 2)
-                valueType = new TypeInfo { userType = cname };
+                valueType = new TypeInfo { UserType = cname };
 
-            TypeInfo type = new TypeInfo { userType = $"{cname}" };
+            TypeInfo type = new TypeInfo { UserType = $"{cname}" };
             foreach (DataRow row in dt.Rows)
             {
                 string key = Value.ToPrimitive(row[0]);
@@ -223,7 +223,7 @@ namespace sqlcon
                 var A = group.ToArray();
                 if (A.Length > 1)
                 {
-                    valueType.isArray = true;
+                    valueType.IsArray = true;
                     break;
                 }
             }
@@ -232,8 +232,8 @@ namespace sqlcon
             {
                 var A = group.ToArray();
                 object val;
-                if (valueType.isArray)
-                    val = new Value(A) { type = valueType };
+                if (valueType.IsArray)
+                    val = new Value(A) { Type = valueType };
                 else
                     val = A[0];
 
@@ -241,10 +241,10 @@ namespace sqlcon
             }
 
 
-            TypeInfo typeinfo = new TypeInfo { userType = $"Dictionary<{keyType}, {valueType}>" };
-            Field field = new Field(typeinfo, fieldName, new Value(dict) { type = typeinfo })
+            TypeInfo typeinfo = new TypeInfo { UserType = $"Dictionary<{keyType}, {valueType}>" };
+            Field field = new Field(typeinfo, fieldName, new Value(dict) { Type = typeinfo })
             {
-                modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
+                Modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
             };
 
             return field;
@@ -255,7 +255,7 @@ namespace sqlcon
             string fieldName = $"{cname}Data";
 
             List<Value> L = new List<Value>();
-            TypeInfo type = new TypeInfo { userType = $"{cname}" };
+            TypeInfo type = new TypeInfo { UserType = $"{cname}" };
             foreach (DataRow row in dt.Rows)
             {
                 var V = Value.NewPropertyObject(type);
@@ -270,13 +270,13 @@ namespace sqlcon
                 L.Add(V);
             }
 
-            TypeInfo typeinfo = new TypeInfo { userType = $"{cname}[]" };
+            TypeInfo typeinfo = new TypeInfo { UserType = $"{cname}[]" };
             if (dataType == DataClassType.List)
-                typeinfo = new TypeInfo { userType = $"List<{cname}>" };
+                typeinfo = new TypeInfo { UserType = $"List<{cname}>" };
 
-            Field field = new Field(typeinfo, fieldName, new Value(L.ToArray()) { type = typeinfo })
+            Field field = new Field(typeinfo, fieldName, new Value(L.ToArray()) { Type = typeinfo })
             {
-                modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
+                Modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
             };
 
             return field;
@@ -294,7 +294,7 @@ namespace sqlcon
 
             CSharpBuilder builder = new CSharpBuilder()
             {
-                nameSpace = NameSpace
+                Namespace = NameSpace
             };
 
             string cname = ClassName;

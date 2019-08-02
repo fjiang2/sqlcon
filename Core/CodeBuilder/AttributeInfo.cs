@@ -1,4 +1,20 @@
-﻿using System;
+﻿//--------------------------------------------------------------------------------------------------//
+//                                                                                                  //
+//        DPO(Data Persistent Object)                                                               //
+//                                                                                                  //
+//          Copyright(c) Datum Connect Inc.                                                         //
+//                                                                                                  //
+// This source code is subject to terms and conditions of the Datum Connect Software License. A     //
+// copy of the license can be found in the License.html file at the root of this distribution. If   //
+// you cannot locate the  Datum Connect Software License, please send an email to                   //
+// datconn@gmail.com. By using this source code in any fashion, you are agreeing to be bound        //
+// by the terms of the Datum Connect Software License.                                              //
+//                                                                                                  //
+// You must not remove this notice, or any other, from this software.                               //
+//                                                                                                  //
+//                                                                                                  //
+//--------------------------------------------------------------------------------------------------//
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,19 +25,20 @@ namespace Sys.CodeBuilder
 {
     public class AttributeInfo
     {
-        public string name { get; set; }
-        public string[] args { get; set; }
+        public string Name { get; set; }
 
-        public Comment comment { get; set; }
+        public string[] Args { get; set; }
+
+        public Comment Comment { get; set; }
 
         public AttributeInfo(string name)
         {
-            this.name = name;
+            this.Name = name;
         }
 
         public AttributeInfo(string name, params object[] args)
         {
-            this.name = name;
+            this.Name = name;
 
             if (args != null)
             {
@@ -46,17 +63,17 @@ namespace Sys.CodeBuilder
                     }
                 }
 
-                this.args = list.ToArray();
+                this.Args = list.ToArray();
             }
         }
 
         public override string ToString()
         {
             string text;
-            if (args == null)
-                text = string.Format("[{0}]", name);
+            if (Args == null)
+                text = string.Format("[{0}]", Name);
             else
-                text = string.Format("[{0}({1})]", name, string.Join(", ", args));
+                text = string.Format("[{0}({1})]", Name, string.Join(", ", Args));
 
             int pad = 70;
             pad = pad - text.Length;
@@ -65,8 +82,8 @@ namespace Sys.CodeBuilder
 
             string sp = new string(' ', pad);
 
-            if (comment != null)
-                return $"{text}{sp}{comment}";
+            if (Comment != null)
+                return $"{text}{sp}{Comment}";
             else
                 return text;
         }

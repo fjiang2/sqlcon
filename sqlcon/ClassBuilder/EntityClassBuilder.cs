@@ -41,7 +41,7 @@ namespace sqlcon
 
             var clss = new Class(cname, OptionalBaseType())
             {
-                modifier = Modifier.Public | Modifier.Partial
+                Modifier = Modifier.Public | Modifier.Partial
             };
 
             builder.AddClass(clss);
@@ -57,9 +57,9 @@ namespace sqlcon
                     Field field;
                     foreach (var column in schema.Columns)
                     {
-                        field = new Field(new TypeInfo { type = typeof(string) }, COLUMN(column), new Value(column.ColumnName))
+                        field = new Field(new TypeInfo { Type = typeof(string) }, COLUMN(column), new Value(column.ColumnName))
                         {
-                            modifier = Modifier.Public | Modifier.Const
+                            Modifier = Modifier.Public | Modifier.Const
                         };
                         clss.Add(field);
                     }
@@ -103,7 +103,7 @@ namespace sqlcon
                             identity.AddAttribute(new AttributeInfo(x));
                     }
 
-                    identity.gets.Append($"this.{identityColumn};");
+                    identity.Gets.Append($"this.{identityColumn};");
                     clss.Add(identity);
                 }
 

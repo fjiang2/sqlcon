@@ -23,25 +23,25 @@ namespace Sys.CodeBuilder
 {
     public class Operator : Declare, ICodeBlock
     {
-        public Arguments args { get; set; } = new Arguments();
+        public Arguments Args { get; set; } = new Arguments();
 
-        public Statement statements { get; } = new Statement();
+        public Statement Statement { get; } = new Statement();
 
 
         public Operator(TypeInfo returnType, string operation)
             : base("operator " + operation)
         {
-            base.modifier = Modifier.Public | Modifier.Static;
-            base.type = returnType;
+            base.Modifier = Modifier.Public | Modifier.Static;
+            base.Type = returnType;
         }
 
         public static Operator Implicit(TypeInfo operation, Argument arg)
         {
             Operator opr = new Operator(null, operation.ToString())
             {
-                modifier = Modifier.Public | Modifier.Static | Modifier.Implicit,
+                Modifier = Modifier.Public | Modifier.Static | Modifier.Implicit,
             };
-            opr.args.Add(arg);
+            opr.Args.Add(arg);
 
             return opr;
         }
@@ -50,9 +50,9 @@ namespace Sys.CodeBuilder
         {
             Operator opr = new Operator(null, operation.ToString())
             {
-                modifier = Modifier.Public | Modifier.Static | Modifier.Explicit,
+                Modifier = Modifier.Public | Modifier.Static | Modifier.Explicit,
             };
-            opr.args.Add(arg);
+            opr.Args.Add(arg);
 
             return opr;
         }
@@ -61,9 +61,9 @@ namespace Sys.CodeBuilder
         {
             base.BuildBlock(block);
 
-            block.AppendFormat("{0}({1})", Signature, args);
+            block.AppendFormat("{0}({1})", Signature, Args);
 
-            block.AddWithBeginEnd(statements);
+            block.AddWithBeginEnd(Statement);
         }
     }
 }

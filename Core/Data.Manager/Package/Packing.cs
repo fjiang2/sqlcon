@@ -49,7 +49,7 @@ namespace Sys.Data.Manager
 
             this.classBuilder = new CSharpBuilder()
             {
-                nameSpace = dpoType.Assembly.GetName().Name + "." + Setting.DPO_PACKAGE_SUB_NAMESPACE,
+                Namespace = dpoType.Assembly.GetName().Name + "." + Setting.DPO_PACKAGE_SUB_NAMESPACE,
             };
 
             this.classBuilder.AddUsing("System")
@@ -62,9 +62,9 @@ namespace Sys.Data.Manager
             .AddUsing(dpoType.Namespace);
 
 
-            var clss = new Class(ClassName, new CodeBuilder.TypeInfo { type = baseType })
+            var clss = new Class(ClassName, new CodeBuilder.TypeInfo { Type = baseType })
             {
-                modifier = Modifier.Public
+                Modifier = Modifier.Public
             };
 
 
@@ -72,7 +72,7 @@ namespace Sys.Data.Manager
             //constructor
             clss.Add(new Constructor(ClassName));
 
-            this.pack = new Method("Pack") { modifier = Modifier.Protected | Modifier.Override };
+            this.pack = new Method("Pack") { Modifier = Modifier.Protected | Modifier.Override };
             clss.Add(pack);
 
             classBuilder.AddClass(clss);
@@ -120,17 +120,17 @@ namespace Sys.Data.Manager
                             ;
 
 
-                        pack.statements.AppendFormat("dpo.{0} = @{1}", fieldInfo.Name, s);
+                        pack.Statement.AppendFormat("dpo.{0} = @{1}", fieldInfo.Name, s);
                     }
                     else
                     {
-                        pack.statements.AppendFormat("dpo.{0} = {1}", fieldInfo.Name, s);
+                        pack.Statement.AppendFormat("dpo.{0} = {1}", fieldInfo.Name, s);
                     }
                 }
             }
 
-            pack.statements.AppendLine("list.Add(dpo)");
-            pack.statements.AppendLine();
+            pack.Statement.AppendLine("list.Add(dpo)");
+            pack.Statement.AppendLine();
         }
 
 
@@ -145,7 +145,7 @@ namespace Sys.Data.Manager
 
         public bool Pack()
         {
-            pack.statements.AppendFormat("var dpo = new {0}()", dpoType.Name);
+            pack.Statement.AppendFormat("var dpo = new {0}()", dpoType.Name);
 
             PersistentObject dpo = (PersistentObject)Activator.CreateInstance(this.dpoType);
             DataTable dt = new TableReader(dpo.TableName).Table;
@@ -168,7 +168,7 @@ namespace Sys.Data.Manager
             {
                 PackRecord(dataRow);
                 if (i < dt.Rows.Count - 1)
-                    pack.statements.AppendFormat("dpo = new {0}()", dpoType.Name);
+                    pack.Statement.AppendFormat("dpo = new {0}()", dpoType.Name);
 
                 i++;
             }

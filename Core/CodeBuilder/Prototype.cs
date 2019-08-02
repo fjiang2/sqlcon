@@ -25,12 +25,15 @@ namespace Sys.CodeBuilder
 {
     public class Prototype : Declare
     {
-        public string prefix { get; set; }
-        public string suffix { get; set; }
+        public string Prefix { get; set; }
+        public string Suffix { get; set; }
 
         public Prototype(string name)
             : base(name)
         {
         }
+
+        public CSharpBuilder Builder => this.Parent as CSharpBuilder;
+
     }
 }

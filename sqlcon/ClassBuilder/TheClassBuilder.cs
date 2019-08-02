@@ -34,7 +34,7 @@ namespace sqlcon
                 foreach (string item in items)
                 {
                     string type = item.Replace("~", cname);
-                    bases.Add(new TypeInfo { userType = type });
+                    bases.Add(new TypeInfo { UserType = type });
                 }
             }
 
@@ -45,7 +45,7 @@ namespace sqlcon
 
         private void createClass()
         {
-            builder.nameSpace = NameSpace;
+            builder.Namespace = NameSpace;
             CreateClass();
         }
 

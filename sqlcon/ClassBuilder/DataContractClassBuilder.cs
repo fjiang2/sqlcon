@@ -26,7 +26,7 @@ namespace sqlcon
 
             foreach (DataColumn column in dt.Columns)
             {
-                TypeInfo ty = new TypeInfo { type = column.DataType };
+                TypeInfo ty = new TypeInfo { Type = column.DataType };
                 foreach (DataRow row in dt.Rows)
                 {
                     if (row[column] == DBNull.Value)
@@ -54,7 +54,7 @@ namespace sqlcon
 
             var clss = new Class(cname)
             {
-                modifier = Modifier.Public | Modifier.Partial
+                Modifier = Modifier.Public | Modifier.Partial
             };
             builder.AddClass(clss);
 
@@ -65,7 +65,7 @@ namespace sqlcon
             {
                 var property = new Property(dict[column], column.ColumnName.ToFieldName())
                 {
-                    modifier = Modifier.Public
+                    Modifier = Modifier.Public
                 };
 
                 property.AddAttribute(new AttributeInfo("DataMember", new

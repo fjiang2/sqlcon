@@ -25,9 +25,9 @@ namespace Sys.CodeBuilder
 {
     public class Class : Prototype
     {
-        List<Buildable> list = new List<Buildable>();
+        private readonly List<Buildable> list = new List<Buildable>();
 
-        public TypeInfo[] inherits { get; set; }
+        public TypeInfo[] Inherits { get; set; }
         public bool Sorted { get; set; } = false;
 
         public Class(string className)
@@ -40,11 +40,9 @@ namespace Sys.CodeBuilder
         public Class(string className, params TypeInfo[] inherits)
             : base(className)
         {
-            this.inherits = inherits;
-            base.modifier = Modifier.Public;
+            this.Inherits = inherits;
+            base.Modifier = Modifier.Public;
         }
-
-        public CSharpBuilder Builder => this.Parent as CSharpBuilder;
 
         public void Clear()
         {
@@ -68,7 +66,7 @@ namespace Sys.CodeBuilder
 
         public Constructor AddConstructor()
         {
-            var constructor = new Constructor(base.name);
+            var constructor = new Constructor(base.Name);
 
             this.Add(constructor);
             return constructor;
@@ -76,9 +74,9 @@ namespace Sys.CodeBuilder
 
         public Field AddField<T>(Modifier modifier, string name, Value value = null)
         {
-            var field = new Field(new TypeInfo { type = typeof(T) }, name, value)
+            var field = new Field(new TypeInfo { Type = typeof(T) }, name, value)
             {
-                modifier = modifier
+                Modifier = modifier
             };
 
             this.Add(field);
@@ -87,9 +85,9 @@ namespace Sys.CodeBuilder
 
         public Property AddProperty<T>(Modifier modifier, string name, object value = null)
         {
-            var property = new Property(new TypeInfo { type = typeof(T) }, name, value)
+            var property = new Property(new TypeInfo { Type = typeof(T) }, name, value)
             {
-                modifier = modifier
+                Modifier = modifier
             };
 
             this.Add(property);
@@ -166,22 +164,22 @@ namespace Sys.CodeBuilder
         protected override void BuildBlock(CodeBlock clss)
         {
             base.BuildBlock(clss);
-            if (comment != null)
+            if (Comment != null)
             {
-                comment.alignment = Alignment.Top;
-                clss.AppendFormat($"{comment}");
+                Comment.Alignment = Alignment.Top;
+                clss.AppendFormat($"{Comment}");
             }
 
-            clss.AppendFormat("{0} class {1}", new ModifierString(modifier), base.name);
-            if (inherits.Length > 0)
-                clss.AppendFormat("\t: {0}", string.Join(", ", inherits.Select(inherit => inherit.ToString())));
+            clss.AppendFormat("{0} class {1}", new ModifierString(Modifier), base.Name);
+            if (Inherits.Length > 0)
+                clss.AppendFormat("\t: {0}", string.Join(", ", Inherits.Select(inherit => inherit.ToString())));
 
             var body = new CodeBlock();
 
             if (Sorted)
             {
-                var flds = fields.Where(fld => (fld.modifier & Modifier.Const) != Modifier.Const);
-                foreach (Field field in flds.OrderBy(fld => fld.modifier))
+                var flds = fields.Where(fld => (fld.Modifier & Modifier.Const) != Modifier.Const);
+                foreach (Field field in flds.OrderBy(fld => fld.Modifier))
                 {
                     body.Add(field);
                 }
@@ -206,7 +204,7 @@ namespace Sys.CodeBuilder
                     body.AppendLine();
                 }
 
-                flds = fields.Where(fld => (fld.modifier & Modifier.Const) == Modifier.Const);
+                flds = fields.Where(fld => (fld.Modifier & Modifier.Const) == Modifier.Const);
                 if (flds.Count() > 0)
                 {
                     body.AppendLine();
@@ -245,10 +243,10 @@ namespace Sys.CodeBuilder
         public void AddUtilsMethod(UtilsThisMethod type)
         {
             var rw = properties
-                .Where(p => (p.modifier & Modifier.Public) == Modifier.Public && p.CanRead && p.CanWrite)
-                .Select(p => new PropertyInfo { PropertyName = p.name });
+                .Where(p => (p.Modifier & Modifier.Public) == Modifier.Public && p.CanRead && p.CanWrite)
+                .Select(p => new PropertyInfo { PropertyName = p.Name });
 
-            AddUtilsMethod(this.name, rw, type);
+            AddUtilsMethod(this.Name, rw, type);
         }
 
         public void AddUtilsMethod(string className, IEnumerable<PropertyInfo> propertyNames, UtilsThisMethod type)

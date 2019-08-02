@@ -23,30 +23,31 @@ namespace Sys.CodeBuilder
 {
     public class Constructor : Declare, ICodeBlock
     {
-        public Arguments args { get; set; } = new Arguments();
-        public string[] baseArgs { get; set; }
+        public Arguments Args { get; set; } = new Arguments();
 
-        public Statement statements { get; } = new Statement();
+        public string[] BaseArgs { get; set; }
+
+        public Statement Statement { get; } = new Statement();
 
 
         public Constructor(string constructorName )
             :base(constructorName)
         {
-            base.modifier = Modifier.Public;
-            base.type = null;
+            base.Modifier = Modifier.Public;
+            base.Type = null;
         }
 
         protected override void BuildBlock(CodeBlock block)
         {
             base.BuildBlock(block);
 
-            block.AppendFormat("{0}({1})", Signature, args);
-            if (baseArgs != null)
+            block.AppendFormat("{0}({1})", Signature, Args);
+            if (BaseArgs != null)
             {
-                block.Indent().AppendFormat(": base({0})", string.Join(",", baseArgs)).Unindent();
+                block.Indent().AppendFormat(": base({0})", string.Join(",", BaseArgs)).Unindent();
             }
 
-            block.AddWithBeginEnd(statements);
+            block.AddWithBeginEnd(Statement);
         }
         
 

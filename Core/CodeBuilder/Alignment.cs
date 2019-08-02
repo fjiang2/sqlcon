@@ -14,33 +14,13 @@
 //                                                                                                  //
 //                                                                                                  //
 //--------------------------------------------------------------------------------------------------//
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Argument
+    public enum Alignment
     {
-        public TypeInfo Type { get; set; }
-
-        public string Name { get; }
-
-        public object Value { get; set; }
-
-        public Argument(TypeInfo type, string name)
-        {
-            this.Type = type;
-            this.Name = name;
-        }
-
-        public override string ToString()
-        {
-            if (Value == null)
-                return string.Format("{0} {1}", Type, Name);
-            else
-                return string.Format("{0} {1} = {2}", Type, Name, Value);
-        }
+        Top,
+        Center,
+        Right,
     }
 }

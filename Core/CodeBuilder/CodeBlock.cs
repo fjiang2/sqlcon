@@ -28,7 +28,7 @@ namespace Sys.CodeBuilder
         //current tab number
         private int curruent = 0;
 
-        private List<CodeLine> lines = new List<CodeLine>();
+        private readonly List<CodeLine> lines = new List<CodeLine>();
 
 
         public CodeBlock()

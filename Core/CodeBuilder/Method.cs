@@ -23,16 +23,16 @@ namespace Sys.CodeBuilder
 {
     public class Method  : Declare, ICodeBlock
     {
-        public Statement statements { get; } = new Statement();
+        public Statement Statement { get; } = new Statement();
 
-        public Arguments args { get; set; } = new Arguments();
+        public Arguments Args { get; set; } = new Arguments();
 
         public bool IsExtensionMethod { get; set; } = false;
 
         public Method(TypeInfo returnType, string methodName)
             :base(methodName)
         {
-            base.type = returnType;
+            base.Type = returnType;
         }
 
         public Method(string methodName)
@@ -46,11 +46,11 @@ namespace Sys.CodeBuilder
             {
                 if (IsExtensionMethod)
                 {
-                    return string.Format("{0}(this {1})", Signature, args);
+                    return string.Format("{0}(this {1})", Signature, Args);
                 }
                 else
                 {
-                    return string.Format("{0}({1})", Signature, args);
+                    return string.Format("{0}({1})", Signature, Args);
                 }
             }
         }
@@ -60,7 +60,7 @@ namespace Sys.CodeBuilder
             base.BuildBlock(block);
 
             block.AppendLine(signature);
-            block.AddWithBeginEnd(statements);
+            block.AddWithBeginEnd(Statement);
         }
     }
 }
