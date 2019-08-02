@@ -349,7 +349,7 @@ namespace sqlcon
 
                 foreach (var group in groups)
                 {
-                    var _enum = new Sys.CodeBuilder.Enum(group.First().Category);
+                    var _enum = new EnumType(group.First().Category);
                     foreach (var row in group)
                         _enum.Add(row.Feature, row.Value, $"\"{row.Label}\"");
 
@@ -358,7 +358,7 @@ namespace sqlcon
             }
             else
             {
-                var _enum = new Sys.CodeBuilder.Enum(cname);
+                var _enum = new EnumType(cname);
                 foreach (var row in rows)
                     _enum.Add(row.Feature, row.Value, $"\"{row.Label}\"");
 

@@ -58,7 +58,7 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        public CSharpBuilder AddEnum(Enum _enum)
+        public CSharpBuilder AddEnum(EnumType _enum)
         {
             classes.Add(_enum);
             _enum.Parent = this;

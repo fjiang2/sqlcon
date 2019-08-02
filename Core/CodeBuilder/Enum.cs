@@ -21,12 +21,12 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Enum : Prototype, ICodeBlock
+    public class EnumType : Prototype, ICodeBlock
     {
         public List<Feature> Features { get; } = new List<Feature>();
 
 
-        public Enum(string enumName)
+        public EnumType(string enumName)
             : base(enumName)
         {
             Type = new TypeInfo { UserType = "enum" };
