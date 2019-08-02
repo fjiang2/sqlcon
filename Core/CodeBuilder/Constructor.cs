@@ -21,13 +21,10 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Constructor : Declare, ICodeBlock
+    public class Constructor : Member, ICodeBlock
     {
-        public Arguments Args { get; set; } = new Arguments();
-
+   
         public string[] BaseArgs { get; set; }
-
-        public Statement Statement { get; } = new Statement();
 
 
         public Constructor(string constructorName )
@@ -37,19 +34,21 @@ namespace Sys.CodeBuilder
             base.Type = null;
         }
 
-        protected override void BuildBlock(CodeBlock block)
+
+        protected override string signature
         {
-            base.BuildBlock(block);
-
-            block.AppendFormat("{0}({1})", Signature, Args);
-            if (BaseArgs != null)
+            get
             {
-                block.Indent().AppendFormat(": base({0})", string.Join(",", BaseArgs)).Unindent();
-            }
+                CodeBlock block = new CodeBlock();
+                block.AppendFormat("{0}({1})", Signature, Args);
+                if (BaseArgs != null)
+                {
+                    block.Indent().AppendFormat(": base({0})", string.Join(",", BaseArgs)).Unindent();
+                }
 
-            block.AddWithBeginEnd(Statement);
+                return block.ToString();
+            }
         }
-        
 
     }
 }

@@ -22,27 +22,25 @@ using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
-    public class Member : Buildable
+    public abstract class Member : Declare
     {
-        private CodeBlock code = new CodeBlock();
+        public Statement Statement { get; } = new Statement();
+        public Arguments Args { get; set; } = new Arguments();
 
-        public Member(string line)
+
+        public Member(string name)
+            : base(name)
         {
-            code.AppendLine(line);
         }
 
-        public Member Add(string line)
-        {
-            code.AppendLine(line);
-            return this;
-        }
+        protected abstract string signature { get; }
 
         protected override void BuildBlock(CodeBlock block)
         {
             base.BuildBlock(block);
 
-            block.Add(code);
+            block.AppendLine(signature);
+            block.AddWithBeginEnd(Statement);
         }
-
     }
 }

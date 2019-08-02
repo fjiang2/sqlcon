@@ -21,12 +21,8 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Operator : Declare, ICodeBlock
+    public class Operator : Member, ICodeBlock
     {
-        public Arguments Args { get; set; } = new Arguments();
-
-        public Statement Statement { get; } = new Statement();
-
 
         public Operator(TypeInfo returnType, string operation)
             : base("operator " + operation)
@@ -57,13 +53,8 @@ namespace Sys.CodeBuilder
             return opr;
         }
 
-        protected override void BuildBlock(CodeBlock block)
-        {
-            base.BuildBlock(block);
 
-            block.AppendFormat("{0}({1})", Signature, Args);
+        protected override string signature => $"{Signature}({Args})";
 
-            block.AddWithBeginEnd(Statement);
-        }
     }
 }

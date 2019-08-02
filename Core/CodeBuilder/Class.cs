@@ -102,9 +102,9 @@ namespace Sys.CodeBuilder
             return builder;
         }
 
-        public Member AddMember(string text)
+        public Directive AddMember(string text)
         {
-            var member = new Member(text);
+            var member = new Directive(text);
             this.Add(member);
             return member;
         }

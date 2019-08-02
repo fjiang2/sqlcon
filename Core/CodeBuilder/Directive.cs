@@ -18,39 +18,31 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
-    public class Method  : Member, ICodeBlock
+    public class Directive : Buildable
     {
-        public bool IsExtensionMethod { get; set; } = false;
+        private CodeBlock code = new CodeBlock();
 
-        public Method(TypeInfo returnType, string methodName)
-            :base(methodName)
+        public Directive(string line)
         {
-            base.Type = returnType;
+            code.AppendLine(line);
         }
 
-        public Method(string methodName)
-            :base(methodName)
+        public Directive Add(string line)
         {
+            code.AppendLine(line);
+            return this;
         }
 
-        protected override string signature
+        protected override void BuildBlock(CodeBlock block)
         {
-            get
-            {
-                if (IsExtensionMethod)
-                {
-                    return string.Format("{0}(this {1})", Signature, Args);
-                }
-                else
-                {
-                    return string.Format("{0}({1})", Signature, Args);
-                }
-            }
+            base.BuildBlock(block);
+
+            block.Add(code);
         }
 
-       
     }
 }
