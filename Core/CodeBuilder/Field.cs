@@ -24,7 +24,8 @@ namespace Sys.CodeBuilder
     public class Field : Declare, ICodeBlock
     {
         private Value value;
-        public string userValue { get; set; }
+
+        public string UserValue { get; set; }
 
         public Field(TypeInfo type, string fieldName)
             : this(type, fieldName, null)
@@ -35,7 +36,7 @@ namespace Sys.CodeBuilder
         public Field(TypeInfo type, string fieldName, Value value)
             : base(fieldName)
         {
-            this.type = type;
+            this.Type = type;
             this.value = value;
         }
 
@@ -46,20 +47,20 @@ namespace Sys.CodeBuilder
             base.BuildBlock(block);
 
             string _comment = string.Empty;
-            if (comment != null)
+            if (Comment != null)
             {
-                _comment = comment.ToString();
+                _comment = Comment.ToString();
 
-                if (comment.alignment == Alignment.Top)
+                if (Comment.Alignment == Alignment.Top)
                 {
                     block.Append(_comment);
                     _comment = string.Empty;
                 }
             }
 
-            if (userValue != null)
+            if (UserValue != null)
             {
-                block.AppendLine($"{Signature} = {userValue};{_comment}");
+                block.AppendLine($"{Signature} = {UserValue};{_comment}");
             }
             else if (value != null)
             {

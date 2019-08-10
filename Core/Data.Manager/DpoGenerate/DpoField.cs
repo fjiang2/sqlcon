@@ -48,12 +48,12 @@ namespace Sys.Data.Manager
             string fieldName = column.ToFieldName();
             string ty = column.DataType.GetFieldType(column.Nullable);
 
-            Property prop = new Property(new CodeBuilder.TypeInfo { userType = ty }, fieldName);
+            Property prop = new Property(new CodeBuilder.TypeInfo { UserType = ty }, fieldName);
             if (dpoClass.option.HasColumnAttribute || column.ColumnName != fieldName)
             {
                 var attr = prop.AddAttribute<ColumnAttribute>();
                 Attribute(attr, column);
-                attr.comment = new Comment(string.Format("{0}({1}) {2}", column.DataType, column.AdjuestedLength(), column.Nullable ? "null" : "not null"));
+                attr.Comment = new Comment(string.Format("{0}({1}) {2}", column.DataType, column.AdjuestedLength(), column.Nullable ? "null" : "not null"));
             }
 
             if (dpoClass.Nonvalized.IndexOf(fieldName) != -1)
@@ -111,9 +111,9 @@ namespace Sys.Data.Manager
             string _columnName = dpoClass.dict_column_field[column.ColumnName].PropertyName;
 
 
-            Field field = new Field(new CodeBuilder.TypeInfo { type = typeof(string) }, $"_{_columnName}", new Value($"{column.ColumnName}"))
+            Field field = new Field(new CodeBuilder.TypeInfo { Type = typeof(string) }, $"_{_columnName}", new Value($"{column.ColumnName}"))
             {
-                modifier= Modifier.Public | Modifier.Const
+                Modifier= Modifier.Public | Modifier.Const
             };
 
             clss.Add(field);
@@ -125,15 +125,15 @@ namespace Sys.Data.Manager
         {
             string fieldName = column.ToFieldName();
             
-            Property prop = new Property(new CodeBuilder.TypeInfo { userType = "Image" }, $"{fieldName}Image");
-            prop.gets.IF($"{fieldName} != null", new Statement()
+            Property prop = new Property(new CodeBuilder.TypeInfo { UserType = "Image" }, $"{fieldName}Image");
+            prop.Gets.IF($"{fieldName} != null", new Statement()
                     .Begin()
                     .AppendLine($"System.IO.MemoryStream stream = new System.IO.MemoryStream({fieldName});")
                     .AppendLine("return System.Drawing.Image.FromStream(stream);")
                     .End())
                 .AppendLine("return null;");
 
-            prop.sets.IF("value != null", new Statement()
+            prop.Sets.IF("value != null", new Statement()
                     .Begin()
                     .AppendLine("System.IO.MemoryStream stream = new System.IO.MemoryStream();")
                     .AppendLine("value.Save(stream, System.Drawing.Imaging.ImageFormat.Jpeg);")
@@ -190,7 +190,7 @@ namespace Sys.Data.Manager
             if (column.IsComputed)
                 args.Add("Computed = true");
 
-            attr.args = args.ToArray();
+            attr.Args = args.ToArray();
         }
     }
 }

@@ -54,7 +54,7 @@ namespace Sys.Data.Manager
 
             this.option = option;
 
-            this.code = new CSharpBuilder { nameSpace = cname.Namespace, };
+            this.code = new CSharpBuilder { Namespace = cname.Namespace, };
 
             code.AddUsing("System");
             code.AddUsing("System.Collections.Generic");
@@ -64,9 +64,9 @@ namespace Sys.Data.Manager
             code.AddUsing("Sys.Data");
             code.AddUsing("Sys.Data.Manager");
 
-            clss = new Class(cname.Class, new CodeBuilder.TypeInfo { type = typeof(DPObject) })
+            clss = new Class(cname.Class, new CodeBuilder.TypeInfo { Type = typeof(DPObject) })
             {
-                modifier = Modifier.Public | Modifier.Partial,
+                Modifier = Modifier.Public | Modifier.Partial,
                 Sorted = option.CodeSorted
             };
 
@@ -106,10 +106,10 @@ namespace Sys.Data.Manager
         private void DPObjectId()
         {
             Property prop = clss.AddProperty<int>(Modifier.Protected | Modifier.Override, "DPObjectId");
-            prop.comment = new Comment("must override when logger is used");
+            prop.Comment = new Comment("must override when logger is used");
             if (metaTable.Identity.Length > 0)
             {
-                prop.gets.AppendFormat("return this.{0};", metaTable.Identity.ColumnNames[0]);
+                prop.Gets.AppendFormat("return this.{0};", metaTable.Identity.ColumnNames[0]);
                 return;
             }
             else if (metaTable.PrimaryKeys.Length == 1)
@@ -119,13 +119,13 @@ namespace Sys.Data.Manager
 
                 if (column.CType == CType.Int)
                 {
-                    prop.gets.AppendFormat("return this.{0};", dict_column_field[key].PropertyName);
+                    prop.Gets.AppendFormat("return this.{0};", dict_column_field[key].PropertyName);
                     return;
                 }
 
             }
 
-            prop.gets.Add(new CodeBlock().AppendLine("throw new NotImplementedException();"));
+            prop.Gets.Add(new CodeBlock().AppendLine("throw new NotImplementedException();"));
 
             return;
         }
@@ -138,13 +138,13 @@ namespace Sys.Data.Manager
 
             if (metaTable.PrimaryKeys.Length == 0)
             {
-                prop.gets.AppendLine("return new PrimaryKeys(new string[] {});");
+                prop.Gets.AppendLine("return new PrimaryKeys(new string[] {});");
                 return;
             }
 
             if (metaTable.PrimaryKeys.Length > 0)
             {
-                prop.gets.AppendFormat("return new PrimaryKeys(new string[] {{ {0} }});", stringQL(metaTable.PrimaryKeys.Keys));
+                prop.Gets.AppendFormat("return new PrimaryKeys(new string[] {{ {0} }});", stringQL(metaTable.PrimaryKeys.Keys));
                 return;
             }
 
@@ -160,13 +160,13 @@ namespace Sys.Data.Manager
 
             if (metaTable.Identity.Length == 0)
             {
-                prop.gets.AppendLine("return new IdentityKeys();");
+                prop.Gets.AppendLine("return new IdentityKeys();");
                 return;
             }
 
             if (metaTable.Identity.Length > 0)
             {
-                prop.gets.AppendFormat(" return new IdentityKeys(new string[] {{ {0} }});", stringQL(metaTable.Identity.ColumnNames));
+                prop.Gets.AppendFormat(" return new IdentityKeys(new string[] {{ {0} }});", stringQL(metaTable.Identity.ColumnNames));
                 return;
             }
 
@@ -198,7 +198,7 @@ namespace Sys.Data.Manager
             string[] keys = metaTable.PrimaryKeys.Keys;
             foreach (string p in keys)
             {
-                cons.args.Add(dict_column_field[p].Type, dict_column_field[p].PropertyName.ToLower());
+                cons.Args.Add(dict_column_field[p].Type, dict_column_field[p].PropertyName.ToLower());
             }
 
             Statement sent1 = new Statement();
@@ -210,9 +210,9 @@ namespace Sys.Data.Manager
             }
             sent2.End();
 
-            cons.statements.Add(sent1);
-            cons.statements.AppendLine("this.Load();");
-            cons.statements.IF("!this.Exists", sent2);
+            cons.Statement.Add(sent1);
+            cons.Statement.AppendLine("this.Load();");
+            cons.Statement.IF("!this.Exists", sent2);
 
 
         }
@@ -222,22 +222,22 @@ namespace Sys.Data.Manager
 
             Method fill = new Method("FillObject")
             {
-                modifier = Modifier.Public | Modifier.Override,
-                args = new Arguments().Add<DataRow>("row")
+                Modifier = Modifier.Public | Modifier.Override,
+                Args = new Arguments().Add<DataRow>("row")
             };
 
             Method collect = new Method("UpdateRow")
             {
-                modifier = Modifier.Public | Modifier.Override,
-                args = new Arguments().Add<DataRow>("row")
+                Modifier = Modifier.Public | Modifier.Override,
+                Args = new Arguments().Add<DataRow>("row")
             };
 
             foreach (IColumn column in metaTable.Columns)
             {
                 var fieldDef = dict_column_field[column.ColumnName];
                 string fieldName = fieldDef.PropertyName;
-                fill.statements.AppendFormat("this.{0} = GetField<{1}>(row, _{0});", fieldName, fieldDef.Type);
-                collect.statements.AppendFormat("SetField(row, _{0}, this.{0});", fieldName);
+                fill.Statement.AppendFormat("this.{0} = GetField<{1}>(row, _{0});", fieldName, fieldDef.Type);
+                collect.Statement.AppendFormat("SetField(row, _{0}, this.{0});", fieldName);
             }
 
             clss.Add(fill);
@@ -313,8 +313,8 @@ namespace Sys.Data.Manager
 
             this.clss.AddConstructor();
             var cons = this.clss.AddConstructor();
-            cons.args.Add<DataRow>("row");
-            cons.baseArgs = new string[] { "row" };
+            cons.Args.Add<DataRow>("row");
+            cons.BaseArgs = new string[] { "row" };
 
             SQL_CREATE_TABLE_STRING = TableClause.GenerateCREATE_TABLE(metaTable);
 
@@ -396,7 +396,7 @@ namespace Sys.Data.Manager
         /// <returns></returns>
         internal static void GetTableAttribute(AttributeInfo attr, ITableSchema metaTable, ClassTableName ctname)
         {
-            attr.comment = new Comment(string.Format("Primary Keys = {0};  Identity = {1};", metaTable.PrimaryKeys, metaTable.Identity));
+            attr.Comment = new Comment(string.Format("Primary Keys = {0};  Identity = {1};", metaTable.PrimaryKeys, metaTable.Identity));
 
             List<string> args = new List<string>();
 
@@ -433,7 +433,7 @@ namespace Sys.Data.Manager
             if (!ctname.Option.IsPack)
                 args.Add("Pack = false");
 
-            attr.args = args.ToArray();
+            attr.Args = args.ToArray();
             return;
         }
 

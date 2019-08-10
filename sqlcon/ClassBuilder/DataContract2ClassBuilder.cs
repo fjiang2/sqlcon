@@ -25,7 +25,7 @@ namespace sqlcon
 
             foreach (DataColumn column in dt.Columns)
             {
-                TypeInfo ty = new TypeInfo { type = column.DataType };
+                TypeInfo ty = new TypeInfo { Type = column.DataType };
                 foreach (DataRow row in dt.Rows)
                 {
                     if (row[column] == DBNull.Value)
@@ -51,9 +51,9 @@ namespace sqlcon
         protected override void CreateClass()
         {
 
-            var clss = new Class(cname, new TypeInfo { type = typeof(IDataContractRow) }, new TypeInfo { userType = $"IEquatable<{cname}>" })
+            var clss = new Class(cname, new TypeInfo { Type = typeof(IDataContractRow) }, new TypeInfo { UserType = $"IEquatable<{cname}>" })
             {
-                modifier = Modifier.Public | Modifier.Partial
+                Modifier = Modifier.Public | Modifier.Partial
             };
             builder.AddClass(clss);
 
@@ -61,7 +61,7 @@ namespace sqlcon
 
             foreach (DataColumn column in dt.Columns)
             {
-                clss.Add(new Property(dict[column], column.ColumnName) { modifier = Modifier.Public });
+                clss.Add(new Property(dict[column], column.ColumnName) { Modifier = Modifier.Public });
             }
 
 
@@ -78,31 +78,31 @@ namespace sqlcon
 
             Method mtdFillObject = new Method("FillObject")
             {
-                modifier = Modifier.Public,
-                args = new Arguments().Add(typeof(DataRow), "row")
+                Modifier = Modifier.Public,
+                Args = new Arguments().Add(typeof(DataRow), "row")
             };
             clss.Add(mtdFillObject);
 
             Method mtdUpdateRow = new Method("UpdateRow")
             {
-                modifier = Modifier.Public,
-                args = new Arguments().Add(typeof(DataRow), "row")
+                Modifier = Modifier.Public,
+                Args = new Arguments().Add(typeof(DataRow), "row")
             };
             clss.Add(mtdUpdateRow);
 
             Method mtdCopyTo = new Method("CopyTo")
             {
-                modifier = Modifier.Public,
-                args = new Arguments().Add(cname, "obj")
+                Modifier = Modifier.Public,
+                Args = new Arguments().Add(cname, "obj")
             };
             clss.Add(mtdCopyTo);
 
 
 
 
-            var sent1 = mtdFillObject.statements;
-            var sent2 = mtdUpdateRow.statements;
-            var sent3 = mtdCopyTo.statements;
+            var sent1 = mtdFillObject.Statement;
+            var sent2 = mtdUpdateRow.Statement;
+            var sent3 = mtdCopyTo.Statement;
 
             count = dt.Columns.Count;
             i = 0;
@@ -124,12 +124,12 @@ namespace sqlcon
 
             Method mtdEquals = new Method("Equals")
             {
-                modifier = Modifier.Public,
-                type = new TypeInfo { type = typeof(bool) },
-                args = new Arguments().Add(cname, "obj")
+                Modifier = Modifier.Public,
+                Type = new TypeInfo { Type = typeof(bool) },
+                Args = new Arguments().Add(cname, "obj")
             };
             clss.Add(mtdEquals);
-            sent = mtdEquals.statements;
+            sent = mtdEquals.Statement;
             sent.AppendLine("return ");
             var variables = dict.Keys.Select(column => column.ColumnName);
             variables.ForEach(
@@ -140,13 +140,13 @@ namespace sqlcon
 
             Method mtdNewObject = new Method("NewObject")
             {
-                modifier = Modifier.Public | Modifier.Static,
-                type = new TypeInfo { userType = cname },
-                args = new Arguments().Add(typeof(DataRow), "row"),
+                Modifier = Modifier.Public | Modifier.Static,
+                Type = new TypeInfo { UserType = cname },
+                Args = new Arguments().Add(typeof(DataRow), "row"),
                 IsExtensionMethod = false
             };
             clss.Add(mtdNewObject);
-            sent = mtdNewObject.statements;
+            sent = mtdNewObject.Statement;
             sent.AppendLine($"return new {cname}");
             sent.Begin();
 
@@ -166,15 +166,15 @@ namespace sqlcon
 
             method = new Method("CreateTable")
             {
-                modifier = Modifier.Public | Modifier.Static,
-                type = new TypeInfo { type = typeof(DataTable) }
+                Modifier = Modifier.Public | Modifier.Static,
+                Type = new TypeInfo { Type = typeof(DataTable) }
             };
             clss.Add(method);
-            sent = method.statements;
+            sent = method.Statement;
             sent.AppendLine("DataTable dt = new DataTable();");
             foreach (DataColumn column in dt.Columns)
             {
-                Type ty = dict[column].type;
+                Type ty = dict[column].Type;
                 var NAME = COLUMN(column);
                 sent.AppendLine($"dt.Columns.Add(new DataColumn({NAME}, typeof({ty})));");
             }
@@ -182,12 +182,12 @@ namespace sqlcon
             sent.AppendLine("return dt;");
 
 
-            method = new Method(new TypeInfo { type = typeof(string) }, "ToString")
+            method = new Method(new TypeInfo { Type = typeof(string) }, "ToString")
             {
-                modifier = Modifier.Public | Modifier.Override
+                Modifier = Modifier.Public | Modifier.Override
             };
             clss.Add(method);
-            sent = method.statements;
+            sent = method.Statement;
 
 
             StringBuilder sb = new StringBuilder("\"{{");
@@ -210,9 +210,9 @@ namespace sqlcon
             //Const Field
             foreach (DataColumn column in dt.Columns)
             {
-                Field field = new Field(new TypeInfo { type = typeof(string) }, COLUMN(column), new Value(column.ColumnName))
+                Field field = new Field(new TypeInfo { Type = typeof(string) }, COLUMN(column), new Value(column.ColumnName))
                 {
-                    modifier = Modifier.Public | Modifier.Const
+                    Modifier = Modifier.Public | Modifier.Const
                 };
                 clss.Add(field);
             }

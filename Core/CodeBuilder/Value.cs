@@ -1,4 +1,20 @@
-﻿using System;
+﻿//--------------------------------------------------------------------------------------------------//
+//                                                                                                  //
+//        DPO(Data Persistent Object)                                                               //
+//                                                                                                  //
+//          Copyright(c) Datum Connect Inc.                                                         //
+//                                                                                                  //
+// This source code is subject to terms and conditions of the Datum Connect Software License. A     //
+// copy of the license can be found in the License.html file at the root of this distribution. If   //
+// you cannot locate the  Datum Connect Software License, please send an email to                   //
+// datconn@gmail.com. By using this source code in any fashion, you are agreeing to be bound        //
+// by the terms of the Datum Connect Software License.                                              //
+//                                                                                                  //
+// You must not remove this notice, or any other, from this software.                               //
+//                                                                                                  //
+//                                                                                                  //
+//--------------------------------------------------------------------------------------------------//
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +32,7 @@ namespace Sys.CodeBuilder
 
     public class Value : Buildable
     {
-        public TypeInfo type { get; set; } = TypeInfo.Anonymous;
+        public TypeInfo Type { get; set; } = TypeInfo.Anonymous;
 
         private object value;
         private ValueOutputFormat format { get; set; } = ValueOutputFormat.MultipleLine;
@@ -29,7 +45,7 @@ namespace Sys.CodeBuilder
 
         public static Value NewPropertyObject(TypeInfo type)
         {
-            return new Value(new Dictionary<string, Value>()) { type = type };
+            return new Value(new Dictionary<string, Value>()) { Type = type };
         }
 
         public static string ToPrimitive(object value)
@@ -92,20 +108,20 @@ namespace Sys.CodeBuilder
             else if (value is Array)                        // new Foo[] { new Foo {...}, new Foo {...}, ...}
             {
                 var A = value as Array;
-                if (type == TypeInfo.Anonymous)
-                    type = new TypeInfo { type = A.GetType() };
+                if (Type == TypeInfo.Anonymous)
+                    Type = new TypeInfo { Type = A.GetType() };
 
-                block.Append($"new {type}");
+                block.Append($"new {Type}");
                 WriteArrayValue(block, A, 10);
             }
             else if (value is Dictionary<string, Value>)    // new Foo { A = 1, B = true }
             {
-                block.Append($"new {type}");
+                block.Append($"new {Type}");
                 WriteDictionary(block, value as Dictionary<string, Value>);
             }
             else if (value is Dictionary<object, object>)   // new Dictionary<T1,T2> { [t1] = new T2 {...}, ... }
             {
-                block.Append($"new {type}");
+                block.Append($"new {Type}");
                 WriteDictionary(block, value as Dictionary<object, object>);
             }
             else
@@ -114,7 +130,7 @@ namespace Sys.CodeBuilder
 
         private void WriteArrayValue(CodeBlock block, Array A, int columnNumber)
         {
-            Type ty = type.GetElementType();
+            Type ty = Type.GetElementType();
 
             if (ty != null && ty.IsPrimitive)
             {

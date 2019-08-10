@@ -30,7 +30,7 @@ namespace sqlcon
 
             foreach (DataColumn column in dt.Columns)
             {
-                TypeInfo ty = new TypeInfo { type = column.DataType };
+                TypeInfo ty = new TypeInfo { Type = column.DataType };
                 foreach (DataRow row in dt.Rows)
                 {
                     if (row[column] == DBNull.Value)
@@ -55,14 +55,14 @@ namespace sqlcon
 
         protected override void CreateClass()
         {
-            var clss = new Class(cname) { modifier = Modifier.Public | Modifier.Partial };
+            var clss = new Class(cname) { Modifier = Modifier.Public | Modifier.Partial };
 
             builder.AddClass(clss);
 
 
             foreach (DataColumn column in dt.Columns)
             {
-                clss.Add(new Property(dict[column], column.ColumnName) { modifier = Modifier.Public });
+                clss.Add(new Property(dict[column], column.ColumnName) { Modifier = Modifier.Public });
             }
 
 
@@ -70,7 +70,7 @@ namespace sqlcon
             int count;
             Statement sent;
 
-            clss = new Class(cname + "Extension") { modifier = Modifier.Public | Modifier.Static };
+            clss = new Class(cname + "Extension") { Modifier = Modifier.Public | Modifier.Static };
             builder.AddClass(clss);
 
             Func<DataColumn, string> COLUMN = column => $"_{column.ColumnName.ToUpper()}";
@@ -82,9 +82,9 @@ namespace sqlcon
 
             if (dt.TableName != null)
             {
-                field = new Field(new TypeInfo { type = typeof(string) }, "TableName", new Value(dt.TableName))
+                field = new Field(new TypeInfo { Type = typeof(string) }, "TableName", new Value(dt.TableName))
                 {
-                    modifier = Modifier.Public | Modifier.Const
+                    Modifier = Modifier.Public | Modifier.Const
                 };
                 clss.Add(field);
             }
@@ -100,35 +100,35 @@ namespace sqlcon
             }
 
             string pks = string.Join(", ", pk.Select(key => COLUMN(key)));
-            field = new Field(new TypeInfo { type = typeof(string[]) }, "Keys")
+            field = new Field(new TypeInfo { Type = typeof(string[]) }, "Keys")
             {
-                modifier = Modifier.Public | Modifier.Static | Modifier.Readonly,
-                userValue = $"new string[] {LP} {pks} {RP}"
+                Modifier = Modifier.Public | Modifier.Static | Modifier.Readonly,
+                UserValue = $"new string[] {LP} {pks} {RP}"
             };
             clss.Add(field);
 
             Method method = new Method($"To{cname}Collection")
             {
-                modifier = Modifier.Public | Modifier.Static,
-                type = new TypeInfo { userType = $"List<{cname}>" },
-                args = new Arguments().Add(typeof(DataTable), "dt"),
+                Modifier = Modifier.Public | Modifier.Static,
+                Type = new TypeInfo { UserType = $"List<{cname}>" },
+                Args = new Arguments().Add(typeof(DataTable), "dt"),
                 IsExtensionMethod = true
             };
             clss.Add(method);
-            sent = method.statements;
+            sent = method.Statement;
             sent.AppendLine("return dt.AsEnumerable()");
             sent.AppendLine(".Select(row => NewObject(row))");
             sent.AppendLine(".ToList();");
 
             Method method0 = new Method("NewObject")
             {
-                modifier = Modifier.Public | Modifier.Static,
-                type = new TypeInfo { userType = cname },
-                args = new Arguments().Add(typeof(DataRow), "row"),
+                Modifier = Modifier.Public | Modifier.Static,
+                Type = new TypeInfo { UserType = cname },
+                Args = new Arguments().Add(typeof(DataRow), "row"),
                 IsExtensionMethod = false
             };
             clss.Add(method0);
-            sent = method0.statements;
+            sent = method0.Statement;
             sent.AppendLine($"return new {cname}");
             sent.Begin();
 
@@ -154,22 +154,22 @@ namespace sqlcon
             {
                 Method method1 = new Method("FillObject")
                 {
-                    modifier = Modifier.Public | Modifier.Static,
-                    args = new Arguments().Add(cname, "item").Add(typeof(DataRow), "row"),
+                    Modifier = Modifier.Public | Modifier.Static,
+                    Args = new Arguments().Add(cname, "item").Add(typeof(DataRow), "row"),
                     IsExtensionMethod = true
                 };
                 clss.Add(method1);
 
                 Method method2 = new Method("UpdateRow")
                 {
-                    modifier = Modifier.Public | Modifier.Static,
-                    args = new Arguments().Add(cname, "item").Add(typeof(DataRow), "row"),
+                    Modifier = Modifier.Public | Modifier.Static,
+                    Args = new Arguments().Add(cname, "item").Add(typeof(DataRow), "row"),
                     IsExtensionMethod = true
                 };
                 clss.Add(method2);
 
-                var sent1 = method1.statements;
-                var sent2 = method2.statements;
+                var sent1 = method1.Statement;
+                var sent2 = method2.Statement;
                 foreach (DataColumn column in dt.Columns)
                 {
                     var type = dict[column];
@@ -188,15 +188,15 @@ namespace sqlcon
 
                 method = new Method("CreateTable")
                 {
-                    modifier = Modifier.Public | Modifier.Static,
-                    type = new TypeInfo { type = typeof(DataTable) }
+                    Modifier = Modifier.Public | Modifier.Static,
+                    Type = new TypeInfo { Type = typeof(DataTable) }
                 };
                 clss.Add(method);
-                sent = method.statements;
+                sent = method.Statement;
                 sent.AppendLine("DataTable dt = new DataTable();");
                 foreach (DataColumn column in dt.Columns)
                 {
-                    Type ty = dict[column].type;
+                    Type ty = dict[column].Type;
                     var name = COLUMN(column);
                     sent.AppendLine($"dt.Columns.Add(new DataColumn({name}, typeof({ty})));");
                 }
@@ -206,12 +206,12 @@ namespace sqlcon
 
                 method = new Method(_ToDataTable)
                 {
-                    modifier = Modifier.Public | Modifier.Static,
-                    args = new Arguments().Add($"IEnumerable<{cname}>", "items").Add(typeof(DataTable), "dt"),
+                    Modifier = Modifier.Public | Modifier.Static,
+                    Args = new Arguments().Add($"IEnumerable<{cname}>", "items").Add(typeof(DataTable), "dt"),
                     IsExtensionMethod = true
                 };
                 clss.Add(method);
-                sent = method.statements;
+                sent = method.Statement;
                 sent.AppendLine("foreach (var item in items)");
                 sent.Begin();
                 sent.AppendLine("var row = dt.NewRow();");
@@ -223,35 +223,35 @@ namespace sqlcon
 
                 method = new Method(_ToDataTable)
                 {
-                    modifier = Modifier.Public | Modifier.Static,
-                    type = new TypeInfo { type = typeof(DataTable) },
-                    args = new Arguments().Add($"IEnumerable<{cname}>", "items"),
+                    Modifier = Modifier.Public | Modifier.Static,
+                    Type = new TypeInfo { Type = typeof(DataTable) },
+                    Args = new Arguments().Add($"IEnumerable<{cname}>", "items"),
                     IsExtensionMethod = true
                 };
                 clss.Add(method);
-                sent = method.statements;
+                sent = method.Statement;
                 sent.AppendLine("var dt = CreateTable();");
                 sent.AppendLine("ToDataTable(items, dt);");
                 sent.AppendLine("return dt;");
-                sent = method.statements;
+                sent = method.Statement;
             }
 
             method = new Method("ToDictionary")
             {
-                modifier = Modifier.Public | Modifier.Static,
-                type = new TypeInfo { type = typeof(IDictionary<string, object>) },
-                args = new Arguments().Add(cname, "item"),
+                Modifier = Modifier.Public | Modifier.Static,
+                Type = new TypeInfo { Type = typeof(IDictionary<string, object>) },
+                Args = new Arguments().Add(cname, "item"),
                 IsExtensionMethod = true
             };
             clss.Add(method);
-            sent = method.statements;
+            sent = method.Statement;
             sent.AppendLine("return new Dictionary<string,object>() ");
             sent.Begin();
             count = dt.Columns.Count;
             i = 0;
             foreach (DataColumn column in dt.Columns)
             {
-                Type ty = dict[column].type;
+                Type ty = dict[column].Type;
                 var name = COLUMN(column);
                 var line = $"[{name}] = item.{column.ColumnName}";
                 if (++i < count)
@@ -264,13 +264,13 @@ namespace sqlcon
 
             method = new Method("FromDictionary")
             {
-                modifier = Modifier.Public | Modifier.Static,
-                type = new TypeInfo { userType = cname },
-                args = new Arguments().Add(typeof(IDictionary<string, object>), "dict"),
+                Modifier = Modifier.Public | Modifier.Static,
+                Type = new TypeInfo { UserType = cname },
+                Args = new Arguments().Add(typeof(IDictionary<string, object>), "dict"),
                 IsExtensionMethod = true
             };
             clss.Add(method);
-            sent = method.statements;
+            sent = method.Statement;
             sent.AppendLine($"return new {cname}");
             sent.Begin();
             count = dt.Columns.Count;
@@ -293,9 +293,9 @@ namespace sqlcon
 
             foreach (DataColumn column in dt.Columns)
             {
-                field = new Field(new TypeInfo { type = typeof(string) }, COLUMN(column), new Value(column.ColumnName))
+                field = new Field(new TypeInfo { Type = typeof(string) }, COLUMN(column), new Value(column.ColumnName))
                 {
-                    modifier = Modifier.Public | Modifier.Const
+                    Modifier = Modifier.Public | Modifier.Const
                 };
                 clss.Add(field);
             }

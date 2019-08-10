@@ -18,29 +18,31 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
-    public class Argument
+    public class Directive : Buildable
     {
-        public TypeInfo Type { get; set; }
+        private CodeBlock code = new CodeBlock();
 
-        public string Name { get; }
-
-        public object Value { get; set; }
-
-        public Argument(TypeInfo type, string name)
+        public Directive(string line)
         {
-            this.Type = type;
-            this.Name = name;
+            code.AppendLine(line);
         }
 
-        public override string ToString()
+        public Directive Add(string line)
         {
-            if (Value == null)
-                return string.Format("{0} {1}", Type, Name);
-            else
-                return string.Format("{0} {1} = {2}", Type, Name, Value);
+            code.AppendLine(line);
+            return this;
         }
+
+        protected override void BuildBlock(CodeBlock block)
+        {
+            base.BuildBlock(block);
+
+            block.Add(code);
+        }
+
     }
 }

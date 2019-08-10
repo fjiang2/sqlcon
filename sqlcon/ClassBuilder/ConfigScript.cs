@@ -36,7 +36,7 @@ namespace sqlcon
 
         public Class Generate(string cname)
         {
-            Class clss = new Class(cname) { modifier = Modifier.Public | Modifier.Static | Modifier.Partial };
+            Class clss = new Class(cname) { Modifier = Modifier.Public | Modifier.Static | Modifier.Partial };
 
 
             foreach (VAR var in DS.Names)
@@ -57,7 +57,7 @@ namespace sqlcon
         {
             if (val.IsAssociativeArray())
             {
-                var clss1 = new Class(key) { modifier = Modifier.Public | Modifier.Static };
+                var clss1 = new Class(key) { Modifier = Modifier.Public | Modifier.Static };
                 clss.Add(clss1);
 
                 prefix = MakeVariableName(prefix, key);
@@ -122,23 +122,23 @@ namespace sqlcon
 
         private Property createProperty(string name, TypeInfo ty, string var)
         {
-            Comment comment = new Comment(var) { alignment = Alignment.Top };
+            Comment comment = new Comment(var) { Alignment = Alignment.Top };
             return new Property(ty, name)
             {
-                modifier = Modifier.Public | Modifier.Static,
+                Modifier = Modifier.Public | Modifier.Static,
                 Expression = expr(ty, var),
-                comment = comment
+                Comment = comment
             };
         }
 
         private Field createField(string name, TypeInfo ty, string var)
         {
-            Comment comment = new Comment(var) { alignment = Alignment.Top };
+            Comment comment = new Comment(var) { Alignment = Alignment.Top };
             return new Field(ty, name)
             {
-                modifier = Modifier.Public | Modifier.Readonly | Modifier.Static,
-                userValue = expr(ty, var),
-                comment = comment
+                Modifier = Modifier.Public | Modifier.Readonly | Modifier.Static,
+                UserValue = expr(ty, var),
+                Comment = comment
             };
         }
 
@@ -163,21 +163,21 @@ namespace sqlcon
         {
             string constKey = ToConstKey(var);
             string defaultKey = ToDefaultKey(var);
-            Comment comment = new Comment(var) { alignment = Alignment.Top };
+            Comment comment = new Comment(var) { Alignment = Alignment.Top };
 
             //const key field
             Field field = new Field(new TypeInfo(typeof(string)), constKey, new Value(var))
             {
-                modifier = Modifier.Public | Modifier.Const,
+                Modifier = Modifier.Public | Modifier.Const,
             };
             ConstKeyFields.Add(field);
 
             //default value field
             field = new Field(ty, defaultKey)
             {
-                modifier = Modifier.Public | Modifier.Const,
-                userValue = val.ToString(),
-                comment = comment
+                Modifier = Modifier.Public | Modifier.Const,
+                UserValue = val.ToString(),
+                Comment = comment
             };
             DefaultValueFields.Add(field);
 

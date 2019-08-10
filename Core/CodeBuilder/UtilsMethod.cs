@@ -1,4 +1,20 @@
-﻿using System;
+﻿//--------------------------------------------------------------------------------------------------//
+//                                                                                                  //
+//        DPO(Data Persistent Object)                                                               //
+//                                                                                                  //
+//          Copyright(c) Datum Connect Inc.                                                         //
+//                                                                                                  //
+// This source code is subject to terms and conditions of the Datum Connect Software License. A     //
+// copy of the license can be found in the License.html file at the root of this distribution. If   //
+// you cannot locate the  Datum Connect Software License, please send an email to                   //
+// datconn@gmail.com. By using this source code in any fashion, you are agreeing to be bound        //
+// by the terms of the Datum Connect Software License.                                              //
+//                                                                                                  //
+// You must not remove this notice, or any other, from this software.                               //
+//                                                                                                  //
+//                                                                                                  //
+//--------------------------------------------------------------------------------------------------//
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,13 +26,13 @@ namespace Sys.CodeBuilder
     {
         private string className;
         private IEnumerable<PropertyInfo> variables;
+        private TypeInfo classType;
 
-        TypeInfo classType;
         public UtilsMethod(string className, IEnumerable<PropertyInfo> variables)
         {
             this.className = className;
             this.variables = variables;
-            this.classType = new TypeInfo { userType = className };
+            this.classType = new TypeInfo { UserType = className };
 
         }
 
@@ -34,12 +50,12 @@ namespace Sys.CodeBuilder
         {
             Method mtd = new Method(methodName)
             {
-                modifier = Modifier.Public,
+                Modifier = Modifier.Public,
             };
 
-            mtd.args.Add(className, "obj");
+            mtd.Args.Add(className, "obj");
 
-            var sent = mtd.statements;
+            var sent = mtd.Statement;
 
             foreach (var variable in variables)
             {
@@ -52,14 +68,14 @@ namespace Sys.CodeBuilder
         {
             Method mtd = new Method("CopyTo")
             {
-                modifier = Modifier.Public | Modifier.Static,
+                Modifier = Modifier.Public | Modifier.Static,
                 IsExtensionMethod = true
             };
 
-            mtd.args.Add(className, "from");
-            mtd.args.Add(className, "to");
+            mtd.Args.Add(className, "from");
+            mtd.Args.Add(className, "to");
 
-            var sent = mtd.statements;
+            var sent = mtd.Statement;
 
             foreach (var variable in variables)
             {
@@ -74,10 +90,10 @@ namespace Sys.CodeBuilder
         {
             Method mtd = new Method(classType, "Clone")
             {
-                modifier = Modifier.Public,
+                Modifier = Modifier.Public,
             };
 
-            var sent = mtd.statements;
+            var sent = mtd.Statement;
 
             sent.AppendFormat("var obj = new {0}();", className);
             sent.AppendLine();
@@ -97,12 +113,12 @@ namespace Sys.CodeBuilder
         {
             Method mtd = new Method(classType, "Clone")
             {
-                modifier = Modifier.Public | Modifier.Static,
+                Modifier = Modifier.Public | Modifier.Static,
                 IsExtensionMethod = true
             };
 
-            mtd.args.Add(className, "from");
-            var sent = mtd.statements;
+            mtd.Args.Add(className, "from");
+            var sent = mtd.Statement;
 
             sent.AppendFormat("var obj = new {0}();", className);
             sent.AppendLine();
@@ -120,14 +136,14 @@ namespace Sys.CodeBuilder
 
         public Method Equals()
         {
-            Method mtd = new Method(new TypeInfo { type = typeof(bool) }, "Equals")
+            Method mtd = new Method(new TypeInfo { Type = typeof(bool) }, "Equals")
             {
-                modifier = Modifier.Public | Modifier.Override,
+                Modifier = Modifier.Public | Modifier.Override,
             };
 
-            mtd.args.Add<object>("obj");
+            mtd.Args.Add<object>("obj");
 
-            var sent = mtd.statements;
+            var sent = mtd.Statement;
             sent.AppendFormat("var x = ({0})obj;", className);
             sent.AppendLine();
 
@@ -144,26 +160,26 @@ namespace Sys.CodeBuilder
 
         public Method _GetHashCode()
         {
-            Method mtd = new Method(new TypeInfo { type = typeof(int) }, "GetHashCode")
+            Method mtd = new Method(new TypeInfo { Type = typeof(int) }, "GetHashCode")
             {
-                modifier = Modifier.Public | Modifier.Override,
+                Modifier = Modifier.Public | Modifier.Override,
             };
 
-            var sent = mtd.statements;
+            var sent = mtd.Statement;
             sent.AppendLine("return 0;");
             return mtd;
         }
 
         public Method Compare()
         {
-            Method mtd = new Method(new TypeInfo { type = typeof(bool) }, "Compare")
+            Method mtd = new Method(new TypeInfo { Type = typeof(bool) }, "Compare")
             {
-                modifier = Modifier.Public,
+                Modifier = Modifier.Public,
             };
 
-            mtd.args.Add(className, "obj");
+            mtd.Args.Add(className, "obj");
 
-            var sent = mtd.statements;
+            var sent = mtd.Statement;
 
             sent.AppendLine("return ");
 
@@ -179,16 +195,16 @@ namespace Sys.CodeBuilder
 
         public Method CompareTo()
         {
-            Method mtd = new Method(new TypeInfo { type = typeof(bool) }, "CompareTo")
+            Method mtd = new Method(new TypeInfo { Type = typeof(bool) }, "CompareTo")
             {
-                modifier = Modifier.Public | Modifier.Static,
+                Modifier = Modifier.Public | Modifier.Static,
                 IsExtensionMethod = true
             };
 
-            mtd.args.Add(className, "a");
-            mtd.args.Add(className, "b");
+            mtd.Args.Add(className, "a");
+            mtd.Args.Add(className, "b");
 
-            var sent = mtd.statements;
+            var sent = mtd.Statement;
 
             sent.AppendLine("return ");
 
@@ -203,15 +219,15 @@ namespace Sys.CodeBuilder
 
         public Method ToSimpleString()
         {
-            Method mtd = new Method(new TypeInfo { type = typeof(string) }, "ToSimpleString")
+            Method mtd = new Method(new TypeInfo { Type = typeof(string) }, "ToSimpleString")
             {
-                modifier = Modifier.Public | Modifier.Static,
+                Modifier = Modifier.Public | Modifier.Static,
                 IsExtensionMethod = true
             };
 
-            mtd.args.Add(className, "obj");
+            mtd.Args.Add(className, "obj");
 
-            var sent = mtd.statements;
+            var sent = mtd.Statement;
 
 
             StringBuilder builder = new StringBuilder("\"{{");
@@ -234,12 +250,12 @@ namespace Sys.CodeBuilder
 
         public Method _ToString()
         {
-            Method mtd = new Method(new TypeInfo { type = typeof(string) }, "ToString")
+            Method mtd = new Method(new TypeInfo { Type = typeof(string) }, "ToString")
             {
-                modifier = Modifier.Public | Modifier.Override,
+                Modifier = Modifier.Public | Modifier.Override,
             };
 
-            var sent = mtd.statements;
+            var sent = mtd.Statement;
 
 
             StringBuilder builder = new StringBuilder("\"{{");
@@ -262,12 +278,12 @@ namespace Sys.CodeBuilder
 
         public Method _ToString_v2()
         {
-            Method mtd = new Method(new TypeInfo { type = typeof(string) }, "ToString")
+            Method mtd = new Method(new TypeInfo { Type = typeof(string) }, "ToString")
             {
-                modifier = Modifier.Public | Modifier.Override,
+                Modifier = Modifier.Public | Modifier.Override,
             };
 
-            var sent = mtd.statements;
+            var sent = mtd.Statement;
 
 
             sent.Append("return ");
@@ -285,10 +301,10 @@ namespace Sys.CodeBuilder
         {
             Method method = new Method("ToDictionary")
             {
-                modifier = Modifier.Public,
-                type = new TypeInfo { type = typeof(IDictionary<string, object>) },
+                Modifier = Modifier.Public,
+                Type = new TypeInfo { Type = typeof(IDictionary<string, object>) },
             };
-            var sent = method.statements;
+            var sent = method.Statement;
             sent.AppendLine("return new Dictionary<string,object>() ");
             sent.Begin();
 
@@ -304,19 +320,19 @@ namespace Sys.CodeBuilder
 
         public Method FromDictinary()
         {
-            var type = new TypeInfo { type = typeof(IDictionary<string, object>) };
+            var type = new TypeInfo { Type = typeof(IDictionary<string, object>) };
             Method method = new Method("Copy")
             {
-                modifier = Modifier.Public,
-                args = new Arguments(new Argument[] { new Argument(type, "dictionary") }),
+                Modifier = Modifier.Public,
+                Args = new Arguments(new Argument[] { new Argument(type, "dictionary") }),
             };
 
-            var sent = method.statements;
+            var sent = method.Statement;
             foreach (var variable in variables)
             {
                 TypeInfo typeInfo = variable.PropertyType;
-                if (typeInfo.type == typeof(System.Xml.Linq.XElement))
-                    typeInfo.type = typeof(string);
+                if (typeInfo.Type == typeof(System.Xml.Linq.XElement))
+                    typeInfo.Type = typeof(string);
 
                 var line = $"this.{variable} = ({typeInfo})dictionary[\"{variable.PropertyName}\"];";
                 sent.AppendLine(line);

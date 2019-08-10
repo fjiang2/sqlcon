@@ -21,15 +21,15 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Enum : Prototype, ICodeBlock
+    public class EnumType : Prototype, ICodeBlock
     {
-        public List<Feature> features { get; } = new List<Feature>();
+        public List<Feature> Features { get; } = new List<Feature>();
 
 
-        public Enum(string enumName)
+        public EnumType(string enumName)
             : base(enumName)
         {
-            type = new TypeInfo { userType = "enum" };
+            Type = new TypeInfo { UserType = "enum" };
         }
 
         public void Add(string feature)
@@ -39,21 +39,21 @@ namespace Sys.CodeBuilder
 
         public void Add(string feature, int value)
         {
-            this.Add(new Feature(feature) { value = value });
+            this.Add(new Feature(feature) { Value = value });
         }
 
         public void Add(Feature feature)
         {
-            features.Add(feature);
+            Features.Add(feature);
             feature.Parent = this;
         }
 
         public void Add(string feature, int value, string label)
         {
-            var _feature = new Feature(feature) { value = value };
+            var _feature = new Feature(feature) { Value = value };
             if (label != null)
             {
-                _feature.AddAttribute(new AttributeInfo("Description") { args = new string[] { label } });
+                _feature.AddAttribute(new AttributeInfo("Description") { Args = new string[] { label } });
             }
 
             this.Add(_feature);
@@ -66,7 +66,7 @@ namespace Sys.CodeBuilder
             block.AppendLine(Signature);
             var body = new CodeBlock();
 
-            features.ForEach(
+            Features.ForEach(
                     item => body.Add(item),
                     item =>
                     {

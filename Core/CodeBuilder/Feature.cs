@@ -24,7 +24,7 @@ namespace Sys.CodeBuilder
 {
     public class Feature : Declare, ICodeBlock
     {
-        public int? value { get; set; }
+        public int? Value { get; set; }
 
         public Feature(string feature)
             : base(feature)
@@ -37,16 +37,16 @@ namespace Sys.CodeBuilder
         {
             base.BuildBlock(block);
 
-            if (comment?.alignment == Alignment.Top)
+            if (Comment?.Alignment == Alignment.Top)
             {
-                block.AppendFormat(comment.ToString());
-                comment.Clear();
+                block.AppendFormat(Comment.ToString());
+                Comment.Clear();
             }
 
-            if (value != null)
-                block.AppendLine($"{name} = {value}, {comment}");
+            if (Value != null)
+                block.AppendLine($"{Name} = {Value}, {Comment}");
             else
-                block.AppendLine($"{name}, {comment}");
+                block.AppendLine($"{Name}, {Comment}");
         }
 
     }
