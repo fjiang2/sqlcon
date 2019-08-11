@@ -125,9 +125,9 @@ namespace Sys.CodeBuilder
                 string code = block.ToString();
 
                 string folder = directory;
-                if (!string.IsNullOrEmpty(clss.Suffix))
+                if (!string.IsNullOrEmpty(clss.Subdirectory))
                 {
-                    folder = Path.Combine(directory, clss.Suffix);
+                    folder = Path.Combine(directory, clss.Subdirectory);
                     if (!Directory.Exists(folder))
                         Directory.CreateDirectory(folder);
                 }
