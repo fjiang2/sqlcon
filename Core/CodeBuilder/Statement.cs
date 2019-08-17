@@ -27,6 +27,18 @@ namespace Sys.CodeBuilder
         {
         }
 
+        public static explicit operator string(Statement expr)
+        {
+            return expr.ToString();
+        }
+
+        public static implicit operator Statement(string sent)
+        {
+            var statement = new Statement();
+            statement.Append(sent);
+            return statement;
+        }
+
         public Statement ASSIGN(string variable, string className, Expression[] assignments)
         {
             AppendLine($"{variable} = new {className}");
@@ -81,6 +93,13 @@ namespace Sys.CodeBuilder
             return this;
         }
 
+        public Statement FOR(Expression exp, CodeBlock sent)
+        {
+            AppendLine($"for ({exp})");
+            AddWithBeginEnd(sent);
+            return this;
+        }
+
         public Statement FOREACH(Expression exp1, Expression exp2, CodeBlock sent)
         {
             AppendLine($"foreach ({exp1} in {exp2})");
@@ -112,6 +131,12 @@ namespace Sys.CodeBuilder
             return this;
         }
 
+        public Statement CASE(Expression exp)
+        {
+            AppendLine($"case {exp}:");
+            return this;
+        }
+
         public Statement CASE(Expression exp, CodeBlock sent)
         {
             AppendLine($"case {exp}:");
@@ -135,6 +160,12 @@ namespace Sys.CodeBuilder
         public Statement RETURN(Expression exp)
         {
             AppendLine($"return {exp};");
+            return this;
+        }
+
+        public Statement RETURN()
+        {
+            AppendLine($"return;");
             return this;
         }
 
