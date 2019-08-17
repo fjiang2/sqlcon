@@ -35,32 +35,41 @@ namespace Sys.CodeBuilder
         public static implicit operator Statement(string sent)
         {
             var statement = new Statement();
-            statement.Append(sent);
+            statement.AppendLine(sent);
             return statement;
         }
 
-        public Statement ASSIGN(string variable, string className, Expression[] assignments)
+        public Statement ASSIGN(string variable, TypeInfo type, Expression[] assignments)
         {
-            AppendLine($"{variable} = new {className}");
-            Begin();
-            foreach (Expression assign in assignments)
-            {
-                AppendLine($"{assign},");
-            }
-            End(";");
-            return this;
+            return ASSIGN(variable, type, new Expression[] { }, assignments);
         }
 
-        public Statement ASSIGN(string variable, string className, Expression[] parameters, Expression[] assignments)
+        public Statement ASSIGN(string variable, TypeInfo type, Expression[] parameters, Expression[] assignments)
         {
-            string args = string.Join(", ", (IEnumerable<Expression>)parameters);
-            AppendLine($"{variable} = new {className}({args})");
-            Begin();
-            foreach (Expression assign in assignments)
+            if (parameters.Length > 0)
             {
-                AppendLine($"{assign},");
+                string args = string.Join(", ", (IEnumerable<Expression>)parameters);
+                Append($"{variable} = new {type}({args})");
             }
-            End(";");
+            else
+            {
+                Append($"{variable} = new {type}");
+            }
+
+            if (assignments.Length > 0)
+            {
+                AppendLine();
+                Begin();
+                foreach (Expression assign in assignments)
+                {
+                    AppendLine($"{assign},");
+                }
+                End(";");
+            }
+            else
+            {
+                AppendLine("();");
+            }
             return this;
         }
 

@@ -154,5 +154,10 @@ namespace Sys.CodeBuilder
             else
                 return text;
         }
+
+        public static implicit operator TypeInfo(Type type)
+        {
+            return new TypeInfo(type);
+        }
     }
 }
