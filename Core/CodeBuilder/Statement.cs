@@ -27,15 +27,45 @@ namespace Sys.CodeBuilder
         {
         }
 
-   
-        public Statement IF(string exp, CodeBlock sent)
+        public Statement NEW(string variable, string className, Expression[] assignments)
+        {
+            AppendLine($"{variable} = new {className}");
+            Begin();
+            foreach (Expression assign in assignments)
+            {
+                AppendLine($"{assign},");
+            }
+            End(";");
+            return this;
+        }
+
+        public Statement NEW(string variable, string className, Expression[] parameters, Expression[] assignments)
+        {
+            string args = string.Join(", ", (IEnumerable<Expression>)parameters);
+            AppendLine($"{variable} = new {className}({args})");
+            Begin();
+            foreach (Expression assign in assignments)
+            {
+                AppendLine($"{assign},");
+            }
+            End(";");
+            return this;
+        }
+
+        public Statement ASSIGN(string variable, Expression exp)
+        {
+            AppendLine($"{variable} = {exp};");
+            return this;
+        }
+
+        public Statement IF(Expression exp, CodeBlock sent)
         {
             AppendLine($"if ({exp})");
             AddWithBeginEnd(sent);
             return this;
         }
 
-        public Statement IF(string exp, CodeBlock sent1, CodeBlock sent2)
+        public Statement IF(Expression exp, CodeBlock sent1, CodeBlock sent2)
         {
             AppendLine($"if ({exp})");
             AddWithBeginEnd(sent1);
@@ -44,28 +74,28 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        public Statement FOR(string exp1, string exp2, string exp3, CodeBlock sent)
+        public Statement FOR(Expression exp1, Expression exp2, Expression exp3, CodeBlock sent)
         {
             AppendLine($"for ({exp1}; {exp2}; {exp3})");
             AddWithBeginEnd(sent);
             return this;
         }
 
-        public Statement FOREACH(string exp1, string exp2, CodeBlock sent)
+        public Statement FOREACH(Expression exp1, Expression exp2, CodeBlock sent)
         {
             AppendLine($"foreach ({exp1} in {exp2})");
             AddWithBeginEnd(sent);
             return this;
         }
 
-        public Statement WHILE(string exp, CodeBlock sent)
+        public Statement WHILE(Expression exp, CodeBlock sent)
         {
             AppendLine($"while ({exp})");
             AddWithBeginEnd(sent);
             return this;
         }
 
-        public Statement DOWHILE(CodeBlock sent, string exp)
+        public Statement DOWHILE(CodeBlock sent, Expression exp)
         {
             AppendLine($"do");
             AddWithBeginEnd(sent);
@@ -73,7 +103,7 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        public Statement SWITCH(string exp, CodeBlock sent)
+        public Statement SWITCH(Expression exp, CodeBlock sent)
         {
             AppendLine($"switch ({exp})");
             Begin();
@@ -82,7 +112,7 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        public Statement CASE(string exp, CodeBlock sent)
+        public Statement CASE(Expression exp, CodeBlock sent)
         {
             AppendLine($"case {exp}:");
             Indent();
@@ -94,17 +124,29 @@ namespace Sys.CodeBuilder
 
         public Statement DEFAULT(CodeBlock sent)
         {
-            AppendLine($"default:");
+            AppendLine("default:");
             Indent();
             Add(sent);
-            AppendLine($"break;");
+            AppendLine("break;");
             Unindent();
             return this;
         }
 
-        public Statement RETURN(string exp)
+        public Statement RETURN(Expression exp)
         {
             AppendLine($"return {exp};");
+            return this;
+        }
+
+        public Statement BREAK()
+        {
+            AppendLine("break;");
+            return this;
+        }
+
+        public Statement CONTINUE()
+        {
+            AppendLine("continue;");
             return this;
         }
 

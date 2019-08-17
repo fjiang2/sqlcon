@@ -63,6 +63,7 @@
     <Compile Include="CodeBuilder\AttributeInfo.cs" />
     <Compile Include="CodeBuilder\Class.cs" />
     <Compile Include="CodeBuilder\CodeString.cs" />
+    <Compile Include="CodeBuilder\Expression.cs" />
     <Compile Include="CodeBuilder\ICodeBlock.cs" />
     <Compile Include="CodeBuilder\Member.cs" />
     <Compile Include="CodeBuilder\Operator.cs" />
