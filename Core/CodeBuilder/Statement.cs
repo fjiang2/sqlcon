@@ -27,6 +27,11 @@ namespace Sys.CodeBuilder
         {
         }
 
+        public Statement(string sent)
+        {
+            AppendLine(sent);
+        }
+
         public static explicit operator string(Statement expr)
         {
             return expr.ToString();
