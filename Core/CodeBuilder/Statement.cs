@@ -31,31 +31,45 @@ namespace Sys.CodeBuilder
         public Statement IF(string exp, CodeBlock sent)
         {
             AppendLine($"if ({exp})");
-            Add(sent);
+            AddWithBeginEnd(sent);
             return this;
         }
 
         public Statement IF(string exp, CodeBlock sent1, CodeBlock sent2)
         {
             AppendLine($"if ({exp})");
-            Add(sent1);
+            AddWithBeginEnd(sent1);
             AppendLine("else");
-            Add(sent2);
+            AddWithBeginEnd(sent2);
+            return this;
+        }
+
+        public Statement FOR(string exp1, string exp2, string exp3, CodeBlock sent)
+        {
+            AppendLine($"for ({exp1}; {exp2}; {exp3})");
+            AddWithBeginEnd(sent);
             return this;
         }
 
         public Statement FOREACH(string exp1, string exp2, CodeBlock sent)
         {
             AppendLine($"foreach ({exp1} in {exp2})");
-            Add(sent);
+            AddWithBeginEnd(sent);
             return this;
         }
-
 
         public Statement WHILE(string exp, CodeBlock sent)
         {
             AppendLine($"while ({exp})");
-            Add(sent);
+            AddWithBeginEnd(sent);
+            return this;
+        }
+
+        public Statement DOWHILE(CodeBlock sent, string exp)
+        {
+            AppendLine($"do");
+            AddWithBeginEnd(sent);
+            AppendLine($"while ({exp})");
             return this;
         }
 
@@ -77,6 +91,7 @@ namespace Sys.CodeBuilder
             Unindent();
             return this;
         }
+
         public Statement DEFAULT(CodeBlock sent)
         {
             AppendLine($"default:");
