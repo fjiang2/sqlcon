@@ -32,8 +32,8 @@ namespace Sys.Data.Manager
         DpoClass dpoClass;
 
         private IColumn column;
-        
-        
+
+
         public DpoField(DpoClass dpoClass, IColumn column)
         {
             this.dpoClass = dpoClass;
@@ -44,7 +44,7 @@ namespace Sys.Data.Manager
 
         public void GenerateField()
         {
-            
+
             string fieldName = column.ToFieldName();
             string ty = column.DataType.GetFieldType(column.Nullable);
 
@@ -69,12 +69,12 @@ namespace Sys.Data.Manager
 
             dpoClass.dict_column_field.Add(column.ColumnName, new PropertyDefinition(ty, fieldName));
 
-            
+
 
             if (column.ForeignKey != null && dpoClass.Dict != null)
             {
                 TableName pkTableName = new TableName(
-                    column.ForeignKey.TableName.DatabaseName, 
+                    column.ForeignKey.TableName.DatabaseName,
                     column.ForeignKey.PK_Schema,
                     column.ForeignKey.PK_Table);  //column.ForeignKey.TableName;
 
@@ -94,16 +94,16 @@ namespace Sys.Data.Manager
                     //    line = string.Format("{0}{1}\r\n", tab, ForeignKey.GetAttribute(column.ForeignKey, classFullName)) + line;
                     //}
                     //else
-                        throw new MessageException("cannot generate Dpo class of FK {0} before generate Dpo class of PK {1}",
-                            dpoClass.MetaTable.TableName,
-                            pkTableName);
+                    throw new MessageException("cannot generate Dpo class of FK {0} before generate Dpo class of PK {1}",
+                        dpoClass.MetaTable.TableName,
+                        pkTableName);
                 }
             }
 
             return;
         }
 
-       
+
 
         public void GetConstStringColumnName()
         {
@@ -113,33 +113,32 @@ namespace Sys.Data.Manager
 
             Field field = new Field(new CodeBuilder.TypeInfo { Type = typeof(string) }, $"_{_columnName}", new Value($"{column.ColumnName}"))
             {
-                Modifier= Modifier.Public | Modifier.Const
+                Modifier = Modifier.Public | Modifier.Const
             };
 
             clss.Add(field);
-            
+
             return;
         }
 
         public void GenerateImageField()
         {
             string fieldName = column.ToFieldName();
-            
+
             Property prop = new Property(new CodeBuilder.TypeInfo { UserType = "Image" }, $"{fieldName}Image");
-            prop.Gets.IF($"{fieldName} != null", new Statement()
-                    .Begin()
-                    .AppendLine($"System.IO.MemoryStream stream = new System.IO.MemoryStream({fieldName});")
-                    .AppendLine("return System.Drawing.Image.FromStream(stream);")
-                    .End())
+
+            Statement sent = new Statement();
+            sent.AppendLine($"System.IO.MemoryStream stream = new System.IO.MemoryStream({fieldName});")
+                .AppendLine("return System.Drawing.Image.FromStream(stream);");
+
+            prop.Gets.IF($"{fieldName} != null", sent)
                 .AppendLine("return null;");
 
-            prop.Sets.IF("value != null", new Statement()
-                    .Begin()
-                    .AppendLine("System.IO.MemoryStream stream = new System.IO.MemoryStream();")
-                    .AppendLine("value.Save(stream, System.Drawing.Imaging.ImageFormat.Jpeg);")
-                    .AppendLine($"{fieldName} = stream.ToArray();")
-                    .End()
-                    );
+            sent = new Statement();
+            sent.AppendLine("System.IO.MemoryStream stream = new System.IO.MemoryStream();")
+                .AppendLine("value.Save(stream, System.Drawing.Imaging.ImageFormat.Jpeg);")
+                .AppendLine($"{fieldName} = stream.ToArray();");
+            prop.Sets.IF("value != null", sent);
 
             dpoClass.clss.Add(prop);
         }
@@ -176,7 +175,7 @@ namespace Sys.Data.Manager
                     break;
             }
 
-            
+
 
             if (column.Nullable)
                 args.Add("Nullable = true");   //see: bool Nullable = false; in class DataColumnAttribute

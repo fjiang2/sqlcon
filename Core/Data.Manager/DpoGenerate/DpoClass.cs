@@ -202,7 +202,8 @@ namespace Sys.Data.Manager
             }
 
             Statement sent1 = new Statement();
-            var sent2 = new Statement().Begin();
+            var sent2 = new Statement();
+            sent2.Begin();
             foreach (string p in keys)
             {
                 sent1.AppendFormat("this.{0} = {1};", dict_column_field[p].PropertyName, dict_column_field[p].PropertyName.ToLower());

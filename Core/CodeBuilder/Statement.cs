@@ -70,14 +70,14 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        public Statement IF(Expression exp, CodeBlock sent)
+        public Statement IF(Expression exp, Statement sent)
         {
             AppendLine($"if ({exp})");
             AddWithBeginEnd(sent);
             return this;
         }
 
-        public Statement IF(Expression exp, CodeBlock sent1, CodeBlock sent2)
+        public Statement IF(Expression exp, Statement sent1, Statement sent2)
         {
             AppendLine($"if ({exp})");
             AddWithBeginEnd(sent1);
@@ -86,35 +86,35 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        public Statement FOR(Expression exp1, Expression exp2, Expression exp3, CodeBlock sent)
+        public Statement FOR(Expression exp1, Expression exp2, Expression exp3, Statement sent)
         {
             AppendLine($"for ({exp1}; {exp2}; {exp3})");
             AddWithBeginEnd(sent);
             return this;
         }
 
-        public Statement FOR(Expression exp, CodeBlock sent)
+        public Statement FOR(Expression exp, Statement sent)
         {
             AppendLine($"for ({exp})");
             AddWithBeginEnd(sent);
             return this;
         }
 
-        public Statement FOREACH(Expression exp1, Expression exp2, CodeBlock sent)
+        public Statement FOREACH(Expression exp1, Expression exp2, Statement sent)
         {
             AppendLine($"foreach ({exp1} in {exp2})");
             AddWithBeginEnd(sent);
             return this;
         }
 
-        public Statement WHILE(Expression exp, CodeBlock sent)
+        public Statement WHILE(Expression exp, Statement sent)
         {
             AppendLine($"while ({exp})");
             AddWithBeginEnd(sent);
             return this;
         }
 
-        public Statement DOWHILE(CodeBlock sent, Expression exp)
+        public Statement DOWHILE(Statement sent, Expression exp)
         {
             AppendLine($"do");
             AddWithBeginEnd(sent);
@@ -122,7 +122,7 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        public Statement SWITCH(Expression exp, CodeBlock sent)
+        public Statement SWITCH(Expression exp, Statement sent)
         {
             AppendLine($"switch ({exp})");
             Begin();
@@ -137,7 +137,7 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        public Statement CASE(Expression exp, CodeBlock sent)
+        public Statement CASE(Expression exp, Statement sent)
         {
             AppendLine($"case {exp}:");
             Indent();
@@ -147,7 +147,7 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        public Statement DEFAULT(CodeBlock sent)
+        public Statement DEFAULT(Statement sent)
         {
             AppendLine("default:");
             Indent();
