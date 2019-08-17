@@ -27,7 +27,7 @@ namespace Sys.CodeBuilder
         {
         }
 
-        public Statement NEW(string variable, string className, Expression[] assignments)
+        public Statement ASSIGN(string variable, string className, Expression[] assignments)
         {
             AppendLine($"{variable} = new {className}");
             Begin();
@@ -39,7 +39,7 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        public Statement NEW(string variable, string className, Expression[] parameters, Expression[] assignments)
+        public Statement ASSIGN(string variable, string className, Expression[] parameters, Expression[] assignments)
         {
             string args = string.Join(", ", (IEnumerable<Expression>)parameters);
             AppendLine($"{variable} = new {className}({args})");
