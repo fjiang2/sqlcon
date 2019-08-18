@@ -324,7 +324,7 @@ namespace Sys.CodeBuilder
             Method method = new Method("Copy")
             {
                 Modifier = Modifier.Public,
-                Args = new Arguments(new Argument[] { new Argument(type, "dictionary") }),
+                Args = new Parameters(new Parameter[] { new Parameter(type, "dictionary") }),
             };
 
             var sent = method.Statement;

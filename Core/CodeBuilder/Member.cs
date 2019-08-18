@@ -25,7 +25,7 @@ namespace Sys.CodeBuilder
     public abstract class Member : Declare
     {
         public Statement Statement { get; } = new Statement();
-        public Arguments Args { get; set; } = new Arguments();
+        public Parameters Args { get; set; } = new Parameters();
 
 
         public Member(string name)

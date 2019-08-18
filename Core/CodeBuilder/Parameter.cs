@@ -21,7 +21,7 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Argument
+    public class Parameter
     {
         public TypeInfo Type { get; set; }
 
@@ -29,7 +29,7 @@ namespace Sys.CodeBuilder
 
         public object Value { get; set; }
 
-        public Argument(TypeInfo type, string name)
+        public Parameter(TypeInfo type, string name)
         {
             this.Type = type;
             this.Name = name;

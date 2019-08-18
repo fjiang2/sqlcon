@@ -32,9 +32,9 @@ namespace Sys.CodeBuilder
             AppendLine(sent);
         }
 
-        public static explicit operator string(Statement expr)
+        public static explicit operator string(Statement sent)
         {
-            return expr.ToString();
+            return sent.ToString();
         }
 
         public static implicit operator Statement(string sent)

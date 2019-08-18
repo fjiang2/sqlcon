@@ -26,12 +26,12 @@ namespace Sys.CodeBuilder
             return new Expression($"{variable} = {exp}");
         }
 
-        public static Expression AND(params Expression[] exp)
+        public static Expression ANDAND(params Expression[] exp)
         {
             return new Expression(string.Join(" && ", (IEnumerable<Expression>)exp));
         }
 
-        public static Expression OR(params Expression[] exp)
+        public static Expression OROR(params Expression[] exp)
         {
             return new Expression(string.Join(" || ", (IEnumerable<Expression>)exp));
         }
@@ -66,7 +66,7 @@ namespace Sys.CodeBuilder
 
         public static implicit operator Expression(char value)
         {
-            return new Expression(value);
+            return new Expression($"'{value}'");
         }
 
         public static implicit operator Expression(byte value)

@@ -111,7 +111,7 @@ namespace sqlcon
             {
                 Modifier = Modifier.Public | Modifier.Static,
                 Type = new TypeInfo { UserType = $"List<{cname}>" },
-                Args = new Arguments().Add(typeof(DataTable), "dt"),
+                Args = new Parameters().Add(typeof(DataTable), "dt"),
                 IsExtensionMethod = true
             };
             clss.Add(method);
@@ -124,7 +124,7 @@ namespace sqlcon
             {
                 Modifier = Modifier.Public | Modifier.Static,
                 Type = new TypeInfo { UserType = cname },
-                Args = new Arguments().Add(typeof(DataRow), "row"),
+                Args = new Parameters().Add(typeof(DataRow), "row"),
                 IsExtensionMethod = false
             };
             clss.Add(method0);
@@ -155,7 +155,7 @@ namespace sqlcon
                 Method method1 = new Method("FillObject")
                 {
                     Modifier = Modifier.Public | Modifier.Static,
-                    Args = new Arguments().Add(cname, "item").Add(typeof(DataRow), "row"),
+                    Args = new Parameters().Add(cname, "item").Add(typeof(DataRow), "row"),
                     IsExtensionMethod = true
                 };
                 clss.Add(method1);
@@ -163,7 +163,7 @@ namespace sqlcon
                 Method method2 = new Method("UpdateRow")
                 {
                     Modifier = Modifier.Public | Modifier.Static,
-                    Args = new Arguments().Add(cname, "item").Add(typeof(DataRow), "row"),
+                    Args = new Parameters().Add(cname, "item").Add(typeof(DataRow), "row"),
                     IsExtensionMethod = true
                 };
                 clss.Add(method2);
@@ -207,7 +207,7 @@ namespace sqlcon
                 method = new Method(_ToDataTable)
                 {
                     Modifier = Modifier.Public | Modifier.Static,
-                    Args = new Arguments().Add($"IEnumerable<{cname}>", "items").Add(typeof(DataTable), "dt"),
+                    Args = new Parameters().Add($"IEnumerable<{cname}>", "items").Add(typeof(DataTable), "dt"),
                     IsExtensionMethod = true
                 };
                 clss.Add(method);
@@ -225,7 +225,7 @@ namespace sqlcon
                 {
                     Modifier = Modifier.Public | Modifier.Static,
                     Type = new TypeInfo { Type = typeof(DataTable) },
-                    Args = new Arguments().Add($"IEnumerable<{cname}>", "items"),
+                    Args = new Parameters().Add($"IEnumerable<{cname}>", "items"),
                     IsExtensionMethod = true
                 };
                 clss.Add(method);
@@ -240,7 +240,7 @@ namespace sqlcon
             {
                 Modifier = Modifier.Public | Modifier.Static,
                 Type = new TypeInfo { Type = typeof(IDictionary<string, object>) },
-                Args = new Arguments().Add(cname, "item"),
+                Args = new Parameters().Add(cname, "item"),
                 IsExtensionMethod = true
             };
             clss.Add(method);
@@ -266,7 +266,7 @@ namespace sqlcon
             {
                 Modifier = Modifier.Public | Modifier.Static,
                 Type = new TypeInfo { UserType = cname },
-                Args = new Arguments().Add(typeof(IDictionary<string, object>), "dict"),
+                Args = new Parameters().Add(typeof(IDictionary<string, object>), "dict"),
                 IsExtensionMethod = true
             };
             clss.Add(method);

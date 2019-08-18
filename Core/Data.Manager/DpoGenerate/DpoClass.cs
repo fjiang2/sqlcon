@@ -224,13 +224,13 @@ namespace Sys.Data.Manager
             Method fill = new Method("FillObject")
             {
                 Modifier = Modifier.Public | Modifier.Override,
-                Args = new Arguments().Add<DataRow>("row")
+                Args = new Parameters().Add<DataRow>("row")
             };
 
             Method collect = new Method("UpdateRow")
             {
                 Modifier = Modifier.Public | Modifier.Override,
-                Args = new Arguments().Add<DataRow>("row")
+                Args = new Parameters().Add<DataRow>("row")
             };
 
             foreach (IColumn column in metaTable.Columns)
@@ -315,7 +315,7 @@ namespace Sys.Data.Manager
             this.clss.AddConstructor();
             var cons = this.clss.AddConstructor();
             cons.Args.Add<DataRow>("row");
-            cons.BaseArgs = new string[] { "row" };
+            cons.BaseArgs = new Parameters1("row");
 
             SQL_CREATE_TABLE_STRING = TableClause.GenerateCREATE_TABLE(metaTable);
 

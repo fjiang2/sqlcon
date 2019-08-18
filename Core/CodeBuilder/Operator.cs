@@ -31,7 +31,7 @@ namespace Sys.CodeBuilder
             base.Type = returnType;
         }
 
-        public static Operator Implicit(TypeInfo operation, Argument arg)
+        public static Operator Implicit(TypeInfo operation, Parameter arg)
         {
             Operator opr = new Operator(null, operation.ToString())
             {
@@ -42,7 +42,7 @@ namespace Sys.CodeBuilder
             return opr;
         }
 
-        public static Operator Explicit(TypeInfo operation, Argument arg)
+        public static Operator Explicit(TypeInfo operation, Parameter arg)
         {
             Operator opr = new Operator(null, operation.ToString())
             {

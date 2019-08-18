@@ -142,10 +142,15 @@ namespace Sys.CodeBuilder
 
         private void Lambda(CodeBlock block, string opr, Statement statement)
         {
-            if (opr.EndsWith("get") && statement.Count == 1)
+            if (opr.EndsWith("get"))
             {
-                block.Append($" => {statement}");
-                return;
+                if (statement.Count == 1)
+                {
+                    block.Append($" => {statement}");
+                    return;
+                }
+
+                throw new Exception("cannot generate complicated get lambda expression");
             }
 
             block.Append($"{opr} => ").AddWithBeginEnd(statement);

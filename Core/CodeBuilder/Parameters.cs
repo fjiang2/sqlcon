@@ -23,45 +23,45 @@ using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
-    public class Arguments
+    public class Parameters
     {
-        private readonly List<Argument> args = new List<Argument>();
+        private readonly List<Parameter> args = new List<Parameter>();
 
-        public Arguments()
+        public Parameters()
         {
         }
 
-        public Arguments(IEnumerable<Argument> args)
+        public Parameters(IEnumerable<Parameter> args)
         {
             foreach (var arg in args)
                 this.args.Add(arg);
         }
 
-        public Arguments Add(Argument arg)
+        public Parameters Add(Parameter arg)
         {
             args.Add(arg);
             return this;
         }
 
-        public Arguments Add(string userType, string name)
+        public Parameters Add(string userType, string name)
         {
-            var arg = new Argument(new TypeInfo { UserType = userType }, name);
+            var arg = new Parameter(new TypeInfo { UserType = userType }, name);
 
             args.Add(arg);
             return this;
         }
 
-        public Arguments Add(Type type, string name)
+        public Parameters Add(Type type, string name)
         {
-            var arg = new Argument(new TypeInfo { Type = type }, name);
+            var arg = new Parameter(new TypeInfo { Type = type }, name);
 
             args.Add(arg);
             return this;
         }
 
-        public Arguments Add<T>(string name)
+        public Parameters Add<T>(string name)
         {
-            var arg = new Argument(new TypeInfo { Type = typeof(T) }, name);
+            var arg = new Parameter(new TypeInfo { Type = typeof(T) }, name);
             args.Add(arg);
 
             return this;
