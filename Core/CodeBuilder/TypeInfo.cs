@@ -139,7 +139,8 @@ namespace Sys.CodeBuilder
             if (Type.IsGenericType)
             {
                 ty = Type.Name.Substring(0, ty.IndexOf("`"));
-                ty = string.Format("{0}<{1}>", ty, string.Join(",", Type.GetGenericArguments().Select(T => T.Name)));
+                var args = string.Join(", ", Type.GetGenericArguments().Select(T => new TypeInfo(T).ToString()));
+                ty = string.Format("{0}<{1}>", ty, args);
             }
 
             return ty;
@@ -158,6 +159,16 @@ namespace Sys.CodeBuilder
         public static implicit operator TypeInfo(Type type)
         {
             return new TypeInfo(type);
+        }
+
+        public static TypeInfo Generic<T>(TypeInfo type)
+        {
+            return new TypeInfo($"{type}<{new TypeInfo(typeof(T))}>");
+        }
+
+        public static TypeInfo Generic<T1, T2>(TypeInfo type)
+        {
+            return new TypeInfo($"{type}<{new TypeInfo(typeof(T1))}, {new TypeInfo(typeof(T2))}>");
         }
     }
 }
