@@ -44,36 +44,40 @@ namespace Sys.CodeBuilder
             return statement;
         }
 
-        public Statement ASSIGN(string variable, TypeInfo type, Expression[] assignments)
+        public Statement ASSIGN(string variable, TypeInfo type, Expression[] expressions)
         {
-            return ASSIGN(variable, type, null, assignments);
+            return ASSIGN(variable, type, null, expressions);
         }
 
-        public Statement ASSIGN(string variable, TypeInfo type, Arguments args, Expression[] assignments)
+        public Statement ASSIGN(string variable, TypeInfo type, Arguments args)
         {
-            if (args != null)
+            return ASSIGN(variable, type, args, null);
+        }
+
+        public Statement ASSIGN(string variable, TypeInfo type, Arguments args, Expression[] expressions)
+        {
+            if (expressions == null || expressions.Length == 0)
             {
-                Append($"{variable} = new {type}({args})");
-            }
-            else
-            {
-                Append($"{variable} = new {type}");
+                if (args != null)
+                    Append($"{variable} = new {type}({args});");
+                else
+                    Append($"{variable} = new {type}();");
+
+                return this;
             }
 
-            if (assignments.Length > 0)
-            {
-                AppendLine();
-                Begin();
-                foreach (Expression assign in assignments)
-                {
-                    AppendLine($"{assign},");
-                }
-                End(";");
-            }
+            if (args != null)
+                Append($"{variable} = new {type}({args})");
             else
+                Append($"{variable} = new {type}");
+
+            Begin();
+            foreach (Expression assign in expressions)
             {
-                AppendLine("();");
+                AppendLine($"{assign},");
             }
+            End(";");
+
             return this;
         }
 

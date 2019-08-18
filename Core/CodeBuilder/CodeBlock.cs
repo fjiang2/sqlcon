@@ -123,6 +123,7 @@ namespace Sys.CodeBuilder
                 line.line += str;
             else
                 AppendLine(str);
+
             return this;
         }
 
