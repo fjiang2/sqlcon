@@ -8,14 +8,14 @@ namespace Sys.CodeBuilder
 {
     public class Arguments
     {
-        private List<Expression> arguments { get; } = new List<Expression>();
+        private List<Argument> arguments { get; } = new List<Argument>();
 
-        public Arguments(params Expression[] arguments)
+        public Arguments(params Argument[] arguments)
         {
             this.arguments.AddRange(arguments);
         }
 
-        public void Add(Expression argument)
+        public void Add(Argument argument)
         {
             this.arguments.Add(argument);
         }
