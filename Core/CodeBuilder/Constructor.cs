@@ -24,7 +24,7 @@ namespace Sys.CodeBuilder
     public class Constructor : Member, IBuildable
     {
    
-        public Parameters1 BaseArgs { get; set; }
+        public Arguments BaseArgs { get; set; }
 
         public Constructor(string constructorName )
             :base(constructorName)
@@ -39,7 +39,7 @@ namespace Sys.CodeBuilder
             get
             {
                 CodeBlock block = new CodeBlock();
-                block.AppendLine($"{Signature}({Args})");
+                block.AppendLine($"{Signature}({Params})");
                 if (BaseArgs != null)
                 {
                     block.Indent().Append($": base({BaseArgs})").Unindent();

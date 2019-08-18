@@ -42,11 +42,11 @@ namespace Sys.CodeBuilder
             {
                 if (IsExtensionMethod)
                 {
-                    return string.Format("{0}(this {1})", Signature, Args);
+                    return string.Format("{0}(this {1})", Signature, Params);
                 }
                 else
                 {
-                    return string.Format("{0}({1})", Signature, Args);
+                    return string.Format("{0}({1})", Signature, Params);
                 }
             }
         }

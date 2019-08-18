@@ -53,7 +53,7 @@ namespace Sys.CodeBuilder
                 Modifier = Modifier.Public,
             };
 
-            mtd.Args.Add(className, "obj");
+            mtd.Params.Add(className, "obj");
 
             var sent = mtd.Statement;
 
@@ -72,8 +72,8 @@ namespace Sys.CodeBuilder
                 IsExtensionMethod = true
             };
 
-            mtd.Args.Add(className, "from");
-            mtd.Args.Add(className, "to");
+            mtd.Params.Add(className, "from");
+            mtd.Params.Add(className, "to");
 
             var sent = mtd.Statement;
 
@@ -117,7 +117,7 @@ namespace Sys.CodeBuilder
                 IsExtensionMethod = true
             };
 
-            mtd.Args.Add(className, "from");
+            mtd.Params.Add(className, "from");
             var sent = mtd.Statement;
 
             sent.AppendFormat("var obj = new {0}();", className);
@@ -141,7 +141,7 @@ namespace Sys.CodeBuilder
                 Modifier = Modifier.Public | Modifier.Override,
             };
 
-            mtd.Args.Add<object>("obj");
+            mtd.Params.Add<object>("obj");
 
             var sent = mtd.Statement;
             sent.AppendFormat("var x = ({0})obj;", className);
@@ -177,7 +177,7 @@ namespace Sys.CodeBuilder
                 Modifier = Modifier.Public,
             };
 
-            mtd.Args.Add(className, "obj");
+            mtd.Params.Add(className, "obj");
 
             var sent = mtd.Statement;
 
@@ -201,8 +201,8 @@ namespace Sys.CodeBuilder
                 IsExtensionMethod = true
             };
 
-            mtd.Args.Add(className, "a");
-            mtd.Args.Add(className, "b");
+            mtd.Params.Add(className, "a");
+            mtd.Params.Add(className, "b");
 
             var sent = mtd.Statement;
 
@@ -225,7 +225,7 @@ namespace Sys.CodeBuilder
                 IsExtensionMethod = true
             };
 
-            mtd.Args.Add(className, "obj");
+            mtd.Params.Add(className, "obj");
 
             var sent = mtd.Statement;
 
@@ -324,7 +324,7 @@ namespace Sys.CodeBuilder
             Method method = new Method("Copy")
             {
                 Modifier = Modifier.Public,
-                Args = new Parameters(new Parameter[] { new Parameter(type, "dictionary") }),
+                Params = new Parameters(new Parameter[] { new Parameter(type, "dictionary") }),
             };
 
             var sent = method.Statement;

@@ -198,7 +198,7 @@ namespace Sys.Data.Manager
             string[] keys = metaTable.PrimaryKeys.Keys;
             foreach (string p in keys)
             {
-                cons.Args.Add(dict_column_field[p].Type, dict_column_field[p].PropertyName.ToLower());
+                cons.Params.Add(dict_column_field[p].Type, dict_column_field[p].PropertyName.ToLower());
             }
 
             Statement sent1 = new Statement();
@@ -224,13 +224,13 @@ namespace Sys.Data.Manager
             Method fill = new Method("FillObject")
             {
                 Modifier = Modifier.Public | Modifier.Override,
-                Args = new Parameters().Add<DataRow>("row")
+                Params = new Parameters().Add<DataRow>("row")
             };
 
             Method collect = new Method("UpdateRow")
             {
                 Modifier = Modifier.Public | Modifier.Override,
-                Args = new Parameters().Add<DataRow>("row")
+                Params = new Parameters().Add<DataRow>("row")
             };
 
             foreach (IColumn column in metaTable.Columns)
@@ -314,8 +314,8 @@ namespace Sys.Data.Manager
 
             this.clss.AddConstructor();
             var cons = this.clss.AddConstructor();
-            cons.Args.Add<DataRow>("row");
-            cons.BaseArgs = new Parameters1("row");
+            cons.Params.Add<DataRow>("row");
+            cons.BaseArgs = new Arguments("row");
 
             SQL_CREATE_TABLE_STRING = TableClause.GenerateCREATE_TABLE(metaTable);
 

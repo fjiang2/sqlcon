@@ -79,21 +79,21 @@ namespace sqlcon
             Method mtdFillObject = new Method("FillObject")
             {
                 Modifier = Modifier.Public,
-                Args = new Parameters().Add(typeof(DataRow), "row")
+                Params = new Parameters().Add(typeof(DataRow), "row")
             };
             clss.Add(mtdFillObject);
 
             Method mtdUpdateRow = new Method("UpdateRow")
             {
                 Modifier = Modifier.Public,
-                Args = new Parameters().Add(typeof(DataRow), "row")
+                Params = new Parameters().Add(typeof(DataRow), "row")
             };
             clss.Add(mtdUpdateRow);
 
             Method mtdCopyTo = new Method("CopyTo")
             {
                 Modifier = Modifier.Public,
-                Args = new Parameters().Add(cname, "obj")
+                Params = new Parameters().Add(cname, "obj")
             };
             clss.Add(mtdCopyTo);
 
@@ -126,7 +126,7 @@ namespace sqlcon
             {
                 Modifier = Modifier.Public,
                 Type = new TypeInfo { Type = typeof(bool) },
-                Args = new Parameters().Add(cname, "obj")
+                Params = new Parameters().Add(cname, "obj")
             };
             clss.Add(mtdEquals);
             sent = mtdEquals.Statement;
@@ -142,7 +142,7 @@ namespace sqlcon
             {
                 Modifier = Modifier.Public | Modifier.Static,
                 Type = new TypeInfo { UserType = cname },
-                Args = new Parameters().Add(typeof(DataRow), "row"),
+                Params = new Parameters().Add(typeof(DataRow), "row"),
                 IsExtensionMethod = false
             };
             clss.Add(mtdNewObject);

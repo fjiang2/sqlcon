@@ -64,7 +64,7 @@
     <Compile Include="CodeBuilder\Class.cs" />
     <Compile Include="CodeBuilder\CodeString.cs" />
     <Compile Include="CodeBuilder\Expression.cs" />
-    <Compile Include="CodeBuilder\Parameters1.cs" />
+    <Compile Include="CodeBuilder\Arguments.cs" />
     <Compile Include="CodeBuilder\IBuildable.cs" />
     <Compile Include="CodeBuilder\Member.cs" />
     <Compile Include="CodeBuilder\Operator.cs" />

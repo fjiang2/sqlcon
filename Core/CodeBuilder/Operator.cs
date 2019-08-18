@@ -37,7 +37,7 @@ namespace Sys.CodeBuilder
             {
                 Modifier = Modifier.Public | Modifier.Static | Modifier.Implicit,
             };
-            opr.Args.Add(arg);
+            opr.Params.Add(arg);
 
             return opr;
         }
@@ -48,13 +48,13 @@ namespace Sys.CodeBuilder
             {
                 Modifier = Modifier.Public | Modifier.Static | Modifier.Explicit,
             };
-            opr.Args.Add(arg);
+            opr.Params.Add(arg);
 
             return opr;
         }
 
 
-        protected override string signature => $"{Signature}({Args})";
+        protected override string signature => $"{Signature}({Params})";
 
     }
 }
