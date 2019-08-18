@@ -25,44 +25,44 @@ namespace Sys.CodeBuilder
 {
     public class Parameters
     {
-        private readonly List<Parameter> args = new List<Parameter>();
+        private readonly List<Parameter> parameters = new List<Parameter>();
 
         public Parameters()
         {
         }
 
-        public Parameters(IEnumerable<Parameter> args)
+        public Parameters(IEnumerable<Parameter> parameters)
         {
-            foreach (var arg in args)
-                this.args.Add(arg);
+            foreach (var parameter in parameters)
+                this.parameters.Add(parameter);
         }
 
-        public Parameters Add(Parameter arg)
+        public Parameters Add(Parameter param)
         {
-            args.Add(arg);
+            parameters.Add(param);
             return this;
         }
 
         public Parameters Add(string userType, string name)
         {
-            var arg = new Parameter(new TypeInfo { UserType = userType }, name);
+            var param = new Parameter(new TypeInfo { UserType = userType }, name);
 
-            args.Add(arg);
+            parameters.Add(param);
             return this;
         }
 
         public Parameters Add(Type type, string name)
         {
-            var arg = new Parameter(new TypeInfo { Type = type }, name);
+            var param = new Parameter(new TypeInfo { Type = type }, name);
 
-            args.Add(arg);
+            parameters.Add(param);
             return this;
         }
 
         public Parameters Add<T>(string name)
         {
-            var arg = new Parameter(new TypeInfo { Type = typeof(T) }, name);
-            args.Add(arg);
+            var param = new Parameter(new TypeInfo { Type = typeof(T) }, name);
+            parameters.Add(param);
 
             return this;
         }
@@ -71,13 +71,13 @@ namespace Sys.CodeBuilder
         {
             get
             {
-                return args.Count == 0;
+                return parameters.Count == 0;
             }
         }
 
         public override string ToString()
         {
-            return string.Join(", ", args.Select(arg => arg.ToString()));
+            return string.Join(", ", parameters.Select(param => param.ToString()));
         }
     }
 }

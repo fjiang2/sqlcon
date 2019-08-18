@@ -46,14 +46,13 @@ namespace Sys.CodeBuilder
 
         public Statement ASSIGN(string variable, TypeInfo type, Expression[] assignments)
         {
-            return ASSIGN(variable, type, new Expression[] { }, assignments);
+            return ASSIGN(variable, type, null, assignments);
         }
 
-        public Statement ASSIGN(string variable, TypeInfo type, Expression[] parameters, Expression[] assignments)
+        public Statement ASSIGN(string variable, TypeInfo type, Arguments args, Expression[] assignments)
         {
-            if (parameters.Length > 0)
+            if (args != null)
             {
-                string args = string.Join(", ", (IEnumerable<Expression>)parameters);
                 Append($"{variable} = new {type}({args})");
             }
             else

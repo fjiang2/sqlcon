@@ -31,24 +31,24 @@ namespace Sys.CodeBuilder
             base.Type = returnType;
         }
 
-        public static Operator Implicit(TypeInfo operation, Parameter arg)
+        public static Operator Implicit(TypeInfo operation, Parameter parameter)
         {
             Operator opr = new Operator(null, operation.ToString())
             {
                 Modifier = Modifier.Public | Modifier.Static | Modifier.Implicit,
             };
-            opr.Params.Add(arg);
+            opr.Params.Add(parameter);
 
             return opr;
         }
 
-        public static Operator Explicit(TypeInfo operation, Parameter arg)
+        public static Operator Explicit(TypeInfo operation, Parameter parameter)
         {
             Operator opr = new Operator(null, operation.ToString())
             {
                 Modifier = Modifier.Public | Modifier.Static | Modifier.Explicit,
             };
-            opr.Params.Add(arg);
+            opr.Params.Add(parameter);
 
             return opr;
         }
