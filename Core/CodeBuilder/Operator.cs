@@ -21,7 +21,7 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Operator : Member, ICodeBlock
+    public class Operator : Member, IBuildable
     {
 
         public Operator(TypeInfo returnType, string operation)

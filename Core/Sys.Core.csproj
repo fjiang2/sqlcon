@@ -64,7 +64,7 @@
     <Compile Include="CodeBuilder\Class.cs" />
     <Compile Include="CodeBuilder\CodeString.cs" />
     <Compile Include="CodeBuilder\Expression.cs" />
-    <Compile Include="CodeBuilder\ICodeBlock.cs" />
+    <Compile Include="CodeBuilder\IBuildable.cs" />
     <Compile Include="CodeBuilder\Member.cs" />
     <Compile Include="CodeBuilder\Operator.cs" />
     <Compile Include="CodeBuilder\CSharpBuilder.cs" />
@@ -77,7 +77,7 @@
     <Compile Include="CodeBuilder\Field.cs" />
     <Compile Include="CodeBuilder\CodeBlock.cs" />
     <Compile Include="CodeBuilder\Declare.cs" />
-    <Compile Include="CodeBuilder\Enum.cs" />
+    <Compile Include="CodeBuilder\EnumType.cs" />
     <Compile Include="CodeBuilder\Method.cs" />
     <Compile Include="CodeBuilder\ModifierString.cs" />
     <Compile Include="CodeBuilder\Modifier.cs" />

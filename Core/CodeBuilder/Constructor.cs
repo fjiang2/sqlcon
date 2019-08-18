@@ -21,7 +21,7 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Constructor : Member, ICodeBlock
+    public class Constructor : Member, IBuildable
     {
    
         public string[] BaseArgs { get; set; }

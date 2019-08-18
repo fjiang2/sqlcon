@@ -67,7 +67,7 @@ namespace Sys.CodeBuilder
             }
         }
 
-        public void Add(ICodeBlock block)
+        public void Add(IBuildable block)
         {
             Add(block.GetBlock(), 0);
         }

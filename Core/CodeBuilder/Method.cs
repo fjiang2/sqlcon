@@ -21,7 +21,7 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Method  : Member, ICodeBlock
+    public class Method  : Member, IBuildable
     {
         public bool IsExtensionMethod { get; set; } = false;
 

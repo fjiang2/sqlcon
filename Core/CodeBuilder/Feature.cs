@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
-    public class Feature : Declare, ICodeBlock
+    public class Feature : Declare, IBuildable
     {
         public int? Value { get; set; }
 

@@ -21,7 +21,7 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Field : Declare, ICodeBlock
+    public class Field : Declare, IBuildable
     {
         private Value value;
 

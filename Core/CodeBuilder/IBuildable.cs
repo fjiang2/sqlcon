@@ -17,7 +17,7 @@
 
 namespace Sys.CodeBuilder
 {
-    public interface ICodeBlock
+    public interface IBuildable
     {
         CodeBlock GetBlock();
     }

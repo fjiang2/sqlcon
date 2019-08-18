@@ -21,7 +21,7 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class EnumType : Prototype, ICodeBlock
+    public class EnumType : Prototype, IBuildable
     {
         public List<Feature> Features { get; } = new List<Feature>();
 

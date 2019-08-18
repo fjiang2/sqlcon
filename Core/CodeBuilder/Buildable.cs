@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
-    public class Buildable : ICodeBlock
+    public class Buildable : IBuildable
     {
         private CodeBlock block = null;
         public Buildable Parent { get; set; }

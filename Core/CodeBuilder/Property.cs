@@ -21,7 +21,7 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Property : Declare, ICodeBlock
+    public class Property : Declare, IBuildable
     {
         private object value;
 
