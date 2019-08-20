@@ -204,7 +204,7 @@ namespace sqlcon
                             if (cts.IsCancellationRequested)
                                 return;
 
-                            if (!cfg.exportIncludedTables.IsMatch(tn.ShortName))
+                            if (cfg.exportIncludedTables.IsMatch(tn.ShortName))
                             {
                                 int count = new SqlCmd(tn.Provider, string.Format("SELECT COUNT(*) FROM {0}", tn)).FillObject<int>();
                                 if (count > cfg.Export_Max_Count)
