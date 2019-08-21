@@ -51,7 +51,7 @@ namespace sqlcon
 
             var clss = new Class(cname)
             {
-                modifier = Modifier.Public | Modifier.Partial
+                Modifier = Modifier.Public | Modifier.Partial
             };
             clss.AddAttribute(new AttributeInfo("Table", new { Name = tname.ShortName }));
 
@@ -63,9 +63,9 @@ namespace sqlcon
             Property prop;
             foreach (IColumn column in schema.Columns)
             {
-                TypeInfo ty = new TypeInfo { userType = column.DataType.GetFieldType(column.Nullable) };
+                TypeInfo ty = new TypeInfo { UserType = column.DataType.GetFieldType(column.Nullable) };
 
-                prop = new Property(ty, column.ToFieldName()) { modifier = Modifier.Public };
+                prop = new Property(ty, column.ToFieldName()) { Modifier = Modifier.Public };
 
                 List<object> args = new List<object>();
                 args.Add(new { Name = column.ColumnName });
@@ -156,12 +156,12 @@ namespace sqlcon
             {
                 // 1:1 mapping
                 pname = clss.MakeUniqueName(Pluralization.Singularize(fk_cname));
-                ty = new TypeInfo { userType = $"EntityRef<{fk_cname}>" };
-                field = new Field(ty, $"_{pname}") { modifier = Modifier.Private };
+                ty = new TypeInfo { UserType = $"EntityRef<{fk_cname}>" };
+                field = new Field(ty, $"_{pname}") { Modifier = Modifier.Private };
 
-                prop = new Property(new TypeInfo { userType = fk_cname }, pname) { modifier = Modifier.Public };
-                prop.gets.Append($"return this._{pname}.Entity;");
-                prop.sets.Append($"this._{pname}.Entity = value;");
+                prop = new Property(new TypeInfo { UserType = fk_cname }, pname) { Modifier = Modifier.Public };
+                prop.Gets.Append($"return this._{pname}.Entity;");
+                prop.Sets.Append($"this._{pname}.Entity = value;");
 
                 prop.AddAttribute(new AttributeInfo("Association",
                  new
@@ -178,14 +178,14 @@ namespace sqlcon
             {
                 //1:n mapping
                 pname = clss.MakeUniqueName(Pluralization.Pluralize(fk_cname));
-                constructor.statements.AppendLine($"this._{pname} = new EntitySet<{fk_cname}>();");
+                constructor.Statement.AppendLine($"this._{pname} = new EntitySet<{fk_cname}>();");
 
-                ty = new TypeInfo { userType = $"EntitySet<{fk_cname}>" };
-                field = new Field(ty, $"_{pname}") { modifier = Modifier.Private };
+                ty = new TypeInfo { UserType = $"EntitySet<{fk_cname}>" };
+                field = new Field(ty, $"_{pname}") { Modifier = Modifier.Private };
 
-                prop = new Property(ty, pname) { modifier = Modifier.Public };
-                prop.gets.Append($"return this._{pname};");
-                prop.sets.Append($"this._{pname}.Assign(value);");
+                prop = new Property(ty, pname) { Modifier = Modifier.Public };
+                prop.Gets.Append($"return this._{pname};");
+                prop.Sets.Append($"this._{pname}.Assign(value);");
 
                 prop.AddAttribute(new AttributeInfo("Association",
                  new
@@ -216,12 +216,12 @@ namespace sqlcon
             string pk_cname = new TableName(tname.DatabaseName, key.PK_Schema, key.PK_Table).ToClassName(null);
             string pname = clss.MakeUniqueName(pk_cname);
 
-            var field = new Field(new TypeInfo { userType = $"EntityRef<{pk_cname}>" }, $"_{pname}") { modifier = Modifier.Private };
+            var field = new Field(new TypeInfo { UserType = $"EntityRef<{pk_cname}>" }, $"_{pname}") { Modifier = Modifier.Private };
             clss.Add(field);
 
-            var prop = new Property(new TypeInfo { userType = pk_cname }, pname) { modifier = Modifier.Public };
-            prop.gets.Append($"return this._{pname}.Entity;");
-            prop.sets.Append($"this._{pname}.Entity = value;");
+            var prop = new Property(new TypeInfo { UserType = pk_cname }, pname) { Modifier = Modifier.Public };
+            prop.Gets.Append($"return this._{pname}.Entity;");
+            prop.Sets.Append($"this._{pname}.Entity = value;");
             prop.AddAttribute(new AttributeInfo("Association",
                 new
                 {

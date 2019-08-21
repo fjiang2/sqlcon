@@ -31,7 +31,7 @@ namespace sqlcon
         {
             Class clss = new Class(cname)
             {
-                modifier = Modifier.Public | Modifier.Partial
+                Modifier = Modifier.Public | Modifier.Partial
             };
 
             builder.AddClass(clss);
@@ -53,7 +53,7 @@ namespace sqlcon
             {
                 var clss1 = new Class(key)
                 {
-                    modifier = Modifier.Public | Modifier.Partial
+                    Modifier = Modifier.Public | Modifier.Partial
                 };
 
                 builder.AddClass(clss1);
@@ -98,7 +98,7 @@ namespace sqlcon
 
                     ty = new TypeInfo(key)
                     {
-                        isArray = true
+                        IsArray = true
                     };
 
                     path = MakeVariableName(prefix, $"{key}[]");
@@ -138,10 +138,10 @@ namespace sqlcon
 
         private Property createProperty(string name, TypeInfo ty, string path)
         {
-            Comment comment = new Comment(path) { alignment = Alignment.Top };
+            Comment comment = new Comment(path) { Alignment = Alignment.Top };
             return new Property(ty, name)
             {
-                modifier = Modifier.Public,
+                Modifier = Modifier.Public,
                 // comment = comment
             };
         }

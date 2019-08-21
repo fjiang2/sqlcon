@@ -27,39 +27,119 @@ namespace Sys.CodeBuilder
         {
         }
 
-   
-        public Statement IF(string exp, CodeBlock sent)
+        public Statement(string sent)
         {
-            AppendLine($"if ({exp})");
-            Add(sent);
+            AppendLine(sent);
+        }
+
+        public static explicit operator string(Statement sent)
+        {
+            return sent.ToString();
+        }
+
+        public static implicit operator Statement(string sent)
+        {
+            var statement = new Statement();
+            statement.AppendLine(sent);
+            return statement;
+        }
+
+        public Statement ASSIGN(string variable, TypeInfo type, Expression[] expressions)
+        {
+            return ASSIGN(variable, type, null, expressions);
+        }
+
+        public Statement ASSIGN(string variable, TypeInfo type, Arguments args)
+        {
+            return ASSIGN(variable, type, args, null);
+        }
+
+        public Statement ASSIGN(string variable, TypeInfo type, Arguments args, Expression[] expressions)
+        {
+            if (expressions == null || expressions.Length == 0)
+            {
+                if (args != null)
+                    Append($"{variable} = new {type}({args});");
+                else
+                    Append($"{variable} = new {type}();");
+
+                return this;
+            }
+
+            if (args != null)
+                Append($"{variable} = new {type}({args})");
+            else
+                Append($"{variable} = new {type}");
+
+            Begin();
+            foreach (Expression assign in expressions)
+            {
+                AppendLine($"{assign},");
+            }
+            End(";");
+
             return this;
         }
 
-        public Statement IF(string exp, CodeBlock sent1, CodeBlock sent2)
+        public Statement ASSIGN(string variable, Expression exp)
+        {
+            AppendLine($"{variable} = {exp};");
+            return this;
+        }
+
+        public Statement IF(Expression exp, Statement sent)
         {
             AppendLine($"if ({exp})");
-            Add(sent1);
+            AddWithBeginEnd(sent);
+            return this;
+        }
+
+        public Statement IF(Expression exp, Statement sent1, Statement sent2)
+        {
+            AppendLine($"if ({exp})");
+            AddWithBeginEnd(sent1);
             AppendLine("else");
-            Add(sent2);
+            AddWithBeginEnd(sent2);
             return this;
         }
 
-        public Statement FOREACH(string exp1, string exp2, CodeBlock sent)
+        public Statement FOR(Expression exp1, Expression exp2, Expression exp3, Statement sent)
+        {
+            AppendLine($"for ({exp1}; {exp2}; {exp3})");
+            AddWithBeginEnd(sent);
+            return this;
+        }
+
+        public Statement FOR(Expression exp, Statement sent)
+        {
+            AppendLine($"for ({exp})");
+            AddWithBeginEnd(sent);
+            return this;
+        }
+
+        public Statement FOREACH(Expression exp1, Expression exp2, Statement sent)
         {
             AppendLine($"foreach ({exp1} in {exp2})");
-            Add(sent);
+            AddWithBeginEnd(sent);
             return this;
         }
 
-
-        public Statement WHILE(string exp, CodeBlock sent)
+        public Statement WHILE(Expression exp, Statement sent)
         {
             AppendLine($"while ({exp})");
-            Add(sent);
+            AddWithBeginEnd(sent);
             return this;
         }
 
-        public Statement SWITCH(string exp, CodeBlock sent)
+        public Statement DOWHILE(Statement sent, Expression exp)
+        {
+            AppendLine($"do");
+            AddWithBeginEnd(sent);
+            AppendLine($"while ({exp})");
+            return this;
+        }
+
+        public Statement SWITCH(Expression exp, Statement sent)
         {
             AppendLine($"switch ({exp})");
             Begin();
@@ -68,7 +148,13 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        public Statement CASE(string exp, CodeBlock sent)
+        public Statement CASE(Expression exp)
+        {
+            AppendLine($"case {exp}:");
+            return this;
+        }
+
+        public Statement CASE(Expression exp, Statement sent)
         {
             AppendLine($"case {exp}:");
             Indent();
@@ -77,19 +163,38 @@ namespace Sys.CodeBuilder
             Unindent();
             return this;
         }
-        public Statement DEFAULT(CodeBlock sent)
+
+        public Statement DEFAULT(Statement sent)
         {
-            AppendLine($"default:");
+            AppendLine("default:");
             Indent();
             Add(sent);
-            AppendLine($"break;");
+            AppendLine("break;");
             Unindent();
             return this;
         }
 
-        public Statement RETURN(string exp)
+        public Statement RETURN(Expression exp)
         {
             AppendLine($"return {exp};");
+            return this;
+        }
+
+        public Statement RETURN()
+        {
+            AppendLine($"return;");
+            return this;
+        }
+
+        public Statement BREAK()
+        {
+            AppendLine("break;");
+            return this;
+        }
+
+        public Statement CONTINUE()
+        {
+            AppendLine("continue;");
             return this;
         }
 

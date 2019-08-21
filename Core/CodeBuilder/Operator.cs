@@ -21,49 +21,40 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Operator : Declare, ICodeBlock
+    public class Operator : Member, IBuildable
     {
-        public Arguments args { get; set; } = new Arguments();
-
-        public Statement statements { get; } = new Statement();
-
 
         public Operator(TypeInfo returnType, string operation)
             : base("operator " + operation)
         {
-            base.modifier = Modifier.Public | Modifier.Static;
-            base.type = returnType;
+            base.Modifier = Modifier.Public | Modifier.Static;
+            base.Type = returnType;
         }
 
-        public static Operator Implicit(TypeInfo operation, Argument arg)
+        public static Operator Implicit(TypeInfo operation, Parameter parameter)
         {
             Operator opr = new Operator(null, operation.ToString())
             {
-                modifier = Modifier.Public | Modifier.Static | Modifier.Implicit,
+                Modifier = Modifier.Public | Modifier.Static | Modifier.Implicit,
             };
-            opr.args.Add(arg);
+            opr.Params.Add(parameter);
 
             return opr;
         }
 
-        public static Operator Explicit(TypeInfo operation, Argument arg)
+        public static Operator Explicit(TypeInfo operation, Parameter parameter)
         {
             Operator opr = new Operator(null, operation.ToString())
             {
-                modifier = Modifier.Public | Modifier.Static | Modifier.Explicit,
+                Modifier = Modifier.Public | Modifier.Static | Modifier.Explicit,
             };
-            opr.args.Add(arg);
+            opr.Params.Add(parameter);
 
             return opr;
         }
 
-        protected override void BuildBlock(CodeBlock block)
-        {
-            base.BuildBlock(block);
 
-            block.AppendFormat("{0}({1})", Signature, args);
+        protected override string signature => $"{Signature}({Params})";
 
-            block.AddWithBeginEnd(statements);
-        }
     }
 }

@@ -14,72 +14,70 @@
 //                                                                                                  //
 //                                                                                                  //
 //--------------------------------------------------------------------------------------------------//
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
-    public class Enum : Prototype, ICodeBlock
+    public class Parameters
     {
-        public List<Feature> features { get; } = new List<Feature>();
+        private readonly List<Parameter> parameters = new List<Parameter>();
 
-
-        public Enum(string enumName)
-            : base(enumName)
+        public Parameters()
         {
-            type = new TypeInfo { userType = "enum" };
         }
 
-        public void Add(string feature)
+        public Parameters(IEnumerable<Parameter> parameters)
         {
-            this.Add(new Feature(feature));
+            foreach (var parameter in parameters)
+                this.parameters.Add(parameter);
         }
 
-        public void Add(string feature, int value)
+        public Parameters Add(Parameter param)
         {
-            this.Add(new Feature(feature) { value = value });
+            parameters.Add(param);
+            return this;
         }
 
-        public void Add(Feature feature)
+        public Parameters Add(string userType, string name)
         {
-            features.Add(feature);
-            feature.Parent = this;
+            var param = new Parameter(new TypeInfo { UserType = userType }, name);
+
+            parameters.Add(param);
+            return this;
         }
 
-        public void Add(string feature, int value, string label)
+        public Parameters Add(Type type, string name)
         {
-            var _feature = new Feature(feature) { value = value };
-            if (label != null)
+            var param = new Parameter(new TypeInfo { Type = type }, name);
+
+            parameters.Add(param);
+            return this;
+        }
+
+        public Parameters Add<T>(string name)
+        {
+            var param = new Parameter(new TypeInfo { Type = typeof(T) }, name);
+            parameters.Add(param);
+
+            return this;
+        }
+
+        public bool IsEmpty
+        {
+            get
             {
-                _feature.AddAttribute(new AttributeInfo("Description") { args = new string[] { label } });
+                return parameters.Count == 0;
             }
-
-            this.Add(_feature);
         }
 
-        protected override void BuildBlock(CodeBlock block)
+        public override string ToString()
         {
-            base.BuildBlock(block);
-
-            block.AppendLine(Signature);
-            var body = new CodeBlock();
-
-            features.ForEach(
-                    item => body.Add(item),
-                    item =>
-                    {
-                        if (item.Count == 1)
-                            return;
-
-                        body.AppendLine();
-                    }
-                    );
-
-            block.AddWithBeginEnd(body);
+            return string.Join(", ", parameters.Select(param => param.ToString()));
         }
     }
-
-
 }

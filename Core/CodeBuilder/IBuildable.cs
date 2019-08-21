@@ -14,40 +14,11 @@
 //                                                                                                  //
 //                                                                                                  //
 //--------------------------------------------------------------------------------------------------//
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
-
-    public class Comment
+    public interface IBuildable
     {
-        private string comment;
-
-        public Alignment Alignment { get; set; } = Alignment.Top;
-
-        public Comment(string text)
-        {
-            this.comment = text;
-        }
-
-        public void Clear()
-        {
-            comment = null;
-        }
-
-        public override string ToString()
-        {
-            if (comment == null)
-                return string.Empty;
-
-            if (Alignment == Alignment.Right)
-                return $"{CodeLine.Tab(2)}//{comment}";
-            else
-                return $"//{comment}";
-        }
+        CodeBlock GetBlock();
     }
 }

@@ -23,24 +23,15 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Class : Prototype
+    public class Struct : Prototype
     {
         private readonly List<Buildable> list = new List<Buildable>();
 
-        public TypeInfo[] Inherits { get; set; }
         public bool Sorted { get; set; } = false;
 
-        public Class(string className)
-            : this(className, new TypeInfo[] { })
+        public Struct(string structName)
+            : base(structName)
         {
-            //class name can be same as property/field name
-            _names.Add(className, 0);
-        }
-
-        public Class(string className, params TypeInfo[] inherits)
-            : base(className)
-        {
-            this.Inherits = inherits;
             base.Modifier = Modifier.Public;
         }
 
@@ -49,49 +40,19 @@ namespace Sys.CodeBuilder
             list.Clear();
         }
 
-        public Class Add(Buildable code)
+        public Struct Add(Buildable code)
         {
             this.list.Add(code);
             code.Parent = this;
             return this;
         }
 
-        public Class AddRange(IEnumerable<Buildable> members)
+        public Struct AddRange(IEnumerable<Buildable> members)
         {
             foreach (var member in members)
                 this.Add(member);
 
             return this;
-        }
-
-        public Constructor AddConstructor()
-        {
-            var constructor = new Constructor(base.Name);
-
-            this.Add(constructor);
-            return constructor;
-        }
-
-        public Field AddField<T>(Modifier modifier, string name, Value value = null)
-        {
-            var field = new Field(new TypeInfo { Type = typeof(T) }, name, value)
-            {
-                Modifier = modifier
-            };
-
-            this.Add(field);
-            return field;
-        }
-
-        public Property AddProperty<T>(Modifier modifier, string name, object value = null)
-        {
-            var property = new Property(new TypeInfo { Type = typeof(T) }, name, value)
-            {
-                Modifier = modifier
-            };
-
-            this.Add(property);
-            return property;
         }
 
         public Buildable AppendLine()
@@ -102,23 +63,7 @@ namespace Sys.CodeBuilder
             return builder;
         }
 
-        public Directive AddMember(string text)
-        {
-            var member = new Directive(text);
-            this.Add(member);
-            return member;
-        }
-
-        private IEnumerable<Class> classes
-        {
-            get
-            {
-                return list
-                    .Where(item => item is Class)
-                    .Select(item => (Class)item);
-            }
-        }
-
+ 
         private IEnumerable<Constructor> constructors
         {
             get
@@ -170,10 +115,8 @@ namespace Sys.CodeBuilder
                 clss.AppendFormat($"{Comment}");
             }
 
-            clss.AppendFormat("{0} class {1}", new ModifierString(Modifier), base.Name);
-            if (Inherits.Length > 0)
-                clss.AppendFormat("\t: {0}", string.Join(", ", Inherits.Select(inherit => inherit.ToString())));
-
+            clss.AppendFormat("{0} struct {1}", new ModifierString(Modifier), base.Name);
+       
             var body = new CodeBlock();
 
             if (Sorted)
@@ -214,11 +157,6 @@ namespace Sys.CodeBuilder
                     }
                 }
 
-                foreach (Class _class in classes)
-                {
-                    body.Add(_class);
-                    body.AppendLine();
-                }
             }
             else
             {
@@ -240,80 +178,5 @@ namespace Sys.CodeBuilder
             clss.AddWithBeginEnd(body);
         }
 
-        public void AddUtilsMethod(UtilsThisMethod type)
-        {
-            var rw = properties
-                .Where(p => (p.Modifier & Modifier.Public) == Modifier.Public && p.CanRead && p.CanWrite)
-                .Select(p => new PropertyInfo { PropertyName = p.Name });
-
-            AddUtilsMethod(this.Name, rw, type);
-        }
-
-        public void AddUtilsMethod(string className, IEnumerable<PropertyInfo> propertyNames, UtilsThisMethod type)
-        {
-            var x = new UtilsMethod(className, propertyNames);
-
-            if ((type & UtilsThisMethod.Map) == UtilsThisMethod.Map)
-                Add(x.Map());
-
-            if ((type & UtilsThisMethod.Equals) == UtilsThisMethod.Equals)
-                Add(x.Equals());
-
-            if ((type & UtilsThisMethod.Clone) == UtilsThisMethod.Clone)
-                Add(x.Clone());
-
-            if ((type & UtilsThisMethod.Compare) == UtilsThisMethod.Compare)
-                Add(x.Compare());
-
-            if ((type & UtilsThisMethod.Copy) == UtilsThisMethod.Copy)
-                Add(x.Copy());
-
-            if ((type & UtilsThisMethod.GetHashCode) == UtilsThisMethod.GetHashCode)
-                Add(x._GetHashCode());
-
-            if ((type & UtilsThisMethod.ToDictionary) == UtilsThisMethod.ToDictionary)
-            {
-                Add(x.ToDictinary());
-                Add(x.FromDictinary());
-            }
-
-            if ((type & UtilsThisMethod.ToString) == UtilsThisMethod.ToString)
-                Add(x._ToString_v2());
-
-        }
-
-        public void AddUtilsMethod(string className, IEnumerable<PropertyInfo> propertyNames, UtilsStaticMethod type)
-        {
-            var x = new UtilsMethod(className, propertyNames);
-
-
-            if ((type & UtilsStaticMethod.CloneFrom) == UtilsStaticMethod.CloneFrom)
-                Add(x.CloneFrom());
-
-
-            if ((type & UtilsStaticMethod.CompareTo) == UtilsStaticMethod.CompareTo)
-                Add(x.CompareTo());
-
-
-            if ((type & UtilsStaticMethod.CopyTo) == UtilsStaticMethod.CopyTo)
-                Add(x.CopyTo());
-
-            if ((type & UtilsStaticMethod.ToSimpleString) == UtilsStaticMethod.ToSimpleString)
-                Add(x.ToSimpleString());
-        }
-
-
-        private Dictionary<string, int> _names = new Dictionary<string, int>();
-
-        UniqueNameMaker uniqueNameMaker = new UniqueNameMaker();
-        /// <summary>
-        /// make unique name in the class
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public string MakeUniqueName(string name)
-        {
-            return uniqueNameMaker.ToUniqueName(name);
-        }
     }
 }

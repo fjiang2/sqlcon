@@ -23,14 +23,15 @@ namespace Sys.CodeBuilder
 {
     public class TypeInfo
     {
-        public static readonly TypeInfo Anonymous = new TypeInfo { userType = string.Empty };
+        public static readonly TypeInfo Anonymous = new TypeInfo { UserType = string.Empty };
 
-        public Type type { get; set; } = null;
+        public Type Type { get; set; } = null;
 
         public bool Nullable { get; set; } = false;
 
-        public string userType { get; set; }
-        public bool isArray { get; set; }
+        public string UserType { get; set; }
+
+        public bool IsArray { get; set; }
 
         public TypeInfo()
         {
@@ -38,107 +39,108 @@ namespace Sys.CodeBuilder
 
         public TypeInfo(string userType)
         {
-            this.userType = userType;
+            this.UserType = userType;
         }
 
         public TypeInfo(Type type)
         {
-            this.type = type;
+            this.Type = type;
         }
 
         public Type GetElementType()
         {
-            if (isArray)
-                return type;
+            if (IsArray)
+                return Type;
             else
-                return type?.GetElementType();
+                return Type?.GetElementType();
         }
 
         private string typeText()
         {
-            if (userType != null)
+            if (UserType != null)
             {
-                if (isArray)
-                    return userType + "[]";
+                if (IsArray)
+                    return UserType + "[]";
                 else
-                    return userType;
+                    return UserType;
             }
 
-            if (type == null)
+            if (Type == null)
             {
                 Nullable = false;
                 return "void";
             }
 
-            if (isArray)
+            if (IsArray)
             {
                 Nullable = false;
-                return new TypeInfo(type).typeText() + "[]";
+                return new TypeInfo(Type).typeText() + "[]";
             }
 
 
-            if (type.IsArray)
+            if (Type.IsArray)
             {
                 Nullable = false;
-                return new TypeInfo(type.GetElementType()).typeText() + "[]";
+                return new TypeInfo(Type.GetElementType()).typeText() + "[]";
             }
 
-            if (type == typeof(string))
+            if (Type == typeof(string))
             {
                 Nullable = false;
                 return "string";
             }
 
-            if (type == typeof(object))
+            if (Type == typeof(object))
                 return "object";
 
-            if (type == typeof(int))
+            if (Type == typeof(int))
                 return "int";
 
-            if (type == typeof(short))
+            if (Type == typeof(short))
                 return "short";
 
-            if (type == typeof(long))
+            if (Type == typeof(long))
                 return "long";
 
-            if (type == typeof(uint))
+            if (Type == typeof(uint))
                 return "uint";
 
-            if (type == typeof(ushort))
+            if (Type == typeof(ushort))
                 return "ushort";
 
-            if (type == typeof(ulong))
+            if (Type == typeof(ulong))
                 return "ulong";
 
-            if (type == typeof(double))
+            if (Type == typeof(double))
                 return "double";
 
-            if (type == typeof(float))
+            if (Type == typeof(float))
                 return "float";
 
-            if (type == typeof(bool))
+            if (Type == typeof(bool))
                 return "bool";
 
-            if (type == typeof(char))
+            if (Type == typeof(char))
                 return "char";
 
-            if (type == typeof(byte))
+            if (Type == typeof(byte))
                 return "byte";
 
-            if (type == typeof(sbyte))
+            if (Type == typeof(sbyte))
                 return "sbyte";
 
-            if (type == typeof(decimal))
+            if (Type == typeof(decimal))
                 return "decimal";
 
-            if (type.IsClass || type.IsArray)
+            if (Type.IsClass || Type.IsArray)
                 Nullable = false;
 
-            string ty = type.Name;
-            if (type.IsGenericType)
+            string ty = Type.Name;
+            if (Type.IsGenericType)
             {
-                ty = type.Name.Substring(0, ty.IndexOf("`"));
-                ty = string.Format("{0}<{1}>", ty, string.Join(",", type.GetGenericArguments().Select(T => T.Name)));
+                ty = Type.Name.Substring(0, ty.IndexOf("`"));
+                var args = string.Join(", ", Type.GetGenericArguments().Select(T => new TypeInfo(T).ToString()));
+                ty = string.Format("{0}<{1}>", ty, args);
             }
 
             return ty;
@@ -152,6 +154,21 @@ namespace Sys.CodeBuilder
                 return text + "?";
             else
                 return text;
+        }
+
+        public static implicit operator TypeInfo(Type type)
+        {
+            return new TypeInfo(type);
+        }
+
+        public static TypeInfo Generic<T>(TypeInfo type)
+        {
+            return new TypeInfo($"{type}<{new TypeInfo(typeof(T))}>");
+        }
+
+        public static TypeInfo Generic<T1, T2>(TypeInfo type)
+        {
+            return new TypeInfo($"{type}<{new TypeInfo(typeof(T1))}, {new TypeInfo(typeof(T2))}>");
         }
     }
 }

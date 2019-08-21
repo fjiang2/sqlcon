@@ -30,7 +30,7 @@ namespace sqlcon
         {
             var clss = new Class(ClassName)
             {
-                modifier = Modifier.Public | Modifier.Partial,
+                Modifier = Modifier.Public | Modifier.Partial,
                 Sorted = true
 
             };
@@ -66,7 +66,7 @@ namespace sqlcon
             {
                 var clss1 = new Class(key)
                 {
-                    modifier = Modifier.Public,
+                    Modifier = Modifier.Public,
                     Sorted = true
                 };
 
@@ -82,7 +82,7 @@ namespace sqlcon
                     create(clss1, prefix, member.Name, member.Value);
                     continue;
                 }
-                ty = new TypeInfo { userType = key };
+                ty = new TypeInfo { UserType = key };
             }
             else
             {
@@ -105,11 +105,11 @@ namespace sqlcon
 
         private Property createProperty(string name, TypeInfo ty, string var)
         {
-            Comment comment = new Comment(var) { alignment = Alignment.Top };
+            Comment comment = new Comment(var) { Alignment = Alignment.Top };
             return new Property(ty, name)
             {
-                modifier = Modifier.Public,
-                comment = comment
+                Modifier = Modifier.Public,
+                Comment = comment
             };
         }
     }

@@ -28,7 +28,7 @@ namespace Sys.CodeBuilder
         //current tab number
         private int curruent = 0;
 
-        private List<CodeLine> lines = new List<CodeLine>();
+        private readonly List<CodeLine> lines = new List<CodeLine>();
 
 
         public CodeBlock()
@@ -67,7 +67,7 @@ namespace Sys.CodeBuilder
             }
         }
 
-        public void Add(ICodeBlock block)
+        public void Add(IBuildable block)
         {
             Add(block.GetBlock(), 0);
         }
@@ -123,6 +123,7 @@ namespace Sys.CodeBuilder
                 line.line += str;
             else
                 AppendLine(str);
+
             return this;
         }
 

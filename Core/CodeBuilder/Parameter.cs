@@ -18,36 +18,29 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
-
-    public class Comment
+    public class Parameter
     {
-        private string comment;
+        public TypeInfo Type { get; set; }
 
-        public Alignment Alignment { get; set; } = Alignment.Top;
+        public string Name { get; }
 
-        public Comment(string text)
+        public object Value { get; set; }
+
+        public Parameter(TypeInfo type, string name)
         {
-            this.comment = text;
-        }
-
-        public void Clear()
-        {
-            comment = null;
+            this.Type = type;
+            this.Name = name;
         }
 
         public override string ToString()
         {
-            if (comment == null)
-                return string.Empty;
-
-            if (Alignment == Alignment.Right)
-                return $"{CodeLine.Tab(2)}//{comment}";
+            if (Value == null)
+                return string.Format("{0} {1}", Type, Name);
             else
-                return $"//{comment}";
+                return string.Format("{0} {1} = {2}", Type, Name, Value);
         }
     }
 }

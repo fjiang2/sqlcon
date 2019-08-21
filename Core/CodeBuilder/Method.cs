@@ -21,18 +21,14 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Method  : Declare, ICodeBlock
+    public class Method  : Member, IBuildable
     {
-        public Statement statements { get; } = new Statement();
-
-        public Arguments args { get; set; } = new Arguments();
-
         public bool IsExtensionMethod { get; set; } = false;
 
         public Method(TypeInfo returnType, string methodName)
             :base(methodName)
         {
-            base.type = returnType;
+            base.Type = returnType;
         }
 
         public Method(string methodName)
@@ -40,27 +36,21 @@ namespace Sys.CodeBuilder
         {
         }
 
-        protected string signature
+        protected override string signature
         {
             get
             {
                 if (IsExtensionMethod)
                 {
-                    return string.Format("{0}(this {1})", Signature, args);
+                    return string.Format("{0}(this {1})", Signature, Params);
                 }
                 else
                 {
-                    return string.Format("{0}({1})", Signature, args);
+                    return string.Format("{0}({1})", Signature, Params);
                 }
             }
         }
 
-        protected override void BuildBlock(CodeBlock block)
-        {
-            base.BuildBlock(block);
-
-            block.AppendLine(signature);
-            block.AddWithBeginEnd(statements);
-        }
+       
     }
 }

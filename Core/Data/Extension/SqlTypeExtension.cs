@@ -85,7 +85,7 @@ namespace Sys.Data
         {
             TypeInfo ty = new TypeInfo
             {
-                type = column.CType.ToType(),
+                Type = column.CType.ToType(),
                 Nullable = column.Nullable,
             };
 

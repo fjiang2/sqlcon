@@ -21,15 +21,15 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Property : Declare, ICodeBlock
+    public class Property : Declare, IBuildable
     {
         private object value;
 
-        public Statement gets { get; } = new Statement();
-        public Statement sets { get; } = new Statement();
+        public Statement Gets { get; } = new Statement();
+        public Statement Sets { get; } = new Statement();
 
-        public Modifier getModifier { get; set; } = Modifier.Public;
-        public Modifier setModifier { get; set; } = Modifier.Public;
+        public Modifier GetModifier { get; set; } = Modifier.Public;
+        public Modifier SetModifier { get; set; } = Modifier.Public;
 
         public bool IsLambda { get; set; }
 
@@ -41,7 +41,7 @@ namespace Sys.CodeBuilder
         public Property(TypeInfo returnType, string propertyName, object value)
             : base(propertyName)
         {
-            this.type = returnType;
+            this.Type = returnType;
             this.value = value;
         }
 
@@ -49,14 +49,14 @@ namespace Sys.CodeBuilder
         {
             get
             {
-                return (gets.Count == 0 && sets.Count == 0) || gets.Count > 0;
+                return (Gets.Count == 0 && Sets.Count == 0) || Gets.Count > 0;
             }
         }
         public bool CanWrite
         {
             get
             {
-                return (gets.Count == 0 && sets.Count == 0) || sets.Count > 0;
+                return (Gets.Count == 0 && Sets.Count == 0) || Sets.Count > 0;
             }
         }
 
@@ -64,9 +64,9 @@ namespace Sys.CodeBuilder
         {
             get
             {
-                if (getModifier == Modifier.Private)
+                if (GetModifier == Modifier.Private)
                     return "private get";
-                else if (getModifier == Modifier.Protected)
+                else if (GetModifier == Modifier.Protected)
                     return "protected get";
                 else
                     return "get";
@@ -77,9 +77,9 @@ namespace Sys.CodeBuilder
         {
             get
             {
-                if (setModifier == Modifier.Private)
+                if (SetModifier == Modifier.Private)
                     return "private set";
-                else if (setModifier == Modifier.Protected)
+                else if (SetModifier == Modifier.Protected)
                     return "protected set";
                 else
                     return "set";
@@ -92,49 +92,49 @@ namespace Sys.CodeBuilder
         {
             base.BuildBlock(block);
 
-            if (comment?.alignment == Alignment.Top)
+            if (Comment?.Alignment == Alignment.Top)
             {
-                block.AppendFormat(comment.ToString());
-                comment.Clear();
+                block.AppendFormat(Comment.ToString());
+                Comment.Clear();
             }
 
             if (Expression != null)
             {
-                block.AppendFormat("{0}{1}", $"{Signature} => {Expression};", comment);
+                block.AppendFormat("{0}{1}", $"{Signature} => {Expression};", Comment);
             }
-            else if (gets.Count == 0 && sets.Count == 0)
+            else if (Gets.Count == 0 && Sets.Count == 0)
             {
                 if (value != null)
-                    block.AppendFormat("{0}{1}", $"{Signature} {{ {get}; {set}; }} = {value};", comment);
+                    block.AppendFormat("{0}{1}", $"{Signature} {{ {get}; {set}; }} = {value};", Comment);
                 else
-                    block.AppendFormat("{0}{1}", $"{Signature} {{ {get}; {set}; }}", comment);
+                    block.AppendFormat("{0}{1}", $"{Signature} {{ {get}; {set}; }}", Comment);
             }
             else if (!IsLambda)
             {
-                block.AppendLine(Signature + comment);
+                block.AppendLine(Signature + Comment);
                 block.Begin();
-                if (gets.Count != 0)
+                if (Gets.Count != 0)
                 {
                     block.AppendLine(get);
-                    block.AddWithBeginEnd(gets);
+                    block.AddWithBeginEnd(Gets);
                 }
 
-                if (sets.Count != 0)
+                if (Sets.Count != 0)
                 {
                     block.AppendLine(set);
-                    block.AddWithBeginEnd(sets);
+                    block.AddWithBeginEnd(Sets);
                 }
 
                 block.End();
             }
             else
             {
-                block.AppendLine(Signature + comment);
-                if (gets.Count != 0)
-                    Lambda(block, get, gets);
+                block.AppendLine(Signature + Comment);
+                if (Gets.Count != 0)
+                    Lambda(block, get, Gets);
 
-                if (sets.Count != 0)
-                    Lambda(block, set, sets);
+                if (Sets.Count != 0)
+                    Lambda(block, set, Sets);
             }
 
             return;
@@ -142,10 +142,15 @@ namespace Sys.CodeBuilder
 
         private void Lambda(CodeBlock block, string opr, Statement statement)
         {
-            if (opr.EndsWith("get") && statement.Count == 1)
+            if (opr.EndsWith("get"))
             {
-                block.Append($" => {statement}");
-                return;
+                if (statement.Count == 1)
+                {
+                    block.Append($" => {statement}");
+                    return;
+                }
+
+                throw new Exception("cannot generate complicated get lambda expression");
             }
 
             block.Append($"{opr} => ").AddWithBeginEnd(statement);

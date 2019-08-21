@@ -22,32 +22,27 @@ using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
-
-    public class Comment
+    public class Directive : Buildable
     {
-        private string comment;
+        private CodeBlock code = new CodeBlock();
 
-        public Alignment Alignment { get; set; } = Alignment.Top;
-
-        public Comment(string text)
+        public Directive(string line)
         {
-            this.comment = text;
+            code.AppendLine(line);
         }
 
-        public void Clear()
+        public Directive Add(string line)
         {
-            comment = null;
+            code.AppendLine(line);
+            return this;
         }
 
-        public override string ToString()
+        protected override void BuildBlock(CodeBlock block)
         {
-            if (comment == null)
-                return string.Empty;
+            base.BuildBlock(block);
 
-            if (Alignment == Alignment.Right)
-                return $"{CodeLine.Tab(2)}//{comment}";
-            else
-                return $"//{comment}";
+            block.Add(code);
         }
+
     }
 }

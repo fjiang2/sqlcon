@@ -21,34 +21,33 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Constructor : Declare, ICodeBlock
+    public class Constructor : Member, IBuildable
     {
-        public Arguments args { get; set; } = new Arguments();
-        public string[] baseArgs { get; set; }
-
-        public Statement statements { get; } = new Statement();
-
+   
+        public Arguments BaseArgs { get; set; }
 
         public Constructor(string constructorName )
             :base(constructorName)
         {
-            base.modifier = Modifier.Public;
-            base.type = null;
+            base.Modifier = Modifier.Public;
+            base.Type = null;
         }
 
-        protected override void BuildBlock(CodeBlock block)
+
+        protected override string signature
         {
-            base.BuildBlock(block);
-
-            block.AppendFormat("{0}({1})", Signature, args);
-            if (baseArgs != null)
+            get
             {
-                block.Indent().AppendFormat(": base({0})", string.Join(",", baseArgs)).Unindent();
-            }
+                CodeBlock block = new CodeBlock();
+                block.AppendLine($"{Signature}({Params})");
+                if (BaseArgs != null)
+                {
+                    block.Indent().Append($": base({BaseArgs})").Unindent();
+                }
 
-            block.AddWithBeginEnd(statements);
+                return block.ToString();
+            }
         }
-        
 
     }
 }

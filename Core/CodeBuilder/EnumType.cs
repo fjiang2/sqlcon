@@ -18,36 +18,68 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
-
-    public class Comment
+    public class EnumType : Prototype, IBuildable
     {
-        private string comment;
+        public List<Feature> Features { get; } = new List<Feature>();
 
-        public Alignment Alignment { get; set; } = Alignment.Top;
 
-        public Comment(string text)
+        public EnumType(string enumName)
+            : base(enumName)
         {
-            this.comment = text;
+            Type = new TypeInfo { UserType = "enum" };
         }
 
-        public void Clear()
+        public void Add(string feature)
         {
-            comment = null;
+            this.Add(new Feature(feature));
         }
 
-        public override string ToString()
+        public void Add(string feature, int value)
         {
-            if (comment == null)
-                return string.Empty;
+            this.Add(new Feature(feature) { Value = value });
+        }
 
-            if (Alignment == Alignment.Right)
-                return $"{CodeLine.Tab(2)}//{comment}";
-            else
-                return $"//{comment}";
+        public void Add(Feature feature)
+        {
+            Features.Add(feature);
+            feature.Parent = this;
+        }
+
+        public void Add(string feature, int value, string label)
+        {
+            var _feature = new Feature(feature) { Value = value };
+            if (label != null)
+            {
+                _feature.AddAttribute(new AttributeInfo("Description") { Args = new string[] { label } });
+            }
+
+            this.Add(_feature);
+        }
+
+        protected override void BuildBlock(CodeBlock block)
+        {
+            base.BuildBlock(block);
+
+            block.AppendLine(Signature);
+            var body = new CodeBlock();
+
+            Features.ForEach(
+                    item => body.Add(item),
+                    item =>
+                    {
+                        if (item.Count == 1)
+                            return;
+
+                        body.AppendLine();
+                    }
+                    );
+
+            block.AddWithBeginEnd(body);
         }
     }
+
+
 }
