@@ -259,6 +259,10 @@ namespace sqlcon
 
         public void ExportData()
         {
+            string directory = cmd.OutputDirectory;
+            if (directory != null)
+                xmlDbFile.XmlDbFolder = directory;
+
             if (tname != null)
             {
                 cout.WriteLine("start to generate {0} data file", tname);
@@ -269,8 +273,21 @@ namespace sqlcon
 
             else if (dname != null)
             {
+                string[] exportIncludedTables = cfg.exportIncludedTables;
+
+                string include = cmd.GetValue("include");
+                try
+                {
+                    if (include != null)
+                        exportIncludedTables = include.Split(',');
+                }
+                catch(Exception ex)
+                {
+                    cerr.WriteLine($"invalid arugment /include:{include}, {ex.Message}");
+                }
+
                 cout.WriteLine("start to generate {0}", dname);
-                var mt = new MatchedDatabase(dname, cmd.wildcard, cfg.exportIncludedTables);
+                var mt = new MatchedDatabase(dname, cmd.wildcard, exportIncludedTables);
                 CancelableWork.CanCancel(cts =>
                 {
                     foreach (var tname in mt.MatchedTableNames)
@@ -791,6 +808,7 @@ namespace sqlcon
             cout.WriteLine("option of data generation:");
             cout.WriteLine("   /schema  : generate database schema xml file");
             cout.WriteLine("   /data    : generate database/table data xml file");
+            cout.WriteLine("      [/include]: include table names with wildcard");
             cout.WriteLine("   /csv     : generate table csv file");
             cout.WriteLine("   /ds      : generate data set xml file");
             cout.WriteLine("   /json    : generate json from last result");
