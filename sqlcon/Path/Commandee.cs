@@ -863,14 +863,15 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            if (this.mgr.Configuration.dictionarytables.Count == 0)
+            KeyValueTable setting = new KeyValueTable
             {
-                cerr.WriteLine("key-value tables is undefined");
-                return;
-            }
+                TableName = "Config",
+                KeyName = "Key",
+                ValueName = "Value",
+            };
 
             TableName tname = mgr.GetCurrentPath<TableName>();
-            var setting = this.mgr.Configuration.dictionarytables.FirstOrDefault(row => row.TableName.ToUpper() == tname.Name.ToUpper());
+
             if (setting == null)
             {
                 cerr.WriteLine("current table is not key-value tables");

@@ -33,8 +33,6 @@ namespace sqlcon
         const string _WORKING_DIRECTORY = "working.directory.commands";
 
         const string _LIMIT = "limit";
-        const string _DICTIONARY_TABLES = "dictionarytables";
-
         const string _QUEREY = "query";
 
         private Memory Cfg = new Memory();
@@ -45,7 +43,6 @@ namespace sqlcon
         public string XmlDbDirectory { get; set; }
         public WorkingDirectory WorkingDirectory { get; }
 
-        public List<KeyValueTable> dictionarytables = new List<KeyValueTable>();
         public int Limit_Top = 20;
         public int Export_Max_Count = 2000;
 
@@ -298,16 +295,6 @@ namespace sqlcon
                 this.CfgFile = cfgFile;
                 TryReadCfg(cfgFile);
             }
-
-            if (Cfg.GetValue(_DICTIONARY_TABLES).Defined)
-            {
-                var d = Cfg.GetValue(_DICTIONARY_TABLES);
-                foreach (var t in d)
-                {
-                    dictionarytables.Add(new KeyValueTable { TableName = (string)t["table"], KeyName = (string)t["key"], ValueName = (string)t["value"] });
-                }
-            }
-
 
             this.OutputFile = Cfg.GetValue<string>(_FILE_OUTPUT, "script.sql");
             this.XmlDbDirectory = Cfg.GetValue<string>(_XML_DB_FOLDER, "db");
