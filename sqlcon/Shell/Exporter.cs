@@ -368,7 +368,7 @@ namespace sqlcon
             if (tname != null)
             {
                 cout.WriteLine("start to generate {0} csv file", tname);
-                file = this.cmd.OutputFileName;
+                file = this.cmd.OutputFileName();
                 if (file == null)
                     file = fullName(tname);
 
@@ -420,7 +420,7 @@ namespace sqlcon
         public void ExportDataContract(int version)
         {
             string path = cmd.OutputPath(ConfigKey._GENERATOR_DC_PATH, $"{Configuration.MyDocuments}\\dc");
-            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>(ConfigKey._GENERATOR_DC_NS, "Sys.DataModel.DataContract");
+            string ns = cmd.GetValue("ns", ConfigKey._GENERATOR_DC_NS, "Sys.DataModel.DataContract");
             string clss = cmd.GetValue("class");
             bool last = cmd.Has("last");
 
@@ -533,7 +533,7 @@ namespace sqlcon
             }
 
             string path = cmd.OutputPath(ConfigKey._GENERATOR_DC_PATH, $"{Configuration.MyDocuments}\\dc");
-            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>(ConfigKey._GENERATOR_DC_NS, "Sys.DataModel.DataContracts");
+            string ns = cmd.GetValue("ns", ConfigKey._GENERATOR_DC_NS, "Sys.DataModel.DataContracts");
 
             if (tname != null)
             {
@@ -590,7 +590,7 @@ namespace sqlcon
         public void ExportLinq2SQLClass()
         {
             string path = cmd.OutputPath(ConfigKey._GENERATOR_L2S_PATH, $"{Configuration.MyDocuments}\\dc");
-            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>(ConfigKey._GENERATOR_L2S_NS, "Sys.DataModel.L2s");
+            string ns = cmd.GetValue("ns", ConfigKey._GENERATOR_L2S_NS, "Sys.DataModel.L2s");
             Dictionary<TableName, TableSchema> schemas = new Dictionary<TableName, TableSchema>();
 
             if (tname != null)

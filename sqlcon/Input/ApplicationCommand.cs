@@ -232,37 +232,35 @@ namespace sqlcon
             return directory;
         }
 
-     
 
-        public string OutputFileName
+
+        public string OutputFileName()
         {
-            get
-            {
-                string path = OutputPath();
-                if (path == null)
-                    return null;
+            string path = OutputPath();
+            if (path == null)
+                return null;
 
-                if (File.Exists(path))
-                    return path;
-
-                if (Directory.Exists(path))
-                    return null;
-
-                string directory = Path.GetDirectoryName(path);
-                if (!Directory.Exists(directory))
-                    Directory.CreateDirectory(directory);
-
+            if (File.Exists(path))
                 return path;
-            }
+
+            if (Directory.Exists(path))
+                return null;
+
+            string directory = Path.GetDirectoryName(path);
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+
+            return path;
         }
 
         public string OutputPath()
         {
+            Append = Has("append");
+
             string path = GetValue("out");
             if (path == null)
                 return null;
 
-            Append = Has("append");
             return path;
         }
 
@@ -310,6 +308,11 @@ namespace sqlcon
 
                 return d;
             }
+        }
+
+        public string GetValue(string name, string configKey, string defaultValue)
+        {
+            return GetValue(name) ?? cfg.GetValue<string>(configKey, defaultValue);
         }
     }
 }
