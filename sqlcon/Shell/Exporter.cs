@@ -69,7 +69,7 @@ namespace sqlcon
             TableName[] tnames;
             if (cmd.wildcard != null)
             {
-                var md = new MatchedDatabase(dname, cmd.wildcard, null);
+                var md = new MatchedDatabase(dname, cmd);
                 tnames = md.MatchedTableNames;
                 if (tnames.Length == 0)
                 {
@@ -123,7 +123,7 @@ namespace sqlcon
             {
                 if (cmd.wildcard != null)
                 {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, cmd.Includes);
+                    var md = new MatchedDatabase(dname, cmd);
                     TableName[] tnames = md.MatchedTableNames;
                     if (tnames.Length > 0)
                     {
@@ -195,7 +195,7 @@ namespace sqlcon
                 cout.WriteLine("start to generate {0} script to file: {1}", dname, fileName);
                 using (var writer = fileName.CreateStreamWriter(cmd.Append))
                 {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, cmd.Includes);
+                    var md = new MatchedDatabase(dname, cmd);
                     TableName[] tnames = md.MatchedTableNames;
                     CancelableWork.CanCancel(cts =>
                     {
@@ -269,7 +269,7 @@ namespace sqlcon
             else if (dname != null)
             {
                 cout.WriteLine("start to generate {0}", dname);
-                var mt = new MatchedDatabase(dname, cmd.wildcard, cmd.Includes);
+                var mt = new MatchedDatabase(dname, cmd);
                 CancelableWork.CanCancel(cts =>
                 {
                     foreach (var tname in mt.MatchedTableNames)
@@ -327,7 +327,7 @@ namespace sqlcon
                 cout.WriteLine("start to generate database {0} class to directory: {1}", dname, option.OutputPath);
                 CancelableWork.CanCancel(cts =>
                 {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, cmd.Includes);
+                    var md = new MatchedDatabase(dname, cmd);
                     TableName[] tnames = md.MatchedTableNames;
                     foreach (var tn in tnames)
                     {
@@ -387,7 +387,7 @@ namespace sqlcon
                 cout.WriteLine("start to generate {0} csv to directory: {1}", dname, path);
                 CancelableWork.CanCancel(cts =>
                 {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, cmd.Includes);
+                    var md = new MatchedDatabase(dname, cmd);
                     TableName[] tnames = md.MatchedTableNames;
                     foreach (var tn in tnames)
                     {
@@ -554,7 +554,7 @@ namespace sqlcon
                 cout.WriteLine("start to generate {0} entity framework class to directory: {1}", dname, path);
                 CancelableWork.CanCancel(cts =>
                 {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, null); //cfg.exportExcludedTables);
+                    var md = new MatchedDatabase(dname, cmd); //cfg.exportExcludedTables);
                     TableName[] tnames = md.MatchedTableNames;
                     foreach (var tn in tnames)
                     {
@@ -732,7 +732,7 @@ namespace sqlcon
                 cout.WriteLine($"start to generate data file to directory: {dname}");
                 CancelableWork.CanCancel(cts =>
                 {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, null); //cfg.exportExcludedTables);
+                    var md = new MatchedDatabase(dname, cmd); //cfg.exportExcludedTables);
                     TableName[] tnames = md.MatchedTableNames;
                     DataSet ds = new DataSet
                     {

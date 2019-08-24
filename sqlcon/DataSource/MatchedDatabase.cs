@@ -15,6 +15,13 @@ namespace sqlcon
 
         public readonly DatabaseName DatabaseName;
         public readonly string[] includedtables;
+        public readonly string[] excludedtables;
+
+        public MatchedDatabase(DatabaseName databaseName, ApplicationCommand cmd)
+            : this(databaseName, cmd.wildcard, cmd.Includes)
+        {
+            this.excludedtables = cmd.Excludes;
+        }
 
         public MatchedDatabase(DatabaseName databaseName, string namePattern, string[] includedtables)
         {
