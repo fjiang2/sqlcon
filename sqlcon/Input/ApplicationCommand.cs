@@ -216,30 +216,29 @@ namespace sqlcon
             }
         }
 
-        public string OutputDirectory
+        public string OutputDirectory()
         {
-            get
-            {
-                string path = OutputPath;
-                if (path == null)
-                    return null;
+            string path = OutputPath();
+            if (path == null)
+                return null;
 
-                if (Directory.Exists(path))
-                    return path;
+            if (Directory.Exists(path))
+                return path;
 
-                string directory = Path.GetDirectoryName(path);
-                if (!Directory.Exists(directory))
-                    Directory.CreateDirectory(directory);
+            string directory = Path.GetDirectoryName(path);
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
 
-                return directory;
-            }
+            return directory;
         }
+
+     
 
         public string OutputFileName
         {
             get
             {
-                string path = OutputPath;
+                string path = OutputPath();
                 if (path == null)
                     return null;
 
@@ -257,29 +256,28 @@ namespace sqlcon
             }
         }
 
-        public string OutputPath
+        public string OutputPath()
         {
-            get
-            {
-                string path = GetValue("out");
-                if (path == null)
-                    return null;
+            string path = GetValue("out");
+            if (path == null)
+                return null;
 
-                Append = Has("append");
-                return path;
-            }
+            Append = Has("append");
+            return path;
         }
 
-        public string InputPath
+        public string OutputPath(string configKey, string defaultPath)
         {
-            get
-            {
-                string path = GetValue("in");
-                if (path == null)
-                    return null;
+            return OutputPath() ?? cfg.GetValue<string>(configKey, defaultPath);
+        }
 
-                return path;
-            }
+        public string InputPath()
+        {
+            string path = GetValue("in");
+            if (path == null)
+                return null;
+
+            return path;
         }
 
         public IDictionary<string, string[]> PK

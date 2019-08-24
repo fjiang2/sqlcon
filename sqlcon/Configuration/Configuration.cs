@@ -33,7 +33,6 @@ namespace sqlcon
         const string _WORKING_DIRECTORY = "working.directory.commands";
 
         const string _LIMIT = "limit";
-        const string _QUEREY = "query";
 
         private Memory Cfg = new Memory();
 
@@ -313,14 +312,6 @@ namespace sqlcon
 
             var editor = Cfg.GetValue<string>(_FILE_EDITOR, "notepad.exe");
             Context.DS.Add(_FILE_EDITOR, new VAL(editor));
-
-
-            var x = Cfg[_QUEREY];
-            if (x.Defined)
-            {
-                foreach (var pair in x)
-                    Context.DS.Add((string)pair[0], pair[1]);
-            }
 
             return true;
 

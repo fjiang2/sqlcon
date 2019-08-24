@@ -229,7 +229,7 @@ namespace sqlcon
 
         public void ExportSchema()
         {
-            string directory = cmd.OutputDirectory;
+            string directory = cmd.OutputDirectory();
             if (directory != null)
                 xmlDbFile.XmlDbFolder = directory;
 
@@ -254,7 +254,7 @@ namespace sqlcon
 
         public void ExportData()
         {
-            string directory = cmd.OutputDirectory;
+            string directory = cmd.OutputDirectory();
             if (directory != null)
                 xmlDbFile.XmlDbFolder = directory;
 
@@ -303,7 +303,7 @@ namespace sqlcon
             DpoOption option = new DpoOption
             {
                 NameSpace = cfg.GetValue<string>(ConfigKey._GENERATOR_DPO_NS, "Sys.DataModel.Dpo"),
-                OutputPath = cfg.GetValue<string>(ConfigKey._GENERATOR_DPO_PATH, $"{Configuration.MyDocuments}\\DataModel\\Dpo"),
+                OutputPath = cmd.OutputPath(ConfigKey._GENERATOR_DPO_PATH, $"{Configuration.MyDocuments}\\DataModel\\Dpo"),
                 Level = cfg.GetValue<Level>(ConfigKey._GENERATOR_DPO_LEVEL, Level.Application),
                 HasProvider = cfg.GetValue<bool>(ConfigKey._GENERATOR_DPO_HASPROVIDER, false),
                 HasTableAttribute = cfg.GetValue<bool>(ConfigKey._GENERATOR_DPO_HASTABLEATTR, true),
@@ -360,10 +360,7 @@ namespace sqlcon
 
         public void ExportCsvFile()
         {
-            string path = this.cmd.OutputDirectory;
-
-            if (path == null)
-                path = cfg.GetValue<string>(ConfigKey._GENERATOR_CSV_PATH, $"{Configuration.MyDocuments}\\csv");
+            string path = this.cmd.OutputPath(ConfigKey._GENERATOR_CSV_PATH, $"{Configuration.MyDocuments}\\csv");
 
             string file;
             string fullName(TableName tname) => $"{path}\\{sname.Path}\\{dname.Name}\\{tname.ShortName}.csv";
@@ -422,7 +419,7 @@ namespace sqlcon
 
         public void ExportDataContract(int version)
         {
-            string path = cmd.OutputPath ?? cfg.GetValue<string>(ConfigKey._GENERATOR_DC_PATH, $"{Configuration.MyDocuments}\\dc");
+            string path = cmd.OutputPath(ConfigKey._GENERATOR_DC_PATH, $"{Configuration.MyDocuments}\\dc");
             string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>(ConfigKey._GENERATOR_DC_NS, "Sys.DataModel.DataContract");
             string clss = cmd.GetValue("class");
             bool last = cmd.Has("last");
@@ -535,7 +532,7 @@ namespace sqlcon
                 return;
             }
 
-            string path = cmd.OutputPath ?? cfg.GetValue<string>(ConfigKey._GENERATOR_DC_PATH, $"{Configuration.MyDocuments}\\dc");
+            string path = cmd.OutputPath(ConfigKey._GENERATOR_DC_PATH, $"{Configuration.MyDocuments}\\dc");
             string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>(ConfigKey._GENERATOR_DC_NS, "Sys.DataModel.DataContracts");
 
             if (tname != null)
@@ -592,7 +589,7 @@ namespace sqlcon
 
         public void ExportLinq2SQLClass()
         {
-            string path = cfg.GetValue<string>(ConfigKey._GENERATOR_L2S_PATH, $"{Configuration.MyDocuments}\\dc");
+            string path = cmd.OutputPath(ConfigKey._GENERATOR_L2S_PATH, $"{Configuration.MyDocuments}\\dc");
             string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>(ConfigKey._GENERATOR_L2S_NS, "Sys.DataModel.L2s");
             Dictionary<TableName, TableSchema> schemas = new Dictionary<TableName, TableSchema>();
 
@@ -676,7 +673,7 @@ namespace sqlcon
             var dt = LastOrCurrentTable();
 
             //not .cfg file
-            if (cmd.InputPath == null)
+            if (cmd.InputPath() == null)
             {
                 if (dt == null)
                     return;
@@ -691,7 +688,7 @@ namespace sqlcon
             var dt = LastOrCurrentTable();
 
             //not .cfg file
-            if (cmd.InputPath == null)
+            if (cmd.InputPath() == null)
             {
                 if (dt == null)
                     return;
@@ -710,7 +707,7 @@ namespace sqlcon
                 return;
             }
 
-            string path = cmd.OutputPath ?? cfg.GetValue<string>(ConfigKey._GENERATOR_DS_PATH, $"{Configuration.MyDocuments}\\ds");
+            string path = cmd.OutputPath(ConfigKey._GENERATOR_DS_PATH, $"{Configuration.MyDocuments}\\ds");
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 

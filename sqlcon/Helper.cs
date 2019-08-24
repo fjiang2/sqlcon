@@ -16,7 +16,7 @@ namespace sqlcon
     {
         public static string OutputFile(this ApplicationCommand cmd)
         {
-            string outputFile = cmd.OutputPath;
+            string outputFile = cmd.OutputPath();
             if (!string.IsNullOrEmpty(outputFile))
             {
                 try

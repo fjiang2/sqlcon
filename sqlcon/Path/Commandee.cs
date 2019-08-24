@@ -1853,7 +1853,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     if (lake == null)
                         return;
 
-                    string output = cmd.OutputPath;
+                    string output = cmd.OutputPath();
                     if (output == null)
                     {
                         foreach (var kvp in lake)
