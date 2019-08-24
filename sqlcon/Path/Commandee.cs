@@ -522,7 +522,7 @@ namespace sqlcon
                         tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
                     }
 
-                    var adapter = new CompareAdapter(both.ps1.side, both.ps2.side);
+                    var adapter = new CompareAdapter(cmd, both.ps1.side, both.ps2.side);
                     //stdio.WriteLine("start to {0} from {1} to {2}", sideType, tname1, tname2);
                     var sql = adapter.CompareTable(cmd.IsSchema ? ActionType.CompareSchema : ActionType.CompareData,
                         sideType, tname1, tname2, mgr.Configuration.PK, cmd.Columns);
@@ -597,7 +597,7 @@ namespace sqlcon
                     return;
                 }
 
-                var adapter = new CompareAdapter(both.ps1.side, both.ps2.side);
+                var adapter = new CompareAdapter(cmd, both.ps1.side, both.ps2.side);
                 var T1 = both.ps1.MatchedTables;
                 var T2 = both.ps2.MatchedTables;
 
@@ -967,7 +967,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             if (pt.Item is DatabaseName dname)
             {
-                var m = new MatchedDatabase(dname, cmd.wildcard, cfg.compareIncludedTables);
+                var m = new MatchedDatabase(dname, cmd.wildcard, cmd.Includes);
                 var T = m.MatchedTableNames;
 
                 CancelableWork.CanCancel(cts =>

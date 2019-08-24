@@ -81,7 +81,5 @@ namespace sqlcon
             return result;
         }
 
-
-
     }
 }

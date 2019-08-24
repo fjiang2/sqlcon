@@ -123,7 +123,7 @@ namespace sqlcon
             {
                 if (cmd.wildcard != null)
                 {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportIncludedTables);
+                    var md = new MatchedDatabase(dname, cmd.wildcard, cmd.Includes);
                     TableName[] tnames = md.MatchedTableNames;
                     if (tnames.Length > 0)
                     {
@@ -195,7 +195,7 @@ namespace sqlcon
                 cout.WriteLine("start to generate {0} script to file: {1}", dname, fileName);
                 using (var writer = fileName.CreateStreamWriter(cmd.Append))
                 {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportIncludedTables);
+                    var md = new MatchedDatabase(dname, cmd.wildcard, cmd.Includes);
                     TableName[] tnames = md.MatchedTableNames;
                     CancelableWork.CanCancel(cts =>
                     {
@@ -204,23 +204,18 @@ namespace sqlcon
                             if (cts.IsCancellationRequested)
                                 return;
 
-                            if (cfg.exportIncludedTables.IsMatch(tn.ShortName))
+                            int count = new SqlCmd(tn.Provider, string.Format("SELECT COUNT(*) FROM {0}", tn)).FillObject<int>();
+                            if (count > cfg.Export_Max_Count)
                             {
-                                int count = new SqlCmd(tn.Provider, string.Format("SELECT COUNT(*) FROM {0}", tn)).FillObject<int>();
-                                if (count > cfg.Export_Max_Count)
+                                if (!cin.YesOrNo($"are you sure to export {count} rows on {tn.ShortName} (y/n)?"))
                                 {
-                                    if (!cin.YesOrNo($"are you sure to export {count} rows on {tn.ShortName} (y/n)?"))
-                                    {
-                                        cout.WriteLine("\n{0,10} skipped", tn.ShortName);
-                                        continue;
-                                    }
+                                    cout.WriteLine("\n{0,10} skipped", tn.ShortName);
+                                    continue;
                                 }
-
-                                count = Compare.GenerateRows(type, writer, new TableSchema(tn), null, cmd.HasIfExists);
-                                cout.WriteLine($"{count,10} row(s) generated on {tn.ShortName}");
                             }
-                            else
-                                cout.WriteLine("{0,10} skipped", tn.ShortName);
+
+                            count = Compare.GenerateRows(type, writer, new TableSchema(tn), null, cmd.HasIfExists);
+                            cout.WriteLine($"{count,10} row(s) generated on {tn.ShortName}");
                         }
 
                         cout.WriteLine($"completed to generate {type} clauses to \"{fileName}\"");
@@ -273,21 +268,8 @@ namespace sqlcon
 
             else if (dname != null)
             {
-                string[] exportIncludedTables = cfg.exportIncludedTables;
-
-                string include = cmd.GetValue("include");
-                try
-                {
-                    if (include != null)
-                        exportIncludedTables = include.Split(',');
-                }
-                catch(Exception ex)
-                {
-                    cerr.WriteLine($"invalid arugment /include:{include}, {ex.Message}");
-                }
-
                 cout.WriteLine("start to generate {0}", dname);
-                var mt = new MatchedDatabase(dname, cmd.wildcard, exportIncludedTables);
+                var mt = new MatchedDatabase(dname, cmd.wildcard, cmd.Includes);
                 CancelableWork.CanCancel(cts =>
                 {
                     foreach (var tname in mt.MatchedTableNames)
@@ -345,7 +327,7 @@ namespace sqlcon
                 cout.WriteLine("start to generate database {0} class to directory: {1}", dname, option.OutputPath);
                 CancelableWork.CanCancel(cts =>
                 {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportIncludedTables);
+                    var md = new MatchedDatabase(dname, cmd.wildcard, cmd.Includes);
                     TableName[] tnames = md.MatchedTableNames;
                     foreach (var tn in tnames)
                     {
@@ -405,7 +387,7 @@ namespace sqlcon
                 cout.WriteLine("start to generate {0} csv to directory: {1}", dname, path);
                 CancelableWork.CanCancel(cts =>
                 {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportIncludedTables);
+                    var md = new MatchedDatabase(dname, cmd.wildcard, cmd.Includes);
                     TableName[] tnames = md.MatchedTableNames;
                     foreach (var tn in tnames)
                     {

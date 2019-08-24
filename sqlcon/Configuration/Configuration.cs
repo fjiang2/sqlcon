@@ -33,8 +33,6 @@ namespace sqlcon
         const string _WORKING_DIRECTORY = "working.directory.commands";
 
         const string _LIMIT = "limit";
-        const string _COMPARE_INCLUDED_TABLES = "compare_included_tables";
-        const string _EXPORT_INCLUDED_TABLES = "export_included_tables";
         const string _DICTIONARY_TABLES = "dictionarytables";
 
         const string _QUEREY = "query";
@@ -48,8 +46,6 @@ namespace sqlcon
         public string XmlDbDirectory { get; set; }
         public WorkingDirectory WorkingDirectory { get; }
 
-        public string[] compareIncludedTables = new string[] { };
-        public string[] exportIncludedTables = new string[] { };
         public List<KeyValueTable> dictionarytables = new List<KeyValueTable>();
         public int Limit_Top = 20;
         public int Export_Max_Count = 2000;
@@ -306,8 +302,6 @@ namespace sqlcon
                 TryReadCfg(cfgFile);
             }
 
-            this.compareIncludedTables = Cfg.GetValue<string[]>(_COMPARE_INCLUDED_TABLES, new string[] { });
-            this.exportIncludedTables = Cfg.GetValue<string[]>(_EXPORT_INCLUDED_TABLES, new string[] { });
             if (Cfg.GetValue(_DICTIONARY_TABLES).Defined)
             {
                 var d = Cfg.GetValue(_DICTIONARY_TABLES);

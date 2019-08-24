@@ -178,6 +178,44 @@ namespace sqlcon
             }
         }
 
+        public string[] Includes
+        {
+            get
+            {
+                string include = GetValue("include");
+                try
+                {
+                    if (include != null)
+                        return include.Split(',');
+                    else
+                        return new string[] { };
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"invalid arugment /include:{include}, {ex.Message}");
+                }
+            }
+        }
+
+        public string[] Excludes
+        {
+            get
+            {
+                string include = GetValue("exclude");
+                try
+                {
+                    if (include != null)
+                        return include.Split(',');
+                    else
+                        return new string[] { };
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"invalid arugment /exclude:{include}, {ex.Message}");
+                }
+            }
+        }
+
         public string OutputDirectory
         {
             get

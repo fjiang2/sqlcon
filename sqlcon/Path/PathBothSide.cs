@@ -27,8 +27,8 @@ namespace sqlcon
         public PathBothSide(PathManager mgr, ApplicationCommand cmd)
         {
             this.mgr = mgr;
-            ps1 = new PathSide(mgr);
-            ps2 = new PathSide(mgr);
+            ps1 = new PathSide(mgr, cmd);
+            ps2 = new PathSide(mgr, cmd);
 
             var f1 = ps1.SetSource(cmd.arg1);
             var f2 = ps2.SetSink(cmd.arg2);

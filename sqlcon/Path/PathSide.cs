@@ -21,10 +21,12 @@ namespace sqlcon
         private TableName[] T;   //wildcard matched tables
 
         private PathManager mgr;
+        private ApplicationCommand cmd;
 
-        public PathSide(PathManager mgr)
+        public PathSide(PathManager mgr, ApplicationCommand cmd)
         {
             this.mgr = mgr;
+            this.cmd = cmd;
         }
 
         public TableName[] MatchedTables
@@ -73,7 +75,7 @@ namespace sqlcon
 
             if (path.wildcard != null)
             {
-                var m1 = new MatchedDatabase(dname, path.wildcard, mgr.Configuration.compareIncludedTables);
+                var m1 = new MatchedDatabase(dname, path.wildcard, cmd.Includes);
                 T = m1.MatchedTableNames;
             }
             else

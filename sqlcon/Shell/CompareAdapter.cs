@@ -19,8 +19,12 @@ namespace sqlcon
         public Side Side1 { get; private set; }
         public Side Side2 { get; private set; }
 
-        public CompareAdapter(Side side1, Side side2)
+        private readonly ApplicationCommand cmd;
+
+        public CompareAdapter(ApplicationCommand cmd, Side side1, Side side2)
         {
+            this.cmd = cmd;
+
             this.Side1 = side1;
             this.Side2 = side2;
         }
@@ -82,7 +86,7 @@ namespace sqlcon
                             tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
                     }
 
-                    if (compareType == ActionType.CompareData && !MatchedDatabase.Includes(cfg.compareIncludedTables, tname1))
+                    if (compareType == ActionType.CompareData && !MatchedDatabase.Includes(cmd.Includes, tname1))
                     {
                         cout.WriteLine("{0} is excluded", tname1);
                         continue;
