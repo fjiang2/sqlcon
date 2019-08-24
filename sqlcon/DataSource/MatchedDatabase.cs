@@ -83,7 +83,7 @@ namespace sqlcon
         public static TableName[] Search(string pattern, TableName[] tableNames)
         {
             Regex regex = pattern.WildcardRegex();
-            var result = tableNames.Where(tname => regex.IsMatch(tname.Name)).ToArray();
+            var result = tableNames.Where(tname => regex.IsMatch(tname.Path)).ToArray();
 
             return result;
         }

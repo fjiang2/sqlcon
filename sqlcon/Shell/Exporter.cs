@@ -85,6 +85,14 @@ namespace sqlcon
             return tnames;
         }
 
+        private static DataTable FillTable(TableName tname)
+        {
+            var dt = new SqlCmd(tname.Provider, $"SELECT TOP 1 * FROM {tname.FormalName}").FillDataTable();
+            dt.TableName = tname.Name;
+            var schema = new TableSchema(tname);
+            dt.PrimaryKeys(schema.PrimaryKeys.Keys);
+            return dt;
+        }
 
         public void ExportScud(SqlScriptType type)
         {
@@ -449,20 +457,15 @@ namespace sqlcon
             }
             else if (tname != null)
             {
-                var dt = new SqlCmd(tname.Provider, $"SELECT TOP 1 * FROM {tname.FormalName}").FillDataTable();
-                dt.TableName = tname.Name;
-                var schema = new TableSchema(tname);
-                dt.PrimaryKeys(schema.PrimaryKeys.Keys);
+                var dt = FillTable(tname);
                 list.Add(dt);
             }
             else if (dname != null)
             {
-                path = path + "\\" + dname.Name;
                 TableName[] tnames = getTableNames(cmd);
                 foreach (var tn in tnames)
                 {
-                    var dt = new SqlCmd(tn.Provider, $"SELECT TOP 1 * FROM {tn.FormalName}").FillDataTable();
-                    dt.TableName = tn.Name;
+                    var dt = FillTable(tn);
                     list.Add(dt);
                 }
             }
