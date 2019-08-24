@@ -52,8 +52,10 @@ namespace sqlcon
         }
 
 
-        public string Run(ActionType compareType, TableName[] N1, TableName[] N2, Configuration cfg, string[] exceptColumns)
+        public string Run(ActionType compareType, TableName[] N1, TableName[] N2, ApplicationCommand cmd)
         {
+            string[] exceptColumns = cmd.Columns;
+
             DatabaseName dname1 = Side1.DatabaseName;
             DatabaseName dname2 = Side2.DatabaseName;
 
@@ -93,7 +95,7 @@ namespace sqlcon
                     }
 
                     if (tname2.Exists())
-                        builder.Append(CompareTable(compareType, CompareSideType.compare, tname1, tname2, cfg.PK, exceptColumns));
+                        builder.Append(CompareTable(compareType, CompareSideType.compare, tname1, tname2, cmd.PK, exceptColumns));
                     else
                     {
                         if (compareType == ActionType.CompareSchema)
@@ -131,7 +133,7 @@ namespace sqlcon
         }
 
 
-        public string CompareTable(ActionType actiontype, CompareSideType sidetype, TableName tname1, TableName tname2, Dictionary<string, string[]> pk, string[] exceptColumns)
+        public string CompareTable(ActionType actiontype, CompareSideType sidetype, TableName tname1, TableName tname2, IDictionary<string, string[]> pk, string[] exceptColumns)
         {
             TableSchema schema1 = new TableSchema(tname1);
             TableSchema schema2 = new TableSchema(tname2);

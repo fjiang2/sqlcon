@@ -281,5 +281,37 @@ namespace sqlcon
                 return path;
             }
         }
+
+        public IDictionary<string, string[]> PK
+        {
+            // option: /pk:table1=pk1+pk2,table2=pk1
+            // option: /pk:Product=Id+Name,Supply=Id
+            get
+            {
+                Dictionary<string, string[]> d = new Dictionary<string, string[]>();
+
+                string option = GetValue("pk");
+                if (option == null)
+                    return d;
+
+                string[] items = option.Split(',');
+                foreach (string item in items)
+                {
+                    string[] L1 = item.Split('=');
+                    if (L1.Length != 2)
+                        throw new Exception($"invalid argument /pk, format is /pk:table1=pk1+pk2,table2=pk1");
+
+                    string table = L1[0];
+                    string[] L2 = L1[1].Split('+');
+
+                    if (d.ContainsKey(table))
+                        throw new Exception($"duplicated table in option /pk, format is /pk:table1=pk1+pk2,table2=pk1");
+
+                    d.Add(table, L2);
+                }
+
+                return d;
+            }
+        }
     }
 }

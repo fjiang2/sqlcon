@@ -36,7 +36,6 @@ namespace sqlcon
         const string _DICTIONARY_TABLES = "dictionarytables";
 
         const string _QUEREY = "query";
-        const string _PRIMARY_KEY = "primary_key";
 
         private Memory Cfg = new Memory();
 
@@ -49,8 +48,6 @@ namespace sqlcon
         public List<KeyValueTable> dictionarytables = new List<KeyValueTable>();
         public int Limit_Top = 20;
         public int Export_Max_Count = 2000;
-
-        public readonly Dictionary<string, string[]> PK = new Dictionary<string, string[]>();
 
         public Configuration()
         {
@@ -329,18 +326,6 @@ namespace sqlcon
 
             var editor = Cfg.GetValue<string>(_FILE_EDITOR, "notepad.exe");
             Context.DS.Add(_FILE_EDITOR, new VAL(editor));
-
-
-            var pk = Cfg[_PRIMARY_KEY];
-            if (pk.Defined)
-            {
-                foreach (var item in pk)
-                {
-                    string tableName = (string)item[0];
-                    PK.Add(tableName.ToUpper(), (string[])item[1].HostValue);
-                }
-            }
-
 
 
             var x = Cfg[_QUEREY];

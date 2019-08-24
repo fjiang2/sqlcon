@@ -481,6 +481,7 @@ namespace sqlcon
         {
             if (cmd.HasHelp)
             {
+                cout.WriteLine("use \"/pk:table1=pk1+pk2,table=pk1\" if primary key doesn't exist");
                 if (sideType == CompareSideType.copy)
                 {
                     cout.WriteLine("copy schema or records from table1 to table2, support table name wildcards");
@@ -525,7 +526,7 @@ namespace sqlcon
                     var adapter = new CompareAdapter(cmd, both.ps1.side, both.ps2.side);
                     //stdio.WriteLine("start to {0} from {1} to {2}", sideType, tname1, tname2);
                     var sql = adapter.CompareTable(cmd.IsSchema ? ActionType.CompareSchema : ActionType.CompareData,
-                        sideType, tname1, tname2, mgr.Configuration.PK, cmd.Columns);
+                        sideType, tname1, tname2, cmd.PK, cmd.Columns);
 
                     if (sideType == CompareSideType.compare)
                     {
@@ -577,6 +578,8 @@ namespace sqlcon
                 cout.WriteLine("compare path1 [path2]  : compare data");
                 cout.WriteLine("compare [/s]           : compare schema");
                 cout.WriteLine("compare [/e]           : find common existing table names");
+                cout.WriteLine("        [/pk]          : if primary key doesn't exist");
+                cout.WriteLine("                         for example /pk:table1=pk1+pk2,table=pk1");
                 cout.WriteLine();
                 return;
             }
@@ -611,7 +614,7 @@ namespace sqlcon
                     T2 = T2.Where(t => C.Contains(t.ShortName.ToUpper())).ToArray();
                 }
 
-                var sql = adapter.Run(type, T1, T2, cfg, cmd.Columns);
+                var sql = adapter.Run(type, T1, T2, cmd);
                 writer.Write(sql);
             }
             cout.WriteLine($"result in \"{fileName}\"");
