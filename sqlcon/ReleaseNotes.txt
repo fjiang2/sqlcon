@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+8/24/2019 v2.2.4.0
+	Improvements/Enhancements:
+	1.add command option /include:xxx and /exclude:xxx. option value could be wildcard table name list
+
 8/21/2019 v2.2.3.0
 	Improvements/Enhancements:
 	1. support append to existing file on output. The command option is "/append"
