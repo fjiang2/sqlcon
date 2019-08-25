@@ -70,6 +70,7 @@ namespace sqlcon
             builder.AppendFormat("-- compare server={0} db={1}", Side1.Provider.DataSource, dname1.Name).AppendLine();
             builder.AppendFormat("--         server={0} db={1} @ {2}", Side2.Provider.DataSource, dname2.Name, DateTime.Now).AppendLine();
 
+            MatchedTable match = new MatchedTable(N1, cmd);
             CancelableWork.CanCancel(cts =>
             {
                 int i = 0;
@@ -88,7 +89,7 @@ namespace sqlcon
                             tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
                     }
 
-                    if (compareType == ActionType.CompareData && !MatchedDatabase.Includes(cmd.Includes, tname1))
+                    if (compareType == ActionType.CompareData && !match.Contains(tname1))
                     {
                         cout.WriteLine("{0} is excluded", tname1);
                         continue;

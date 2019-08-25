@@ -14,25 +14,21 @@ namespace sqlcon
         private string namePattern;
 
         public readonly DatabaseName DatabaseName;
-        public readonly string[] includedtables;
-        public readonly string[] excludedtables;
+        public string[] Includedtables { get; set; }
+        public string[] Excludedtables { get; set; }
 
         public MatchedDatabase(DatabaseName databaseName, ApplicationCommand cmd)
-            : this(databaseName, cmd.wildcard, cmd.Includes)
+            : this(databaseName, cmd.wildcard)
         {
-            this.excludedtables = cmd.Excludes;
+            this.Includedtables = cmd.Includes;
+            this.Excludedtables = cmd.Excludes;
         }
 
-        public MatchedDatabase(DatabaseName databaseName, string namePattern, string[] includedtables)
+        public MatchedDatabase(DatabaseName databaseName, string namePattern)
         {
             this.namePattern = namePattern;
             this.DatabaseName = databaseName;
-
-            if (includedtables != null)
-                this.includedtables = includedtables;
         }
-
-
 
 
         public TableName[] MatchedTableNames
@@ -40,14 +36,14 @@ namespace sqlcon
             get
             {
                 TableName[] names = this.DatabaseName.GetDependencyTableNames();
+                MatchedTable match = new MatchedTable(names)
+                {
+                    Pattern = namePattern,
+                    IncludedTables = Includedtables,
+                    ExcludedTables = Excludedtables,
+                };
 
-                names = names.Where(name => Includes(name)).ToArray();
-                if (namePattern == null)
-                    return names;
-
-                names = Search(namePattern, names);
-
-                return names;
+                return match.MatchedTables();
             }
         }
 
@@ -56,36 +52,15 @@ namespace sqlcon
             get
             {
                 TableName[] names = this.DatabaseName.GetViewNames();
+                MatchedTable match = new MatchedTable(names)
+                {
+                    Pattern = namePattern,
+                    IncludedTables = Includedtables,
+                    ExcludedTables = Excludedtables,
+                };
 
-                names = names.Where(name => Includes(name)).ToArray();
-                if (namePattern == null)
-                    return names;
-
-                names = Search(namePattern, names);
-
-                return names;
+                return match.MatchedTables();
             }
-        }
-
-        public bool Includes(TableName tableName)
-        {
-            return Includes(includedtables, tableName);
-        }
-
-        public static bool Includes(string[] includedtables, TableName tableName)
-        {
-            if (includedtables == null || includedtables.Length == 0)
-                return true;
-
-            return includedtables.IsMatch(tableName.ShortName);
-        }
-
-        public static TableName[] Search(string pattern, TableName[] tableNames)
-        {
-            Regex regex = pattern.WildcardRegex();
-            var result = tableNames.Where(tname => regex.IsMatch(tname.Path)).ToArray();
-
-            return result;
         }
 
     }

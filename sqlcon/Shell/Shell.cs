@@ -579,7 +579,7 @@ namespace sqlcon
                     break;
 
                 case "vw":
-                    vnames = new MatchedDatabase(dname, arg2, null).DefaultViewNames;
+                    vnames = new MatchedDatabase(dname, arg2).DefaultViewNames;
                     foreach (var vname in vnames)
                     {
                         DataTable dt = null;
@@ -595,7 +595,7 @@ namespace sqlcon
                     break;
 
                 case "view":
-                    vnames = new MatchedDatabase(dname, arg2, null).DefaultViewNames;
+                    vnames = new MatchedDatabase(dname, arg2).DefaultViewNames;
                     vnames.Select(tname => new { Schema = tname.SchemaName, View = tname.Name })
                         .ToConsole();
                     break;

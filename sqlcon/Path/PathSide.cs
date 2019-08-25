@@ -41,10 +41,10 @@ namespace sqlcon
 
         public bool SetSource(string source)
         {
-            return SetSource(source,  "source");
+            return SetSource(source, "source");
         }
 
-        private bool SetSource(string source,  string sourceText)
+        private bool SetSource(string source, string sourceText)
         {
             if (source == null)
             {
@@ -75,7 +75,12 @@ namespace sqlcon
 
             if (path.wildcard != null)
             {
-                var m1 = new MatchedDatabase(dname, path.wildcard, cmd.Includes);
+                var m1 = new MatchedDatabase(dname, path.wildcard)
+                {
+                    Includedtables = cmd.Includes,
+                    Excludedtables = cmd.Excludes
+                };
+
                 T = m1.MatchedTableNames;
             }
             else
@@ -98,7 +103,7 @@ namespace sqlcon
         {
             if (sink != null)
             {
-                return SetSource(sink,"destination");
+                return SetSource(sink, "destination");
             }
             else
                 node = mgr.current;
