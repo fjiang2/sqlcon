@@ -31,20 +31,17 @@ namespace sqlcon
         }
 
 
-        public TableName[] MatchedTableNames
+        public TableName[] Results()
         {
-            get
+            TableName[] names = this.DatabaseName.GetDependencyTableNames();
+            MatchedTable match = new MatchedTable(names)
             {
-                TableName[] names = this.DatabaseName.GetDependencyTableNames();
-                MatchedTable match = new MatchedTable(names)
-                {
-                    Pattern = namePattern,
-                    Includes = Includedtables,
-                    Excludes = Excludedtables,
-                };
+                Pattern = namePattern,
+                Includes = Includedtables,
+                Excludes = Excludedtables,
+            };
 
-                return match.Results();
-            }
+            return match.Results();
         }
 
         public TableName[] DefaultViewNames

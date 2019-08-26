@@ -70,7 +70,7 @@ namespace sqlcon
             if (cmd.wildcard != null)
             {
                 var md = new MatchedDatabase(dname, cmd);
-                tnames = md.MatchedTableNames;
+                tnames = md.Results();
                 if (tnames.Length == 0)
                 {
                     cerr.WriteLine("warning: no table is matched");
@@ -141,7 +141,7 @@ namespace sqlcon
                 if (cmd.wildcard != null)
                 {
                     var md = new MatchedDatabase(dname, cmd);
-                    TableName[] tnames = md.MatchedTableNames;
+                    TableName[] tnames = md.Results();
                     if (tnames.Length > 0)
                     {
                         Stack<string> stack = new Stack<string>();
@@ -213,7 +213,7 @@ namespace sqlcon
                 using (var writer = fileName.CreateStreamWriter(cmd.Append))
                 {
                     var md = new MatchedDatabase(dname, cmd);
-                    TableName[] tnames = md.MatchedTableNames;
+                    TableName[] tnames = md.Results();
                     CancelableWork.CanCancel(cts =>
                     {
                         foreach (var tn in tnames)
@@ -289,7 +289,7 @@ namespace sqlcon
                 var mt = new MatchedDatabase(dname, cmd);
                 CancelableWork.CanCancel(cts =>
                 {
-                    foreach (var tname in mt.MatchedTableNames)
+                    foreach (var tname in mt.Results())
                     {
                         if (cts.IsCancellationRequested)
                             return;
@@ -345,7 +345,7 @@ namespace sqlcon
                 CancelableWork.CanCancel(cts =>
                 {
                     var md = new MatchedDatabase(dname, cmd);
-                    TableName[] tnames = md.MatchedTableNames;
+                    TableName[] tnames = md.Results();
                     foreach (var tn in tnames)
                     {
                         if (cts.IsCancellationRequested)
@@ -402,7 +402,7 @@ namespace sqlcon
                 CancelableWork.CanCancel(cts =>
                 {
                     var md = new MatchedDatabase(dname, cmd);
-                    TableName[] tnames = md.MatchedTableNames;
+                    TableName[] tnames = md.Results();
                     foreach (var tn in tnames)
                     {
                         if (cts.IsCancellationRequested)
@@ -564,7 +564,7 @@ namespace sqlcon
                 CancelableWork.CanCancel(cts =>
                 {
                     var md = new MatchedDatabase(dname, cmd); //cfg.exportExcludedTables);
-                    TableName[] tnames = md.MatchedTableNames;
+                    TableName[] tnames = md.Results();
                     foreach (var tn in tnames)
                     {
                         if (cts.IsCancellationRequested)
@@ -742,7 +742,7 @@ namespace sqlcon
                 CancelableWork.CanCancel(cts =>
                 {
                     var md = new MatchedDatabase(dname, cmd); //cfg.exportExcludedTables);
-                    TableName[] tnames = md.MatchedTableNames;
+                    TableName[] tnames = md.Results();
                     DataSet ds = new DataSet
                     {
                         DataSetName = dname.Name,
