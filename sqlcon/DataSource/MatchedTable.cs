@@ -10,8 +10,8 @@ namespace sqlcon
         private TableName[] tableNames { get; }
 
         public string Pattern { get; set; }
-        public string[] IncludedTables { get; set; }
-        public string[] ExcludedTables { get; set; }
+        public string[] IncludedTables { get; set; } = new string[] { };
+        public string[] ExcludedTables { get; set; } = new string[] { };
 
         public MatchedTable(TableName[] tnames)
         {
@@ -45,8 +45,7 @@ namespace sqlcon
             if (!Includes(tname) && !Excludes(tname))
                 return false;
 
-            Regex regex = Pattern.WildcardRegex();
-            return regex.IsMatch(tname.Path);
+            return Pattern.IsMatch(tname.Path);
         }
 
         private bool Includes(TableName tableName)
@@ -67,9 +66,7 @@ namespace sqlcon
 
         public static TableName[] Search(string pattern, TableName[] tableNames)
         {
-            Regex regex = pattern.WildcardRegex();
-            var result = tableNames.Where(tname => regex.IsMatch(tname.Path)).ToArray();
-
+            var result = tableNames.Where(tname => pattern.IsMatch(tname.Path)).ToArray();
             return result;
         }
 

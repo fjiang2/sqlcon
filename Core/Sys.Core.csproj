@@ -290,6 +290,7 @@
     <Compile Include="EventArgs\MessageEventArgs.cs" />
     <Compile Include="Extension\Iteratable.cs" />
     <Compile Include="Extension\JsonExtension.cs" />
+    <Compile Include="Extension\Wildcard.cs" />
     <Compile Include="IO\DiskFileLink.cs" />
     <Compile Include="IO\FileLink.cs" />
     <Compile Include="IO\FtpFileLink.cs" />

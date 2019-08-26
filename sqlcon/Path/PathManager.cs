@@ -46,9 +46,9 @@ namespace sqlcon
         {
             if (wildcard != null)
             {
-                Regex regex = wildcard.WildcardRegex();
-                return regex.IsMatch(text);
+                return wildcard.IsMatch(text);
             }
+
             return true;
         }
        
