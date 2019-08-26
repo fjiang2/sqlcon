@@ -7,36 +7,24 @@ namespace sqlcon
 {
     class MatchedTable
     {
-        private TableName[] tnames { get; }
-
         public string Pattern { get; set; }
         public string[] Includes { get; set; } = new string[] { };
         public string[] Excludes { get; set; } = new string[] { };
 
-        public MatchedTable(TableName[] tnames)
+        public MatchedTable()
         {
-            this.tnames = tnames;
         }
 
-        public MatchedTable(TableName[] tnames, ApplicationCommand cmd)
+        public MatchedTable(ApplicationCommand cmd)
         {
-            this.tnames = tnames;
             this.Pattern = cmd.wildcard;
             this.Includes = cmd.Includes;
             this.Excludes = cmd.Excludes;
         }
 
-        private string Compare(TableName tname)
+        public TableName[] Results(TableName[] tnames)
         {
-            if (Pattern.StartsWith("dbo."))
-                return tname.Path;
-            else
-                return tname.ShortName;
-        }
-
-        public TableName[] Results()
-        {
-            var names = this.tnames
+            var names = tnames
                 .Where(name => Include(name) && !Exclude(name))
                 .ToArray();
 

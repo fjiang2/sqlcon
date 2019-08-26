@@ -34,14 +34,14 @@ namespace sqlcon
         public TableName[] Results()
         {
             TableName[] names = this.DatabaseName.GetDependencyTableNames();
-            MatchedTable match = new MatchedTable(names)
+            MatchedTable match = new MatchedTable()
             {
                 Pattern = namePattern,
                 Includes = Includedtables,
                 Excludes = Excludedtables,
             };
 
-            return match.Results();
+            return match.Results(names);
         }
 
         public TableName[] DefaultViewNames
@@ -49,14 +49,14 @@ namespace sqlcon
             get
             {
                 TableName[] names = this.DatabaseName.GetViewNames();
-                MatchedTable match = new MatchedTable(names)
+                MatchedTable match = new MatchedTable()
                 {
                     Pattern = namePattern,
                     Includes = Includedtables,
                     Excludes = Excludedtables,
                 };
 
-                return match.Results();
+                return match.Results(names);
             }
         }
 
