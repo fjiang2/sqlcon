@@ -22,14 +22,14 @@ namespace sqlcon
         private bool isReadOnly = false;
         private IDictionary<DataColumn, TypeInfo> dict { get; }
 
-        public DataContract1ClassBuilder(ApplicationCommand cmd, DataTable dt)
+        public DataContract1ClassBuilder(ApplicationCommand cmd, DataTable dt, bool allowDbNull)
             : base(cmd)
         {
             this.dt = dt;
             if (cmd.Has("readonly"))
                 isReadOnly = true;
 
-            this.dict = DataContract2ClassBuilder.CreateMapOfTypeInfo(dt);
+            this.dict = DataContract2ClassBuilder.CreateMapOfTypeInfo(dt, allowDbNull);
 
 
             builder.AddUsing("System");

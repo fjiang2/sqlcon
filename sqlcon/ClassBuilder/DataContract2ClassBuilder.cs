@@ -18,11 +18,11 @@ namespace sqlcon
         public string mtd { get; set; }
         private IDictionary<DataColumn, TypeInfo> dict { get; }
 
-        public DataContract2ClassBuilder(ApplicationCommand cmd, DataTable dt)
+        public DataContract2ClassBuilder(ApplicationCommand cmd, DataTable dt, bool allowDbNull)
             : base(cmd)
         {
             this.dt = dt;
-            this.dict = CreateMapOfTypeInfo(dt);
+            this.dict = CreateMapOfTypeInfo(dt, allowDbNull);
 
             builder.AddUsing("System");
             builder.AddUsing("System.Collections.Generic");
@@ -33,24 +33,28 @@ namespace sqlcon
             AddOptionalUsing();
         }
 
-        public static IDictionary<DataColumn, TypeInfo> CreateMapOfTypeInfo(DataTable dt)
+        public static IDictionary<DataColumn, TypeInfo> CreateMapOfTypeInfo(DataTable dt, bool allowDbNull)
         {
             Dictionary<DataColumn, TypeInfo> dict = new Dictionary<DataColumn, TypeInfo>();
 
             foreach (DataColumn column in dt.Columns)
             {
                 TypeInfo ty = new TypeInfo { Type = column.DataType };
-                if (column.AllowDBNull)
+
+                if (allowDbNull)
                 {
-                    ty.Nullable = true;
-                }
-                else
-                {
-                    foreach (DataRow row in dt.Rows)
+                    if (column.AllowDBNull)
                     {
-                        if (row[column] == DBNull.Value)
-                            ty.Nullable = true;
-                        break;
+                        ty.Nullable = true;
+                    }
+                    else
+                    {
+                        foreach (DataRow row in dt.Rows)
+                        {
+                            if (row[column] == DBNull.Value)
+                                ty.Nullable = true;
+                            break;
+                        }
                     }
                 }
 

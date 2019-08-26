@@ -493,13 +493,13 @@ namespace sqlcon
 
         private void ExportDataContractClass(string path, int version, DataTable dt, string ns, string className)
         {
-
+            bool allowDbNull = cmd.Has("NULL");
             string mtd = cmd.GetValue("method");
             string[] keys = cmd.Columns;
 
             if (version == 0)
             {
-                var builder = new DataContractClassBuilder(cmd, dt)
+                var builder = new DataContractClassBuilder(cmd, dt, allowDbNull)
                 {
                     ns = ns,
                     cname = className,
@@ -511,7 +511,7 @@ namespace sqlcon
             }
             else if (version == 1)
             {
-                var builder = new DataContract1ClassBuilder(cmd, dt)
+                var builder = new DataContract1ClassBuilder(cmd, dt, allowDbNull)
                 {
                     ns = ns,
                     cname = className,
@@ -524,7 +524,7 @@ namespace sqlcon
             }
             else
             {
-                var builder = new DataContract2ClassBuilder(cmd, dt)
+                var builder = new DataContract2ClassBuilder(cmd, dt, allowDbNull)
                 {
                     ns = ns,
                     cname = className,
@@ -808,10 +808,12 @@ namespace sqlcon
             cout.WriteLine("   /l2s     : generate C# Linq to SQL class");
             cout.WriteLine("   /dc      : generate C# data contract class");
             cout.WriteLine("   /dc1     : generate C# data contract class and extension class");
+            cout.WriteLine("   /dc2     : generate C# data contract class and extension class");
+            cout.WriteLine("      option of data contract /[dc|dc1|dc2] :");
             cout.WriteLine("      [/readonly]: contract class for reading only");
             cout.WriteLine("      [/last]: generate C# data contract from last result");
-            cout.WriteLine("   /dc2     : generate C# data contract class from last result");
             cout.WriteLine("      [/method:name] default convert method is defined on the .cfg");
+            cout.WriteLine("      [/NULL] allow column type be nullable");
             cout.WriteLine("      [/col:pk1,pk2] default primary key is the first column");
             cout.WriteLine("   /entity  : generate C# method copy/compare/clone for Entity framework");
             cout.WriteLine("      [/base:type] define base class or interface, use ~ to represent generic class itself, delimited by ;");
