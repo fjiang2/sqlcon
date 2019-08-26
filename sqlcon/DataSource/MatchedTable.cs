@@ -53,7 +53,7 @@ namespace sqlcon
             if (IncludedTables == null || IncludedTables.Length == 0)
                 return true;
 
-            return IncludedTables.IsMatch(tableName.ShortName);
+            return IncludedTables.IsMatch(tableName.Path);
         }
 
         private bool Excludes(TableName tableName)
@@ -61,13 +61,12 @@ namespace sqlcon
             if (ExcludedTables == null || ExcludedTables.Length == 0)
                 return false;
 
-            return ExcludedTables.IsMatch(tableName.ShortName);
+            return ExcludedTables.IsMatch(tableName.Path);
         }
 
         public static TableName[] Search(string pattern, TableName[] tableNames)
         {
-            var result = tableNames.Where(tname => pattern.IsMatch(tname.Path)).ToArray();
-            return result;
+            return tableNames.Where(tname => pattern.IsMatch(tname.Path)).ToArray();
         }
 
     }

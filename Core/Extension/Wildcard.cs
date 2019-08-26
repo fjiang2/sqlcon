@@ -9,27 +9,21 @@ namespace Sys
 {
     public static class Wildcard
     {
-        public static IEnumerable<TSource> IsMatch<TSource>(this IEnumerable<TSource> source, IEnumerable<string> patterns, Func<TSource, string> keySelector)
+        public static IEnumerable<TSource> IsMatch<TSource>(this IEnumerable<TSource> source, Func<TSource, string> keySelector, IEnumerable<string> patterns)
         {
             return source.Where(x => IsMatch(patterns, keySelector(x)));
         }
 
+        public static IEnumerable<TSource> IsMatch<TSource>(this IEnumerable<TSource> source, Func<TSource, string> keySelector, string pattern)
+        {
+            return source.Where(x => pattern.IsMatch(keySelector(x)));
+        }
 
         public static bool IsMatch(this IEnumerable<string> patterns, string text)
         {
-            bool matched;
             foreach (var pattern in patterns)
             {
-                if (pattern.IndexOf('?') == -1 && pattern.IndexOf('*') == -1)
-                {
-                    matched = pattern.ToUpper().Equals(text.ToUpper());
-                }
-                else
-                {
-                    matched = IsMatch(pattern, text);
-                }
-
-                if (matched)
+                if (IsMatch(pattern, text))
                     return true;
             }
 
@@ -38,8 +32,15 @@ namespace Sys
 
         public static bool IsMatch(this string pattern, string text)
         {
-            Regex regex = pattern.WildcardRegex();
-            return regex.IsMatch(text);
+            if (pattern.IndexOf('?') == -1 && pattern.IndexOf('*') == -1)
+            {
+                return pattern.ToUpper().Equals(text.ToUpper());
+            }
+            else
+            {
+                Regex regex = pattern.WildcardRegex();
+                return regex.IsMatch(text);
+            }
         }
 
         public static Regex WildcardRegex(this string pattern)
