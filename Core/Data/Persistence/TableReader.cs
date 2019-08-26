@@ -105,8 +105,11 @@ namespace Sys.Data
                         _column.AutoIncrement = column.IsIdentity;
 
                         //because string supports Unicode
-                        if (column.CType == CType.NVarChar || column.CType == CType.NText || column.CType == CType.NChar) 
-                            _column.MaxLength = column.Length / 2;
+                        if (column.CType == CType.NVarChar || column.CType == CType.NText || column.CType == CType.NChar)
+                        {
+                            if (column.Length > 0)
+                                _column.MaxLength = column.Length / 2;
+                        }
                     }
                 }
 
