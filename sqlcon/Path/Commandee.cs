@@ -53,6 +53,33 @@ namespace sqlcon
             return true;
         }
 
+        private static bool IsReadonly(TableName tname)
+        {
+            bool ro = tname.DatabaseName.ServerName.Provider.IsReadOnly;
+            if (ro)
+                cout.WriteLine("it is read-only table");
+
+            return ro;
+        }
+
+        private static bool IsReadonly(DatabaseName dname)
+        {
+            bool ro = dname.ServerName.Provider.IsReadOnly;
+            if (ro)
+                cout.WriteLine("it is read-only database");
+
+            return ro;
+        }
+
+        private static bool IsReadonly(ServerName sname)
+        {
+            bool ro = sname.Provider.IsReadOnly;
+            if (ro)
+                cout.WriteLine("it is read-only database server");
+
+            return ro;
+        }
+
         public void chdir(ServerName serverName, DatabaseName databaseName)
         {
             string path = string.Format("\\{0}\\{1}\\", serverName.Path, databaseName.Path);
@@ -948,9 +975,11 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             if (!Navigate(cmd.Path1))
                 return;
 
-
             if (pt.Item is TableName tname)
             {
+                if (IsReadonly(tname))
+                    return;
+
                 var dup = new DuplicatedTable(tname, cmd.Columns);
                 if (cmd.Has("d"))
                 {
@@ -971,6 +1000,10 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             if (pt.Item is DatabaseName dname)
             {
+                if (IsReadonly(dname))
+                    return;
+
+
                 var m = new MatchedDatabase(dname, cmd);
                 var T = m.MatchedTableNames;
 
