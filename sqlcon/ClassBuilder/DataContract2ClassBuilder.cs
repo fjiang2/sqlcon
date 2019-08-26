@@ -16,26 +16,13 @@ namespace sqlcon
         private DataTable dt;
 
         public string mtd { get; set; }
-
+        private IDictionary<DataColumn, TypeInfo> dict { get; }
 
         public DataContract2ClassBuilder(ApplicationCommand cmd, DataTable dt)
             : base(cmd)
         {
             this.dt = dt;
-
-            foreach (DataColumn column in dt.Columns)
-            {
-                TypeInfo ty = new TypeInfo { Type = column.DataType };
-                foreach (DataRow row in dt.Rows)
-                {
-                    if (row[column] == DBNull.Value)
-                        ty.Nullable = true;
-                    break;
-                }
-
-                dict.Add(column, ty);
-            }
-
+            this.dict = CreateMapOfTypeInfo(dt);
 
             builder.AddUsing("System");
             builder.AddUsing("System.Collections.Generic");
@@ -46,7 +33,33 @@ namespace sqlcon
             AddOptionalUsing();
         }
 
-        private Dictionary<DataColumn, TypeInfo> dict = new Dictionary<DataColumn, TypeInfo>();
+        public static IDictionary<DataColumn, TypeInfo> CreateMapOfTypeInfo(DataTable dt)
+        {
+            Dictionary<DataColumn, TypeInfo> dict = new Dictionary<DataColumn, TypeInfo>();
+
+            foreach (DataColumn column in dt.Columns)
+            {
+                TypeInfo ty = new TypeInfo { Type = column.DataType };
+                if (column.AllowDBNull)
+                {
+                    ty.Nullable = true;
+                }
+                else
+                {
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        if (row[column] == DBNull.Value)
+                            ty.Nullable = true;
+                        break;
+                    }
+                }
+
+                dict.Add(column, ty);
+            }
+
+            return dict;
+        }
+
 
         protected override void CreateClass()
         {

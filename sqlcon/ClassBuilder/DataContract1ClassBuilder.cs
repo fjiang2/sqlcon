@@ -20,6 +20,7 @@ namespace sqlcon
 
         private const string _ToDataTable = "ToDataTable";
         private bool isReadOnly = false;
+        private IDictionary<DataColumn, TypeInfo> dict { get; }
 
         public DataContract1ClassBuilder(ApplicationCommand cmd, DataTable dt)
             : base(cmd)
@@ -28,18 +29,7 @@ namespace sqlcon
             if (cmd.Has("readonly"))
                 isReadOnly = true;
 
-            foreach (DataColumn column in dt.Columns)
-            {
-                TypeInfo ty = new TypeInfo { Type = column.DataType };
-                foreach (DataRow row in dt.Rows)
-                {
-                    if (row[column] == DBNull.Value)
-                        ty.Nullable = true;
-                    break;
-                }
-
-                dict.Add(column, ty);
-            }
+            this.dict = DataContract2ClassBuilder.CreateMapOfTypeInfo(dt);
 
 
             builder.AddUsing("System");
@@ -49,8 +39,6 @@ namespace sqlcon
             AddOptionalUsing();
 
         }
-
-        private Dictionary<DataColumn, TypeInfo> dict = new Dictionary<DataColumn, TypeInfo>();
 
 
         protected override void CreateClass()

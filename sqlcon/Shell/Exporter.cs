@@ -91,6 +91,15 @@ namespace sqlcon
             dt.TableName = tname.Name;
             var schema = new TableSchema(tname);
             dt.PrimaryKeys(schema.PrimaryKeys.Keys);
+            foreach (IColumn column in schema.Columns)
+            {
+                dt.Columns[column.ColumnName].AllowDBNull = column.Nullable;
+            }
+
+            if (dt.Rows.Count > 0)
+                dt.Rows[0].Delete();
+            dt.AcceptChanges();
+
             return dt;
         }
 
