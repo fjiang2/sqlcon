@@ -5,30 +5,30 @@ using Sys.Data;
 
 namespace sqlcon
 {
-    class MatchedDataPath<TPath> where TPath : IDataPath
+    class MatchedTable
     {
-        private TPath[] paths { get; }
+        private TableName[] tnames { get; }
 
         public string Pattern { get; set; }
         public string[] Includes { get; set; } = new string[] { };
         public string[] Excludes { get; set; } = new string[] { };
 
-        public MatchedDataPath(TPath[] paths)
+        public MatchedTable(TableName[] tnames)
         {
-            this.paths = paths;
+            this.tnames = tnames;
         }
 
-        public MatchedDataPath(TPath[] paths, ApplicationCommand cmd)
+        public MatchedTable(TableName[] tnames, ApplicationCommand cmd)
         {
-            this.paths = paths;
+            this.tnames = tnames;
             this.Pattern = cmd.wildcard;
             this.Includes = cmd.Includes;
             this.Excludes = cmd.Excludes;
         }
 
-        public TPath[] Results()
+        public TableName[] Results()
         {
-            var names = this.paths
+            var names = this.tnames
                 .Where(name => Include(name) && !Exclude(name))
                 .ToArray();
 
@@ -40,33 +40,33 @@ namespace sqlcon
             return names;
         }
 
-        public bool Contains(TPath path)
+        public bool Contains(TableName tname)
         {
-            if (!Include(path) && !Exclude(path))
+            if (!Include(tname) && !Exclude(tname))
                 return false;
 
-            return Pattern.IsMatch(path.Path);
+            return Pattern.IsMatch(tname.ShortName);
         }
 
-        private bool Include(TPath path)
+        private bool Include(TableName tname)
         {
             if (Includes == null || Includes.Length == 0)
                 return true;
 
-            return Includes.IsMatch(path.Path);
+            return Includes.IsMatch(tname.ShortName);
         }
 
-        private bool Exclude(TPath path)
+        private bool Exclude(TableName tname)
         {
             if (Excludes == null || Excludes.Length == 0)
                 return false;
 
-            return Excludes.IsMatch(path.Path);
+            return Excludes.IsMatch(tname.ShortName);
         }
 
-        private TPath[] Search(string pattern, TPath[] paths)
+        private static TableName[] Search(string pattern, TableName[] tnames)
         {
-            return paths.Where(x => pattern.IsMatch(x.Path)).ToArray();
+            return tnames.Where(x => pattern.IsMatch(x.ShortName)).ToArray();
         }
 
     }

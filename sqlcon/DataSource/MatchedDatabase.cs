@@ -36,7 +36,7 @@ namespace sqlcon
             get
             {
                 TableName[] names = this.DatabaseName.GetDependencyTableNames();
-                MatchedDataPath<TableName> match = new MatchedDataPath<TableName>(names)
+                MatchedTable match = new MatchedTable(names)
                 {
                     Pattern = namePattern,
                     Includes = Includedtables,
@@ -52,7 +52,7 @@ namespace sqlcon
             get
             {
                 TableName[] names = this.DatabaseName.GetViewNames();
-                MatchedDataPath<TableName> match = new MatchedDataPath<TableName>(names)
+                MatchedTable match = new MatchedTable(names)
                 {
                     Pattern = namePattern,
                     Includes = Includedtables,
