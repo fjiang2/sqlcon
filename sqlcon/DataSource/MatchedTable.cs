@@ -45,6 +45,9 @@ namespace sqlcon
             if (!Include(tname) && !Exclude(tname))
                 return false;
 
+            if (Pattern == null)
+                return true;
+
             return Pattern.IsMatch(tname.ShortName);
         }
 
