@@ -36,14 +36,14 @@ namespace sqlcon
             get
             {
                 TableName[] names = this.DatabaseName.GetDependencyTableNames();
-                MatchedTable match = new MatchedTable(names)
+                MatchedDataPath match = new MatchedDataPath(names)
                 {
                     Pattern = namePattern,
-                    IncludedTables = Includedtables,
-                    ExcludedTables = Excludedtables,
+                    Includes = Includedtables,
+                    Excludes = Excludedtables,
                 };
 
-                return match.MatchedTables();
+                return (TableName[])match.Results();
             }
         }
 
@@ -52,14 +52,14 @@ namespace sqlcon
             get
             {
                 TableName[] names = this.DatabaseName.GetViewNames();
-                MatchedTable match = new MatchedTable(names)
+                MatchedDataPath match = new MatchedDataPath(names)
                 {
                     Pattern = namePattern,
-                    IncludedTables = Includedtables,
-                    ExcludedTables = Excludedtables,
+                    Includes = Includedtables,
+                    Excludes = Excludedtables,
                 };
 
-                return match.MatchedTables();
+                return (TableName[])match.Results();
             }
         }
 
