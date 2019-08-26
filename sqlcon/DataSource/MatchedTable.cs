@@ -42,7 +42,7 @@ namespace sqlcon
 
         public bool Contains(TableName tname)
         {
-            if (!Include(tname) && !Exclude(tname))
+            if (!Include(tname) || Exclude(tname))
                 return false;
 
             if (Pattern == null)
