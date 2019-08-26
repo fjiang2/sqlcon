@@ -19,6 +19,11 @@ namespace Sys
             return source.Where(x => pattern.IsMatch(keySelector(x)));
         }
 
+        public static bool IsMatch<TSource>(this TSource source, IEnumerable<string> patterns, Func<TSource, string> keySelector)
+        {
+            return IsMatch(patterns, keySelector(source));
+        }
+
         public static bool IsMatch(this IEnumerable<string> patterns, string text)
         {
             foreach (var pattern in patterns)

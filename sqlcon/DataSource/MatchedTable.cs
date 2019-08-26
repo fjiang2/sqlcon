@@ -26,6 +26,14 @@ namespace sqlcon
             this.Excludes = cmd.Excludes;
         }
 
+        private string Compare(TableName tname)
+        {
+            if (Pattern.StartsWith("dbo."))
+                return tname.Path;
+            else
+                return tname.ShortName;
+        }
+
         public TableName[] Results()
         {
             var names = this.tnames
