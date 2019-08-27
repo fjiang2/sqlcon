@@ -100,11 +100,11 @@ namespace sqlcon
                 cout.WriteLine("Change current database directory");
                 cout.WriteLine("command cd or chdir");
                 cout.WriteLine("cd [path]              : change database directory");
-                cout.WriteLine("cd \\                  : change to root directory");
+                cout.WriteLine("cd \\                   : change to root directory");
                 cout.WriteLine("cd ..                  : change to the parent directory");
                 cout.WriteLine("cd ...                 : change to the grand parent directory");
-                cout.WriteLine("cd ~~                  : change to default database defined on the connection string, or change to default server");
                 cout.WriteLine("cd ~                   : change to home directory");
+                cout.WriteLine("cd ~~                  : change to default database (initial-catalog)");
                 return true;
             }
 
