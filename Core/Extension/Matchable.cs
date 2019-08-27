@@ -9,7 +9,7 @@ namespace Sys
 {
     public static class Matchable
     {
-        public static IEnumerable<TSource> IsMatch<TSource>(this IEnumerable<TSource> source, Func<TSource, string> keySelector, Wildcard wildcard)
+        public static IEnumerable<TSource> IsMatch<TSource>(this IEnumerable<TSource> source, Func<TSource, string> keySelector, IWildcard wildcard)
         {
             Wildcard<TSource> x = new Wildcard<TSource>(keySelector)
             {

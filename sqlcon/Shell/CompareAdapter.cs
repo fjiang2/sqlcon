@@ -70,12 +70,7 @@ namespace sqlcon
             builder.AppendFormat("-- compare server={0} db={1}", Side1.Provider.DataSource, dname1.Name).AppendLine();
             builder.AppendFormat("--         server={0} db={1} @ {2}", Side2.Provider.DataSource, dname2.Name, DateTime.Now).AppendLine();
 
-            Wildcard<TableName> match = new Wildcard<TableName>(x => x.Path)
-            {
-                Pattern = cmd.wildcard,
-                Includes = cmd.Includes,
-                Excludes = cmd.Excludes,
-            };
+            Wildcard<TableName> match = MatchedDatabase.CreateWildcard(cmd);
 
             CancelableWork.CanCancel(cts =>
             {

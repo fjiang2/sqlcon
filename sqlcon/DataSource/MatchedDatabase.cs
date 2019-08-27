@@ -12,8 +12,8 @@ namespace sqlcon
     class MatchedDatabase
     {
         private string Pattern;
+        private DatabaseName DatabaseName;
 
-        public readonly DatabaseName DatabaseName;
         public string[] Includedtables { get; set; }
         public string[] Excludedtables { get; set; }
 
@@ -24,42 +24,27 @@ namespace sqlcon
             this.Excludedtables = cmd.Excludes;
         }
 
-        public MatchedDatabase(DatabaseName databaseName, string namePattern)
+        public MatchedDatabase(DatabaseName databaseName, string pattern)
         {
-            this.Pattern = namePattern;
+            this.Pattern = pattern;
             this.DatabaseName = databaseName;
         }
 
         public TableName[] TableNames()
         {
-            if (Pattern != null && Pattern.IndexOf(".") > 0)
-                return TableNames(x => x.Path);
-            else
-                return TableNames(x => x.ShortName);
-        }
-
-        public TableName[] TableNames(Func<TableName, string> selector)
-        {
             TableName[] names = this.DatabaseName.GetDependencyTableNames();
-            return TableName(names, selector);
+            return Search(names);
         }
 
         public TableName[] ViewNames()
         {
-            if (Pattern != null && Pattern.IndexOf(".") > 0)
-                return ViewNames(x => x.Path);
-            else
-                return ViewNames(x => x.ShortName);
-        }
-
-        public TableName[] ViewNames(Func<TableName, string> selector)
-        {
             TableName[] names = this.DatabaseName.GetViewNames();
-            return TableName(names, selector);
+            return Search(names);
         }
 
-        public TableName[] TableName(TableName[] names, Func<TableName, string> selector)
+        private TableName[] Search(TableName[] names)
         {
+            var selector = KeySelector(Pattern);
             Wildcard<TableName> match = new Wildcard<TableName>(selector)
             {
                 Pattern = Pattern,
@@ -69,5 +54,27 @@ namespace sqlcon
 
             return match.Results(names);
         }
+
+        public static Wildcard<TableName> CreateWildcard(ApplicationCommand cmd)
+        {
+            var selector = KeySelector(cmd.wildcard);
+            Wildcard<TableName> match = new Wildcard<TableName>(selector)
+            {
+                Pattern = cmd.wildcard,
+                Includes = cmd.Includes,
+                Excludes = cmd.Excludes,
+            };
+
+            return match;
+        }
+
+        private static Func<TableName, string> KeySelector(string pattern)
+        {
+            if (pattern != null && pattern.IndexOf(".") > 0)
+                return x => x.Path;
+            else
+                return x => x.ShortName;
+        }
+
     }
 }
