@@ -128,9 +128,19 @@ namespace sqlcon
             }
             else if (segment == "~")
             {
+                return Navigate(new PathName(cfg.DefaultServerPath));
+            }
+            else if (segment == "~~")
+            {
                 if (node == RootNode)
                 {
                     return Navigate(new PathName(cfg.DefaultServerPath));
+                }
+                else if (node.Item is DatabaseName)
+                {
+                    var dname = node.Item as DatabaseName;
+                    if (dname != null)
+                        segment = dname.Provider.DefaultDatabaseName.Name;
                 }
                 else if (node.Item is ServerName)
                 {
@@ -182,7 +192,7 @@ namespace sqlcon
             var locator = new Locator(cmd.arg1) { Name = cmd.GetValue("name") };
             if (locator.Name == null)
             {
-                locator.Name = $"filter{pt.Nodes.Count+1}";
+                locator.Name = $"filter{pt.Nodes.Count + 1}";
             }
 
             var builder = new SqlBuilder().SELECT.TOP(1).COLUMNS().FROM(tname).WHERE(locator);
