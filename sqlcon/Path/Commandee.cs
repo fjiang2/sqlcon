@@ -291,7 +291,7 @@ namespace sqlcon
                             if (cmd.wildcard != null)
                             {
                                 var m = new MatchedDatabase(dname, cmd);
-                                T = m.Results();
+                                T = m.TableNames();
                             }
                             else
                             {
@@ -1005,7 +1005,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
 
                 var m = new MatchedDatabase(dname, cmd);
-                var T = m.Results();
+                var T = m.TableNames();
 
                 CancelableWork.CanCancel(cts =>
                 {

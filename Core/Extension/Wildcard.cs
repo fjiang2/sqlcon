@@ -1,62 +1,73 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using Sys;
+using Sys.Data;
 
 namespace Sys
 {
-    public static class Wildcard
+    public class Wildcard
     {
-        public static IEnumerable<TSource> IsMatch<TSource>(this IEnumerable<TSource> source, Func<TSource, string> keySelector, IEnumerable<string> patterns)
+        public string Pattern { get; set; }
+        public string[] Includes { get; set; } = new string[] { };
+        public string[] Excludes { get; set; } = new string[] { };
+
+    }
+
+    public class Wildcard<T> : Wildcard
+    {
+        private Func<T, string> selector;
+
+        public Wildcard(Func<T, string> selector)
         {
-            return source.Where(x => IsMatch(patterns, keySelector(x)));
+            this.selector = selector;
         }
 
-        public static IEnumerable<TSource> IsMatch<TSource>(this IEnumerable<TSource> source, Func<TSource, string> keySelector, string pattern)
+        public T[] Results(IEnumerable<T> tnames)
         {
-            return source.Where(x => pattern.IsMatch(keySelector(x)));
+            var names = tnames
+                .Where(name => Include(name) && !Exclude(name))
+                .ToArray();
+
+            if (Pattern == null)
+                return names;
+
+            names = Search(Pattern, names);
+
+            return names;
         }
 
-        public static bool IsMatch<TSource>(this TSource source, IEnumerable<string> patterns, Func<TSource, string> keySelector)
+        public bool Contains(T tname)
         {
-            return IsMatch(patterns, keySelector(source));
+            if (!Include(tname) || Exclude(tname))
+                return false;
+
+            if (Pattern == null)
+                return true;
+
+            return Pattern.IsMatch(selector(tname));
         }
 
-        public static bool IsMatch(this IEnumerable<string> patterns, string text)
+        private bool Include(T tname)
         {
-            foreach (var pattern in patterns)
-            {
-                if (IsMatch(pattern, text))
-                    return true;
-            }
+            if (Includes == null || Includes.Length == 0)
+                return true;
 
-            return false;
+            return Includes.IsMatch(selector(tname));
         }
 
-        public static bool IsMatch(this string pattern, string text)
+        private bool Exclude(T tname)
         {
-            if (pattern.IndexOf('?') == -1 && pattern.IndexOf('*') == -1)
-            {
-                return pattern.ToUpper().Equals(text.ToUpper());
-            }
-            else
-            {
-                Regex regex = pattern.WildcardRegex();
-                return regex.IsMatch(text);
-            }
+            if (Excludes == null || Excludes.Length == 0)
+                return false;
+
+            return Excludes.IsMatch(selector(tname));
         }
 
-        public static Regex WildcardRegex(this string pattern)
+        private T[] Search(string pattern, T[] tnames)
         {
-            string x = "^" + Regex.Escape(pattern)
-                                  .Replace(@"\*", ".*")
-                                  .Replace(@"\?", ".")
-                           + "$";
-
-            Regex regex = new Regex(x, RegexOptions.IgnoreCase);
-            return regex;
+            return tnames.Where(x => pattern.IsMatch(selector(x))).ToArray();
         }
 
     }

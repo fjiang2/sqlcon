@@ -30,11 +30,15 @@ namespace sqlcon
             this.DatabaseName = databaseName;
         }
 
+        public TableName[] TableNames()
+        {
+            return TableNames(x => x.Path);
+        }
 
-        public TableName[] Results()
+        public TableName[] TableNames(Func<TableName, string> selector)
         {
             TableName[] names = this.DatabaseName.GetDependencyTableNames();
-            MatchedTable match = new MatchedTable()
+            Wildcard<TableName> match = new Wildcard<TableName>(selector)
             {
                 Pattern = namePattern,
                 Includes = Includedtables,
@@ -44,20 +48,22 @@ namespace sqlcon
             return match.Results(names);
         }
 
-        public TableName[] DefaultViewNames
+        public TableName[] ViewNames()
         {
-            get
-            {
-                TableName[] names = this.DatabaseName.GetViewNames();
-                MatchedTable match = new MatchedTable()
-                {
-                    Pattern = namePattern,
-                    Includes = Includedtables,
-                    Excludes = Excludedtables,
-                };
+            return ViewNames(x => x.Path);
+        }
 
-                return match.Results(names);
-            }
+        public TableName[] ViewNames(Func<TableName, string> selector)
+        {
+            TableName[] names = this.DatabaseName.GetViewNames();
+            Wildcard<TableName> match = new Wildcard<TableName>(selector)
+            {
+                Pattern = namePattern,
+                Includes = Includedtables,
+                Excludes = Excludedtables,
+            };
+
+            return match.Results(names);
         }
 
     }

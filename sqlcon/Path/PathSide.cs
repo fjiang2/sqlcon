@@ -81,7 +81,7 @@ namespace sqlcon
                     Excludedtables = cmd.Excludes
                 };
 
-                T = m1.Results();
+                T = m1.TableNames();
             }
             else
             {
