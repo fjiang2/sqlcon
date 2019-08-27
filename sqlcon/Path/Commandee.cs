@@ -1570,8 +1570,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         {
             if (cmd.HasHelp)
             {
-                cout.WriteLine("open files in the editor");
-                cout.WriteLine("open files");
+                cout.WriteLine("open file in the editor or open directory in the Explorer");
+                cout.WriteLine("open file or directory ");
                 cout.WriteLine("options:");
                 cout.WriteLine("   log              : open log file");
                 cout.WriteLine("   working          : open working directory");
@@ -1579,11 +1579,12 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("   output           : open output file");
                 cout.WriteLine("   config [/s]      : open user configure file, /s open system configurate");
                 cout.WriteLine("   dpo              : open table class output directory");
-                cout.WriteLine("   dc               : open data contract class output directory");
+                cout.WriteLine("   dc|dc1|dc2       : open data contract class output directory");
                 cout.WriteLine("   l2s              : open Linq to SQL class output directory");
                 cout.WriteLine("   release          : open release notes");
-                cout.WriteLine("   file-name.sqc    : open batch files");
-                cout.WriteLine("   file-name.sqt    : open tie files");
+                cout.WriteLine("   file-name.sqc    : open batch file");
+                cout.WriteLine("   file-name.sql    : open SQL script file");
+                cout.WriteLine("   file-name.sqt    : open Tie file");
 
                 return;
             }
