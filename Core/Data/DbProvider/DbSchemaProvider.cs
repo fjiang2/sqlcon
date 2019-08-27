@@ -8,6 +8,8 @@ namespace Sys.Data
 {
     public abstract class DbSchemaProvider
     {
+        protected static string[] __sys_tables = { "master", "model", "msdb", "tempdb" };
+
         protected ConnectionProvider provider;
 
         protected DbSchemaProvider(ConnectionProvider provider)
@@ -45,5 +47,10 @@ namespace Sys.Data
         public abstract DataTable GetDatabaseSchema(DatabaseName dname);
         public abstract DataTable GetTableSchema(TableName tname);
         public abstract DependencyInfo[] GetDependencySchema(DatabaseName dname);
+
+        public static bool IsSystemDatabase(string name)
+        {
+            return __sys_tables.Contains(name);
+        }
     }
 }

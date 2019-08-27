@@ -141,8 +141,7 @@ namespace sqlcon
                     var dname = node.Item as DatabaseName;
                     if (dname != null)
                     {
-                        DatabaseName d = dname.Provider.DefaultDatabaseName;
-                        return Navigate(new PathName(d.FullPath));
+                        return NavigateToDefaultDatabase(dname.Provider) ?? node;
                     }
                 }
                 else if (node.Item is ServerName)
@@ -150,8 +149,7 @@ namespace sqlcon
                     var sname = node.Item as ServerName;
                     if (sname != null)
                     {
-                        DatabaseName d = sname.Provider.DefaultDatabaseName;
-                        return Navigate(new PathName(d.FullPath));
+                        return NavigateToDefaultDatabase(sname.Provider) ?? node;
                     }
                 }
             }
@@ -180,6 +178,17 @@ namespace sqlcon
             }
         }
 
+        private TreeNode<IDataPath> NavigateToDefaultDatabase(ConnectionProvider provider)
+        {
+            DatabaseName d = provider.DefaultDatabaseName;
+            if (DbSchemaProvider.IsSystemDatabase(d.Name))
+            {
+                cerr.WriteLine($"cannot navigate to system database: \"{d.Name}\"");
+                return null;
+            }
+
+            return Navigate(new PathName(d.FullPath));
+        }
 
         public TreeNode<IDataPath> TryAddWhereOrColumns(TreeNode<IDataPath> pt, ApplicationCommand cmd)
         {
