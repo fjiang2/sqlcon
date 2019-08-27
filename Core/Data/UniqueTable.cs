@@ -10,7 +10,7 @@ namespace Sys.Data
     public class UniqueTable
     {
         public readonly TableName TableName;
-        public static string ROWID = "RowId";
+        public static string ROWID = "$RowId";
 
         private DataTable table;
         private List<byte[]> LOC = new List<byte[]>();
