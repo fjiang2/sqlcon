@@ -42,7 +42,9 @@ namespace Sys.Data
         {
             get { return this.name; }
         }
-        
+
+        public string FullPath => $"{ServerName.FullPath}\\{Path}";
+
         public ServerName ServerName
         {
             get { return Provider.ServerName; }

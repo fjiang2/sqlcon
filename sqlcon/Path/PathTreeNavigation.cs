@@ -140,13 +140,19 @@ namespace sqlcon
                 {
                     var dname = node.Item as DatabaseName;
                     if (dname != null)
-                        segment = dname.Provider.DefaultDatabaseName.Name;
+                    {
+                        DatabaseName d = dname.Provider.DefaultDatabaseName;
+                        return Navigate(new PathName(d.FullPath));
+                    }
                 }
                 else if (node.Item is ServerName)
                 {
                     var sname = node.Item as ServerName;
                     if (sname != null)
-                        segment = sname.Provider.DefaultDatabaseName.Name;
+                    {
+                        DatabaseName d = sname.Provider.DefaultDatabaseName;
+                        return Navigate(new PathName(d.FullPath));
+                    }
                 }
             }
 

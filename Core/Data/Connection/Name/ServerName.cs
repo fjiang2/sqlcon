@@ -49,6 +49,7 @@ namespace Sys.Data
             get { return this.name; }
         }
 
+        public string FullPath => $"\\{Path}";
 
         public ConnectionProvider Provider
         {

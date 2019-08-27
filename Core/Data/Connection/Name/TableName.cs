@@ -101,11 +101,10 @@ namespace Sys.Data
 
         public string Path
         {
-            get
-            {
-                return string.Format("{0}.{1}", this.schema, this.tableName);
-            }
+            get => $"{this.schema}.{this.tableName}";
         }
+
+        public string FullPath => $"{DatabaseName.FullPath}\\{Path}";
 
         public string SchemaName
         {
