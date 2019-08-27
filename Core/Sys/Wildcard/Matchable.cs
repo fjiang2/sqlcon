@@ -9,9 +9,9 @@ namespace Sys
 {
     public static class Matchable
     {
-        public static IEnumerable<TSource> IsMatch<TSource>(this IEnumerable<TSource> source, Func<TSource, string> keySelector, IWildcard wildcard)
+        public static IEnumerable<TSource> Matches<TSource>(this IEnumerable<TSource> source, Func<TSource, string> selector, IWildcard wildcard)
         {
-            Wildcard<TSource> x = new Wildcard<TSource>(keySelector)
+            Wildcard<TSource> x = new Wildcard<TSource>(selector)
             {
                 Pattern = wildcard.Pattern,
                 Includes = wildcard.Includes,
@@ -21,9 +21,9 @@ namespace Sys
             return x.Results(source);
         }
 
-        public static IEnumerable<TSource> IsMatch<TSource>(this IEnumerable<TSource> source, Func<TSource, string> keySelector, string pattern)
+        public static IEnumerable<TSource> Matches<TSource>(this IEnumerable<TSource> source, Func<TSource, string> selector, string wildcard)
         {
-            return source.Where(x => keySelector(x).IsMatch(pattern));
+            return source.Where(x => selector(x).IsMatch(wildcard));
         }
 
 
