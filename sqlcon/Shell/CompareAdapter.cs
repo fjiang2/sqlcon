@@ -97,7 +97,16 @@ namespace sqlcon
                     }
 
                     if (tname2.Exists())
-                        builder.Append(CompareTable(compareType, CompareSideType.compare, tname1, tname2, cmd.PK, exceptColumns));
+                    {
+                        try
+                        {
+                            builder.Append(CompareTable(compareType, CompareSideType.compare, tname1, tname2, cmd.PK, exceptColumns));
+                        }
+                        catch(Exception ex)
+                        {
+                            cerr.WriteLine(ex.Message);
+                        }
+                    }
                     else
                     {
                         if (compareType == ActionType.CompareSchema)
