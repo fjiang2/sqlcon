@@ -32,7 +32,7 @@ namespace Sys.Data
         internal const int USER_HANDLE_BASE = DEFAULT_HANDLE + 1000;
 
         private DbConnectionStringBuilder ConnectionBuilder;
-
+        private DatabaseName _defaultDatabaseName = null;
 
         protected ConnectionProvider(string name, ConnectionProviderType type, string connectionString)
         {
@@ -40,6 +40,7 @@ namespace Sys.Data
             this.Type = type;
 
             SetDbConnectionString(connectionString);
+            _defaultDatabaseName = new DatabaseName(this, InitialCatalog);
         }
 
 
@@ -190,16 +191,9 @@ namespace Sys.Data
         }
 
 
-        private DatabaseName _defaultDatabaseName = null;
         public DatabaseName DefaultDatabaseName
         {
-            get
-            {
-                if (_defaultDatabaseName == null)
-                    _defaultDatabaseName = new DatabaseName(this, InitialCatalog);
-
-                return _defaultDatabaseName;
-            }
+            get => _defaultDatabaseName;
         }
 
 
