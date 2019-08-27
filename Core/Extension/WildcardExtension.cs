@@ -23,31 +23,31 @@ namespace Sys
 
         public static IEnumerable<TSource> IsMatch<TSource>(this IEnumerable<TSource> source, Func<TSource, string> keySelector, IEnumerable<string> patterns)
         {
-            return source.Where(x => IsMatch(patterns, keySelector(x)));
+            return source.Where(x => keySelector(x).IsMatch(patterns));
         }
 
         public static IEnumerable<TSource> IsMatch<TSource>(this IEnumerable<TSource> source, Func<TSource, string> keySelector, string pattern)
         {
-            return source.Where(x => pattern.IsMatch(keySelector(x)));
+            return source.Where(x => IsMatch(keySelector(x), pattern));
         }
 
         public static bool IsMatch<TSource>(this TSource source, IEnumerable<string> patterns, Func<TSource, string> keySelector)
         {
-            return IsMatch(patterns, keySelector(source));
+            return keySelector(source).IsMatch(patterns);
         }
 
-        public static bool IsMatch(this IEnumerable<string> patterns, string text)
+        public static bool IsMatch(this string text, IEnumerable<string> patterns)
         {
             foreach (var pattern in patterns)
             {
-                if (IsMatch(pattern, text))
+                if (IsMatch(text, pattern))
                     return true;
             }
 
             return false;
         }
 
-        public static bool IsMatch(this string pattern, string text)
+        public static bool IsMatch(this string text, string pattern)
         {
             if (pattern.IndexOf('?') == -1 && pattern.IndexOf('*') == -1)
             {

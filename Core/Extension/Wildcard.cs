@@ -46,7 +46,7 @@ namespace Sys
             if (Pattern == null)
                 return true;
 
-            return Pattern.IsMatch(selector(tname));
+            return selector(tname).IsMatch(Pattern);
         }
 
         private bool Include(T tname)
@@ -54,7 +54,7 @@ namespace Sys
             if (Includes == null || Includes.Length == 0)
                 return true;
 
-            return Includes.IsMatch(selector(tname));
+            return selector(tname).IsMatch(Includes);
         }
 
         private bool Exclude(T tname)
@@ -62,12 +62,12 @@ namespace Sys
             if (Excludes == null || Excludes.Length == 0)
                 return false;
 
-            return Excludes.IsMatch(selector(tname));
+            return selector(tname).IsMatch(Excludes);
         }
 
         private T[] Search(string pattern, T[] tnames)
         {
-            return tnames.Where(x => pattern.IsMatch(selector(x))).ToArray();
+            return tnames.Where(x => selector(x).IsMatch(pattern)).ToArray();
         }
 
     }
