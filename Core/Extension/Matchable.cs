@@ -7,45 +7,25 @@ using System.Text.RegularExpressions;
 
 namespace Sys
 {
-    public static class WildcardExtension
+    public static class Matchable
     {
         public static IEnumerable<TSource> IsMatch<TSource>(this IEnumerable<TSource> source, Func<TSource, string> keySelector, Wildcard wildcard)
         {
             Wildcard<TSource> x = new Wildcard<TSource>(keySelector)
             {
                 Pattern = wildcard.Pattern,
-                Excludes = wildcard.Excludes,
                 Includes = wildcard.Includes,
+                Excludes = wildcard.Excludes,
             };
 
             return x.Results(source);
         }
 
-        public static IEnumerable<TSource> IsMatch<TSource>(this IEnumerable<TSource> source, Func<TSource, string> keySelector, IEnumerable<string> patterns)
-        {
-            return source.Where(x => keySelector(x).IsMatch(patterns));
-        }
-
         public static IEnumerable<TSource> IsMatch<TSource>(this IEnumerable<TSource> source, Func<TSource, string> keySelector, string pattern)
         {
-            return source.Where(x => IsMatch(keySelector(x), pattern));
+            return source.Where(x => keySelector(x).IsMatch(pattern));
         }
 
-        public static bool IsMatch<TSource>(this TSource source, IEnumerable<string> patterns, Func<TSource, string> keySelector)
-        {
-            return keySelector(source).IsMatch(patterns);
-        }
-
-        public static bool IsMatch(this string text, IEnumerable<string> patterns)
-        {
-            foreach (var pattern in patterns)
-            {
-                if (IsMatch(text, pattern))
-                    return true;
-            }
-
-            return false;
-        }
 
         public static bool IsMatch(this string text, string pattern)
         {
