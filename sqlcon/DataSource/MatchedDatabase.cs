@@ -32,7 +32,7 @@ namespace sqlcon
 
         public TableName[] TableNames()
         {
-            if (Pattern.IndexOf(".") > 0)
+            if (Pattern != null && Pattern.IndexOf(".") > 0)
                 return TableNames(x => x.Path);
             else
                 return TableNames(x => x.ShortName);
@@ -46,7 +46,7 @@ namespace sqlcon
 
         public TableName[] ViewNames()
         {
-            if (Pattern.IndexOf(".") > 0)
+            if (Pattern != null && Pattern.IndexOf(".") > 0)
                 return ViewNames(x => x.Path);
             else
                 return ViewNames(x => x.ShortName);
