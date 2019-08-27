@@ -1582,6 +1582,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("   dc               : open data contract class output directory");
                 cout.WriteLine("   l2s              : open Linq to SQL class output directory");
                 cout.WriteLine("   release          : open release notes");
+                cout.WriteLine("   file-name.sqc    : open batch files");
+                cout.WriteLine("   file-name.sqt    : open tie files");
 
                 return;
             }
@@ -1620,6 +1622,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     break;
 
                 case "dc":
+                case "dc1":
+                case "dc2":
                     path = cfg.GetValue<string>(ConfigKey._GENERATOR_DC_PATH, $"{Configuration.MyDocuments}\\DataModel\\DataContracts");
                     OpenDirectory(path, "data contract class");
                     break;
@@ -1634,11 +1638,28 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     break;
 
                 default:
+                    if (open(cmd.arg1))
+                        return;
+
                     cerr.WriteLine("invalid arguments");
                     return;
             }
 
+            bool open(string filename)
+            {
+                string[] EXT = new string[] { ".sqc", ".sql", ".sqt" };
+                foreach (string ext in EXT)
+                {
+                    string _path = cfg.WorkingDirectory.GetFullPath(filename, ext);
+                    if (File.Exists(_path))
+                    {
+                        stdio.OpenEditor(_path);
+                        return true;
+                    }
+                }
 
+                return false;
+            }
         }
 
         public void save(ApplicationCommand cmd, Configuration cfg)
