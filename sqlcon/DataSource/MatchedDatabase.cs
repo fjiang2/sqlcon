@@ -11,7 +11,7 @@ namespace sqlcon
 {
     class MatchedDatabase
     {
-        private string namePattern;
+        private string Pattern;
 
         public readonly DatabaseName DatabaseName;
         public string[] Includedtables { get; set; }
@@ -26,45 +26,48 @@ namespace sqlcon
 
         public MatchedDatabase(DatabaseName databaseName, string namePattern)
         {
-            this.namePattern = namePattern;
+            this.Pattern = namePattern;
             this.DatabaseName = databaseName;
         }
 
         public TableName[] TableNames()
         {
-            return TableNames(x => x.Path);
+            if (Pattern.IndexOf(".") > 0)
+                return TableNames(x => x.Path);
+            else
+                return TableNames(x => x.ShortName);
         }
 
         public TableName[] TableNames(Func<TableName, string> selector)
         {
             TableName[] names = this.DatabaseName.GetDependencyTableNames();
-            Wildcard<TableName> match = new Wildcard<TableName>(selector)
-            {
-                Pattern = namePattern,
-                Includes = Includedtables,
-                Excludes = Excludedtables,
-            };
-
-            return match.Results(names);
+            return TableName(names, selector);
         }
 
         public TableName[] ViewNames()
         {
-            return ViewNames(x => x.Path);
+            if (Pattern.IndexOf(".") > 0)
+                return ViewNames(x => x.Path);
+            else
+                return ViewNames(x => x.ShortName);
         }
 
         public TableName[] ViewNames(Func<TableName, string> selector)
         {
             TableName[] names = this.DatabaseName.GetViewNames();
+            return TableName(names, selector);
+        }
+
+        public TableName[] TableName(TableName[] names, Func<TableName, string> selector)
+        {
             Wildcard<TableName> match = new Wildcard<TableName>(selector)
             {
-                Pattern = namePattern,
+                Pattern = Pattern,
                 Includes = Includedtables,
                 Excludes = Excludedtables,
             };
 
             return match.Results(names);
         }
-
     }
 }
