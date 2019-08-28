@@ -130,7 +130,7 @@ namespace sqlcon.Windows
             string path = combo.SelectedValue as string;
         }
 
-        private ScriptResultPane activePane => scriptTabControl.SelectedPane;
+        private IResultPane SelectedPane => scriptTabControl.SelectedPane;
 
         private void TreeView_PathChanged(object sender, EventArgs<TreeNode<IDataPath>> e)
         {

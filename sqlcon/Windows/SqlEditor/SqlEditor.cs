@@ -38,7 +38,7 @@ namespace sqlcon.Windows
 
         private void ScriptTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            FileLink link = activePane?.Link;
+            FileLink link = SelectedPane?.Link;
             if (link != null)
                 this.Title = $"{link} - sqlcon";
         }
@@ -50,14 +50,14 @@ namespace sqlcon.Windows
             if (name is DatabaseName)
                 provider = (name as DatabaseName).Provider;
 
-            activePane.Execute(provider);
+            (SelectedPane as ScriptResultPane)?.Execute(provider);
         }
 
         private void commandCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             if (e.Command == ExecuteCommand)
             {
-                e.CanExecute = activePane?.Text != string.Empty;
+                e.CanExecute = (SelectedPane as ScriptResultPane)?.Text != string.Empty;
             }
             else if (e.Command == ApplicationCommands.Save)
                 e.CanExecute = scriptTabControl.SelectedItem != null;
@@ -72,7 +72,7 @@ namespace sqlcon.Windows
             else if (e.Command == ApplicationCommands.New)
                 New();
             else if (e.Command == ApplicationCommands.Save)
-                activePane.Save();
+                SelectedPane.Save();
             else if (e.Command == ApplicationCommands.Open)
                 Open();
         }

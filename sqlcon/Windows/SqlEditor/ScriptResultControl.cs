@@ -102,13 +102,13 @@ namespace sqlcon.Windows
             return pane;
         }
 
-        public ScriptResultPane SelectedPane
+        public IResultPane SelectedPane
         {
             get
             {
                 var tab = SelectedTab();
-                if (tab != null && tab.Content is ScriptResultPane)
-                    return (ScriptResultPane)tab.Content;
+                if (tab != null)
+                    return (IResultPane)tab.Content;
 
                 return null;
             }
