@@ -24,17 +24,19 @@ namespace sqlcon.Windows
 {
     class SqlEditor : Window
     {
+        private ApplicationCommand cmd;
         private Configuration cfg;
         private FileLink link;
         private ConnectionProvider provider;
 
         private const string untitled = "untitled.sql";
-
-        public SqlEditor(Configuration cfg, ConnectionProvider provider, FileLink link)
+        public SqlEditor(ApplicationCommand cmd, ConnectionProvider provider, FileLink link)
         {
+            this.cmd = cmd;
+            this.cfg = cmd.Configuration;
+
             InitializeComponent(cfg);
 
-            this.cfg = cfg;
             this.provider = provider;
 
             textBox.Document.Blocks.Clear();
@@ -207,6 +209,16 @@ namespace sqlcon.Windows
         {
             TreeNode<IDataPath> node = e.Value;
             IDataPath name = node.Item;
+            if (name is TableName)
+            {
+                tabControl.Items.Clear();
+                var dt = new TableReader(name as TableName, cmd.Top).Table;
+                var tab = new TabItem { Header = name.Path, Content = DisplayTable(dt) };
+                tabControl.Items.Add(tab);
+                tab.Focus();
+                return;
+            }
+
             if (!(name is DatabaseName))
                 return;
 
@@ -268,17 +280,22 @@ namespace sqlcon.Windows
             if (text == string.Empty)
                 return;
 
-            tabControl.Items.Clear();
-
             IDataPath name = comboPath.SelectedValue as IDataPath;
             if (name is DatabaseName)
                 provider = (name as DatabaseName).Provider;
 
-            var cmd = new SqlCmd(provider, text);
-            if (text.IndexOf("select", StringComparison.CurrentCultureIgnoreCase) >= 0
-                && text.IndexOf("insert", StringComparison.CurrentCultureIgnoreCase) < 0
-                && text.IndexOf("update", StringComparison.CurrentCultureIgnoreCase) < 0
-                && text.IndexOf("delete", StringComparison.CurrentCultureIgnoreCase) < 0
+            Execute(provider, text);
+        }
+
+        private void Execute(ConnectionProvider provider, string sql)
+        {
+            tabControl.Items.Clear();
+
+            var cmd = new SqlCmd(provider, sql);
+            if (sql.IndexOf("select", StringComparison.CurrentCultureIgnoreCase) >= 0
+                && sql.IndexOf("insert", StringComparison.CurrentCultureIgnoreCase) < 0
+                && sql.IndexOf("update", StringComparison.CurrentCultureIgnoreCase) < 0
+                && sql.IndexOf("delete", StringComparison.CurrentCultureIgnoreCase) < 0
                 )
             {
                 try
