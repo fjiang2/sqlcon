@@ -27,15 +27,13 @@ namespace Sys.Data.IO
             get { return exists(); }
         }
 
-        public string Name => Path.GetFileNameWithoutExtension(FileName);
-        
-        public string FileName
+        public string Name
         {
             get
             {
                 Uri uri = new Uri(url);
                 string path = uri.LocalPath;
-                return Path.GetFileName(path);
+                return Path.GetFileNameWithoutExtension(path);
             }
         }
 

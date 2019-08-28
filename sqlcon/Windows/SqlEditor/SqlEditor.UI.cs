@@ -29,7 +29,7 @@ namespace sqlcon.Windows
 
         private ComboBox comboPath;
 
-        private ScriptResultControl tabControl;
+        private ScriptResultControl scriptTabControl;
 
         private static RoutedUICommand ExecuteCommand = new RoutedUICommand("Execute", "execute", typeof(SqlEditor), new InputGestureCollection { new KeyGesture(Key.F5, ModifierKeys.None, "F5") });
 
@@ -81,15 +81,15 @@ namespace sqlcon.Windows
 
             Grid grid1 = new Grid();
             GridSplitter vSplitter = new GridSplitter { Width = 5, VerticalAlignment = VerticalAlignment.Stretch };
-            tabControl = new ScriptResultControl(this);
+            scriptTabControl = new ScriptResultControl(this);
 
             grid1.SetValue(Grid.ColumnProperty, 0);
             vSplitter.SetValue(Grid.ColumnProperty, 1);
-            tabControl.SetValue(Grid.ColumnProperty, 2);
+            scriptTabControl.SetValue(Grid.ColumnProperty, 2);
 
             grid.Children.Add(grid1);
             grid.Children.Add(vSplitter);
-            grid.Children.Add(tabControl);
+            grid.Children.Add(scriptTabControl);
 
             //Database Tree
             DbTreeUI treeView = new DbTreeUI
@@ -129,9 +129,8 @@ namespace sqlcon.Windows
             ComboBox combo = (ComboBox)sender;
             string path = combo.SelectedValue as string;
         }
-        private ScriptResultPane activePane => tabControl.ActivePane;
-        private RichTextBox activeTextBox => activePane.TextBox;
-        private TabControl activeTabControl => activePane.TabControl;
+
+        private ScriptResultPane activePane => scriptTabControl.SelectedPane;
 
         private void TreeView_PathChanged(object sender, EventArgs<TreeNode<IDataPath>> e)
         {
@@ -139,11 +138,11 @@ namespace sqlcon.Windows
             IDataPath name = node.Item;
             if (name is TableName)
             {
-                activeTabControl.Items.Clear();
-                var dt = new TableReader(name as TableName, cmd.Top).Table;
-                var tab = new TabItem { Header = name.Path, Content = DisplayTable(dt) };
-                activeTabControl.Items.Add(tab);
-                tab.Focus();
+                //activeTabControl.Items.Clear();
+                //var dt = new TableReader(name as TableName, cmd.Top).Table;
+                //var tab = new TabItem { Header = name.Path, Content = DisplayTable(dt) };
+                //activeTabControl.Items.Add(tab);
+                //tab.Focus();
                 return;
             }
 
@@ -166,6 +165,11 @@ namespace sqlcon.Windows
         public void ShowCursorPosition(int row, int col)
         {
             lblCursorPosition.Text = $"Ln {row}, Col {col}";
+        }
+
+        public void ShowStatus(string text)
+        {
+            lblMessage.Text = "saved successfully";
         }
     }
 }

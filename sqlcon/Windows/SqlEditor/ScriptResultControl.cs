@@ -25,7 +25,7 @@ namespace sqlcon.Windows
     class ScriptResultControl : TabControl
     {
         private TabControl tabControl;
-        private Dictionary<string, ScriptResultPane> panes { get; } = new Dictionary<string, ScriptResultPane>();
+        private Dictionary<FileLink, ScriptResultPane> panes { get; } = new Dictionary<FileLink, ScriptResultPane>();
 
         public SqlEditor Editor { get; }
         public ScriptResultControl(SqlEditor parent)
@@ -34,33 +34,36 @@ namespace sqlcon.Windows
             tabControl = this;
         }
 
-        public RichTextBox ActiveTextBox => ActivePane.TextBox;
-        public TabControl ActiveTabControl => ActivePane.TabControl;
-
-        public ScriptResultPane AddTab(string header)
+        public ScriptResultPane AddTab(FileLink link)
         {
             ScriptResultPane pane;
-            if (panes.ContainsKey(header))
+            if (panes.ContainsKey(link))
             {
-                pane = panes[header];
-                foreach (TabItem tab in tabControl.Items)
-                {
-                    if (tab.Header.Equals(header))
-                    {
-                        tabControl.SelectedItem = tab;
-                        break;
-                    }
-                }
+                pane = panes[link];
+                tabControl.SelectedItem = pane.TabItem;
                 return pane;
             }
 
-            pane = new ScriptResultPane(this);
-            panes.Add(header, pane);
+            pane = new ScriptResultPane(this)
+            {
+                Link = link
+            };
+
+            panes.Add(link, pane);
+
+            string header = link.ToString();
+
+            const int count = 20;
+            if (header.Length > count)
+                header = header.Substring(0, count / 2) + "..." + header.Substring(header.Length - count / 2);
+
             TabItem newTab = new TabItem
             {
                 Header = header,
-                Content = pane
+                Content = pane,
+                ToolTip = link.ToString(),
             };
+            pane.TabItem = newTab;
             tabControl.Items.Add(newTab);
             tabControl.SelectedItem = newTab;
 
@@ -68,11 +71,11 @@ namespace sqlcon.Windows
             return pane;
         }
 
-        public ScriptResultPane ActivePane
+        public ScriptResultPane SelectedPane
         {
             get
             {
-                var tab = ActiveTab();
+                var tab = SelectedTab();
                 if (tab != null)
                     return (ScriptResultPane)tab.Content;
 
@@ -80,25 +83,35 @@ namespace sqlcon.Windows
             }
         }
 
-        private TabItem ActiveTab()
+        private TabItem SelectedTab()
         {
-            foreach (TabItem item in tabControl.Items)
-            {
-                if (item.IsFocused)
-                    return item;
-            }
-
-            if (tabControl.Items.Count > 0)
-                return (TabItem)tabControl.Items[0];
-            else
-                return null;
+            return (TabItem)tabControl.SelectedItem;
         }
 
-        public bool IsDirty => panes.Values.Any(x => x.IsDirty);
+        public bool IsDirty => panes.Values.Any(x => x.IsDirty && x.Link.IsLocalLink);
 
         public void Delete()
         {
 
+        }
+
+        public void OnClosing(CancelEventArgs e)
+        {
+            if (!IsDirty)
+                return;
+
+            var result = MessageBox.Show($"Save changes", "Warning", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.Yes)
+            {
+                foreach (var pane in panes.Values)
+                {
+                    pane.Save();
+                }
+            }
+            else if (result == MessageBoxResult.Cancel)
+            {
+                e.Cancel = true;
+            }
         }
     }
 }

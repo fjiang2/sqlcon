@@ -7,26 +7,26 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Input;
-using System.Windows.Markup;
+using System.IO;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Data;
+using System.Data.SqlClient;
+
+using Sys.Data;
+using Sys.Data.IO;
 
 namespace sqlcon.Windows
 {
     class ScriptResultPane : Grid
     {
-        private TextBlock lblRowCount = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Right };
+        private TextBlock lblRowCount;
         private ScriptResultControl Tabs { get; }
-        public TabControl TabControl { get; } = new TabControl();
-        public RichTextBox TextBox { get; } = new RichTextBox
-        {
-            FontFamily = new FontFamily("Consolas"),
-            FontSize = 12,
-            HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
-            VerticalScrollBarVisibility = ScrollBarVisibility.Auto
-        };
 
+        public TabItem TabItem { get; set; }
+        public TabControl TabControl { get; private set; }
+        public RichTextBox TextBox { get; private set; }
+        public FileLink Link { get; set; }
         public bool IsDirty { get; set; }
 
         public ScriptResultPane(ScriptResultControl parent)
@@ -40,7 +40,7 @@ namespace sqlcon.Windows
             TextBox.Focus();
         }
 
-
+        private Configuration cfg => Tabs.Editor.cfg;
         private void InitializeComponent()
         {
             Grid grid = this;
@@ -49,9 +49,15 @@ namespace sqlcon.Windows
             grid.RowDefinitions.Add(new RowDefinition());
             grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(5) });
 
-
-            //TextBox.Foreground = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_FOREGROUND, Colors.Black);
-            //TextBox.Background = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_BACKGROUND, Colors.White);
+            TextBox = new RichTextBox
+            {
+                FontFamily = new FontFamily("Consolas"),
+                FontSize = 12,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+            };
+            TextBox.Foreground = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_FOREGROUND, Colors.Black);
+            TextBox.Background = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_BACKGROUND, Colors.White);
 
             //Paragraph space
             Style style = new Style { TargetType = typeof(Paragraph) };
@@ -59,9 +65,11 @@ namespace sqlcon.Windows
             TextBox.Resources.Add(typeof(Paragraph), style);
 
             GridSplitter hSplitter = new GridSplitter { Height = 5, HorizontalAlignment = HorizontalAlignment.Stretch };
-            //tabControl.Foreground = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_FOREGROUND, Colors.Black);
-            //tabControl.Background = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_BACKGROUND, Colors.White);
+            TabControl = new TabControl();
+            TabControl.Foreground = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_FOREGROUND, Colors.Black);
+            TabControl.Background = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_BACKGROUND, Colors.White);
 
+            lblRowCount = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Right };
             StatusBar statusBar = new StatusBar { Height = 20 };
             statusBar.Items.Add(new StatusBarItem { Content = lblRowCount, HorizontalAlignment = HorizontalAlignment.Right });
 
@@ -76,6 +84,8 @@ namespace sqlcon.Windows
             grid.Children.Add(statusBar);
 
         }
+
+        public string Text => TextBox.GetSelectionOrAllText();
 
         public void ShowText(string text)
         {
@@ -96,7 +106,6 @@ namespace sqlcon.Windows
             IsDirty = true;
         }
 
-
         //display #of rows
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -115,6 +124,164 @@ namespace sqlcon.Windows
             if (view == null) return;
 
             lblRowCount.Text = $"{view.Table.Rows.Count} row(s)";
+        }
+
+        public void Execute(ConnectionProvider provider)
+        {
+            string sql = TextBox.GetSelectionOrAllText();
+            if (sql == string.Empty)
+                return;
+
+            TabControl.Items.Clear();
+
+            var cmd = new SqlCmd(provider, sql);
+            if (sql.IndexOf("select", StringComparison.CurrentCultureIgnoreCase) >= 0
+                && sql.IndexOf("insert", StringComparison.CurrentCultureIgnoreCase) < 0
+                && sql.IndexOf("update", StringComparison.CurrentCultureIgnoreCase) < 0
+                && sql.IndexOf("delete", StringComparison.CurrentCultureIgnoreCase) < 0
+                )
+            {
+                try
+                {
+                    StringBuilder builder = new StringBuilder();
+                    var ds = cmd.FillDataSet();
+                    int i = 1;
+                    foreach (DataTable dt in ds.Tables)
+                    {
+                        var tab = new TabItem { Header = $"Table {i++}", Content = DisplayTable(dt) };
+                        TabControl.Items.Add(tab);
+                        builder.AppendLine($"{dt.Rows.Count} row(s) affected");
+                    }
+
+                    DisplayMessage(builder.ToString());
+                }
+                catch (SqlException ex)
+                {
+                    DisplayMessage(ex.Message());
+                }
+                catch (Exception ex)
+                {
+                    DisplayMessage(ex.Message);
+                }
+
+            }
+            else
+            {
+                try
+                {
+                    int count = cmd.ExecuteNonQuery();
+                    string message = $"{count} row(s) affected";
+                    DisplayMessage(message);
+                }
+                catch (SqlException ex)
+                {
+                    DisplayMessage(ex.Message());
+                }
+                catch (Exception ex)
+                {
+                    DisplayMessage(ex.Message);
+                }
+            }
+
+            if (TabControl.HasItems)
+                (TabControl.Items[0] as TabItem).Focus();
+        }
+
+        private void DisplayMessage(string message)
+        {
+            var fkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_MESSAGE_FOREGROUND, Colors.White);
+            var bkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_MESSAGE_BACKGROUND, Colors.Black);
+
+            var tab = new TabItem
+            {
+                Header = "Messages",
+                Content = new TextBox
+                {
+                    Text = message,
+                    Foreground = fkColor,
+                    Background = bkColor,
+                    IsReadOnly = true,
+                    TextWrapping = TextWrapping.Wrap,
+                    AcceptsReturn = true
+                }
+            };
+
+            TabControl.Items.Add(tab);
+            tab.Focus();
+        }
+
+        private DataGrid DisplayTable(DataTable table)
+        {
+            var fkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_FOREGROUND, Colors.White);
+            var bkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_BACKGROUND, Colors.Black);
+            var evenRowColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_ALTERNATINGROWBACKGROUND, Colors.DimGray);
+            var oddRowColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_ROWBACKGROUND, Colors.Black);
+
+            var dataGrid = new DataGrid
+            {
+                Foreground = fkColor,
+                AlternationCount = 2,
+                AlternatingRowBackground = evenRowColor,
+                RowBackground = oddRowColor
+            };
+
+            var style = new Style(typeof(DataGridColumnHeader));
+            style.Setters.Add(new Setter { Property = Control.ForegroundProperty, Value = fkColor });
+            style.Setters.Add(new Setter { Property = Control.BackgroundProperty, Value = bkColor });
+            dataGrid.ColumnHeaderStyle = style;
+
+            dataGrid.IsReadOnly = true;
+            dataGrid.ItemsSource = table.DefaultView;
+
+            return dataGrid;
+        }
+
+        public void Save()
+        {
+
+            if (Link.Url != SqlEditor.untitled)
+            {
+                try
+                {
+                    Link.Save(TextBox.GetAllText());
+                    Tabs.Editor.ShowStatus("saved successfully");
+                    IsDirty = false;
+                }
+                catch (Exception ex)
+                {
+                    Tabs.Editor.ShowStatus(ex.Message);
+                }
+                return;
+            }
+
+            var saveFile = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "Sql Script Files (*.sql)|*.sql|Text Files (*.txt)|*.txt|All Files (*.*)|*.*",
+                FileName = Link.Url
+            };
+
+            if (saveFile.ShowDialog() == true)
+            {
+                TextRange documentTextRange = new TextRange(TextBox.Document.ContentStart, TextBox.Document.ContentEnd);
+
+                // If this file exists, it's overwritten.
+                using (FileStream fs = File.Create(saveFile.FileName))
+                {
+                    if (Path.GetExtension(saveFile.FileName).ToLower() == ".rtf")
+                    {
+                        documentTextRange.Save(fs, DataFormats.Rtf);
+                    }
+                    else
+                    {
+                        documentTextRange.Save(fs, DataFormats.Text);
+                    }
+
+                    Link = FileLink.CreateLink(saveFile.FileName);
+                    IsDirty = false;
+                }
+            }
+
+            return;
         }
 
     }
