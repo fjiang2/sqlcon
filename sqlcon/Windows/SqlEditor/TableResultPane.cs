@@ -29,6 +29,8 @@ namespace sqlcon.Windows
 
     class TableResultPane : Grid, IResultPane
     {
+        private TextBlock lblRowCount;
+
         public ScriptResultControl Tabs { get; }
         public TabItem TabItem { get; set; }
         public bool IsDirty { get; }
@@ -37,14 +39,19 @@ namespace sqlcon.Windows
         public TableResultPane(ScriptResultControl parent, Configuration cfg, TableName tname, int top)
         {
             this.Tabs = parent;
-
             var dt = new TableReader(tname, top).Table;
-            CreateDataTableGrid(cfg, dt);
+
+            InitializeComponent(cfg, dt);
+
+            lblRowCount.Text = $"{dt.Rows.Count} row(s)";
         }
 
-
-        private void CreateDataTableGrid(Configuration cfg, DataTable dt)
+        private void InitializeComponent(Configuration cfg, DataTable dt)
         {
+            Grid grid = this;
+            grid.RowDefinitions.Add(new RowDefinition());
+            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(25) });
+
             var fkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_FOREGROUND, Colors.White);
             var bkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_BACKGROUND, Colors.Black);
             var evenRowColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_ALTERNATINGROWBACKGROUND, Colors.DimGray);
@@ -58,7 +65,16 @@ namespace sqlcon.Windows
                 RowBackground = oddRowColor
             };
 
+            StatusBar statusBar = new StatusBar { Height = 20 };
+            lblRowCount = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Right };
+            statusBar.Items.Add(new StatusBarItem { Content = lblRowCount, HorizontalAlignment = HorizontalAlignment.Right });
+
+            dataGrid.SetValue(Grid.RowProperty, 0);
+            statusBar.SetValue(Grid.RowProperty, 1);
+
             this.Children.Add(dataGrid);
+            this.Children.Add(statusBar);
+
 
             var style = new Style(typeof(DataGridColumnHeader));
             style.Setters.Add(new Setter { Property = Control.ForegroundProperty, Value = fkColor });
@@ -68,7 +84,6 @@ namespace sqlcon.Windows
             dataGrid.IsReadOnly = true;
             dataGrid.ItemsSource = dt.DefaultView;
         }
-
 
 
         public void Save()
