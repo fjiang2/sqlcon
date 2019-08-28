@@ -48,6 +48,7 @@ namespace sqlcon.Windows
 
         private void InitializeComponent(Configuration cfg, DataTable dt)
         {
+            dt = dt.AddLineNumberColumn();
             Grid grid = this;
             grid.RowDefinitions.Add(new RowDefinition());
             grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(25) });
