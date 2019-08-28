@@ -138,11 +138,7 @@ namespace sqlcon.Windows
             IDataPath name = node.Item;
             if (name is TableName)
             {
-                //activeTabControl.Items.Clear();
-                //var dt = new TableReader(name as TableName, cmd.Top).Table;
-                //var tab = new TabItem { Header = name.Path, Content = DisplayTable(dt) };
-                //activeTabControl.Items.Add(tab);
-                //tab.Focus();
+                DisplaySignleTable(name);
                 return;
             }
 
@@ -161,6 +157,10 @@ namespace sqlcon.Windows
             comboPath.SelectedValue = found;
         }
 
+        private void DisplaySignleTable(IDataPath name)
+        {
+            scriptTabControl.AddTab(name as TableName, cmd.Top);
+        }
 
         public void ShowCursorPosition(int row, int col)
         {

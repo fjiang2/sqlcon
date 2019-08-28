@@ -54,6 +54,20 @@ namespace Sys.Data.IO
 
         public abstract void Save(string contents);
 
+        public override bool Equals(object obj)
+        {
+            FileLink link = obj as FileLink;
+            if (obj == null)
+                return false;
+
+            return url.Equals(link.url);
+        }
+
+        public override int GetHashCode()
+        {
+            return url.GetHashCode();
+        }
+
         public override string ToString()
         {
             return this.url;

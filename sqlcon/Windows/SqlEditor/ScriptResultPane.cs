@@ -18,11 +18,11 @@ using Sys.Data.IO;
 
 namespace sqlcon.Windows
 {
-    class ScriptResultPane : Grid
+    class ScriptResultPane : Grid, IResultPane
     {
         private TextBlock lblRowCount;
-        private ScriptResultControl Tabs { get; }
 
+        public ScriptResultControl Tabs { get; }
         public TabItem TabItem { get; set; }
         public TabControl TabControl { get; private set; }
         public RichTextBox TextBox { get; private set; }
@@ -47,7 +47,7 @@ namespace sqlcon.Windows
             grid.RowDefinitions.Add(new RowDefinition());
             grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(5) });
             grid.RowDefinitions.Add(new RowDefinition());
-            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(5) });
+            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(25) });
 
             TextBox = new RichTextBox
             {
@@ -148,7 +148,7 @@ namespace sqlcon.Windows
                     int i = 1;
                     foreach (DataTable dt in ds.Tables)
                     {
-                        var tab = new TabItem { Header = $"Table {i++}", Content = DisplayTable(dt) };
+                        var tab = new TabItem { Header = $"Table {i++}", Content = CreateDataTableGrid(cfg, dt) };
                         TabControl.Items.Add(tab);
                         builder.AppendLine($"{dt.Rows.Count} row(s) affected");
                     }
@@ -210,7 +210,7 @@ namespace sqlcon.Windows
             tab.Focus();
         }
 
-        private DataGrid DisplayTable(DataTable table)
+        public static DataGrid CreateDataTableGrid(Configuration cfg, DataTable table)
         {
             var fkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_FOREGROUND, Colors.White);
             var bkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_BACKGROUND, Colors.Black);

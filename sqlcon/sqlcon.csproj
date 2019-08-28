@@ -89,6 +89,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity.Design" />
     <Reference Include="System.Windows" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -126,6 +127,7 @@
     <Compile Include="Windows\SqlEditor\SqlEditor.UI.cs" />
     <Compile Include="Windows\DbTreeUI.cs" />
     <Compile Include="Windows\SqlEditor\SqlEditor.cs" />
+    <Compile Include="Windows\SqlEditor\TableResultPane.cs" />
     <Compile Include="Windows\TableEditor.cs" />
     <Compile Include="Input\KeyValueTable.cs" />
     <Compile Include="Output\ProgressBar.cs" />

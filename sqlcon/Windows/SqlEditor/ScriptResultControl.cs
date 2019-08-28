@@ -25,7 +25,7 @@ namespace sqlcon.Windows
     class ScriptResultControl : TabControl
     {
         private TabControl tabControl;
-        private Dictionary<FileLink, ScriptResultPane> panes { get; } = new Dictionary<FileLink, ScriptResultPane>();
+        private Dictionary<FileLink, IResultPane> panes { get; } = new Dictionary<FileLink, IResultPane>();
 
         public SqlEditor Editor { get; }
         public ScriptResultControl(SqlEditor parent)
@@ -34,12 +34,42 @@ namespace sqlcon.Windows
             tabControl = this;
         }
 
+        public TableResultPane AddTab(TableName tname, int top)
+        {
+            FileLink link = FileLink.CreateLink(tname.FullName);
+            TableResultPane pane;
+            if (panes.ContainsKey(link))
+            {
+                pane = (TableResultPane)panes[link];
+                tabControl.SelectedItem = pane.TabItem;
+                return pane;
+            }
+
+            pane = new TableResultPane(this, Editor.cfg, tname, top)
+            {
+                Link = link
+            };
+
+            panes.Add(link, pane);
+
+            TabItem newTab = new TabItem
+            {
+                Header = tname.Path,
+                Content = pane
+            };
+            pane.TabItem = newTab;
+            tabControl.Items.Add(newTab);
+            newTab.Focus();
+
+            return pane;
+        }
+
         public ScriptResultPane AddTab(FileLink link)
         {
             ScriptResultPane pane;
             if (panes.ContainsKey(link))
             {
-                pane = panes[link];
+                pane = (ScriptResultPane)panes[link];
                 tabControl.SelectedItem = pane.TabItem;
                 return pane;
             }
@@ -63,6 +93,7 @@ namespace sqlcon.Windows
                 Content = pane,
                 ToolTip = link.ToString(),
             };
+
             pane.TabItem = newTab;
             tabControl.Items.Add(newTab);
             tabControl.SelectedItem = newTab;
@@ -76,7 +107,7 @@ namespace sqlcon.Windows
             get
             {
                 var tab = SelectedTab();
-                if (tab != null)
+                if (tab != null && tab.Content is ScriptResultPane)
                     return (ScriptResultPane)tab.Content;
 
                 return null;

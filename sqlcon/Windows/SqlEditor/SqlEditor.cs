@@ -38,8 +38,9 @@ namespace sqlcon.Windows
 
         private void ScriptTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            FileLink link = activePane.Link;
-            this.Title = $"{link} - sqlcon";
+            FileLink link = activePane?.Link;
+            if (link != null)
+                this.Title = $"{link} - sqlcon";
         }
 
 
@@ -56,7 +57,7 @@ namespace sqlcon.Windows
         {
             if (e.Command == ExecuteCommand)
             {
-                e.CanExecute = activePane.Text != string.Empty;
+                e.CanExecute = activePane?.Text != string.Empty;
             }
             else if (e.Command == ApplicationCommands.Save)
                 e.CanExecute = scriptTabControl.SelectedItem != null;
