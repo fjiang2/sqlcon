@@ -121,6 +121,7 @@
     <Compile Include="Shell\Importer.cs" />
     <Compile Include="Shell\ShellHelp.cs" />
     <Compile Include="Shell\ShellHistory.cs" />
+    <Compile Include="Windows\ScriptResultPane.cs" />
     <Compile Include="Windows\SqlEditor.UI.cs" />
     <Compile Include="Windows\DbTreeUI.cs" />
     <Compile Include="Windows\SqlEditor.cs" />

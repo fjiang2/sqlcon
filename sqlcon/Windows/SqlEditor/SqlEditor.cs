@@ -36,15 +36,14 @@ namespace sqlcon.Windows
             this.cfg = cmd.Configuration;
 
             InitializeComponent(cfg);
-
             this.provider = provider;
 
-            textBox.Document.Blocks.Clear();
+            activeTextBox.Document.Blocks.Clear();
             if (link != null)
             {
                 this.link = link;
                 string text = link.ReadAllText();
-                textBox.Document.Blocks.Add(new Paragraph(new Run(text)));
+                activeTextBox.Document.Blocks.Add(new Paragraph(new Run(text)));
             }
             else
             {
@@ -52,10 +51,10 @@ namespace sqlcon.Windows
             }
             UpdateTitle();
 
-            tabControl.SelectionChanged += TabControl_SelectionChanged;
-            textBox.SelectionChanged += TextBox_SelectionChanged;
-            textBox.TextChanged += TextBox_TextChanged;
-            textBox.Focus();
+            activeTabControl.SelectionChanged += TabControl_SelectionChanged;
+            activeTextBox.SelectionChanged += TextBox_SelectionChanged;
+            activeTextBox.TextChanged += TextBox_TextChanged;
+            activeTextBox.Focus();
         }
 
 
@@ -68,8 +67,8 @@ namespace sqlcon.Windows
 
         private void TextBox_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            int row = textBox.LineNumber();
-            int col = textBox.ColumnNumber();
+            int row = activeTextBox.LineNumber();
+            int col = activeTextBox.ColumnNumber();
             lblCursorPosition.Text = $"Ln {row}, Col {col}";
         }
 
@@ -84,7 +83,7 @@ namespace sqlcon.Windows
         //display #of rows
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            TabItem tab = (tabControl.SelectedItem as TabItem);
+            TabItem tab = (activeTabControl.SelectedItem as TabItem);
 
             if (tab == null) return;
 
@@ -103,7 +102,7 @@ namespace sqlcon.Windows
 
         private void Execute()
         {
-            string text = textBox.GetSelectionOrAllText();
+            string text = activeTextBox.GetSelectionOrAllText();
 
             if (text == string.Empty)
                 return;
@@ -117,7 +116,7 @@ namespace sqlcon.Windows
 
         private void Execute(ConnectionProvider provider, string sql)
         {
-            tabControl.Items.Clear();
+            activeTabControl.Items.Clear();
 
             var cmd = new SqlCmd(provider, sql);
             if (sql.IndexOf("select", StringComparison.CurrentCultureIgnoreCase) >= 0
@@ -134,7 +133,7 @@ namespace sqlcon.Windows
                     foreach (DataTable dt in ds.Tables)
                     {
                         var tab = new TabItem { Header = $"Table {i++}", Content = DisplayTable(dt) };
-                        tabControl.Items.Add(tab);
+                        activeTabControl.Items.Add(tab);
                         builder.AppendLine($"{dt.Rows.Count} row(s) affected");
                     }
 
@@ -168,8 +167,8 @@ namespace sqlcon.Windows
                 }
             }
 
-            if (tabControl.HasItems)
-                (tabControl.Items[0] as TabItem).Focus();
+            if (activeTabControl.HasItems)
+                (activeTabControl.Items[0] as TabItem).Focus();
         }
 
         private void DisplayMessage(string message)
@@ -191,7 +190,7 @@ namespace sqlcon.Windows
                 }
             };
 
-            tabControl.Items.Add(tab);
+            activeTabControl.Items.Add(tab);
             tab.Focus();
         }
 
@@ -245,7 +244,7 @@ namespace sqlcon.Windows
         {
             if (e.Command == ExecuteCommand)
             {
-                e.CanExecute = textBox.GetSelectionOrAllText() != string.Empty;
+                e.CanExecute = activeTextBox.GetSelectionOrAllText() != string.Empty;
             }
             else if (e.Command == ApplicationCommands.Save)
                 e.CanExecute = link.IsLocalLink;
@@ -268,7 +267,7 @@ namespace sqlcon.Windows
         public void New()
         {
             link = FileLink.CreateLink(untitled);
-            textBox.Document.Blocks.Clear();
+            activeTextBox.Document.Blocks.Clear();
             UpdateTitle();
             isDirty = false;
         }
@@ -285,8 +284,8 @@ namespace sqlcon.Windows
             {
                 link = FileLink.CreateLink(openFile.FileName);
                 string text = link.ReadAllText();
-                textBox.Document.Blocks.Clear();
-                textBox.Document.Blocks.Add(new Paragraph(new Run(text)));
+                activeTextBox.Document.Blocks.Clear();
+                activeTextBox.Document.Blocks.Add(new Paragraph(new Run(text)));
                 UpdateTitle();
                 isDirty = false;
             }
@@ -299,7 +298,7 @@ namespace sqlcon.Windows
             {
                 try
                 {
-                    link.Save(textBox.GetAllText());
+                    link.Save(activeTextBox.GetAllText());
                     lblMessage.Text = "saved successfully";
                     isDirty = false;
                 }
@@ -318,7 +317,7 @@ namespace sqlcon.Windows
 
             if (saveFile.ShowDialog(this) == true)
             {
-                TextRange documentTextRange = new TextRange(textBox.Document.ContentStart, textBox.Document.ContentEnd);
+                TextRange documentTextRange = new TextRange(activeTextBox.Document.ContentStart, activeTextBox.Document.ContentEnd);
 
                 // If this file exists, it's overwritten.
                 using (FileStream fs = File.Create(saveFile.FileName))

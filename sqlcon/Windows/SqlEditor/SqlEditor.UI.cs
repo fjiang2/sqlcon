@@ -24,19 +24,15 @@ namespace sqlcon.Windows
 {
     partial class SqlEditor : Window
     {
-        private TabControl tabControl = new TabControl();
         private TextBlock lblMessage = new TextBlock { Width = 300 };
         private TextBlock lblCursorPosition = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Left };
         private TextBlock lblRowCount = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Right };
 
         private ComboBox comboPath;
-        private RichTextBox textBox = new RichTextBox
-        {
-            FontFamily = new FontFamily("Consolas"),
-            FontSize = 12,
-            HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
-            VerticalScrollBarVisibility = ScrollBarVisibility.Auto
-        };
+
+        private ScriptResultPane ActivePane = new ScriptResultPane();
+        private RichTextBox activeTextBox => ActivePane.TextBox;
+        private TabControl activeTabControl => ActivePane.TabControl;
 
         private static RoutedUICommand ExecuteCommand = new RoutedUICommand("Execute", "execute", typeof(SqlEditor), new InputGestureCollection { new KeyGesture(Key.F5, ModifierKeys.None, "F5") });
 
@@ -89,14 +85,17 @@ namespace sqlcon.Windows
 
             Grid grid1 = new Grid();
             GridSplitter vSplitter = new GridSplitter { Width = 5, VerticalAlignment = VerticalAlignment.Stretch };
-            Grid grid2 = new Grid();
+            TabControl tabControl = new TabControl();
 
             grid1.SetValue(Grid.ColumnProperty, 0);
             vSplitter.SetValue(Grid.ColumnProperty, 1);
-            grid2.SetValue(Grid.ColumnProperty, 2);
+            tabControl.SetValue(Grid.ColumnProperty, 2);
+
             grid.Children.Add(grid1);
             grid.Children.Add(vSplitter);
-            grid.Children.Add(grid2);
+            grid.Children.Add(tabControl);
+
+            tabControl.Items.Add(new TabItem { Header = "untitled", Content = ActivePane });
 
             //Database Tree
             DbTreeUI treeView = new DbTreeUI
@@ -109,29 +108,6 @@ namespace sqlcon.Windows
 
             treeView.CreateTree(cfg);
             treeView.PathChanged += TreeView_PathChanged;
-
-            grid2.RowDefinitions.Add(new RowDefinition());
-            grid2.RowDefinitions.Add(new RowDefinition { Height = new GridLength(5) });
-            grid2.RowDefinitions.Add(new RowDefinition());
-
-            textBox.Foreground = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_FOREGROUND, Colors.Black);
-            textBox.Background = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_BACKGROUND, Colors.White);
-
-            //Paragraph space
-            Style style = new Style { TargetType = typeof(Paragraph) };
-            style.Setters.Add(new Setter { Property = Block.MarginProperty, Value = new Thickness(0) });
-            textBox.Resources.Add(typeof(Paragraph), style);
-
-            GridSplitter hSplitter = new GridSplitter { Height = 5, HorizontalAlignment = HorizontalAlignment.Stretch };
-            tabControl.Foreground = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_FOREGROUND, Colors.Black);
-            tabControl.Background = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_BACKGROUND, Colors.White);
-
-            textBox.SetValue(Grid.RowProperty, 0);
-            hSplitter.SetValue(Grid.RowProperty, 1);
-            tabControl.SetValue(Grid.RowProperty, 2);
-            grid2.Children.Add(textBox);
-            grid2.Children.Add(hSplitter);
-            grid2.Children.Add(tabControl);
 
             #endregion
 
@@ -166,10 +142,10 @@ namespace sqlcon.Windows
             IDataPath name = node.Item;
             if (name is TableName)
             {
-                tabControl.Items.Clear();
+                activeTabControl.Items.Clear();
                 var dt = new TableReader(name as TableName, cmd.Top).Table;
                 var tab = new TabItem { Header = name.Path, Content = DisplayTable(dt) };
-                tabControl.Items.Add(tab);
+                activeTabControl.Items.Add(tab);
                 tab.Focus();
                 return;
             }
