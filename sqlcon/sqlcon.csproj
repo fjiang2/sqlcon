@@ -121,10 +121,11 @@
     <Compile Include="Shell\Importer.cs" />
     <Compile Include="Shell\ShellHelp.cs" />
     <Compile Include="Shell\ShellHistory.cs" />
-    <Compile Include="Windows\ScriptResultPane.cs" />
-    <Compile Include="Windows\SqlEditor.UI.cs" />
+    <Compile Include="Windows\SqlEditor\ScriptResultControl.cs" />
+    <Compile Include="Windows\SqlEditor\ScriptResultPane.cs" />
+    <Compile Include="Windows\SqlEditor\SqlEditor.UI.cs" />
     <Compile Include="Windows\DbTreeUI.cs" />
-    <Compile Include="Windows\SqlEditor.cs" />
+    <Compile Include="Windows\SqlEditor\SqlEditor.cs" />
     <Compile Include="Windows\TableEditor.cs" />
     <Compile Include="Input\KeyValueTable.cs" />
     <Compile Include="Output\ProgressBar.cs" />

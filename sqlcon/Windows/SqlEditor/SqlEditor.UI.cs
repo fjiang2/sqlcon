@@ -13,7 +13,7 @@ using System.Windows.Documents;
 using System.Windows.Controls.Primitives;
 using System.IO;
 using System.Data;
-using System.Data.SqlClient;
+
 
 using Sys;
 using Sys.Data;
@@ -26,13 +26,10 @@ namespace sqlcon.Windows
     {
         private TextBlock lblMessage = new TextBlock { Width = 300 };
         private TextBlock lblCursorPosition = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Left };
-        private TextBlock lblRowCount = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Right };
 
         private ComboBox comboPath;
 
-        private ScriptResultPane ActivePane = new ScriptResultPane();
-        private RichTextBox activeTextBox => ActivePane.TextBox;
-        private TabControl activeTabControl => ActivePane.TabControl;
+        private ScriptResultControl tabControl;
 
         private static RoutedUICommand ExecuteCommand = new RoutedUICommand("Execute", "execute", typeof(SqlEditor), new InputGestureCollection { new KeyGesture(Key.F5, ModifierKeys.None, "F5") });
 
@@ -70,7 +67,6 @@ namespace sqlcon.Windows
             StatusBar statusBar = new StatusBar { Height = 20 };
             statusBar.Items.Add(new StatusBarItem { Content = lblMessage, HorizontalAlignment = HorizontalAlignment.Left });
             statusBar.Items.Add(new StatusBarItem { Content = lblCursorPosition, HorizontalAlignment = HorizontalAlignment.Right });
-            statusBar.Items.Add(new StatusBarItem { Content = lblRowCount, HorizontalAlignment = HorizontalAlignment.Right });
             statusBar.SetValue(DockPanel.DockProperty, Dock.Bottom);
             dockPanel.Children.Add(statusBar);
 
@@ -85,7 +81,7 @@ namespace sqlcon.Windows
 
             Grid grid1 = new Grid();
             GridSplitter vSplitter = new GridSplitter { Width = 5, VerticalAlignment = VerticalAlignment.Stretch };
-            TabControl tabControl = new TabControl();
+            tabControl = new ScriptResultControl(this);
 
             grid1.SetValue(Grid.ColumnProperty, 0);
             vSplitter.SetValue(Grid.ColumnProperty, 1);
@@ -94,8 +90,6 @@ namespace sqlcon.Windows
             grid.Children.Add(grid1);
             grid.Children.Add(vSplitter);
             grid.Children.Add(tabControl);
-
-            tabControl.Items.Add(new TabItem { Header = "untitled", Content = ActivePane });
 
             //Database Tree
             DbTreeUI treeView = new DbTreeUI
@@ -135,6 +129,9 @@ namespace sqlcon.Windows
             ComboBox combo = (ComboBox)sender;
             string path = combo.SelectedValue as string;
         }
+        private ScriptResultPane activePane => tabControl.ActivePane;
+        private RichTextBox activeTextBox => activePane.TextBox;
+        private TabControl activeTabControl => activePane.TabControl;
 
         private void TreeView_PathChanged(object sender, EventArgs<TreeNode<IDataPath>> e)
         {
@@ -165,5 +162,10 @@ namespace sqlcon.Windows
             comboPath.SelectedValue = found;
         }
 
+
+        public void ShowCursorPosition(int row, int col)
+        {
+            lblCursorPosition.Text = $"Ln {row}, Col {col}";
+        }
     }
 }

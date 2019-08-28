@@ -29,7 +29,7 @@ namespace sqlcon.Windows
         private FileLink link;
         private ConnectionProvider provider;
 
-        private const string untitled = "untitled.sql";
+        private const string untitled = "file://untitled.sql";
         public SqlEditor(ApplicationCommand cmd, ConnectionProvider provider, FileLink link)
         {
             this.cmd = cmd;
@@ -38,25 +38,19 @@ namespace sqlcon.Windows
             InitializeComponent(cfg);
             this.provider = provider;
 
-            activeTextBox.Document.Blocks.Clear();
             if (link != null)
             {
                 this.link = link;
-                string text = link.ReadAllText();
-                activeTextBox.Document.Blocks.Add(new Paragraph(new Run(text)));
             }
             else
             {
                 this.link = FileLink.CreateLink(untitled);
             }
-            UpdateTitle();
 
-            activeTabControl.SelectionChanged += TabControl_SelectionChanged;
-            activeTextBox.SelectionChanged += TextBox_SelectionChanged;
-            activeTextBox.TextChanged += TextBox_TextChanged;
-            activeTextBox.Focus();
+            Display(this.link);
         }
 
+        private bool isDirty => tabControl.IsDirty;
 
 
 
@@ -65,40 +59,6 @@ namespace sqlcon.Windows
             this.Title = $"{this.link} - sqlcon";
         }
 
-        private void TextBox_SelectionChanged(object sender, RoutedEventArgs e)
-        {
-            int row = activeTextBox.LineNumber();
-            int col = activeTextBox.ColumnNumber();
-            lblCursorPosition.Text = $"Ln {row}, Col {col}";
-        }
-
-
-        private bool isDirty = false;
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            isDirty = true;
-        }
-
-
-        //display #of rows
-        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            TabItem tab = (activeTabControl.SelectedItem as TabItem);
-
-            if (tab == null) return;
-
-            DataGrid grid = tab.Content as DataGrid;
-            if (grid == null)
-            {
-                lblRowCount.Text = "";
-                return;
-            }
-
-            var view = grid.ItemsSource as DataView;
-            if (view == null) return;
-
-            lblRowCount.Text = $"{view.Table.Rows.Count} row(s)";
-        }
 
         private void Execute()
         {
@@ -264,12 +224,23 @@ namespace sqlcon.Windows
                 Open();
         }
 
+        private void Display(FileLink link)
+        {
+            var tab = tabControl.AddTab(link.FileName);
+
+            string text = string.Empty;
+            if (link.Exists)
+                text = link.ReadAllText();
+
+            tab.ShowText(text);
+            tab.IsDirty = false;
+            UpdateTitle();
+        }
+
         public void New()
         {
             link = FileLink.CreateLink(untitled);
-            activeTextBox.Document.Blocks.Clear();
-            UpdateTitle();
-            isDirty = false;
+            Display(link);
         }
 
         public void Open()
@@ -277,17 +248,13 @@ namespace sqlcon.Windows
             var openFile = new Microsoft.Win32.OpenFileDialog
             {
                 Filter = "Sql Script Files (*.sql)|*.sql|Text Files (*.txt)|*.txt|All Files (*.*)|*.*",
-                FileName = link.Url
+                FileName = link.FileName
             };
 
             if (openFile.ShowDialog(this) == true)
             {
                 link = FileLink.CreateLink(openFile.FileName);
-                string text = link.ReadAllText();
-                activeTextBox.Document.Blocks.Clear();
-                activeTextBox.Document.Blocks.Add(new Paragraph(new Run(text)));
-                UpdateTitle();
-                isDirty = false;
+                Display(link);
             }
         }
 
@@ -300,7 +267,7 @@ namespace sqlcon.Windows
                 {
                     link.Save(activeTextBox.GetAllText());
                     lblMessage.Text = "saved successfully";
-                    isDirty = false;
+                    activePane.IsDirty = false;
                 }
                 catch (Exception ex)
                 {
@@ -333,7 +300,7 @@ namespace sqlcon.Windows
 
                     link = FileLink.CreateLink(saveFile.FileName);
                     UpdateTitle();
-                    isDirty = false;
+                    activePane.IsDirty = false;
                 }
             }
 

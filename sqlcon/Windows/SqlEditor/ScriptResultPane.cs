@@ -6,23 +6,18 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Input;
 using System.Windows.Markup;
-using System.Windows.Documents;
 using System.Windows.Controls.Primitives;
-using System.IO;
+using System.Windows.Documents;
 using System.Data;
-using System.Data.SqlClient;
 
-using Sys;
-using Sys.Data;
-using Sys.Data.IO;
-using System.ComponentModel;
-namespace sqlcon
+namespace sqlcon.Windows
 {
     class ScriptResultPane : Grid
     {
+        private TextBlock lblRowCount = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Right };
+        private ScriptResultControl Tabs { get; }
         public TabControl TabControl { get; } = new TabControl();
         public RichTextBox TextBox { get; } = new RichTextBox
         {
@@ -32,9 +27,17 @@ namespace sqlcon
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto
         };
 
-        public ScriptResultPane()
+        public bool IsDirty { get; set; }
+
+        public ScriptResultPane(ScriptResultControl parent)
         {
+            this.Tabs = parent;
             InitializeComponent();
+
+            TabControl.SelectionChanged += TabControl_SelectionChanged;
+            TextBox.SelectionChanged += TextBox_SelectionChanged;
+            TextBox.TextChanged += TextBox_TextChanged;
+            TextBox.Focus();
         }
 
 
@@ -44,6 +47,7 @@ namespace sqlcon
             grid.RowDefinitions.Add(new RowDefinition());
             grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(5) });
             grid.RowDefinitions.Add(new RowDefinition());
+            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(5) });
 
 
             //TextBox.Foreground = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_FOREGROUND, Colors.Black);
@@ -58,12 +62,60 @@ namespace sqlcon
             //tabControl.Foreground = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_FOREGROUND, Colors.Black);
             //tabControl.Background = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_BACKGROUND, Colors.White);
 
+            StatusBar statusBar = new StatusBar { Height = 20 };
+            statusBar.Items.Add(new StatusBarItem { Content = lblRowCount, HorizontalAlignment = HorizontalAlignment.Right });
+
             TextBox.SetValue(Grid.RowProperty, 0);
             hSplitter.SetValue(Grid.RowProperty, 1);
             TabControl.SetValue(Grid.RowProperty, 2);
+            statusBar.SetValue(Grid.RowProperty, 3);
+
             grid.Children.Add(TextBox);
             grid.Children.Add(hSplitter);
             grid.Children.Add(TabControl);
+            grid.Children.Add(statusBar);
+
         }
+
+        public void ShowText(string text)
+        {
+            TextBox.Document.Blocks.Clear();
+            TextBox.Document.Blocks.Add(new Paragraph(new Run(text)));
+            IsDirty = false;
+        }
+
+        private void TextBox_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            int row = TextBox.LineNumber();
+            int col = TextBox.ColumnNumber();
+            Tabs.Editor.ShowCursorPosition(row, col);
+        }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            IsDirty = true;
+        }
+
+
+        //display #of rows
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            TabItem tab = (TabControl.SelectedItem as TabItem);
+
+            if (tab == null) return;
+
+            DataGrid grid = tab.Content as DataGrid;
+            if (grid == null)
+            {
+                lblRowCount.Text = "";
+                return;
+            }
+
+            var view = grid.ItemsSource as DataView;
+            if (view == null) return;
+
+            lblRowCount.Text = $"{view.Table.Rows.Count} row(s)";
+        }
+
     }
 }
