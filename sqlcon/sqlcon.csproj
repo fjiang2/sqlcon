@@ -124,6 +124,7 @@
     <Compile Include="Shell\ShellHistory.cs" />
     <Compile Include="Windows\SqlEditor\ScriptResultControl.cs" />
     <Compile Include="Windows\SqlEditor\ScriptResultPane.cs" />
+    <Compile Include="Windows\SqlEditor\Themes.cs" />
     <Compile Include="Windows\SqlEditor\SqlCommands.cs" />
     <Compile Include="Windows\SqlEditor\SqlEditor.UI.cs" />
     <Compile Include="Windows\SqlEditor\DbTreeUI.cs" />

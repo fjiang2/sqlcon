@@ -1353,7 +1353,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            var editor = new Windows.TableEditor(mgr.Configuration, new UniqueTable(null, dt));
+            var editor = new Windows.TableEditor(new UniqueTable(null, dt));
 
             editor.ShowDialog();
         }

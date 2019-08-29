@@ -36,23 +36,23 @@ namespace sqlcon.Windows
         public bool IsDirty { get; }
         public FileLink Link { get; set; }
 
-        public TableResultPane(ScriptResultControl parent, Configuration cfg, TableName tname, int top)
+        public TableResultPane(ScriptResultControl parent, TableName tname, int top)
         {
             this.Tabs = parent;
             var dt = new TableReader(tname, top).Table;
 
-            InitializeComponent(cfg, dt);
+            InitializeComponent(dt);
 
             lblRowCount.Text = $"{dt.Rows.Count} row(s)";
         }
 
-        private void InitializeComponent(Configuration cfg, DataTable dt)
+        private void InitializeComponent(DataTable dt)
         {
             Grid grid = this;
             grid.RowDefinitions.Add(new RowDefinition());
             grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(25) });
 
-            DataGrid dataGrid = dt.CreateDataGrid(cfg);
+            DataGrid dataGrid = dt.CreateDataGrid();
 
             StatusBar statusBar = new StatusBar { Height = 20 };
             lblRowCount = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Right };

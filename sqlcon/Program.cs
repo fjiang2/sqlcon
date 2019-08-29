@@ -10,6 +10,7 @@ namespace sqlcon
 {
     class Program
     {
+        public static Configuration cfg;
 
         [STAThread]
         static void Main(string[] args)
@@ -53,7 +54,7 @@ namespace sqlcon
             L1:
 
 
-            var cfg = new Configuration();
+            cfg = new Configuration();
             try
             {
                 if (!cfg.Initialize(cfgFile))

@@ -67,30 +67,25 @@ namespace sqlcon.Windows
             return stackPanel;
         }
 
-        public static DataGrid CreateDataGrid(this DataTable table, Configuration cfg)
+        public static DataGrid CreateDataGrid(this DataTable table)
         {
-            var fkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_FOREGROUND, Colors.White);
-            var bkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_BACKGROUND, Colors.Black);
-            var evenRowColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_ALTERNATINGROWBACKGROUND, Colors.DimGray);
-            var oddRowColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_ROWBACKGROUND, Colors.Black);
-
             var dataGrid = new DataGrid
             {
-                Foreground = fkColor,
+                Foreground = Themes.SqlResult.Table.Foreground,
                 AlternationCount = 2,
-                AlternatingRowBackground = evenRowColor,
-                RowBackground = oddRowColor
+                AlternatingRowBackground = Themes.SqlResult.Table.AlternatingRowBackground,
+                RowBackground = Themes.SqlResult.Table.RowBackground
             };
 
             var style = new Style(typeof(DataGridColumnHeader));
-            style.Setters.Add(new Setter { Property = Control.ForegroundProperty, Value = fkColor });
-            style.Setters.Add(new Setter { Property = Control.BackgroundProperty, Value = bkColor });
+            style.Setters.Add(new Setter { Property = Control.ForegroundProperty, Value = Themes.SqlResult.Table.Foreground });
+            style.Setters.Add(new Setter { Property = Control.BackgroundProperty, Value = Themes.SqlResult.Table.Background });
             style.Setters.Add(new Setter { Property = Control.PaddingProperty, Value = new Thickness(2, 0, 2, 0) });
             dataGrid.ColumnHeaderStyle = style;
 
             style = new Style(typeof(DataGridRowHeader));
-            style.Setters.Add(new Setter { Property = Control.ForegroundProperty, Value = fkColor });
-            style.Setters.Add(new Setter { Property = Control.BackgroundProperty, Value = bkColor });
+            style.Setters.Add(new Setter { Property = Control.ForegroundProperty, Value = Themes.SqlResult.Table.Foreground });
+            style.Setters.Add(new Setter { Property = Control.BackgroundProperty, Value = Themes.SqlResult.Table.Background });
             style.Setters.Add(new Setter { Property = Control.PaddingProperty, Value = new Thickness(2, 0, 2, 0) });
             dataGrid.RowHeaderStyle = style;
 

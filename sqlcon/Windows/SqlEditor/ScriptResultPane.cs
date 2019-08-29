@@ -40,7 +40,6 @@ namespace sqlcon.Windows
             TextBox.Focus();
         }
 
-        private Configuration cfg => Tabs.Editor.cfg;
         private void InitializeComponent()
         {
             Grid grid = this;
@@ -56,8 +55,8 @@ namespace sqlcon.Windows
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto
             };
-            TextBox.Foreground = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_FOREGROUND, Colors.Black);
-            TextBox.Background = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_BACKGROUND, Colors.White);
+            TextBox.Foreground = Themes.SqlEditor.Foreground;
+            TextBox.Background = Themes.SqlEditor.Background;
 
             //Paragraph space
             Style style = new Style { TargetType = typeof(Paragraph) };
@@ -66,8 +65,8 @@ namespace sqlcon.Windows
 
             GridSplitter hSplitter = new GridSplitter { Height = 5, HorizontalAlignment = HorizontalAlignment.Stretch };
             TabControl = new TabControl();
-            TabControl.Foreground = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_FOREGROUND, Colors.Black);
-            TabControl.Background = cfg.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_BACKGROUND, Colors.White);
+            TabControl.Foreground = Themes.SqlEditor.Foreground;
+            TabControl.Background = Themes.SqlEditor.Background; 
 
             lblRowCount = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Right };
             StatusBar statusBar = new StatusBar { Height = 20 };
@@ -148,7 +147,7 @@ namespace sqlcon.Windows
                     int i = 1;
                     foreach (DataTable dt in ds.Tables)
                     {
-                        var tab = new TabItem { Header = $"Table {i++}", Content = dt.CreateDataGrid(cfg) };
+                        var tab = new TabItem { Header = $"Table {i++}", Content = dt.CreateDataGrid() };
                         TabControl.Items.Add(tab);
                         builder.AppendLine($"{dt.Rows.Count} row(s) affected");
                     }
@@ -189,17 +188,14 @@ namespace sqlcon.Windows
 
         private void DisplayMessage(string message)
         {
-            var fkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_MESSAGE_FOREGROUND, Colors.White);
-            var bkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_MESSAGE_BACKGROUND, Colors.Black);
-
             var tab = new TabItem
             {
                 Header = "Messages",
                 Content = new TextBox
                 {
                     Text = message,
-                    Foreground = fkColor,
-                    Background = bkColor,
+                    Foreground = Themes.SqlResult.Message.Foreground,
+                    Background = Themes.SqlResult.Message.Background,
                     IsReadOnly = true,
                     TextWrapping = TextWrapping.Wrap,
                     AcceptsReturn = true

@@ -162,7 +162,7 @@ namespace sqlcon
         {
             get
             {
-                string path = GetValue<string>(Configuration._SERVER0);
+                string path = GetValue<string>(_SERVER0);
                 var provider = GetProvider(path);
                 path = string.Format("{0}\\{1}", provider.ServerName, provider.DefaultDatabaseName.Name);
                 return path;

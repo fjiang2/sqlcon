@@ -45,7 +45,7 @@ namespace sqlcon.Windows
                 return pane;
             }
 
-            pane = new TableResultPane(this, Editor.cfg, tname, top)
+            pane = new TableResultPane(this, tname, top)
             {
                 Link = link
             };
