@@ -98,7 +98,8 @@ namespace sqlcon.Windows
 
         private void createTree(Configuration cfg, TreeView treeView)
         {
-            foreach (var pvd in cfg.Providers)
+            var L = cfg.Providers.OrderBy(x => x.ServerName.Path);
+            foreach (var pvd in L)
             {
                 ServerName sname = pvd.ServerName;
                 DbTreeNodeUI item = new DbTreeNodeUI($"{sname.Path} ({sname.Provider.DataSource})", "server.png") { Path = sname };

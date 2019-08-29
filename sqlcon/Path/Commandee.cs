@@ -1555,16 +1555,16 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             }
 
-            //try
-            //{
+            try
+            {
                 var editor = new Windows.SqlEditor(cmd, theSide.Provider, fileLink);
                 editor.ShowDialog();
-            //}
-            //catch (Exception ex)
-            //{
-            //    cerr.WriteLine(ex.Message);
-            //    return;
-            //}
+            }
+            catch (Exception ex)
+            {
+                cerr.WriteLine(ex.Message);
+                return;
+            }
         }
 
         public void open(ApplicationCommand cmd, Configuration cfg)
