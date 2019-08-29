@@ -143,7 +143,7 @@ namespace sqlcon.Windows
         {
             TreeNode<IDataPath> node = e.Value;
             IDataPath name = node.Item;
-            if (name is TableName)
+            if (CtrlPressed && name is TableName)
             {
                 DisplaySignleTable(name);
                 return;
@@ -163,6 +163,7 @@ namespace sqlcon.Windows
 
             comboPath.SelectedValue = found;
         }
+        private bool CtrlPressed => Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
 
         private void DisplaySignleTable(IDataPath name)
         {
