@@ -54,7 +54,7 @@ namespace Sys.Data
         }
 
         public TableReader(TableName tableName, int top)
-            : this(tableName, $"SELECT TOP {top} * FROM {tableName}")
+            : this(tableName, top > 0 ? $"SELECT TOP {top} * FROM {tableName}" : $"SELECT * FROM {tableName}")
         {
         }
 

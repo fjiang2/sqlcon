@@ -44,7 +44,7 @@ namespace sqlcon.Windows
 
         private void commandCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (e.Command == SqlCommands.Select)
+            if (e.Command == SqlCommands.Select || e.Command == SqlCommands.Select1000)
             {
                 e.CanExecute = SelectedNode != null && SelectedNode.Path is TableName;
             }
@@ -53,15 +53,17 @@ namespace sqlcon.Windows
                 e.CanExecute = (SelectedPane as ScriptResultPane)?.Text != string.Empty;
             }
             else if (e.Command == ApplicationCommands.Save)
+            {
                 e.CanExecute = scriptTabControl.SelectedItem != null;
+            }
             else
                 e.CanExecute = true;
         }
 
         private void commandExecute(object sender, ExecutedRoutedEventArgs e)
         {
-            if (e.Command == SqlCommands.Select)
-                Select();
+            if (e.Command == SqlCommands.Select || e.Command == SqlCommands.Select1000)
+                Select(e.Parameter);
             else if (e.Command == SqlCommands.Execute)
                 Execute();
             else if (e.Command == ApplicationCommands.New)
@@ -87,12 +89,14 @@ namespace sqlcon.Windows
         private int untitledNumber = 1;
         private string untitled => $"untitled{untitledNumber++}.sql";
 
-        private void Select()
+        private void Select(object commandParameter)
         {
+            int top = (int)commandParameter;
+
             IDataPath path = SelectedNode.Path;
             if (path is TableName)
             {
-                DisplaySignleTable(path);
+                DisplaySignleTable(path, top);
             }
         }
 

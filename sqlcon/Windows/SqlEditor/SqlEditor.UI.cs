@@ -96,7 +96,7 @@ namespace sqlcon.Windows
             textFilter = new TextBox
             {
                 Margin = new Thickness(2),
-                ToolTip = "Input table name filter here",
+                ToolTip = "Search table name",
                 HorizontalAlignment = HorizontalAlignment.Stretch,
             };
             textFilter.TextChanged += TextFilter_TextChanged;
@@ -107,7 +107,7 @@ namespace sqlcon.Windows
                 //Width = 160,
                 Foreground = Brushes.White,
                 Background = Brushes.Black,
-                HorizontalAlignment= HorizontalAlignment.Stretch,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
                 MinWidth = 120,
             };
@@ -131,13 +131,14 @@ namespace sqlcon.Windows
 
             CommandBinding binding;
             RoutedUICommand[] commands = new RoutedUICommand[]
-               {
-                  ApplicationCommands.New,
-                  ApplicationCommands.Open,
-                  ApplicationCommands.Save,
-                  SqlCommands.Execute,
-                  SqlCommands.Select,
-               };
+            {
+                ApplicationCommands.New,
+                ApplicationCommands.Open,
+                ApplicationCommands.Save,
+                SqlCommands.Execute,
+                SqlCommands.Select,
+                SqlCommands.Select1000,
+            };
 
             foreach (var cmd in commands)
             {
@@ -168,7 +169,7 @@ namespace sqlcon.Windows
             IDataPath name = node.Item;
             if (CtrlPressed && name is TableName)
             {
-                DisplaySignleTable(name);
+                DisplaySignleTable(name, top: 1000);
                 return;
             }
 
@@ -188,9 +189,9 @@ namespace sqlcon.Windows
         }
         private bool CtrlPressed => Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
 
-        private void DisplaySignleTable(IDataPath name)
+        private void DisplaySignleTable(IDataPath name, int top)
         {
-            scriptTabControl.AddTab(name as TableName, cmd.Top);
+            scriptTabControl.AddTab(name as TableName, top);
         }
 
         public void ShowCursorPosition(int row, int col)

@@ -33,30 +33,24 @@ namespace sqlcon.Windows
         private void CreateContextMenu()
         {
             this.ContextMenu = new ContextMenu();
+
             MenuItem menuItem = new MenuItem
             {
                 Header = "Select Top 1000 Rows",
-                Command = SqlCommands.Select,
+                Command = SqlCommands.Select1000,
+                CommandParameter = 1000,
             };
-            menuItem.Click += MenuItem_Click;
+            ContextMenu.Items.Add(menuItem);
 
+            menuItem = new MenuItem
+            {
+                Header = "Select All Rows",
+                Command = SqlCommands.Select,
+                CommandParameter = 0,
+            };
             ContextMenu.Items.Add(menuItem);
         }
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            if (this.SelectedItem == null)
-                return;
-
-            MenuItem menuItem = (MenuItem)sender;
-            DbTreeNodeUI node = (DbTreeNodeUI)this.SelectedItem;
-            MenuAction((string)menuItem.Header, node.Path);
-        }
-
-        private void MenuAction(string header, IDataPath path)
-        {
-
-        }
 
         public void CreateTree(Configuration cfg)
         {
