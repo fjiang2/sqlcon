@@ -46,8 +46,23 @@ namespace sqlcon.Windows
         public static StackPanel NewImageLabel(string text, string image)
         {
             StackPanel stackPanel = new StackPanel { Orientation = Orientation.Horizontal };
-            stackPanel.Children.Add(NewImage(image));
-            stackPanel.Children.Add(new TextBlock { Text = text });
+            Image img = NewImage(image);
+            img.Width = 12;
+            img.Height = 12;
+            stackPanel.Children.Add(img);
+            stackPanel.Children.Add(new TextBlock { Text = text, Padding = new Thickness(2,0,2,0) });
+
+            return stackPanel;
+        }
+
+        public static StackPanel NewLabelImage(string text, string image)
+        {
+            StackPanel stackPanel = new StackPanel { Orientation = Orientation.Horizontal };
+            Image img = NewImage(image);
+            img.Width = 12;
+            img.Height = 12;
+            stackPanel.Children.Add(new TextBlock { Text = text, Padding = new Thickness(2, 0, 2, 0) });
+            stackPanel.Children.Add(img);
 
             return stackPanel;
         }

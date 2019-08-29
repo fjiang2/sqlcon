@@ -131,7 +131,7 @@ namespace sqlcon.Windows
 
             foreach (TableName tname in dname.GetTableNames())
             {
-                DbTreeNodeUI item = new DbTreeNodeUI(tname.Path, "ContentArrangeInRows_16x16.png") { Path = tname };
+                DbTreeNodeUI item = new DbTreeNodeUI(tname.Path, "Table_16x16.png") { Path = tname };
                 theItem.Items.Add(item);
                 item.Expanded += tableName_Expanded;
                 item.Selected += node_Selected;

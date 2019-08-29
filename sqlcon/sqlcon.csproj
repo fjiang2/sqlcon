@@ -168,12 +168,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Output\ConsoleGrid.cs" />
+    <Resource Include="Windows\images\Close_16x16.png" />
+    <Resource Include="Windows\images\Table_16x16.png" />
+    <Resource Include="Windows\images\SelectTable_16x16.png" />
     <Resource Include="Windows\images\database.png" />
     <Resource Include="Windows\images\server.png" />
     <Resource Include="Windows\images\server_error.png" />
     <Resource Include="Windows\images\key.png" />
     <Resource Include="Windows\images\AlignHorizontalTop_16x16.png" />
-    <Resource Include="Windows\images\ContentArrangeInRows_16x16.png" />
     <None Include="packages.config" />
     <None Include="sqlcon_TemporaryKey.pfx" />
     <Resource Include="Windows\images\New_16x16.png" />

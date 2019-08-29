@@ -54,7 +54,7 @@ namespace sqlcon.Windows
 
             TabItem newTab = new TabItem
             {
-                Header = tname.Path,
+                Header = WpfUtils.NewLabelImage(tname.Path, "Close_16x16.png"),
                 Content = pane
             };
             pane.TabItem = newTab;
@@ -89,7 +89,7 @@ namespace sqlcon.Windows
 
             TabItem newTab = new TabItem
             {
-                Header = header,
+                Header = WpfUtils.NewLabelImage(header, "Close_16x16.png"),
                 Content = pane,
                 ToolTip = link.ToString(),
             };

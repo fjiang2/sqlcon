@@ -35,7 +35,7 @@ namespace sqlcon.Windows
 
         private void InitializeComponent(Configuration cfg)
         {
-            this.Width = 1024;
+            this.Width = 1280;
             this.Height = 768;
 
             Button btnNew = WpfUtils.NewImageButton(ApplicationCommands.New, "New", "New(Ctrl-N)", "New_16x16.png");
