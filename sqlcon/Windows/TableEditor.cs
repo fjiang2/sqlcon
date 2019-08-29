@@ -38,7 +38,7 @@ namespace sqlcon.Windows
                 AlternationCount = 2,
                 AlternatingRowBackground = Themes.TableEditor.AlternatingRowBackground,
                 Foreground = Themes.TableEditor.Foreground,
-                RowBackground = Themes.TableEditor.Background,
+                RowBackground = Themes.TableEditor.RowBackground,
             };
 
             if (udt.TableName != null)
