@@ -20,7 +20,6 @@ namespace sqlcon.Windows
         internal Configuration cfg;
         private ConnectionProvider provider;
 
-        internal const string untitled = "untitled.sql";
         public SqlEditor(ApplicationCommand cmd, ConnectionProvider provider, FileLink link)
         {
             this.cmd = cmd;
@@ -89,6 +88,8 @@ namespace sqlcon.Windows
             tab.IsDirty = false;
         }
 
+        private int untitledNumber = 1;
+        private string untitled => $"untitled{untitledNumber++}.sql";
         public void New()
         {
             FileLink link = FileLink.CreateLink(untitled);

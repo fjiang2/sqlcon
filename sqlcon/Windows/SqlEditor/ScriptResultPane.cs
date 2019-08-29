@@ -210,11 +210,10 @@ namespace sqlcon.Windows
             tab.Focus();
         }
 
-     
+
         public void Save()
         {
-
-            if (Link.Url != SqlEditor.untitled)
+            if (!Link.Url.StartsWith("untitled") || !Link.Url.EndsWith(".sql"))
             {
                 try
                 {

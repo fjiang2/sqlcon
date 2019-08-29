@@ -113,6 +113,22 @@ namespace sqlcon.Windows
 
             img.MouseDown += (sender, e) =>
             {
+                if (pane.IsDirty)
+                {
+                    switch (MessageBox.Show($"Save file: \"{pane.Link}\" ?", "Save", MessageBoxButton.YesNoCancel, MessageBoxImage.Question))
+                    {
+                        case MessageBoxResult.Yes:
+                            pane.Save();
+                            break;
+
+                        case MessageBoxResult.No:
+                            break;
+
+                        case MessageBoxResult.Cancel:
+                            return;
+                    }
+                }
+
                 panes.Remove(pane.Link);
                 tabControl.Items.Remove(pane.TabItem);
             };
