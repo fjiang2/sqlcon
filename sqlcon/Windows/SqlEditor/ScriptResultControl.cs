@@ -54,7 +54,7 @@ namespace sqlcon.Windows
 
             TabItem newTab = new TabItem
             {
-                Header = WpfUtils.NewLabelImage(tname.Path, "Close_16x16.png"),
+                Header = NewLabelImage(pane, tname.Path, "Close_16x16.png"),
                 Content = pane
             };
             pane.TabItem = newTab;
@@ -89,7 +89,7 @@ namespace sqlcon.Windows
 
             TabItem newTab = new TabItem
             {
-                Header = WpfUtils.NewLabelImage(header, "Close_16x16.png"),
+                Header = NewLabelImage(pane, header, "Close_16x16.png"),
                 Content = pane,
                 ToolTip = link.ToString(),
             };
@@ -100,6 +100,24 @@ namespace sqlcon.Windows
 
             pane.Focus();
             return pane;
+        }
+
+        private StackPanel NewLabelImage(IResultPane pane, string text, string image)
+        {
+            StackPanel stackPanel = new StackPanel { Orientation = Orientation.Horizontal };
+            Image img = WpfUtils.NewImage(image);
+            img.Width = 12;
+            img.Height = 12;
+            stackPanel.Children.Add(new TextBlock { Text = text, Padding = new Thickness(2, 0, 2, 0) });
+            stackPanel.Children.Add(img);
+
+            img.MouseDown += (sender, e) =>
+            {
+                panes.Remove(pane.Link);
+                tabControl.Items.Remove(pane.TabItem);
+            };
+
+            return stackPanel;
         }
 
         public IResultPane SelectedPane
