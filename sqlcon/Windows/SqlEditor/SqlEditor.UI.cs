@@ -97,6 +97,7 @@ namespace sqlcon.Windows
             {
                 Margin = new Thickness(2),
                 ToolTip = "Input table name filter here",
+                HorizontalAlignment = HorizontalAlignment.Stretch,
             };
             textFilter.TextChanged += TextFilter_TextChanged;
 
@@ -106,6 +107,9 @@ namespace sqlcon.Windows
                 //Width = 160,
                 Foreground = Brushes.White,
                 Background = Brushes.Black,
+                HorizontalAlignment= HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch,
+                MinWidth = 120,
             };
 
             //Style style = new Style(typeof(TreeViewItem));

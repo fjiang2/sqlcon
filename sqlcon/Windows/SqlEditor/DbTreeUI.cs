@@ -214,31 +214,64 @@ namespace sqlcon.Windows
 
         public void RunFilter(string wildcard)
         {
-            Func<DbTreeNodeUI, bool> filter;
+            wildcard = wildcard.Trim();
+            if (wildcard == string.Empty)
+            {
+                ShowAllNodes();
+                return;
+            }
 
-            if (string.IsNullOrEmpty(wildcard))
-                filter = item => true;
-            else
-                filter = item => item.Path.Path.IsMatch(wildcard);
+            if (wildcard.IndexOf('*') == -1 && wildcard.IndexOf('?') == -1)
+                wildcard = $"*{wildcard}*";
 
             foreach (DbTreeNodeUI item in this.Items)
-                SetVisibility(item, filter);
+                SetVisibility(item, wildcard);
         }
 
-        private void SetVisibility(DbTreeNodeUI item, Func<DbTreeNodeUI, bool> filter)
+        private bool SetVisibility(DbTreeNodeUI item, string wildcard)
         {
             if (item.Path is TableName)
             {
-                bool macthed = filter(item);
+                TableName tname = (TableName)item.Path;
+                bool macthed = tname.ShortName.IsMatch(wildcard);
                 if (macthed)
                     item.Visibility = Visibility.Visible;
                 else
                     item.Visibility = Visibility.Collapsed;
+
+                return macthed;
             }
 
+            bool found = false;
             foreach (DbTreeNodeUI theItem in item.Items)
             {
-                SetVisibility(theItem, filter);
+                if (SetVisibility(theItem, wildcard))
+                {
+                    if (!found)
+                        found = true;
+                }
+            }
+
+            if (found)
+                item.Visibility = Visibility.Visible;
+            else
+                item.Visibility = Visibility.Collapsed;
+
+            return found;
+        }
+
+        private void ShowAllNodes()
+        {
+            foreach (DbTreeNodeUI item in this.Items)
+                ShowAllNodes(item);
+        }
+
+        private void ShowAllNodes(DbTreeNodeUI item)
+        {
+            item.Visibility = Visibility.Visible;
+            foreach (DbTreeNodeUI theItem in item.Items)
+            {
+                ShowAllNodes(theItem);
             }
         }
     }
