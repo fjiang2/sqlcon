@@ -9,10 +9,8 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Input;
-using System.Windows.Markup;
-using System.Windows.Documents;
 using System.Windows.Controls.Primitives;
-using System.ComponentModel;
+using System.Data;
 
 namespace sqlcon.Windows
 {
@@ -54,5 +52,57 @@ namespace sqlcon.Windows
             return stackPanel;
         }
 
+        public static DataGrid CreateDataGrid(this DataTable table, Configuration cfg)
+        {
+            var fkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_FOREGROUND, Colors.White);
+            var bkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_BACKGROUND, Colors.Black);
+            var evenRowColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_ALTERNATINGROWBACKGROUND, Colors.DimGray);
+            var oddRowColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_ROWBACKGROUND, Colors.Black);
+
+            var dataGrid = new DataGrid
+            {
+                Foreground = fkColor,
+                AlternationCount = 2,
+                AlternatingRowBackground = evenRowColor,
+                RowBackground = oddRowColor
+            };
+
+            var style = new Style(typeof(DataGridColumnHeader));
+            style.Setters.Add(new Setter { Property = Control.ForegroundProperty, Value = fkColor });
+            style.Setters.Add(new Setter { Property = Control.BackgroundProperty, Value = bkColor });
+            style.Setters.Add(new Setter { Property = Control.PaddingProperty, Value = new Thickness(2, 0, 2, 0) });
+            dataGrid.ColumnHeaderStyle = style;
+
+            style = new Style(typeof(DataGridRowHeader));
+            style.Setters.Add(new Setter { Property = Control.ForegroundProperty, Value = fkColor });
+            style.Setters.Add(new Setter { Property = Control.BackgroundProperty, Value = bkColor });
+            style.Setters.Add(new Setter { Property = Control.PaddingProperty, Value = new Thickness(2, 0, 2, 0) });
+            dataGrid.RowHeaderStyle = style;
+
+            dataGrid.RowHeaderWidth = 40;
+            dataGrid.IsReadOnly = true;
+
+            dataGrid.ItemsSource = table.DefaultView;
+            //dataGrid.Loaded += DataGrid_Loaded;
+            dataGrid.LoadingRow += DataGrid_LoadingRow;
+            return dataGrid;
+        }
+
+        private static void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            // add line number on the grid
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+        }
+
+        private static void DataGrid_Loaded(object sender, RoutedEventArgs e)
+        {
+            DataGrid dataGrid = (DataGrid)sender;
+            DataGridTextColumn column = new DataGridTextColumn
+            {
+                Header = "",
+            };
+
+            dataGrid.Columns.Insert(0, column);
+        }
     }
 }

@@ -48,23 +48,11 @@ namespace sqlcon.Windows
 
         private void InitializeComponent(Configuration cfg, DataTable dt)
         {
-            dt = dt.AddLineNumberColumn();
             Grid grid = this;
             grid.RowDefinitions.Add(new RowDefinition());
             grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(25) });
 
-            var fkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_FOREGROUND, Colors.White);
-            var bkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_BACKGROUND, Colors.Black);
-            var evenRowColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_ALTERNATINGROWBACKGROUND, Colors.DimGray);
-            var oddRowColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_ROWBACKGROUND, Colors.Black);
-
-            DataGrid dataGrid = new DataGrid
-            {
-                Foreground = fkColor,
-                AlternationCount = 2,
-                AlternatingRowBackground = evenRowColor,
-                RowBackground = oddRowColor
-            };
+            DataGrid dataGrid = dt.CreateDataGrid(cfg);
 
             StatusBar statusBar = new StatusBar { Height = 20 };
             lblRowCount = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Right };
@@ -75,17 +63,7 @@ namespace sqlcon.Windows
 
             this.Children.Add(dataGrid);
             this.Children.Add(statusBar);
-
-
-            var style = new Style(typeof(DataGridColumnHeader));
-            style.Setters.Add(new Setter { Property = Control.ForegroundProperty, Value = fkColor });
-            style.Setters.Add(new Setter { Property = Control.BackgroundProperty, Value = bkColor });
-            dataGrid.ColumnHeaderStyle = style;
-
-            dataGrid.IsReadOnly = true;
-            dataGrid.ItemsSource = dt.DefaultView;
         }
-
 
         public void Save()
         {

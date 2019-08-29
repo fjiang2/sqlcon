@@ -148,7 +148,7 @@ namespace sqlcon.Windows
                     int i = 1;
                     foreach (DataTable dt in ds.Tables)
                     {
-                        var tab = new TabItem { Header = $"Table {i++}", Content = CreateDataTableGrid(cfg, dt) };
+                        var tab = new TabItem { Header = $"Table {i++}", Content = dt.CreateDataGrid(cfg) };
                         TabControl.Items.Add(tab);
                         builder.AppendLine($"{dt.Rows.Count} row(s) affected");
                     }
@@ -210,32 +210,7 @@ namespace sqlcon.Windows
             tab.Focus();
         }
 
-        public static DataGrid CreateDataTableGrid(Configuration cfg, DataTable table)
-        {
-            var fkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_FOREGROUND, Colors.White);
-            var bkColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_BACKGROUND, Colors.Black);
-            var evenRowColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_ALTERNATINGROWBACKGROUND, Colors.DimGray);
-            var oddRowColor = cfg.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_ROWBACKGROUND, Colors.Black);
-
-            var dataGrid = new DataGrid
-            {
-                Foreground = fkColor,
-                AlternationCount = 2,
-                AlternatingRowBackground = evenRowColor,
-                RowBackground = oddRowColor
-            };
-
-            var style = new Style(typeof(DataGridColumnHeader));
-            style.Setters.Add(new Setter { Property = Control.ForegroundProperty, Value = fkColor });
-            style.Setters.Add(new Setter { Property = Control.BackgroundProperty, Value = bkColor });
-            dataGrid.ColumnHeaderStyle = style;
-
-            dataGrid.IsReadOnly = true;
-            dataGrid.ItemsSource = table.DefaultView;
-
-            return dataGrid;
-        }
-
+     
         public void Save()
         {
 
