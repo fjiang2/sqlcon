@@ -28,10 +28,8 @@ namespace sqlcon.Windows
         private TextBlock lblCursorPosition = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Left };
 
         private ComboBox comboPath;
-
+        private DbTreeUI treeView;
         private ScriptResultControl scriptTabControl;
-
-        private static RoutedUICommand ExecuteCommand = new RoutedUICommand("Execute", "execute", typeof(SqlEditor), new InputGestureCollection { new KeyGesture(Key.F5, ModifierKeys.None, "F5") });
 
         private void InitializeComponent(Configuration cfg)
         {
@@ -41,7 +39,7 @@ namespace sqlcon.Windows
             Button btnNew = WpfUtils.NewImageButton(ApplicationCommands.New, "New", "New(Ctrl-N)", "New_16x16.png");
             Button btnOpen = WpfUtils.NewImageButton(ApplicationCommands.Open, "Open", "Open(Ctrl-O)", "Open_16x16.png");
             Button btnSave = WpfUtils.NewImageButton(ApplicationCommands.Save, "Save", "Save(Ctrl-S)", "Save_16x16.png");
-            Button btnExecute = WpfUtils.NewImageButton(ExecuteCommand, "Execute", "Execute(F5)", "Next_16x16.png");
+            Button btnExecute = WpfUtils.NewImageButton(SqlCommands.Execute, "Execute", "Execute(F5)", "Next_16x16.png");
             this.comboPath = new ComboBox { Width = 300, HorizontalAlignment = HorizontalAlignment.Right };
             this.comboPath.SelectionChanged += ComboPath_SelectionChanged;
             DockPanel dockPanel = new DockPanel();
@@ -92,7 +90,7 @@ namespace sqlcon.Windows
             grid.Children.Add(scriptTabControl);
 
             //Database Tree
-            DbTreeUI treeView = new DbTreeUI
+            this.treeView = new DbTreeUI
             {
                 //Width = 160,
                 Foreground = Brushes.White,
@@ -119,7 +117,8 @@ namespace sqlcon.Windows
                   ApplicationCommands.New,
                   ApplicationCommands.Open,
                   ApplicationCommands.Save,
-                  ExecuteCommand
+                  SqlCommands.Execute,
+                  SqlCommands.Select,
                };
 
             foreach (var cmd in commands)
@@ -138,6 +137,7 @@ namespace sqlcon.Windows
         }
 
         private IResultPane SelectedPane => scriptTabControl.SelectedPane;
+        private DbTreeNodeUI SelectedNode => (DbTreeNodeUI)treeView.SelectedItem;
 
         private void TreeView_PathChanged(object sender, EventArgs<TreeNode<IDataPath>> e)
         {

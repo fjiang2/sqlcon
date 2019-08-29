@@ -42,19 +42,13 @@ namespace sqlcon.Windows
                 this.Title = $"{link} - sqlcon";
         }
 
-
-        private void Execute()
-        {
-            IDataPath name = comboPath.SelectedValue as IDataPath;
-            if (name is DatabaseName)
-                provider = (name as DatabaseName).Provider;
-
-            (SelectedPane as ScriptResultPane)?.Execute(provider);
-        }
-
         private void commandCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (e.Command == ExecuteCommand)
+            if (e.Command == SqlCommands.Select)
+            {
+                e.CanExecute = SelectedNode != null && SelectedNode.Path is TableName;
+            }
+            else if (e.Command == SqlCommands.Execute)
             {
                 e.CanExecute = (SelectedPane as ScriptResultPane)?.Text != string.Empty;
             }
@@ -66,7 +60,9 @@ namespace sqlcon.Windows
 
         private void commandExecute(object sender, ExecutedRoutedEventArgs e)
         {
-            if (e.Command == ExecuteCommand)
+            if (e.Command == SqlCommands.Select)
+                Select();
+            else if (e.Command == SqlCommands.Execute)
                 Execute();
             else if (e.Command == ApplicationCommands.New)
                 New();
@@ -90,6 +86,25 @@ namespace sqlcon.Windows
 
         private int untitledNumber = 1;
         private string untitled => $"untitled{untitledNumber++}.sql";
+
+        private void Select()
+        {
+            IDataPath path = SelectedNode.Path;
+            if (path is TableName)
+            {
+                DisplaySignleTable(path);
+            }
+        }
+
+        private void Execute()
+        {
+            IDataPath name = comboPath.SelectedValue as IDataPath;
+            if (name is DatabaseName)
+                provider = (name as DatabaseName).Provider;
+
+            (SelectedPane as ScriptResultPane)?.Execute(provider);
+        }
+
         public void New()
         {
             FileLink link = FileLink.CreateLink(untitled);

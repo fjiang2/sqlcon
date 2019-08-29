@@ -27,6 +27,35 @@ namespace sqlcon.Windows
 
         public DbTreeUI()
         {
+            CreateContextMenu();
+        }
+
+        private void CreateContextMenu()
+        {
+            this.ContextMenu = new ContextMenu();
+            MenuItem menuItem = new MenuItem
+            {
+                Header = "Select Top 1000 Rows",
+                Command = SqlCommands.Select,
+            };
+            menuItem.Click += MenuItem_Click;
+
+            ContextMenu.Items.Add(menuItem);
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.SelectedItem == null)
+                return;
+
+            MenuItem menuItem = (MenuItem)sender;
+            DbTreeNodeUI node = (DbTreeNodeUI)this.SelectedItem;
+            MenuAction((string)menuItem.Header, node.Path);
+        }
+
+        private void MenuAction(string header, IDataPath path)
+        {
+
         }
 
         public void CreateTree(Configuration cfg)
@@ -185,7 +214,7 @@ namespace sqlcon.Windows
 
     }
 
-    class DbTreeNodeUI : TreeViewItem
+    public class DbTreeNodeUI : TreeViewItem
     {
         public IDataPath Path { get; set; }
         public string Text { get; }
@@ -207,5 +236,9 @@ namespace sqlcon.Windows
             image.Source = WpfUtils.NewBitmapImage(imageName);
         }
 
+        public override string ToString()
+        {
+            return Path.Path;
+        }
     }
 }
