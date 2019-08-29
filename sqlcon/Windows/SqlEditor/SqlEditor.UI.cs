@@ -96,8 +96,15 @@ namespace sqlcon.Windows
             {
                 //Width = 160,
                 Foreground = Brushes.White,
-                //Background = Brushes.Black
+                Background = Brushes.Black,
             };
+
+            //Style style = new Style(typeof(TreeViewItem));
+            //style.Setters.Add(new Setter { Property = Control.ForegroundProperty, Value = Brushes.White });
+            //style.Setters.Add(new Setter { Property = Control.BackgroundProperty, Value = Brushes.Black });
+            //style.Resources.Add(SystemColors.ControlBrushKey, Brushes.Black);
+            //treeView.ItemContainerStyle = style;
+
             grid1.Children.Add(treeView);
 
             treeView.CreateTree(cfg);

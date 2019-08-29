@@ -195,6 +195,9 @@ namespace sqlcon.Windows
             this.Text = text;
             var label = WpfUtils.NewImageLabel(text, imageName);
             this.Header = label;
+
+            Foreground = Brushes.White;
+            Background = Brushes.Black;
         }
 
         public void ChangeImage(string imageName)

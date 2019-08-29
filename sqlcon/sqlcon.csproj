@@ -125,7 +125,7 @@
     <Compile Include="Windows\SqlEditor\ScriptResultControl.cs" />
     <Compile Include="Windows\SqlEditor\ScriptResultPane.cs" />
     <Compile Include="Windows\SqlEditor\SqlEditor.UI.cs" />
-    <Compile Include="Windows\DbTreeUI.cs" />
+    <Compile Include="Windows\SqlEditor\DbTreeUI.cs" />
     <Compile Include="Windows\SqlEditor\SqlEditor.cs" />
     <Compile Include="Windows\SqlEditor\TableResultPane.cs" />
     <Compile Include="Windows\TableEditor.cs" />
