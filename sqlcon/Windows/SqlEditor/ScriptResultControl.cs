@@ -36,7 +36,7 @@ namespace sqlcon.Windows
 
         public TableResultPane AddTab(TableName tname, int top)
         {
-            FileLink link = FileLink.CreateLink(tname.FullName);
+            FileLink link = FileLink.CreateLink(tname.FullPath);
             TableResultPane pane;
             if (panes.ContainsKey(link))
             {
@@ -55,7 +55,8 @@ namespace sqlcon.Windows
             TabItem newTab = new TabItem
             {
                 Header = NewLabelImage(pane, tname.Path, "Close_16x16.png"),
-                Content = pane
+                Content = pane,
+                ToolTip = link.ToString(),
             };
             pane.TabItem = newTab;
             tabControl.Items.Add(newTab);
