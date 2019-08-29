@@ -28,6 +28,7 @@ namespace sqlcon.Windows
         private TextBlock lblCursorPosition = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Left };
 
         private ComboBox comboPath;
+        private TextBox textFilter;
         private DbTreeUI treeView;
         private ScriptResultControl scriptTabControl;
 
@@ -78,6 +79,9 @@ namespace sqlcon.Windows
             grid.ColumnDefinitions.Add(new ColumnDefinition());
 
             Grid grid1 = new Grid();
+            grid1.RowDefinitions.Add(new RowDefinition { Height = new GridLength(25) });
+            grid1.RowDefinitions.Add(new RowDefinition());
+
             GridSplitter vSplitter = new GridSplitter { Width = 5, VerticalAlignment = VerticalAlignment.Stretch };
             scriptTabControl = new ScriptResultControl(this);
 
@@ -88,6 +92,13 @@ namespace sqlcon.Windows
             grid.Children.Add(grid1);
             grid.Children.Add(vSplitter);
             grid.Children.Add(scriptTabControl);
+
+            textFilter = new TextBox
+            {
+                Margin = new Thickness(2),
+                ToolTip = "Input table name filter here",
+            };
+            textFilter.TextChanged += TextFilter_TextChanged;
 
             //Database Tree
             this.treeView = new DbTreeUI
@@ -103,6 +114,9 @@ namespace sqlcon.Windows
             //style.Resources.Add(SystemColors.ControlBrushKey, Brushes.Black);
             //treeView.ItemContainerStyle = style;
 
+            textFilter.SetValue(Grid.RowProperty, 0);
+            treeView.SetValue(Grid.RowProperty, 1);
+            grid1.Children.Add(textFilter);
             grid1.Children.Add(treeView);
 
             treeView.CreateTree(cfg);
@@ -128,6 +142,11 @@ namespace sqlcon.Windows
                 binding.CanExecute += commandCanExecute;
                 this.CommandBindings.Add(binding);
             }
+        }
+
+        private void TextFilter_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            treeView.RunFilter(textFilter.Text);
         }
 
         private void ComboPath_SelectionChanged(object sender, SelectionChangedEventArgs e)

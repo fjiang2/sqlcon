@@ -212,6 +212,35 @@ namespace sqlcon.Windows
             return $"{column.ColumnName} ({line})";
         }
 
+        public void RunFilter(string wildcard)
+        {
+            Func<DbTreeNodeUI, bool> filter;
+
+            if (string.IsNullOrEmpty(wildcard))
+                filter = item => true;
+            else
+                filter = item => item.Path.Path.IsMatch(wildcard);
+
+            foreach (DbTreeNodeUI item in this.Items)
+                SetVisibility(item, filter);
+        }
+
+        private void SetVisibility(DbTreeNodeUI item, Func<DbTreeNodeUI, bool> filter)
+        {
+            if (item.Path is TableName)
+            {
+                bool macthed = filter(item);
+                if (macthed)
+                    item.Visibility = Visibility.Visible;
+                else
+                    item.Visibility = Visibility.Collapsed;
+            }
+
+            foreach (DbTreeNodeUI theItem in item.Items)
+            {
+                SetVisibility(theItem, filter);
+            }
+        }
     }
 
     public class DbTreeNodeUI : TreeViewItem
