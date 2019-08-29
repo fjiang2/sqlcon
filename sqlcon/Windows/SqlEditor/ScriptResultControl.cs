@@ -110,30 +110,32 @@ namespace sqlcon.Windows
             img.Height = 12;
             stackPanel.Children.Add(new TextBlock { Text = text, Padding = new Thickness(2, 0, 2, 0) });
             stackPanel.Children.Add(img);
-
-            img.MouseDown += (sender, e) =>
-            {
-                if (pane.IsDirty)
-                {
-                    switch (MessageBox.Show($"Save file: \"{pane.Link}\" ?", "Save", MessageBoxButton.YesNoCancel, MessageBoxImage.Question))
-                    {
-                        case MessageBoxResult.Yes:
-                            pane.Save();
-                            break;
-
-                        case MessageBoxResult.No:
-                            break;
-
-                        case MessageBoxResult.Cancel:
-                            return;
-                    }
-                }
-
-                panes.Remove(pane.Link);
-                tabControl.Items.Remove(pane.TabItem);
-            };
-
+            img.Tag = pane;
+            img.MouseDown += TabItemClosed;
             return stackPanel;
+        }
+
+        private void TabItemClosed(object sender, MouseButtonEventArgs e)
+        {
+            IResultPane pane = (sender as Image).Tag as IResultPane;
+            if (pane.IsDirty)
+            {
+                switch (MessageBox.Show($"Save file: \"{pane.Link}\" ?", "Save", MessageBoxButton.YesNoCancel, MessageBoxImage.Question))
+                {
+                    case MessageBoxResult.Yes:
+                        pane.Save();
+                        break;
+
+                    case MessageBoxResult.No:
+                        break;
+
+                    case MessageBoxResult.Cancel:
+                        return;
+                }
+            }
+
+            panes.Remove(pane.Link);
+            tabControl.Items.Remove(pane.TabItem);
         }
 
         public IResultPane SelectedPane
