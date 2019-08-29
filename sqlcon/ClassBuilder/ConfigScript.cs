@@ -84,6 +84,11 @@ namespace sqlcon
                 return;
             }
 
+            if(val.IsFunction)
+            {
+                return;
+            }
+
             Type type = typeof(string);
             if (val.HostValue != null)
             {
