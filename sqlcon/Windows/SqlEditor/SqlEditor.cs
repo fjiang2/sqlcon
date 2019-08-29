@@ -62,8 +62,10 @@ namespace sqlcon.Windows
 
         private void commandExecute(object sender, ExecutedRoutedEventArgs e)
         {
-            if (e.Command == SqlCommands.Select || e.Command == SqlCommands.Select1000)
-                Select(e.Parameter);
+            if (e.Command == SqlCommands.Select)
+                Select(top: 0);
+            else if (e.Command == SqlCommands.Select1000)
+                Select(top: 1000);
             else if (e.Command == SqlCommands.Execute)
                 Execute();
             else if (e.Command == ApplicationCommands.New)
@@ -89,10 +91,8 @@ namespace sqlcon.Windows
         private int untitledNumber = 1;
         private string untitled => $"untitled{untitledNumber++}.sql";
 
-        private void Select(object commandParameter)
+        private void Select(int top)
         {
-            int top = (int)commandParameter;
-
             IDataPath path = SelectedNode.Path;
             if (path is TableName)
             {
