@@ -37,7 +37,7 @@ namespace sqlcon.Windows
             this.Width = 1280;
             this.Height = 768;
 
-            Button btnHome = WpfUtils.NewImageButton(SqlCommands.Home, "Home", "Home(Alt-H)", "Home_16x16.png");
+            Button btnHome = WpfUtils.NewImageButton(SqlCommands.Home, "Home", $"Home(Alt-H): {cfg.Home}", "Home_16x16.png");
             Button btnNew = WpfUtils.NewImageButton(ApplicationCommands.New, "New", "New(Ctrl-N)", "New_16x16.png");
             Button btnOpen = WpfUtils.NewImageButton(ApplicationCommands.Open, "Open", "Open(Ctrl-O)", "Open_16x16.png");
             Button btnSave = WpfUtils.NewImageButton(ApplicationCommands.Save, "Save", "Save(Ctrl-S)", "Save_16x16.png");

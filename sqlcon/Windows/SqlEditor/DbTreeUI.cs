@@ -97,9 +97,9 @@ namespace sqlcon.Windows
             return node;
         }
 
-        public void ChangeTreeNode(string path)
+        public void GoHome(string home)
         {
-            PathName pathName = new PathName(path);
+            PathName pathName = new PathName(home);
             string[] S = pathName.FullSegments;
 
             if (S.Length < 2)
@@ -113,10 +113,13 @@ namespace sqlcon.Windows
 
                 snode.IsExpanded = true;
                 snode.IsSelected = true;
-                ExpandServerName(snode, sname);
+                ExpandNode(snode, sname);
 
                 if (S.Length < 3)
+                {
+                    chdir(home);
                     return;
+                }
 
                 foreach (DbTreeNodeUI dnode in snode.Items)
                 {
@@ -126,10 +129,13 @@ namespace sqlcon.Windows
 
                     dnode.IsExpanded = true;
                     dnode.IsSelected = true;
-                    ExpandDatabaseName(dnode, dname);
+                    ExpandNode(dnode, dname);
 
                     if (S.Length < 4)
+                    {
+                        chdir(home);
                         return;
+                    }
 
                     foreach (DbTreeNodeUI tnode in dnode.Items)
                     {
@@ -139,6 +145,8 @@ namespace sqlcon.Windows
 
                         tnode.IsExpanded = true;
                         tnode.IsSelected = true;
+
+                        chdir(home);
                         return;
                     }
                 }
@@ -180,14 +188,14 @@ namespace sqlcon.Windows
             DbTreeNodeUI theItem = (DbTreeNodeUI)sender;
             ServerName sname = theItem.Path as ServerName;
 
-            ExpandServerName(theItem, sname);
+            ExpandNode(theItem, sname);
         }
 
         private void databaseName_Expanded(object sender, RoutedEventArgs e)
         {
             DbTreeNodeUI theItem = (DbTreeNodeUI)sender;
             DatabaseName dname = theItem.Path as DatabaseName;
-            ExpandDatabaseName(theItem, dname);
+            ExpandNode(theItem, dname);
         }
 
         private void tableName_Expanded(object sender, RoutedEventArgs e)
@@ -195,10 +203,10 @@ namespace sqlcon.Windows
             DbTreeNodeUI theItem = (DbTreeNodeUI)sender;
             TableName tname = theItem.Path as TableName;
 
-            ExpandTableName(theItem, tname);
+            ExpandNode(theItem, tname);
         }
 
-        private void ExpandServerName(DbTreeNodeUI theItem, ServerName sname)
+        private void ExpandNode(DbTreeNodeUI theItem, ServerName sname)
         {
             if (theItem.Items.Count > 0)
                 return;
@@ -219,7 +227,7 @@ namespace sqlcon.Windows
         }
 
 
-        private void ExpandDatabaseName(DbTreeNodeUI theItem, DatabaseName dname)
+        private void ExpandNode(DbTreeNodeUI theItem, DatabaseName dname)
         {
             if (theItem.Items.Count > 0)
                 return;
@@ -233,7 +241,7 @@ namespace sqlcon.Windows
             }
         }
 
-        private static void ExpandTableName(DbTreeNodeUI theItem, TableName tname)
+        private static void ExpandNode(DbTreeNodeUI theItem, TableName tname)
         {
             if (theItem.Items.Count > 0)
                 return;

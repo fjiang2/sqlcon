@@ -104,7 +104,7 @@ namespace sqlcon.Windows
         {
             string home = cfg.Home;
             if (home != null)
-                treeView.ChangeTreeNode(home);
+                treeView.GoHome(home);
         }
 
         private void Select(int top)
