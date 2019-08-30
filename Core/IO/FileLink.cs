@@ -42,6 +42,11 @@ namespace Sys.Data.IO
             get { return url.IndexOf("://") < 0; }
         }
 
+        /// <summary>
+        /// Temporary file 
+        /// </summary>
+        public bool TemporaryLink { get; set; }
+
         protected abstract bool exists();
 
         public abstract string PathCombine(string path1, string path2);

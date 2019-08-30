@@ -30,7 +30,10 @@ namespace sqlcon.Windows
             this.provider = provider;
 
             if (link == null)
+            {
                 link = FileLink.CreateLink(untitled);
+                link.TemporaryLink = true;
+            }
 
             Display(link);
         }
@@ -112,6 +115,8 @@ namespace sqlcon.Windows
         public void New()
         {
             FileLink link = FileLink.CreateLink(untitled);
+            link.TemporaryLink = true;
+
             Display(link);
         }
 

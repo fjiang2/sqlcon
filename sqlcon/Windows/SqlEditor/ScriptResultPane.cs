@@ -209,7 +209,7 @@ namespace sqlcon.Windows
 
         public void Save()
         {
-            if (!Link.Url.StartsWith("untitled") || !Link.Url.EndsWith(".sql"))
+            if (!Link.TemporaryLink)
             {
                 try
                 {
