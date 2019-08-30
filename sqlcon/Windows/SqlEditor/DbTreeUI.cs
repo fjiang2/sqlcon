@@ -97,9 +97,9 @@ namespace sqlcon.Windows
             return node;
         }
 
-        public void GoHome(string home)
+        public void ChangeNode(string path)
         {
-            PathName pathName = new PathName(home);
+            PathName pathName = new PathName(path);
             string[] S = pathName.FullSegments;
 
             if (S.Length < 2)
@@ -117,7 +117,7 @@ namespace sqlcon.Windows
 
                 if (S.Length < 3)
                 {
-                    chdir(home);
+                    chdir(path);
                     return;
                 }
 
@@ -136,7 +136,7 @@ namespace sqlcon.Windows
 
                     if (S.Length < 4)
                     {
-                        chdir(home);
+                        chdir(path);
                         return;
                     }
 
@@ -149,7 +149,7 @@ namespace sqlcon.Windows
                         tnode.IsExpanded = true;
                         tnode.IsSelected = true;
 
-                        chdir(home);
+                        chdir(path);
                         return;
                     }
                 }

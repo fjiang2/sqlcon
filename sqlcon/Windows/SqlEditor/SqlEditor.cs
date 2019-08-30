@@ -20,7 +20,7 @@ namespace sqlcon.Windows
         internal Configuration cfg;
         private ConnectionProvider provider;
 
-        public SqlEditor(ApplicationCommand cmd, ConnectionProvider provider, FileLink link)
+        public SqlEditor(ApplicationCommand cmd, ConnectionProvider provider, string currentPath, FileLink link)
         {
             this.cmd = cmd;
             this.cfg = cmd.Configuration;
@@ -36,6 +36,8 @@ namespace sqlcon.Windows
             }
 
             Display(link);
+
+            treeView.ChangeNode(currentPath);
         }
 
         private void ScriptTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -104,7 +106,7 @@ namespace sqlcon.Windows
         {
             string home = cfg.Home;
             if (home != null)
-                treeView.GoHome(home);
+                treeView.ChangeNode(home);
         }
 
         private void Select(int top)
