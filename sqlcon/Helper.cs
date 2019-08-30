@@ -111,39 +111,6 @@ namespace sqlcon
             return true;
         }
 
-        public static Brush GetSolidBrush(this Configuration cfg, string key, Color defaultColor)
-        {
-            if (cfg != null)
-                return new SolidColorBrush(GetColor(cfg, key, defaultColor));
-
-            return default;
-        }
-
-        public static Color GetColor(this Configuration cfg, string key, Color defaultColor)
-        {
-            string colorString = cfg.GetValue<string>(key);
-
-            if (colorString != null)
-            {
-                ColorConverter converter = new ColorConverter();
-
-                if (converter.CanConvertFrom(typeof(string)))
-                {
-                    try
-                    {
-                        Color color = (Color)converter.ConvertFrom(null, null, colorString);
-                        return color;
-                    }
-                    catch (Exception)
-                    {
-                        cerr.WriteLine($"color setting {key} = {colorString} not supported");
-                    }
-                }
-            }
-
-            return defaultColor;
-        }
-
         public static string Message(this SqlException ex)
         {
             StringBuilder builder = new StringBuilder();
