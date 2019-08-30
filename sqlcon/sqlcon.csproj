@@ -125,6 +125,7 @@
     <Compile Include="Shell\Importer.cs" />
     <Compile Include="Shell\ShellHelp.cs" />
     <Compile Include="Shell\ShellHistory.cs" />
+    <Compile Include="Windows\SqlEditor\DbTreeNodeUI.cs" />
     <Compile Include="Windows\SqlEditor\ScriptResultControl.cs" />
     <Compile Include="Windows\SqlEditor\ScriptResultPane.cs" />
     <Compile Include="Windows\SqlEditor\Themes.cs" />
@@ -173,6 +174,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Output\ConsoleGrid.cs" />
+    <Resource Include="Windows\images\Home_16x16.png" />
     <Resource Include="Windows\images\Close_16x16.png" />
     <Resource Include="Windows\images\Table_16x16.png" />
     <Resource Include="Windows\images\SelectTable_16x16.png" />

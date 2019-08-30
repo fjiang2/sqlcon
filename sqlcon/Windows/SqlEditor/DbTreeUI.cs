@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Input;
 using System.Windows.Markup;
@@ -85,7 +84,7 @@ namespace sqlcon.Windows
             }
         }
 
-        private void chdir(string path)
+        private TreeNode<IDataPath> chdir(string path)
         {
             PathName pathName = new PathName(path);
             TreeNode<IDataPath> node = mgr.Navigate(pathName);
@@ -93,6 +92,56 @@ namespace sqlcon.Windows
             {
                 mgr.current = node;
                 PathChanged?.Invoke(this, new EventArgs<TreeNode<IDataPath>>(node));
+            }
+
+            return node;
+        }
+
+        public void ChangeTreeNode(string path)
+        {
+            PathName pathName = new PathName(path);
+            string[] S = pathName.FullSegments;
+
+            if (S.Length < 2)
+                return;
+
+            foreach (DbTreeNodeUI snode in this.Items)
+            {
+                ServerName sname = (ServerName)snode.Path;
+                if (string.Compare(sname.Path, S[1], ignoreCase: true) != 0)
+                    continue;
+
+                snode.IsExpanded = true;
+                snode.IsSelected = true;
+                ExpandServerName(snode, sname);
+
+                if (S.Length < 3)
+                    return;
+
+                foreach (DbTreeNodeUI dnode in snode.Items)
+                {
+                    DatabaseName dname = (DatabaseName)dnode.Path;
+                    if (string.Compare(dname.Path, S[2], ignoreCase: true) != 0)
+                        continue;
+
+                    dnode.IsExpanded = true;
+                    dnode.IsSelected = true;
+                    ExpandDatabaseName(dnode, dname);
+
+                    if (S.Length < 4)
+                        return;
+
+                    foreach (DbTreeNodeUI tnode in dnode.Items)
+                    {
+                        TableName tname = (TableName)tnode.Path;
+                        if (string.Compare(tname.Path, S[3], ignoreCase: true) != 0)
+                            continue;
+
+                        dnode.IsExpanded = true;
+                        dnode.IsSelected = true;
+                        return;
+                    }
+                }
             }
         }
 
@@ -102,7 +151,11 @@ namespace sqlcon.Windows
             foreach (var pvd in L)
             {
                 ServerName sname = pvd.ServerName;
-                DbTreeNodeUI item = new DbTreeNodeUI($"{sname.Path} ({sname.Provider.DataSource})", "server.png") { Path = sname };
+                DbTreeNodeUI item = new DbTreeNodeUI($"{sname.Path} ({sname.Provider.DataSource})", "server.png")
+                {
+                    Path = sname
+                };
+
                 treeView.Items.Add(item);
                 item.Expanded += serverName_Expanded;
                 item.Selected += node_Selected;
@@ -127,6 +180,26 @@ namespace sqlcon.Windows
             DbTreeNodeUI theItem = (DbTreeNodeUI)sender;
             ServerName sname = theItem.Path as ServerName;
 
+            ExpandServerName(theItem, sname);
+        }
+
+        private void databaseName_Expanded(object sender, RoutedEventArgs e)
+        {
+            DbTreeNodeUI theItem = (DbTreeNodeUI)sender;
+            DatabaseName dname = theItem.Path as DatabaseName;
+            ExpandDatabaseName(theItem, dname);
+        }
+
+        private void tableName_Expanded(object sender, RoutedEventArgs e)
+        {
+            DbTreeNodeUI theItem = (DbTreeNodeUI)sender;
+            TableName tname = theItem.Path as TableName;
+
+            ExpandTableName(theItem, tname);
+        }
+
+        private void ExpandServerName(DbTreeNodeUI theItem, ServerName sname)
+        {
             if (theItem.Items.Count > 0)
                 return;
 
@@ -145,11 +218,9 @@ namespace sqlcon.Windows
             }
         }
 
-        private void databaseName_Expanded(object sender, RoutedEventArgs e)
-        {
-            DbTreeNodeUI theItem = (DbTreeNodeUI)sender;
-            DatabaseName dname = theItem.Path as DatabaseName;
 
+        private void ExpandDatabaseName(DbTreeNodeUI theItem, DatabaseName dname)
+        {
             if (theItem.Items.Count > 0)
                 return;
 
@@ -162,11 +233,8 @@ namespace sqlcon.Windows
             }
         }
 
-        private void tableName_Expanded(object sender, RoutedEventArgs e)
+        private static void ExpandTableName(DbTreeNodeUI theItem, TableName tname)
         {
-            DbTreeNodeUI theItem = (DbTreeNodeUI)sender;
-            TableName tname = theItem.Path as TableName;
-
             if (theItem.Items.Count > 0)
                 return;
 
@@ -268,34 +336,6 @@ namespace sqlcon.Windows
             {
                 ShowAllNodes(theItem);
             }
-        }
-    }
-
-    public class DbTreeNodeUI : TreeViewItem
-    {
-        public IDataPath Path { get; set; }
-        public string Text { get; }
-
-        public DbTreeNodeUI(string text, string imageName)
-        {
-            this.Text = text;
-            var label = WpfUtils.NewImageLabel(text, imageName);
-            this.Header = label;
-
-            Foreground = Brushes.White;
-            Background = Brushes.Black;
-        }
-
-        public void ChangeImage(string imageName)
-        {
-            StackPanel panel = (StackPanel)this.Header;
-            Image image = panel.Children[0] as Image;
-            image.Source = WpfUtils.NewBitmapImage(imageName);
-        }
-
-        public override string ToString()
-        {
-            return Path.Path;
         }
     }
 }

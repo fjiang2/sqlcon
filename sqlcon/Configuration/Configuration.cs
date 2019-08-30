@@ -246,7 +246,7 @@ namespace sqlcon
         public ConnectionProvider GetProvider(string path)
         {
             string[] x = path.Split('\\');
-            if (x.Length != 3)
+            if (x.Length < 3)
             {
                 cerr.WriteLine($"invalid server path: {path}, correct format is server\\database");
                 return null;

@@ -9,6 +9,7 @@ namespace sqlcon.Windows
 {
     public class SqlCommands
     {
+        public static readonly RoutedUICommand Home = new RoutedUICommand("Home", "home", typeof(SqlEditor), new InputGestureCollection { new KeyGesture(Key.H, ModifierKeys.Alt, "Alt-H") });
         public static readonly RoutedUICommand Execute = new RoutedUICommand("Execute", "execute", typeof(SqlEditor), new InputGestureCollection { new KeyGesture(Key.F5, ModifierKeys.None, "F5") });
 
         public static readonly RoutedUICommand Select1000 = new RoutedUICommand("Select 1000", "select1000", typeof(SqlEditor), new InputGestureCollection { new KeyGesture(Key.F7, ModifierKeys.None, "F7") });

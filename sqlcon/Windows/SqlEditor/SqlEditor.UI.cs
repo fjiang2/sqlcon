@@ -37,6 +37,7 @@ namespace sqlcon.Windows
             this.Width = 1280;
             this.Height = 768;
 
+            Button btnHome = WpfUtils.NewImageButton(SqlCommands.Home, "Home", "Home(Alt-H)", "Home_16x16.png");
             Button btnNew = WpfUtils.NewImageButton(ApplicationCommands.New, "New", "New(Ctrl-N)", "New_16x16.png");
             Button btnOpen = WpfUtils.NewImageButton(ApplicationCommands.Open, "Open", "Open(Ctrl-O)", "Open_16x16.png");
             Button btnSave = WpfUtils.NewImageButton(ApplicationCommands.Save, "Save", "Save(Ctrl-S)", "Save_16x16.png");
@@ -53,6 +54,8 @@ namespace sqlcon.Windows
             dockPanel.Children.Add(tray);
 
             ToolBar toolBar;
+            tray.ToolBars.Add(toolBar = new ToolBar());
+            toolBar.Items.Add(btnHome);
             tray.ToolBars.Add(toolBar = new ToolBar());
             toolBar.Items.Add(btnNew);
             toolBar.Items.Add(btnOpen);
@@ -135,6 +138,7 @@ namespace sqlcon.Windows
                 ApplicationCommands.New,
                 ApplicationCommands.Open,
                 ApplicationCommands.Save,
+                SqlCommands.Home,
                 SqlCommands.Execute,
                 SqlCommands.Select,
                 SqlCommands.Select1000,

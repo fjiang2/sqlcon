@@ -47,7 +47,11 @@ namespace sqlcon.Windows
 
         private void commandCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (e.Command == SqlCommands.Select || e.Command == SqlCommands.Select1000)
+            if (e.Command == SqlCommands.Home)
+            {
+                e.CanExecute = true;
+            }
+            else if (e.Command == SqlCommands.Select || e.Command == SqlCommands.Select1000)
             {
                 e.CanExecute = SelectedNode != null && SelectedNode.Path is TableName;
             }
@@ -65,6 +69,8 @@ namespace sqlcon.Windows
 
         private void commandExecute(object sender, ExecutedRoutedEventArgs e)
         {
+            if (e.Command == SqlCommands.Home)
+                GoHome();
             if (e.Command == SqlCommands.Select)
                 Select(top: 0);
             else if (e.Command == SqlCommands.Select1000)
@@ -93,6 +99,13 @@ namespace sqlcon.Windows
 
         private int untitledNumber = 1;
         private string untitled => $"untitled{untitledNumber++}.sql";
+
+        private void GoHome()
+        {
+            string home = cfg.DefaultServerPath;
+            if (home != null)
+                treeView.ChangeTreeNode(home);
+        }
 
         private void Select(int top)
         {
