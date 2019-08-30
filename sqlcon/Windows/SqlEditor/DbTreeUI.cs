@@ -121,6 +121,9 @@ namespace sqlcon.Windows
                     return;
                 }
 
+                if (S[2] == "~")
+                    S[2] = sname.DefaultDatabase.Name;
+
                 foreach (DbTreeNodeUI dnode in snode.Items)
                 {
                     DatabaseName dname = (DatabaseName)dnode.Path;

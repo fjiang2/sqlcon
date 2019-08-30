@@ -56,6 +56,8 @@ namespace Sys.Data
             get { return this.provider; }
         }
 
+        public DatabaseName DefaultDatabase => provider.DefaultDatabaseName;
+
         public int CompareTo(object obj)
         {
             return CompareTo((ServerName)obj);

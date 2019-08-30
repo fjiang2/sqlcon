@@ -126,11 +126,11 @@ namespace sqlcon
             {
                 return Navigate(Navigate(node, ".."), "..");
             }
-            else if (segment == "~")
+            else if (segment == "~~")
             {
                 return Navigate(new PathName(cfg.DefaultServerPath));
             }
-            else if (segment == "~~")
+            else if (segment == "~")
             {
                 if (node == RootNode)
                 {
