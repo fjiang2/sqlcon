@@ -137,8 +137,8 @@ namespace sqlcon.Windows
                         if (string.Compare(tname.Path, S[3], ignoreCase: true) != 0)
                             continue;
 
-                        dnode.IsExpanded = true;
-                        dnode.IsSelected = true;
+                        tnode.IsExpanded = true;
+                        tnode.IsSelected = true;
                         return;
                     }
                 }

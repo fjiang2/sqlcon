@@ -102,7 +102,7 @@ namespace sqlcon.Windows
 
         private void GoHome()
         {
-            string home = cfg.DefaultServerPath;
+            string home = cfg.Home;
             if (home != null)
                 treeView.ChangeTreeNode(home);
         }

@@ -18,7 +18,7 @@ namespace sqlcon
     class Configuration
     {
 
-        public const string _SERVER0 = "home";
+        const string _SERVER0 = "home";
 
         const string _FUNC_CONFIG = "config";
         const string _FUNC_CFG = "cfg";
@@ -157,6 +157,8 @@ namespace sqlcon
 
             return defaultValue;
         }
+
+        public string Home => GetValue<string>(_SERVER0);
 
         public string DefaultServerPath
         {

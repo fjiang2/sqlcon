@@ -20,7 +20,7 @@ namespace sqlcon
             this.mgr = new PathManager(cfg);
             this.commandee = new Commandee(mgr);
 
-            string server = cfg.GetValue<string>(Configuration._SERVER0);
+            string server = cfg.Home;
 
             ConnectionProvider pvd = null;
             if (!string.IsNullOrEmpty(server))
