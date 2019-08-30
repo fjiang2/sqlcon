@@ -3,6 +3,12 @@
 8/24/2019 v2.2.4.0
 	Improvements/Enhancements:
 	1.add command option /include:xxx and /exclude:xxx. option value could be wildcard table name list
+	2.SQL editor:
+	     Supports multiple script files and windows
+	     Search bar to serach table names
+		 Add [Home] button to reach home directory
+		 Display Top 100 Rows in data grid
+		 Display All Rows in data grid
 
 8/21/2019 v2.2.3.0
 	Improvements/Enhancements:
