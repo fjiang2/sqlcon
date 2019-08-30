@@ -13,8 +13,30 @@ namespace sqlcon
     {
         private static Configuration cfg = Program.Configuration;
 
+        public static Brush GetBrush(this string colorString, Color defaultColor)
+        {
+            if (colorString != null)
+            {
+                ColorConverter converter = new ColorConverter();
 
-        public static Brush GetSolidBrush(this string key, Color defaultColor)
+                if (converter.CanConvertFrom(typeof(string)))
+                {
+                    try
+                    {
+                        Color color = (Color)converter.ConvertFrom(null, null, colorString);
+                        return new SolidColorBrush(color);
+                    }
+                    catch (Exception)
+                    {
+                        cerr.WriteLine($"color string: \"{colorString}\" not supported");
+                    }
+                }
+            }
+
+            return new SolidColorBrush(defaultColor);
+        }
+
+        public static Brush GetSolidBrush(string key, Color defaultColor)
         {
             if (cfg != null)
                 return new SolidColorBrush(GetColor(key, defaultColor));

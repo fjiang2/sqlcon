@@ -1,4 +1,5 @@
 using System;
+using Sys.Data.Manager;
 
 namespace sqlcon
 {
@@ -71,10 +72,10 @@ namespace sqlcon
         public const string __GENERATOR_DPO_NS = "Sys.DataModel.Dpo";
 
         //generator.dpo.suffix
-        public const string __GENERATOR_DPO_SUFFIX = "Dpo";
+        public const string __GENERATOR_DPO_SUFFIX = Setting.DPO_CLASS_SUFFIX_CLASS_NAME;
 
         //generator.dpo.level
-        public const int __GENERATOR_DPO_LEVEL = 2;
+        public const int __GENERATOR_DPO_LEVEL = 2;     //Level.Application
 
         //generator.dpo.HasProvider
         public const bool __GENERATOR_DPO_HASPROVIDER = false;

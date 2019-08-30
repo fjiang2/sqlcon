@@ -11,32 +11,32 @@ namespace sqlcon.Windows
     {
         public static class SqlEditor
         {
-            public static Brush Foreground => Config.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_FOREGROUND, Colors.White);
-            public static Brush Background => Config.GetSolidBrush(ConfigKey._GUI_SQL_EDITOR_BACKGROUND, Colors.Black);
+            public static Brush Foreground => Config.gui.sql.editor.Foreground.GetBrush(Colors.White);
+            public static Brush Background => Config.gui.sql.editor.Background.GetBrush(Colors.Black);
         }
 
         public static class TableEditor
         {
-            public static Brush Foreground => Config.GetSolidBrush(ConfigKey._GUI_TABLE_EDITOR_FOREGROUND, Colors.LightGray);
-            public static Brush Background => Config.GetSolidBrush(ConfigKey._GUI_TABLE_EDITOR_BACKGROUND, Colors.Black);
-            public static Brush AlternatingRowBackground => Config.GetSolidBrush(ConfigKey._GUI_TABLE_EDITOR_ALTERNATINGROWBACKGROUND, Colors.DimGray);
-            public static Brush RowBackground => Config.GetSolidBrush(ConfigKey._GUI_TABLE_EDITOR_ROWBACKGROUND, Colors.DimGray);
+            public static Brush Foreground => Config.gui.table.editor.Foreground.GetBrush(Colors.LightGray);
+            public static Brush Background => Config.gui.table.editor.Background.GetBrush(Colors.Black);
+            public static Brush AlternatingRowBackground => Config.gui.table.editor.AlternatingRowBackground.GetBrush(Colors.DimGray);
+            public static Brush RowBackground => Config.gui.table.editor.RowBackground.GetBrush(Colors.DimGray);
         }
 
         public static class SqlResult
         {
             public static class Table
             {
-                public static Brush Foreground => Config.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_FOREGROUND, Colors.White);
-                public static Brush Background => Config.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_BACKGROUND, Colors.Black);
-                public static Brush AlternatingRowBackground => Config.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_ALTERNATINGROWBACKGROUND, Colors.DimGray);
-                public static Brush RowBackground => Config.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_TABLE_ROWBACKGROUND, Colors.Black);
+                public static Brush Foreground => Config.gui.sql.result.table.Foreground.GetBrush(Colors.White);
+                public static Brush Background => Config.gui.sql.result.table.Background.GetBrush(Colors.Black);
+                public static Brush AlternatingRowBackground => Config.gui.sql.result.table.AlternatingRowBackground.GetBrush(Colors.DimGray);
+                public static Brush RowBackground => Config.gui.sql.result.table.RowBackground.GetBrush(Colors.Black);
             }
 
             public static class Message
             {
-                public static Brush Foreground => Config.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_MESSAGE_FOREGROUND, Colors.White);
-                public static Brush Background => Config.GetSolidBrush(ConfigKey._GUI_SQL_RESULT_MESSAGE_BACKGROUND, Colors.Black);
+                public static Brush Foreground => Config.gui.sql.result.message.Foreground.GetBrush(Colors.White);
+                public static Brush Background => Config.gui.sql.result.message.Background.GetBrush(Colors.Black);
             }
         }
     }
