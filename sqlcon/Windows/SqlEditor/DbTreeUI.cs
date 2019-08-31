@@ -57,7 +57,7 @@ namespace sqlcon.Windows
             createTree(cfg, this);
         }
 
-        private void chdir(IDataPath node)
+        public void chdir(IDataPath node)
         {
             switch (node)
             {
@@ -105,7 +105,7 @@ namespace sqlcon.Windows
             if (S.Length < 2)
                 return;
 
-            foreach (DbTreeNodeUI snode in this.Items)
+            foreach (DbServerNodeUI snode in this.Items)
             {
                 ServerName sname = (ServerName)snode.Path;
                 if (string.Compare(sname.Path, S[1], ignoreCase: true) != 0)
@@ -113,7 +113,7 @@ namespace sqlcon.Windows
 
                 snode.IsExpanded = true;
                 snode.IsSelected = true;
-                ExpandNode(snode, sname);
+                snode.ExpandNode(snode, sname);
 
                 if (S.Length < 3)
                 {
@@ -124,7 +124,7 @@ namespace sqlcon.Windows
                 if (S[2] == "~")
                     S[2] = sname.DefaultDatabase.Name;
 
-                foreach (DbTreeNodeUI dnode in snode.Items)
+                foreach (DbDatabaseNodeUI dnode in snode.Items)
                 {
                     DatabaseName dname = (DatabaseName)dnode.Path;
                     if (string.Compare(dname.Path, S[2], ignoreCase: true) != 0)
@@ -132,7 +132,7 @@ namespace sqlcon.Windows
 
                     dnode.IsExpanded = true;
                     dnode.IsSelected = true;
-                    ExpandNode(dnode, dname);
+                    dnode.ExpandNode(dnode, dname);
 
                     if (S.Length < 4)
                     {
@@ -140,7 +140,7 @@ namespace sqlcon.Windows
                         return;
                     }
 
-                    foreach (DbTreeNodeUI tnode in dnode.Items)
+                    foreach (DbTableNodeUI tnode in dnode.Items)
                     {
                         TableName tname = (TableName)tnode.Path;
                         if (string.Compare(tname.Path, S[3], ignoreCase: true) != 0)
@@ -162,128 +162,12 @@ namespace sqlcon.Windows
             foreach (var pvd in L)
             {
                 ServerName sname = pvd.ServerName;
-                DbTreeNodeUI item = new DbTreeNodeUI($"{sname.Path} ({sname.Provider.DataSource})", "server.png")
-                {
-                    Path = sname
-                };
-
+                DbTreeNodeUI item = new DbServerNodeUI(this, sname);
+                
                 treeView.Items.Add(item);
-                item.Expanded += serverName_Expanded;
-                item.Selected += node_Selected;
-            }
+             }
 
             return;
-        }
-
-        private void node_Selected(object sender, RoutedEventArgs e)
-        {
-            if (sender is DbTreeNodeUI node)
-            {
-                chdir(node.Path);
-            }
-
-            e.Handled = true;
-        }
-
-
-        private void serverName_Expanded(object sender, RoutedEventArgs e)
-        {
-            DbTreeNodeUI theItem = (DbTreeNodeUI)sender;
-            ServerName sname = theItem.Path as ServerName;
-
-            ExpandNode(theItem, sname);
-        }
-
-        private void databaseName_Expanded(object sender, RoutedEventArgs e)
-        {
-            DbTreeNodeUI theItem = (DbTreeNodeUI)sender;
-            DatabaseName dname = theItem.Path as DatabaseName;
-            ExpandNode(theItem, dname);
-        }
-
-        private void tableName_Expanded(object sender, RoutedEventArgs e)
-        {
-            DbTreeNodeUI theItem = (DbTreeNodeUI)sender;
-            TableName tname = theItem.Path as TableName;
-
-            ExpandNode(theItem, tname);
-        }
-
-        private void ExpandNode(DbTreeNodeUI theItem, ServerName sname)
-        {
-            if (theItem.Items.Count > 0)
-                return;
-
-            if (sname.Disconnected)
-            {
-                theItem.ChangeImage("server_error.png");
-                return;
-            }
-
-            foreach (DatabaseName dname in sname.GetDatabaseNames())
-            {
-                DbTreeNodeUI item = new DbTreeNodeUI(dname.Path, "database.png") { Path = dname };
-                theItem.Items.Add(item);
-                item.Expanded += databaseName_Expanded;
-                item.Selected += node_Selected;
-            }
-        }
-
-
-        private void ExpandNode(DbTreeNodeUI theItem, DatabaseName dname)
-        {
-            if (theItem.Items.Count > 0)
-                return;
-
-            foreach (TableName tname in dname.GetTableNames())
-            {
-                DbTreeNodeUI item = new DbTreeNodeUI(tname.Path, "Table_16x16.png") { Path = tname };
-                theItem.Items.Add(item);
-                item.Expanded += tableName_Expanded;
-                item.Selected += node_Selected;
-            }
-        }
-
-        private static void ExpandNode(DbTreeNodeUI theItem, TableName tname)
-        {
-            if (theItem.Items.Count > 0)
-                return;
-
-            TableSchema schema = new TableSchema(tname);
-            foreach (ColumnSchema column in schema.Columns)
-            {
-                string image = "AlignHorizontalTop_16x16.png";
-                if (column.IsPrimary || column.IsForeignKey)
-                    image = "key.png";
-
-                DbTreeNodeUI item = new DbTreeNodeUI(GetSQLField(column), image) { Path = tname };
-                theItem.Items.Add(item);
-            }
-        }
-
-        private static string GetSQLField(ColumnSchema column)
-        {
-            string ty = column.GetSQLType();
-            List<string> list = new List<string>();
-            if (column.IsPrimary)
-                list.Add("PK");
-
-            if (column.IsForeignKey)
-                list.Add("FK");
-
-            if (column.IsIdentity)
-                list.Add("++");
-
-            list.Add(ty);
-            list.Add(column.Nullable ? "null" : "not null");
-
-            if (column.IsComputed)
-            {
-                list.Add($"={column.Definition}");
-            }
-
-            string line = string.Join(", ", list);
-            return $"{column.ColumnName} ({line})";
         }
 
         public void RunFilter(string wildcard)

@@ -125,6 +125,10 @@
     <Compile Include="Shell\Importer.cs" />
     <Compile Include="Shell\ShellHelp.cs" />
     <Compile Include="Shell\ShellHistory.cs" />
+    <Compile Include="Windows\SqlEditor\DbDatabaseNodeUI.cs" />
+    <Compile Include="Windows\SqlEditor\DbColumnNodeUI.cs" />
+    <Compile Include="Windows\SqlEditor\DbTableNodeUI.cs" />
+    <Compile Include="Windows\SqlEditor\DbServerNodeUI.cs" />
     <Compile Include="Windows\SqlEditor\DbTreeNodeUI.cs" />
     <Compile Include="Windows\SqlEditor\ScriptResultControl.cs" />
     <Compile Include="Windows\SqlEditor\ScriptResultPane.cs" />
