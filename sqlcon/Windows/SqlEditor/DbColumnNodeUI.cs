@@ -8,7 +8,7 @@ using Sys.Data;
 
 namespace sqlcon.Windows
 {
-    class DbColumnNodeUI : DbTreeNodeUI
+    public class DbColumnNodeUI : DbTreeNodeUI
     {
         private DbTreeUI tree;
 

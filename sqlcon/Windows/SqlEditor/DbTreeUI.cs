@@ -19,7 +19,7 @@ using Sys;
 
 namespace sqlcon.Windows
 {
-    class DbTreeUI : TreeView
+    public class DbTreeUI : TreeView
     {
         private PathManager mgr;
         public event EventHandler<EventArgs<TreeNode<IDataPath>>> PathChanged;
@@ -51,7 +51,7 @@ namespace sqlcon.Windows
         }
 
 
-        public void CreateTree(Configuration cfg)
+        internal void CreateTree(Configuration cfg)
         {
             this.mgr = new PathManager(cfg);
             createTree(cfg, this);
@@ -84,7 +84,7 @@ namespace sqlcon.Windows
             }
         }
 
-        private TreeNode<IDataPath> chdir(string path)
+        public TreeNode<IDataPath> chdir(string path)
         {
             PathName pathName = new PathName(path);
             TreeNode<IDataPath> node = mgr.Navigate(pathName);
@@ -113,7 +113,7 @@ namespace sqlcon.Windows
 
                 snode.IsExpanded = true;
                 snode.IsSelected = true;
-                snode.ExpandNode(snode, sname);
+                snode.ExpandNode();
 
                 if (S.Length < 3)
                 {
@@ -132,7 +132,7 @@ namespace sqlcon.Windows
 
                     dnode.IsExpanded = true;
                     dnode.IsSelected = true;
-                    dnode.ExpandNode(dnode, dname);
+                    dnode.ExpandNode();
 
                     if (S.Length < 4)
                     {

@@ -8,7 +8,7 @@ using Sys.Data;
 
 namespace sqlcon.Windows
 {
-    class DbServerNodeUI : DbTreeNodeUI
+    public class DbServerNodeUI : DbTreeNodeUI
     {
         private DbTreeUI tree;
 
@@ -17,20 +17,22 @@ namespace sqlcon.Windows
         {
             this.tree = tree;
             Path = sname;
-            Expanded += serverName_Expanded;
+            Expanded += node_Expanded;
             Selected += node_Selected;
         }
 
-        private void serverName_Expanded(object sender, RoutedEventArgs e)
-        {
-            DbTreeNodeUI theItem = (DbTreeNodeUI)sender;
-            ServerName sname = theItem.Path as ServerName;
+        public ServerName ServerName => (ServerName)Path;
 
-            ExpandNode(theItem, sname);
+        private void node_Expanded(object sender, RoutedEventArgs e)
+        {
+            ExpandNode();
         }
 
-        public void ExpandNode(DbTreeNodeUI theItem, ServerName sname)
+        public void ExpandNode()
         {
+            DbTreeNodeUI theItem = this;
+            ServerName sname = theItem.Path as ServerName;
+
             if (theItem.Items.Count > 0)
                 return;
 
@@ -51,7 +53,8 @@ namespace sqlcon.Windows
         {
             if (sender is DbTreeNodeUI node)
             {
-                tree.chdir(node.Path);
+                //tree.chdir(node.Path);
+                tree.chdir($@"\{ServerName.Path}");
             }
 
             e.Handled = true;

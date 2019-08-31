@@ -8,29 +8,31 @@ using Sys.Data;
 
 namespace sqlcon.Windows
 {
-    class DbTableNodeUI : DbTreeNodeUI
+    public class DbTableNodeUI : DbTreeNodeUI
     {
         private DbTreeUI tree;
 
         public DbTableNodeUI(DbTreeUI tree, TableName tname)
-            :base(tname.Path, "Table_16x16.png")
+            : base(tname.Path, "Table_16x16.png")
         {
             this.tree = tree;
             Path = tname;
-            Expanded += tableName_Expanded;
+            Expanded += node_Expanded;
             Selected += node_Selected;
         }
 
-        private void tableName_Expanded(object sender, RoutedEventArgs e)
-        {
-            DbTreeNodeUI theItem = (DbTreeNodeUI)sender;
-            TableName tname = theItem.Path as TableName;
+        public TableName TableName => (TableName)Path;
 
-            ExpandNode(theItem, tname);
+        private void node_Expanded(object sender, RoutedEventArgs e)
+        {
+            ExpandNode();
         }
 
-        public void ExpandNode(DbTreeNodeUI theItem, TableName tname)
+        public void ExpandNode()
         {
+            DbTreeNodeUI theItem = this;
+            TableName tname = theItem.Path as TableName;
+
             if (theItem.Items.Count > 0)
                 return;
 
@@ -42,17 +44,20 @@ namespace sqlcon.Windows
             }
         }
 
-     
+
         private void node_Selected(object sender, RoutedEventArgs e)
         {
             if (sender is DbTreeNodeUI node)
             {
-                tree.chdir(node.Path);
+                //tree.chdir(node.Path);
+                DatabaseName dname = TableName.DatabaseName;
+                ServerName sname = dname.ServerName;
+                tree.chdir($@"\{sname.Path}\{dname.Path}\{TableName.ShortName}");
             }
 
             e.Handled = true;
         }
 
-      
+
     }
 }
