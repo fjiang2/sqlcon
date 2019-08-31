@@ -17,7 +17,7 @@ namespace sqlcon
     {
         private PathManager mgr;
         private ApplicationCommand cmd;
-        private Configuration cfg;
+        private IConfiguration cfg;
 
 
         private TableName tname;
@@ -222,7 +222,7 @@ namespace sqlcon
                                 return;
 
                             int count = new SqlCmd(tn.Provider, string.Format("SELECT COUNT(*) FROM {0}", tn)).FillObject<int>();
-                            if (count > cfg.Export_Max_Count)
+                            if (count > cfg.MaxRows)
                             {
                                 if (!cin.YesOrNo($"are you sure to export {count} rows on {tn.ShortName} (y/n)?"))
                                 {

@@ -11,7 +11,7 @@ namespace sqlcon
 {
     public static partial class Config
     {
-        private static Configuration cfg = Program.Configuration;
+        private static IConfiguration cfg = Program.Configuration;
 
         public static Brush GetBrush(this string colorString, Color defaultColor)
         {

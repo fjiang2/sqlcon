@@ -31,12 +31,12 @@ namespace sqlcon
 
         private bool hasRowId;
         private string columns;
-        private Configuration cfg;
+        private IConfiguration cfg;
 
-        public ApplicationCommand(Configuration cfg, string line)
+        public ApplicationCommand(IConfiguration cfg, string line)
         {
             this.cfg = cfg;
-            this.Top = cfg.Limit_Top;
+            this.Top = cfg.TopLimit;
 
             ParseLine(line);
         }
@@ -123,7 +123,7 @@ namespace sqlcon
             }
         }
 
-        public Configuration Configuration => this.cfg;
+        public IConfiguration Configuration => this.cfg;
 
         public bool HasRowId => hasRowId || Has("edit");
 

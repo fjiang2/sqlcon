@@ -15,7 +15,7 @@ using Tie;
 
 namespace sqlcon
 {
-    class Configuration : IConnectionConfiguration
+    class Configuration : IConnectionConfiguration, IConfiguration
     {
 
         const string _SERVER0 = "home";
@@ -36,14 +36,14 @@ namespace sqlcon
 
         private Memory Cfg = new Memory();
 
-        public string CfgFile { get; private set; } = "user.cfg";
+        public string UserConfigurationFile { get; private set; } = "user.cfg";
 
         public string OutputFile { get; set; }
         public string XmlDbDirectory { get; set; }
         public WorkingDirectory WorkingDirectory { get; }
 
-        public int Limit_Top = 20;
-        public int Export_Max_Count = 2000;
+        public int TopLimit { get; set; } = 20;
+        public int MaxRows { get; set; } = 2000;
 
         public Configuration()
         {
@@ -280,7 +280,7 @@ namespace sqlcon
             //user.cfg is optional
             if (!string.IsNullOrEmpty(cfgFile) && File.Exists(cfgFile))
             {
-                this.CfgFile = cfgFile;
+                this.UserConfigurationFile = cfgFile;
                 TryReadCfg(cfgFile);
             }
 
@@ -290,10 +290,10 @@ namespace sqlcon
 
             var limit = Cfg[_LIMIT];
             if (limit["top"].Defined)
-                this.Limit_Top = (int)limit["top"];
+                this.TopLimit = (int)limit["top"];
 
             if (limit["export_max_count"].Defined)
-                this.Export_Max_Count = (int)limit["export_max_count"];
+                this.MaxRows = (int)limit["export_max_count"];
 
 
             var log = Cfg[_FILE_LOG];

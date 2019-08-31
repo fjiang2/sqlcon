@@ -15,7 +15,7 @@ namespace sqlcon
     partial class Shell : ShellContext, IShell
     {
 
-        public Shell(Configuration cfg)
+        public Shell(IConfiguration cfg)
             : base(cfg)
         {
         }

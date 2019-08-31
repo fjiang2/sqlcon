@@ -612,7 +612,7 @@ namespace sqlcon
                 return;
             }
 
-            Configuration cfg = cmd.Configuration;
+            IConfiguration cfg = cmd.Configuration;
             PathBothSide both = new PathBothSide(mgr, cmd);
             string fileName = cmd.OutputFile();
             using (var writer = fileName.CreateStreamWriter(cmd.Append))
@@ -958,7 +958,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void clean(ApplicationCommand cmd, Configuration cfg)
+        public void clean(ApplicationCommand cmd, IConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1044,7 +1044,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             cerr.WriteLine("select database or table first");
         }
 
-        public void import(ApplicationCommand cmd, Configuration cfg, ShellContext context)
+        public void import(ApplicationCommand cmd, IConfiguration cfg, ShellContext context)
         {
             if (cmd.HasHelp)
             {
@@ -1149,7 +1149,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void export(ApplicationCommand cmd, Configuration cfg, ShellContext context)
+        public void export(ApplicationCommand cmd, IConfiguration cfg, ShellContext context)
         {
             if (cmd.HasHelp)
             {
@@ -1169,7 +1169,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cerr.WriteLine("select server, database or table first");
         }
 
-        public void mount(ApplicationCommand cmd, Configuration cfg)
+        public void mount(ApplicationCommand cmd, IConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1291,7 +1291,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void umount(ApplicationCommand cmd, Configuration cfg)
+        public void umount(ApplicationCommand cmd, IConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1567,7 +1567,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void open(ApplicationCommand cmd, Configuration cfg)
+        public void open(ApplicationCommand cmd, IConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1606,7 +1606,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     if (cmd.IsSchema)
                         stdio.OpenEditor("sqlcon.cfg");
                     else
-                        stdio.OpenEditor(cfg.CfgFile);
+                        stdio.OpenEditor(cfg.UserConfigurationFile);
                     break;
 
                 case "release":
@@ -1664,7 +1664,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void save(ApplicationCommand cmd, Configuration cfg)
+        public void save(ApplicationCommand cmd, IConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1805,7 +1805,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         }
 
 
-        public void last(ApplicationCommand cmd, Configuration cfg)
+        public void last(ApplicationCommand cmd, IConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
