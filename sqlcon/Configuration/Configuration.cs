@@ -44,6 +44,7 @@ namespace sqlcon
 
         public int TopLimit { get; set; } = 20;
         public int MaxRows { get; set; } = 2000;
+        private static TextWriter cerr = Console.Error;
 
         public Configuration()
         {
@@ -297,7 +298,8 @@ namespace sqlcon
 
 
             var log = Cfg[_FILE_LOG];
-            if (log.Defined) Context.DS.Add(_FILE_LOG, log);
+            if (log.Defined)
+                Context.DS.Add(_FILE_LOG, log);
 
             var editor = Cfg.GetValue<string>(_FILE_EDITOR, "notepad.exe");
             Context.DS.Add(_FILE_EDITOR, new VAL(editor));
