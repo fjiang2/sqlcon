@@ -129,7 +129,7 @@ namespace sqlcon
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("configuration file format error in {0}, {1}", cfgFile, ex.Message);
+                     cerr.WriteLine($"configuration file format error in {cfgFile}, {ex.Message}");
                     return false;
                 }
             }
@@ -270,7 +270,7 @@ namespace sqlcon
 
             if (!File.Exists(sysCfgFile))
             {
-                Console.WriteLine("configuration file {0} not found", sysCfgFile);
+                cerr.WriteLine($"configuration file {sysCfgFile} not found");
                 return false;
             }
 
@@ -310,13 +310,13 @@ namespace sqlcon
         {
             if (val.Size != 3)
             {
-                Console.WriteLine("required 2 parameters on function config(file,path,value), 1: app.config/web.config name; 2: path to reach connection string; 3:connection string attribute");
+                cerr.WriteLine("required 2 parameters on function config(file,path,value), 1: app.config/web.config name; 2: path to reach connection string; 3:connection string attribute");
                 return null;
             }
 
             if (val[0].VALTYPE != VALTYPE.stringcon || val[1].VALTYPE != VALTYPE.stringcon || val[2].VALTYPE != VALTYPE.stringcon)
             {
-                Console.WriteLine("error on function config(file,path,value) argument type, 1: string, 2: string, 3:string");
+                cerr.WriteLine("error on function config(file,path,value) argument type, 1: string, 2: string, 3:string");
                 return null;
             }
 
@@ -330,7 +330,7 @@ namespace sqlcon
             }
             catch (Exception)
             {
-                Console.WriteLine("cannot find connection string on {0}, path={1}", xmlFile, path);
+                cerr.WriteLine($"cannot find connection string on {xmlFile}, path={path}");
                 return null;
             }
         }
@@ -346,7 +346,7 @@ namespace sqlcon
         {
             if (!File.Exists(xmlFile))
             {
-                Console.WriteLine("warning: not found {0}", xmlFile);
+                cerr.WriteLine($"warning: not found {xmlFile}");
                 return null;
             }
 
@@ -392,7 +392,7 @@ namespace sqlcon
         {
             if (val.Size != 1 || val[0].VALTYPE != VALTYPE.stringcon)
             {
-                Console.WriteLine("required 1 parameters on function include(file), file can be local disk file, hyperlink, and ftp link");
+                cerr.WriteLine("required 1 parameters on function include(file), file can be local disk file, hyperlink, and ftp link");
                 return;
             }
 
@@ -408,13 +408,13 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                Console.WriteLine("configuration file {0} doesn't exist, {1}", link, ex.Message);
+                cerr.WriteLine($"configuration file {link} doesn't exist, {ex.Message}");
                 return;
             }
 
             if (!exists)
             {
-                Console.WriteLine("configuration file {0} doesn't exist", link);
+                cerr.WriteLine($"configuration file {link} doesn't exist");
                 return;
             }
 
@@ -425,7 +425,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                Console.WriteLine("failed to load configuration file {0}, {1}", link, ex.Message);
+                cerr.WriteLine($"failed to load configuration file {link}, {ex.Message}");
                 return;
             }
 
@@ -438,7 +438,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                Console.WriteLine("configuration file format error in {0}, {1}", link, ex.Message);
+                cerr.WriteLine($"configuration file format error in {link}, {ex.Message}");
             }
         }
 
@@ -446,13 +446,13 @@ namespace sqlcon
         {
             if (val.Size != 2)
             {
-                Console.WriteLine("required 2 parameters on function cfg(file,variable), 1: app.cfg/web.cfg name; 2: variable to reach connection string");
+                cerr.WriteLine("required 2 parameters on function cfg(file,variable), 1: app.cfg/web.cfg name; 2: variable to reach connection string");
                 return null;
             }
 
             if (val[0].VALTYPE != VALTYPE.stringcon || val[1].VALTYPE != VALTYPE.stringcon)
             {
-                Console.WriteLine("error on function cfg(file,variable) argument type, 1: string, 2: string");
+                cerr.WriteLine("error on function cfg(file,variable) argument type, 1: string, 2: string");
                 return null;
             }
 
@@ -473,26 +473,26 @@ namespace sqlcon
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("configuration file format error in {0}, {1}", cfgFile, ex.Message);
+                            cerr.WriteLine($"configuration file format error in {cfgFile}, {ex.Message}");
                             return null;
                         }
                     }
                 }
                 else
                 {
-                    Console.WriteLine("cannot find configuration file: {0}", cfgFile);
+                    cerr.WriteLine($"cannot find configuration file: {cfgFile}");
                     return null;
                 }
 
                 VAL value = localDS.GetValue(variable);
                 if (value.Undefined)
                 {
-                    Console.WriteLine("undefined variable {0}", variable);
+                    cerr.WriteLine($"undefined variable {variable}");
                     return null;
                 }
                 else if (!(value.Value is string))
                 {
-                    Console.WriteLine("connection string must be string, {0}={1}", variable, value.ToString());
+                    cerr.WriteLine($"connection string must be string, {variable}={value}");
                     return null;
                 }
                 else
@@ -500,7 +500,7 @@ namespace sqlcon
             }
             catch (Exception)
             {
-                Console.WriteLine("cannot find connection string on {0}, variable={1}", cfgFile, variable);
+                cerr.WriteLine($"cannot find connection string on {cfgFile}, variable={variable}");
                 return null;
             }
         }

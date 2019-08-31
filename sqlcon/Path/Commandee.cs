@@ -1716,7 +1716,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 if (!cout.echo)
                     status = "off";
 
-                Console.WriteLine($"echo is {status}");
+                cout.WriteLine($"echo is {status}");
                 return;
             }
 

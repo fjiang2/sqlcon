@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
-using Sys.Data.Comparison;
+using Sys.Stdio;
 
 namespace Sys.Data
 {
@@ -55,14 +55,14 @@ namespace Sys.Data
 
             foreach (var tableName in history)
             {
-                Console.WriteLine("generate CREATE TABLE {0}", tableName.FormalName);
+                cout.WriteLine("generate CREATE TABLE {0}", tableName.FormalName);
                 try
                 {
                     builder.AppendLine(tableName.GenerateClause());
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("failed to generate CREATE TABLE {0},{1}", tableName.FormalName, ex.Message);
+                    cerr.WriteLine($"failed to generate CREATE TABLE {tableName.FormalName},{ex.Message}");
                 }
             }
 
