@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace Sys
 {
@@ -118,44 +117,8 @@ namespace Sys
             return value.Substring(left, len - left - right);
         }
 
-        public static bool IsMatch(this IEnumerable<string> patterns, string text)
-        {
-            bool matched;
-            foreach (var pattern in patterns)
-            {
-                if (pattern.IndexOf('?') == -1 && pattern.IndexOf('*') == -1)
-                {
-                    matched = pattern.ToUpper().Equals(text.ToUpper());
-                }
-                else
-                {
-                    Regex regex = pattern.WildcardRegex();
-                    matched = regex.IsMatch(text);
-                }
+      
 
-                if (matched)
-                    return true;
-            }
-
-            return false;
-        }
-
-        public static bool IsMatch(this string pattern, string text)
-        {
-            Regex regex = pattern.WildcardRegex();
-            return regex.IsMatch(text);
-        }
-
-        public static Regex WildcardRegex(this string pattern)
-        {
-            string x = "^" + Regex.Escape(pattern)
-                                  .Replace(@"\*", ".*")
-                                  .Replace(@"\?", ".")
-                           + "$";
-
-            Regex regex = new Regex(x, RegexOptions.IgnoreCase);
-            return regex;
-        }
-
+    
     }
 }

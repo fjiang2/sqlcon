@@ -31,12 +31,12 @@ namespace sqlcon
 
         private bool hasRowId;
         private string columns;
-        private Configuration cfg;
+        private IConfiguration cfg;
 
-        public ApplicationCommand(Configuration cfg, string line)
+        public ApplicationCommand(IConfiguration cfg, string line)
         {
             this.cfg = cfg;
-            this.Top = cfg.Limit_Top;
+            this.Top = cfg.TopLimit;
 
             ParseLine(line);
         }
@@ -123,7 +123,7 @@ namespace sqlcon
             }
         }
 
-        public Configuration Configuration => this.cfg;
+        public IConfiguration Configuration => this.cfg;
 
         public bool HasRowId => hasRowId || Has("edit");
 
@@ -178,70 +178,141 @@ namespace sqlcon
             }
         }
 
-        public string OutputDirectory
+        public string[] Includes
         {
             get
             {
-                string path = OutputPath;
-                if (path == null)
-                    return null;
-
-                if (Directory.Exists(path))
-                    return path;
-
-                string directory = Path.GetDirectoryName(path);
-                if (!Directory.Exists(directory))
-                    Directory.CreateDirectory(directory);
-
-                return directory;
+                string include = GetValue("include");
+                try
+                {
+                    if (include != null)
+                        return include.Split(',');
+                    else
+                        return new string[] { };
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"invalid arugment /include:{include}, {ex.Message}");
+                }
             }
         }
 
-        public string OutputFileName
+        public string[] Excludes
         {
             get
             {
-                string path = OutputPath;
-                if (path == null)
-                    return null;
-
-                if (File.Exists(path))
-                    return path;
-
-                if (Directory.Exists(path))
-                    return null;
-
-                string directory = Path.GetDirectoryName(path);
-                if (!Directory.Exists(directory))
-                    Directory.CreateDirectory(directory);
-
-                return path;
+                string include = GetValue("exclude");
+                try
+                {
+                    if (include != null)
+                        return include.Split(',');
+                    else
+                        return new string[] { };
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"invalid arugment /exclude:{include}, {ex.Message}");
+                }
             }
         }
 
-        public string OutputPath
+        public string OutputDirectory()
         {
+            string path = OutputPath();
+            if (path == null)
+                return null;
+
+            if (Directory.Exists(path))
+                return path;
+
+            string directory = Path.GetDirectoryName(path);
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+
+            return directory;
+        }
+
+
+
+        public string OutputFileName()
+        {
+            string path = OutputPath();
+            if (path == null)
+                return null;
+
+            if (File.Exists(path))
+                return path;
+
+            if (Directory.Exists(path))
+                return null;
+
+            string directory = Path.GetDirectoryName(path);
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+
+            return path;
+        }
+
+        public string OutputPath()
+        {
+            Append = Has("append");
+
+            string path = GetValue("out");
+            if (path == null)
+                return null;
+
+            return path;
+        }
+
+        public string OutputPath(string configKey, string defaultPath)
+        {
+            return OutputPath() ?? cfg.GetValue<string>(configKey, defaultPath);
+        }
+
+        public string InputPath()
+        {
+            string path = GetValue("in");
+            if (path == null)
+                return null;
+
+            return path;
+        }
+
+        public IDictionary<string, string[]> PK
+        {
+            // option: /pk:table1=pk1+pk2,table2=pk1
+            // option: /pk:Product=Id+Name,Supply=Id
             get
             {
-                string path = GetValue("out");
-                if (path == null)
-                    return null;
+                Dictionary<string, string[]> d = new Dictionary<string, string[]>();
 
-                Append = Has("append");
-                return path;
+                string option = GetValue("pk");
+                if (option == null)
+                    return d;
+
+                string[] items = option.Split(',');
+                foreach (string item in items)
+                {
+                    string[] L1 = item.Split('=');
+                    if (L1.Length != 2)
+                        throw new Exception($"invalid argument /pk, format is /pk:table1=pk1+pk2,table2=pk1");
+
+                    string table = L1[0];
+                    string[] L2 = L1[1].Split('+');
+
+                    if (d.ContainsKey(table))
+                        throw new Exception($"duplicated table in option /pk, format is /pk:table1=pk1+pk2,table2=pk1");
+
+                    d.Add(table, L2);
+                }
+
+                return d;
             }
         }
 
-        public string InputPath
+        public string GetValue(string name, string configKey, string defaultValue)
         {
-            get
-            {
-                string path = GetValue("in");
-                if (path == null)
-                    return null;
-
-                return path;
-            }
+            return GetValue(name) ?? cfg.GetValue<string>(configKey, defaultValue);
         }
     }
 }

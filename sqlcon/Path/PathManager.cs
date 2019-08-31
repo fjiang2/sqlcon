@@ -14,19 +14,19 @@ using Sys.Data;
 namespace sqlcon
 {
 
-    partial class PathManager 
+    partial class PathManager
     {
-        private Configuration cfg;
+        private IConnectionConfiguration cfg;
         private Tree<IDataPath> tree;
 
 
-        public PathManager(Configuration cfg)
+        public PathManager(IConnectionConfiguration cfg)
         {
             tree = new Tree<IDataPath>();
             current = RootNode;
 
             this.cfg = cfg;
-            var snames = cfg.ServerNames;
+            var snames = cfg.Providers.Select(pvd => pvd.ServerName).Distinct().ToList(); 
 
             foreach (var sname in snames)
             {
@@ -35,24 +35,19 @@ namespace sqlcon
             }
         }
 
-        public Configuration Configuration
-        {
-            get { return this.cfg; }
-        }
-
         public bool Refreshing { get; set; }
 
         private static bool IsMatch(string wildcard, string text)
         {
             if (wildcard != null)
             {
-                Regex regex = wildcard.WildcardRegex();
-                return regex.IsMatch(text);
+                return text.IsMatch(wildcard);
             }
+
             return true;
         }
-       
-     
+
+
         public override string ToString()
         {
             List<string> items = new List<string>();
@@ -62,7 +57,7 @@ namespace sqlcon
                 items.Add(p.Item.Path);
                 p = p.Parent;
             }
-            
+
             items.Reverse();
             return "\\" + string.Join("\\", items);
         }

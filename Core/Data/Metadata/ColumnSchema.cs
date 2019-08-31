@@ -26,7 +26,7 @@ namespace Sys.Data
 
 
 
-    public class ColumnSchema : PersistentObject, IColumn
+    public class ColumnSchema : PersistentObject, IColumn, IDataPath
     {
 
         [Column("ColumnName", CType.NVarChar, Primary = true)]
@@ -144,6 +144,7 @@ namespace Sys.Data
                 return (T)obj;
         }
 
+        public string Path => ColumnName;
         public string Caption
         {
             get

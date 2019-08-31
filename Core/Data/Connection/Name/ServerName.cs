@@ -49,11 +49,14 @@ namespace Sys.Data
             get { return this.name; }
         }
 
+        public string FullPath => $"\\{Path}";
 
         public ConnectionProvider Provider
         {
             get { return this.provider; }
         }
+
+        public DatabaseName DefaultDatabase => provider.DefaultDatabaseName;
 
         public int CompareTo(object obj)
         {

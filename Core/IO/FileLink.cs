@@ -26,6 +26,7 @@ namespace Sys.Data.IO
         {
             get { return exists(); }
         }
+
         public string Name
         {
             get
@@ -41,6 +42,11 @@ namespace Sys.Data.IO
             get { return url.IndexOf("://") < 0; }
         }
 
+        /// <summary>
+        /// Temporary file 
+        /// </summary>
+        public bool TemporaryLink { get; set; }
+
         protected abstract bool exists();
 
         public abstract string PathCombine(string path1, string path2);
@@ -52,6 +58,20 @@ namespace Sys.Data.IO
         public abstract string ReadAllText();
 
         public abstract void Save(string contents);
+
+        public override bool Equals(object obj)
+        {
+            FileLink link = obj as FileLink;
+            if (obj == null)
+                return false;
+
+            return url.Equals(link.url);
+        }
+
+        public override int GetHashCode()
+        {
+            return url.GetHashCode();
+        }
 
         public override string ToString()
         {

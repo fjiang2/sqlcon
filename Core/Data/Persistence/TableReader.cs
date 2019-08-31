@@ -49,10 +49,14 @@ namespace Sys.Data
         /// </summary>
         /// <param name="tableName"></param>
         public TableReader(TableName tableName)
-            : this(tableName, string.Format("SELECT * FROM {0}", tableName))
+            : this(tableName, $"SELECT * FROM {tableName}")
         {
         }
 
+        public TableReader(TableName tableName, int top)
+            : this(tableName, top > 0 ? $"SELECT TOP {top} * FROM {tableName}" : $"SELECT * FROM {tableName}")
+        {
+        }
 
         /// <summary>
         /// read records by filter
@@ -94,24 +98,34 @@ namespace Sys.Data
             {
                 if (table == null)
                 {
-                    this.table = cmd.FillDataTable();
-                    var schema = new TableSchema(tableName);
-                    string[] keys = schema.PrimaryKeys.Keys;
-                    this.table.PrimaryKey = table.Columns.OfType<DataColumn>().Where(column => keys.Contains(column.ColumnName)).ToArray();
-                    foreach (IColumn column in schema.Columns)
-                    {
-                        DataColumn _column = table.Columns[column.ColumnName];
-                        _column.AllowDBNull = column.Nullable;
-                        _column.AutoIncrement = column.IsIdentity;
-
-                        //because string supports Unicode
-                        if (column.CType == CType.NVarChar || column.CType == CType.NText || column.CType == CType.NChar) 
-                            _column.MaxLength = column.Length / 2;
-                    }
+                    this.table = LoadData();
                 }
 
                 return this.table;
             }
+        }
+
+        private DataTable LoadData()
+        {
+            DataTable dt = cmd.FillDataTable();
+            var schema = new TableSchema(tableName);
+            string[] keys = schema.PrimaryKeys.Keys;
+            dt.PrimaryKey = dt.Columns.OfType<DataColumn>().Where(column => keys.Contains(column.ColumnName)).ToArray();
+            foreach (IColumn column in schema.Columns)
+            {
+                DataColumn _column = dt.Columns[column.ColumnName];
+                _column.AllowDBNull = column.Nullable;
+                _column.AutoIncrement = column.IsIdentity;
+
+                //because string supports Unicode
+                if (column.CType == CType.NVarChar || column.CType == CType.NChar)
+                {
+                    if (column.Length > 0)
+                        _column.MaxLength = column.Length / 2;
+                }
+            }
+
+            return dt;
         }
 
         /// <summary>

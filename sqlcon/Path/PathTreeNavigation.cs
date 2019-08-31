@@ -126,17 +126,31 @@ namespace sqlcon
             {
                 return Navigate(Navigate(node, ".."), "..");
             }
+            else if (segment == "~~")
+            {
+                return Navigate(new PathName(cfg.DefaultServerPath));
+            }
             else if (segment == "~")
             {
                 if (node == RootNode)
                 {
                     return Navigate(new PathName(cfg.DefaultServerPath));
                 }
+                else if (node.Item is DatabaseName)
+                {
+                    var dname = node.Item as DatabaseName;
+                    if (dname != null)
+                    {
+                        return NavigateToDefaultDatabase(dname.Provider) ?? node;
+                    }
+                }
                 else if (node.Item is ServerName)
                 {
                     var sname = node.Item as ServerName;
                     if (sname != null)
-                        segment = sname.Provider.DefaultDatabaseName.Name;
+                    {
+                        return NavigateToDefaultDatabase(sname.Provider) ?? node;
+                    }
                 }
             }
 
@@ -164,6 +178,17 @@ namespace sqlcon
             }
         }
 
+        private TreeNode<IDataPath> NavigateToDefaultDatabase(ConnectionProvider provider)
+        {
+            DatabaseName d = provider.DefaultDatabaseName;
+            if (DbSchemaProvider.IsSystemDatabase(d.Name))
+            {
+                cerr.WriteLine($"cannot navigate to system database: \"{d.Name}\"");
+                return null;
+            }
+
+            return Navigate(new PathName(d.FullPath));
+        }
 
         public TreeNode<IDataPath> TryAddWhereOrColumns(TreeNode<IDataPath> pt, ApplicationCommand cmd)
         {
@@ -182,7 +207,7 @@ namespace sqlcon
             var locator = new Locator(cmd.arg1) { Name = cmd.GetValue("name") };
             if (locator.Name == null)
             {
-                locator.Name = $"filter{pt.Nodes.Count+1}";
+                locator.Name = $"filter{pt.Nodes.Count + 1}";
             }
 
             var builder = new SqlBuilder().SELECT.TOP(1).COLUMNS().FROM(tname).WHERE(locator);

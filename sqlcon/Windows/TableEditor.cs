@@ -18,7 +18,7 @@ namespace sqlcon.Windows
         private DataGrid dataGrid;
         private UniqueTable udt;
 
-        public TableEditor(Configuration cfg, UniqueTable udt)
+        public TableEditor(UniqueTable udt)
         {
             this.udt = udt;
             if (udt.TableName != null)
@@ -33,16 +33,12 @@ namespace sqlcon.Windows
 
             this.Content = grid;
 
-            var evenRowColor = cfg.GetColor(ConfigKey._GUI_TABLE_EDITOR_ALTERNATINGROWBACKGROUND, Colors.DimGray);
-            var fkColor = cfg.GetColor(ConfigKey._GUI_TABLE_EDITOR_FOREGROUND, Colors.LightGray);
-            var bkColor = cfg.GetColor(ConfigKey._GUI_TABLE_EDITOR_ROWBACKGROUND, Colors.Black);
-
             dataGrid = new DataGrid
             {
                 AlternationCount = 2,
-                AlternatingRowBackground = new SolidColorBrush(evenRowColor),
-                Foreground = new SolidColorBrush(fkColor),
-                RowBackground = new SolidColorBrush(bkColor)
+                AlternatingRowBackground = Themes.TableEditor.AlternatingRowBackground,
+                Foreground = Themes.TableEditor.Foreground,
+                RowBackground = Themes.TableEditor.RowBackground,
             };
 
             if (udt.TableName != null)

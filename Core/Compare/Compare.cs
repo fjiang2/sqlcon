@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Sys.Stdio;
 
 namespace Sys.Data.Comparison
 {
@@ -20,7 +21,7 @@ namespace Sys.Data.Comparison
             foreach (TableName tableName in names)
             {
 #if DEBUG
-                Console.WriteLine(tableName.ShortName);
+                cout.WriteLine(tableName.ShortName);
 #endif
                 try
                 {
@@ -28,12 +29,12 @@ namespace Sys.Data.Comparison
                     builder.Append(sql);
 #if DEBUG
                     if (sql != string.Empty)
-                        Console.WriteLine(sql);
+                        cout.WriteLine(sql);
 #endif
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("error:" + ex.Message);
+                    cerr.WriteLine("error:" + ex.Message);
                 }
             }
 
@@ -56,17 +57,17 @@ namespace Sys.Data.Comparison
                 TableSchema schema1 = new TableSchema(tname1);
                 TableSchema schema2 = new TableSchema(tname2);
 
-                Console.WriteLine(tname1.ShortName);
+                cout.WriteLine(tname1.ShortName);
 
                 if (excludedTables.Contains(tableName.ShortName.ToUpper()))
                 {
-                    Console.WriteLine("skip to compare data on excluded table {0}", tableName.ShortName);
+                    cout.WriteLine("skip to compare data on excluded table {0}", tableName.ShortName);
                     continue;
                 }
 
                 if (schema1.PrimaryKeys.Length == 0)
                 {
-                    Console.WriteLine("undefined primary key");
+                    cout.WriteLine("undefined primary key");
                     continue;
                 }
 

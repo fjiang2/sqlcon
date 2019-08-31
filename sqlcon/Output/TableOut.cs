@@ -75,7 +75,7 @@ namespace sqlcon
 
             if (cmd.Has("edit"))
             {
-                var editor = new Windows.TableEditor(cmd.Configuration, udt);
+                var editor = new Windows.TableEditor(udt);
                 editor.ShowDialog();
                 return;
             }

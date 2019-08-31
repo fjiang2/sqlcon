@@ -39,7 +39,7 @@ namespace sqlcon
                         if (i < args.Length && !args[i].StartsWith("/"))
                         {
                             string inputfile = args[i++];
-                            string server = cfg.GetValue<string>(Configuration._SERVER0);
+                            string server = cfg.Home;
                             var pvd = cfg.GetProvider(server);
                             var theSide = new Side(pvd);
                             theSide.ExecuteScript(inputfile);

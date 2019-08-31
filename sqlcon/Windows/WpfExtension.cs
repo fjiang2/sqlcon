@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Data;
 
 namespace sqlcon.Windows
 {
@@ -85,6 +86,26 @@ namespace sqlcon.Windows
         {
             TextRange textRange = new TextRange(textBox.Document.ContentStart, textBox.Document.ContentEnd);
             return textRange.Text;
+        }
+
+        public static DataTable AddLineNumberColumn(this DataTable dt)
+        {
+            DataColumn line = new DataColumn("Line", typeof(int))
+            {
+                Caption = string.Empty,
+            };
+            dt.Columns.Add(line);
+
+            line.SetOrdinal(0);
+
+            int k = 1;
+            foreach (DataRow row in dt.Rows)
+            {
+                row[line] = k++;
+            }
+
+            dt.AcceptChanges();
+            return dt;
         }
     }
 }

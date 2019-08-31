@@ -17,7 +17,7 @@ namespace sqlcon
     {
         private PathManager mgr;
         private ApplicationCommand cmd;
-        private Configuration cfg;
+        private IConfiguration cfg;
 
 
         private TableName tname;
@@ -69,8 +69,8 @@ namespace sqlcon
             TableName[] tnames;
             if (cmd.wildcard != null)
             {
-                var md = new MatchedDatabase(dname, cmd.wildcard, null);
-                tnames = md.MatchedTableNames;
+                var md = new MatchedDatabase(dname, cmd);
+                tnames = md.TableNames();
                 if (tnames.Length == 0)
                 {
                     cerr.WriteLine("warning: no table is matched");
@@ -85,6 +85,23 @@ namespace sqlcon
             return tnames;
         }
 
+        private static DataTable FillTable(TableName tname)
+        {
+            var dt = new SqlCmd(tname.Provider, $"SELECT TOP 1 * FROM {tname.FormalName}").FillDataTable();
+            dt.TableName = tname.Name;
+            var schema = new TableSchema(tname);
+            dt.PrimaryKeys(schema.PrimaryKeys.Keys);
+            foreach (IColumn column in schema.Columns)
+            {
+                dt.Columns[column.ColumnName].AllowDBNull = column.Nullable;
+            }
+
+            if (dt.Rows.Count > 0)
+                dt.Rows[0].Delete();
+            dt.AcceptChanges();
+
+            return dt;
+        }
 
         public void ExportScud(SqlScriptType type)
         {
@@ -123,8 +140,8 @@ namespace sqlcon
             {
                 if (cmd.wildcard != null)
                 {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportIncludedTables);
-                    TableName[] tnames = md.MatchedTableNames;
+                    var md = new MatchedDatabase(dname, cmd);
+                    TableName[] tnames = md.TableNames();
                     if (tnames.Length > 0)
                     {
                         Stack<string> stack = new Stack<string>();
@@ -195,8 +212,8 @@ namespace sqlcon
                 cout.WriteLine("start to generate {0} script to file: {1}", dname, fileName);
                 using (var writer = fileName.CreateStreamWriter(cmd.Append))
                 {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportIncludedTables);
-                    TableName[] tnames = md.MatchedTableNames;
+                    var md = new MatchedDatabase(dname, cmd);
+                    TableName[] tnames = md.TableNames();
                     CancelableWork.CanCancel(cts =>
                     {
                         foreach (var tn in tnames)
@@ -204,23 +221,18 @@ namespace sqlcon
                             if (cts.IsCancellationRequested)
                                 return;
 
-                            if (cfg.exportIncludedTables.IsMatch(tn.ShortName))
+                            int count = new SqlCmd(tn.Provider, string.Format("SELECT COUNT(*) FROM {0}", tn)).FillObject<int>();
+                            if (count > cfg.MaxRows)
                             {
-                                int count = new SqlCmd(tn.Provider, string.Format("SELECT COUNT(*) FROM {0}", tn)).FillObject<int>();
-                                if (count > cfg.Export_Max_Count)
+                                if (!cin.YesOrNo($"are you sure to export {count} rows on {tn.ShortName} (y/n)?"))
                                 {
-                                    if (!cin.YesOrNo($"are you sure to export {count} rows on {tn.ShortName} (y/n)?"))
-                                    {
-                                        cout.WriteLine("\n{0,10} skipped", tn.ShortName);
-                                        continue;
-                                    }
+                                    cout.WriteLine("\n{0,10} skipped", tn.ShortName);
+                                    continue;
                                 }
-
-                                count = Compare.GenerateRows(type, writer, new TableSchema(tn), null, cmd.HasIfExists);
-                                cout.WriteLine($"{count,10} row(s) generated on {tn.ShortName}");
                             }
-                            else
-                                cout.WriteLine("{0,10} skipped", tn.ShortName);
+
+                            count = Compare.GenerateRows(type, writer, new TableSchema(tn), null, cmd.HasIfExists);
+                            cout.WriteLine($"{count,10} row(s) generated on {tn.ShortName}");
                         }
 
                         cout.WriteLine($"completed to generate {type} clauses to \"{fileName}\"");
@@ -234,7 +246,7 @@ namespace sqlcon
 
         public void ExportSchema()
         {
-            string directory = cmd.OutputDirectory;
+            string directory = cmd.OutputDirectory();
             if (directory != null)
                 xmlDbFile.XmlDbFolder = directory;
 
@@ -259,6 +271,10 @@ namespace sqlcon
 
         public void ExportData()
         {
+            string directory = cmd.OutputDirectory();
+            if (directory != null)
+                xmlDbFile.XmlDbFolder = directory;
+
             if (tname != null)
             {
                 cout.WriteLine("start to generate {0} data file", tname);
@@ -270,10 +286,10 @@ namespace sqlcon
             else if (dname != null)
             {
                 cout.WriteLine("start to generate {0}", dname);
-                var mt = new MatchedDatabase(dname, cmd.wildcard, cfg.exportIncludedTables);
+                var mt = new MatchedDatabase(dname, cmd);
                 CancelableWork.CanCancel(cts =>
                 {
-                    foreach (var tname in mt.MatchedTableNames)
+                    foreach (var tname in mt.TableNames())
                     {
                         if (cts.IsCancellationRequested)
                             return;
@@ -304,7 +320,7 @@ namespace sqlcon
             DpoOption option = new DpoOption
             {
                 NameSpace = cfg.GetValue<string>(ConfigKey._GENERATOR_DPO_NS, "Sys.DataModel.Dpo"),
-                OutputPath = cfg.GetValue<string>(ConfigKey._GENERATOR_DPO_PATH, $"{Configuration.MyDocuments}\\DataModel\\Dpo"),
+                OutputPath = cmd.OutputPath(ConfigKey._GENERATOR_DPO_PATH, $"{Configuration.MyDocuments}\\DataModel\\Dpo"),
                 Level = cfg.GetValue<Level>(ConfigKey._GENERATOR_DPO_LEVEL, Level.Application),
                 HasProvider = cfg.GetValue<bool>(ConfigKey._GENERATOR_DPO_HASPROVIDER, false),
                 HasTableAttribute = cfg.GetValue<bool>(ConfigKey._GENERATOR_DPO_HASTABLEATTR, true),
@@ -328,8 +344,8 @@ namespace sqlcon
                 cout.WriteLine("start to generate database {0} class to directory: {1}", dname, option.OutputPath);
                 CancelableWork.CanCancel(cts =>
                 {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportIncludedTables);
-                    TableName[] tnames = md.MatchedTableNames;
+                    var md = new MatchedDatabase(dname, cmd);
+                    TableName[] tnames = md.TableNames();
                     foreach (var tn in tnames)
                     {
                         if (cts.IsCancellationRequested)
@@ -361,10 +377,7 @@ namespace sqlcon
 
         public void ExportCsvFile()
         {
-            string path = this.cmd.OutputDirectory;
-
-            if (path == null)
-                path = cfg.GetValue<string>(ConfigKey._GENERATOR_CSV_PATH, $"{Configuration.MyDocuments}\\csv");
+            string path = this.cmd.OutputPath(ConfigKey._GENERATOR_CSV_PATH, $"{Configuration.MyDocuments}\\csv");
 
             string file;
             string fullName(TableName tname) => $"{path}\\{sname.Path}\\{dname.Name}\\{tname.ShortName}.csv";
@@ -372,7 +385,7 @@ namespace sqlcon
             if (tname != null)
             {
                 cout.WriteLine("start to generate {0} csv file", tname);
-                file = this.cmd.OutputFileName;
+                file = this.cmd.OutputFileName();
                 if (file == null)
                     file = fullName(tname);
 
@@ -388,8 +401,8 @@ namespace sqlcon
                 cout.WriteLine("start to generate {0} csv to directory: {1}", dname, path);
                 CancelableWork.CanCancel(cts =>
                 {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, cfg.exportIncludedTables);
-                    TableName[] tnames = md.MatchedTableNames;
+                    var md = new MatchedDatabase(dname, cmd);
+                    TableName[] tnames = md.TableNames();
                     foreach (var tn in tnames)
                     {
                         if (cts.IsCancellationRequested)
@@ -423,8 +436,8 @@ namespace sqlcon
 
         public void ExportDataContract(int version)
         {
-            string path = cmd.OutputPath ?? cfg.GetValue<string>(ConfigKey._GENERATOR_DC_PATH, $"{Configuration.MyDocuments}\\dc");
-            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>(ConfigKey._GENERATOR_DC_NS, "Sys.DataModel.DataContract");
+            string path = cmd.OutputPath(ConfigKey._GENERATOR_DC_PATH, $"{Configuration.MyDocuments}\\dc");
+            string ns = cmd.GetValue("ns", ConfigKey._GENERATOR_DC_NS, "Sys.DataModel.DataContract");
             string clss = cmd.GetValue("class");
             bool last = cmd.Has("last");
 
@@ -453,20 +466,15 @@ namespace sqlcon
             }
             else if (tname != null)
             {
-                var dt = new SqlCmd(tname.Provider, $"SELECT TOP 1 * FROM {tname.FormalName}").FillDataTable();
-                dt.TableName = tname.Name;
-                var schema = new TableSchema(tname);
-                dt.PrimaryKeys(schema.PrimaryKeys.Keys);
+                var dt = FillTable(tname);
                 list.Add(dt);
             }
             else if (dname != null)
             {
-                path = path + "\\" + dname.Name;
                 TableName[] tnames = getTableNames(cmd);
                 foreach (var tn in tnames)
                 {
-                    var dt = new SqlCmd(tn.Provider, $"SELECT TOP 1 * FROM {tn.FormalName}").FillDataTable();
-                    dt.TableName = tn.Name;
+                    var dt = FillTable(tn);
                     list.Add(dt);
                 }
             }
@@ -485,13 +493,13 @@ namespace sqlcon
 
         private void ExportDataContractClass(string path, int version, DataTable dt, string ns, string className)
         {
-
+            bool allowDbNull = cmd.Has("NULL");
             string mtd = cmd.GetValue("method");
             string[] keys = cmd.Columns;
 
             if (version == 0)
             {
-                var builder = new DataContractClassBuilder(cmd, dt)
+                var builder = new DataContractClassBuilder(cmd, dt, allowDbNull)
                 {
                     ns = ns,
                     cname = className,
@@ -503,7 +511,7 @@ namespace sqlcon
             }
             else if (version == 1)
             {
-                var builder = new DataContract1ClassBuilder(cmd, dt)
+                var builder = new DataContract1ClassBuilder(cmd, dt, allowDbNull)
                 {
                     ns = ns,
                     cname = className,
@@ -516,7 +524,7 @@ namespace sqlcon
             }
             else
             {
-                var builder = new DataContract2ClassBuilder(cmd, dt)
+                var builder = new DataContract2ClassBuilder(cmd, dt, allowDbNull)
                 {
                     ns = ns,
                     cname = className,
@@ -536,8 +544,8 @@ namespace sqlcon
                 return;
             }
 
-            string path = cmd.OutputPath ?? cfg.GetValue<string>(ConfigKey._GENERATOR_DC_PATH, $"{Configuration.MyDocuments}\\dc");
-            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>(ConfigKey._GENERATOR_DC_NS, "Sys.DataModel.DataContracts");
+            string path = cmd.OutputPath(ConfigKey._GENERATOR_DC_PATH, $"{Configuration.MyDocuments}\\dc");
+            string ns = cmd.GetValue("ns", ConfigKey._GENERATOR_DC_NS, "Sys.DataModel.DataContracts");
 
             if (tname != null)
             {
@@ -555,8 +563,8 @@ namespace sqlcon
                 cout.WriteLine("start to generate {0} entity framework class to directory: {1}", dname, path);
                 CancelableWork.CanCancel(cts =>
                 {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, null); //cfg.exportExcludedTables);
-                    TableName[] tnames = md.MatchedTableNames;
+                    var md = new MatchedDatabase(dname, cmd); //cfg.exportExcludedTables);
+                    TableName[] tnames = md.TableNames();
                     foreach (var tn in tnames)
                     {
                         if (cts.IsCancellationRequested)
@@ -593,8 +601,8 @@ namespace sqlcon
 
         public void ExportLinq2SQLClass()
         {
-            string path = cfg.GetValue<string>(ConfigKey._GENERATOR_L2S_PATH, $"{Configuration.MyDocuments}\\dc");
-            string ns = cmd.GetValue("ns") ?? cfg.GetValue<string>(ConfigKey._GENERATOR_L2S_NS, "Sys.DataModel.L2s");
+            string path = cmd.OutputPath(ConfigKey._GENERATOR_L2S_PATH, $"{Configuration.MyDocuments}\\dc");
+            string ns = cmd.GetValue("ns", ConfigKey._GENERATOR_L2S_NS, "Sys.DataModel.L2s");
             Dictionary<TableName, TableSchema> schemas = new Dictionary<TableName, TableSchema>();
 
             if (tname != null)
@@ -677,7 +685,7 @@ namespace sqlcon
             var dt = LastOrCurrentTable();
 
             //not .cfg file
-            if (cmd.InputPath == null)
+            if (cmd.InputPath() == null)
             {
                 if (dt == null)
                     return;
@@ -692,7 +700,7 @@ namespace sqlcon
             var dt = LastOrCurrentTable();
 
             //not .cfg file
-            if (cmd.InputPath == null)
+            if (cmd.InputPath() == null)
             {
                 if (dt == null)
                     return;
@@ -711,7 +719,7 @@ namespace sqlcon
                 return;
             }
 
-            string path = cmd.OutputPath ?? cfg.GetValue<string>(ConfigKey._GENERATOR_DS_PATH, $"{Configuration.MyDocuments}\\ds");
+            string path = cmd.OutputPath(ConfigKey._GENERATOR_DS_PATH, $"{Configuration.MyDocuments}\\ds");
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
@@ -733,8 +741,8 @@ namespace sqlcon
                 cout.WriteLine($"start to generate data file to directory: {dname}");
                 CancelableWork.CanCancel(cts =>
                 {
-                    var md = new MatchedDatabase(dname, cmd.wildcard, null); //cfg.exportExcludedTables);
-                    TableName[] tnames = md.MatchedTableNames;
+                    var md = new MatchedDatabase(dname, cmd); //cfg.exportExcludedTables);
+                    TableName[] tnames = md.TableNames();
                     DataSet ds = new DataSet
                     {
                         DataSetName = dname.Name,
@@ -791,6 +799,7 @@ namespace sqlcon
             cout.WriteLine("option of data generation:");
             cout.WriteLine("   /schema  : generate database schema xml file");
             cout.WriteLine("   /data    : generate database/table data xml file");
+            cout.WriteLine("      [/include]: include table names with wildcard");
             cout.WriteLine("   /csv     : generate table csv file");
             cout.WriteLine("   /ds      : generate data set xml file");
             cout.WriteLine("   /json    : generate json from last result");
@@ -799,10 +808,12 @@ namespace sqlcon
             cout.WriteLine("   /l2s     : generate C# Linq to SQL class");
             cout.WriteLine("   /dc      : generate C# data contract class");
             cout.WriteLine("   /dc1     : generate C# data contract class and extension class");
+            cout.WriteLine("   /dc2     : generate C# data contract class and extension class");
+            cout.WriteLine("      option of data contract /[dc|dc1|dc2] :");
             cout.WriteLine("      [/readonly]: contract class for reading only");
             cout.WriteLine("      [/last]: generate C# data contract from last result");
-            cout.WriteLine("   /dc2     : generate C# data contract class from last result");
             cout.WriteLine("      [/method:name] default convert method is defined on the .cfg");
+            cout.WriteLine("      [/NULL] allow column type be nullable");
             cout.WriteLine("      [/col:pk1,pk2] default primary key is the first column");
             cout.WriteLine("   /entity  : generate C# method copy/compare/clone for Entity framework");
             cout.WriteLine("      [/base:type] define base class or interface, use ~ to represent generic class itself, delimited by ;");

@@ -89,6 +89,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity.Design" />
     <Reference Include="System.Windows" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -109,7 +110,12 @@
     <Compile Include="ClassBuilder\DataContractClassBuilder.cs" />
     <Compile Include="ClassBuilder\Json2CSharp.cs" />
     <Compile Include="ClassBuilder\TieClassBuilder.cs" />
+    <Compile Include="Configuration\Config.cs" />
+    <Compile Include="Configuration\Config`1.cs" />
+    <Compile Include="Configuration\ConfigDefaultValue.cs" />
     <Compile Include="Configuration\ConfigKey.cs" />
+    <Compile Include="Configuration\IConfiguration.cs" />
+    <Compile Include="Configuration\IConnectionConfiguration.cs" />
     <Compile Include="Data\CsvFile.cs" />
     <Compile Include="Data\DuplicatedTable.cs" />
     <Compile Include="ClassBuilder\EntityClassBuilder.cs" />
@@ -121,8 +127,19 @@
     <Compile Include="Shell\Importer.cs" />
     <Compile Include="Shell\ShellHelp.cs" />
     <Compile Include="Shell\ShellHistory.cs" />
-    <Compile Include="Windows\DbTreeUI.cs" />
-    <Compile Include="Windows\SqlEditor.cs" />
+    <Compile Include="Windows\SqlEditor\DbDatabaseNodeUI.cs" />
+    <Compile Include="Windows\SqlEditor\DbColumnNodeUI.cs" />
+    <Compile Include="Windows\SqlEditor\DbTableNodeUI.cs" />
+    <Compile Include="Windows\SqlEditor\DbServerNodeUI.cs" />
+    <Compile Include="Windows\SqlEditor\DbTreeNodeUI.cs" />
+    <Compile Include="Windows\SqlEditor\ScriptResultControl.cs" />
+    <Compile Include="Windows\SqlEditor\ScriptResultPane.cs" />
+    <Compile Include="Windows\SqlEditor\Themes.cs" />
+    <Compile Include="Windows\SqlEditor\SqlCommands.cs" />
+    <Compile Include="Windows\SqlEditor\SqlEditor.UI.cs" />
+    <Compile Include="Windows\SqlEditor\DbTreeUI.cs" />
+    <Compile Include="Windows\SqlEditor\SqlEditor.cs" />
+    <Compile Include="Windows\SqlEditor\TableResultPane.cs" />
     <Compile Include="Windows\TableEditor.cs" />
     <Compile Include="Input\KeyValueTable.cs" />
     <Compile Include="Output\ProgressBar.cs" />
@@ -163,12 +180,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Output\ConsoleGrid.cs" />
+    <Resource Include="Windows\images\Home_16x16.png" />
+    <Resource Include="Windows\images\Close_16x16.png" />
+    <Resource Include="Windows\images\Table_16x16.png" />
+    <Resource Include="Windows\images\SelectTable_16x16.png" />
     <Resource Include="Windows\images\database.png" />
     <Resource Include="Windows\images\server.png" />
     <Resource Include="Windows\images\server_error.png" />
     <Resource Include="Windows\images\key.png" />
     <Resource Include="Windows\images\AlignHorizontalTop_16x16.png" />
-    <Resource Include="Windows\images\ContentArrangeInRows_16x16.png" />
     <None Include="packages.config" />
     <None Include="sqlcon_TemporaryKey.pfx" />
     <Resource Include="Windows\images\New_16x16.png" />

@@ -9,8 +9,6 @@ namespace Sys.Data
 {
     class OleDbSchemaProvider : DbSchemaProvider
     {
-        private static string[] __sys_tables = { "master", "model", "msdb", "tempdb" };
-
         public OleDbSchemaProvider(ConnectionProvider provider)
             : base(provider)
         {

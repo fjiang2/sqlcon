@@ -9,18 +9,18 @@ namespace sqlcon
     class ShellContext
     {
         public Side theSide { get; set; }
-        public Configuration cfg { get; }
+        public IConfiguration cfg { get; }
         public PathManager mgr { get; }
         public Commandee commandee { get; }
         public const string THESIDE = "$TheSide";
 
-        public ShellContext(Configuration cfg)
+        public ShellContext(IConfiguration cfg)
         {
             this.cfg = cfg;
             this.mgr = new PathManager(cfg);
             this.commandee = new Commandee(mgr);
 
-            string server = cfg.GetValue<string>(Configuration._SERVER0);
+            string server = cfg.Home;
 
             ConnectionProvider pvd = null;
             if (!string.IsNullOrEmpty(server))

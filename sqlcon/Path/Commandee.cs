@@ -53,6 +53,33 @@ namespace sqlcon
             return true;
         }
 
+        private static bool IsReadonly(TableName tname)
+        {
+            bool ro = tname.DatabaseName.ServerName.Provider.IsReadOnly;
+            if (ro)
+                cout.WriteLine("it is read-only table");
+
+            return ro;
+        }
+
+        private static bool IsReadonly(DatabaseName dname)
+        {
+            bool ro = dname.ServerName.Provider.IsReadOnly;
+            if (ro)
+                cout.WriteLine("it is read-only database");
+
+            return ro;
+        }
+
+        private static bool IsReadonly(ServerName sname)
+        {
+            bool ro = sname.Provider.IsReadOnly;
+            if (ro)
+                cout.WriteLine("it is read-only database server");
+
+            return ro;
+        }
+
         public void chdir(ServerName serverName, DatabaseName databaseName)
         {
             string path = string.Format("\\{0}\\{1}\\", serverName.Path, databaseName.Path);
@@ -73,10 +100,11 @@ namespace sqlcon
                 cout.WriteLine("Change current database directory");
                 cout.WriteLine("command cd or chdir");
                 cout.WriteLine("cd [path]              : change database directory");
-                cout.WriteLine("cd \\                  : change to root directory");
+                cout.WriteLine("cd \\                   : change to root directory");
                 cout.WriteLine("cd ..                  : change to the parent directory");
                 cout.WriteLine("cd ...                 : change to the grand parent directory");
-                cout.WriteLine("cd ~                   : change to default database defined on the connection string, or change to default server");
+                cout.WriteLine("cd ~                  : change to default database (initial-catalog)");
+                cout.WriteLine("cd ~~                   : change to home directory");
                 return true;
             }
 
@@ -263,8 +291,8 @@ namespace sqlcon
                         {
                             if (cmd.wildcard != null)
                             {
-                                var m = new MatchedDatabase(dname, cmd.wildcard, null);
-                                T = m.MatchedTableNames;
+                                var m = new MatchedDatabase(dname, cmd);
+                                T = m.TableNames();
                             }
                             else
                             {
@@ -481,6 +509,7 @@ namespace sqlcon
         {
             if (cmd.HasHelp)
             {
+                cout.WriteLine("use \"/pk:table1=pk1+pk2,table=pk1\" if primary key doesn't exist");
                 if (sideType == CompareSideType.copy)
                 {
                     cout.WriteLine("copy schema or records from table1 to table2, support table name wildcards");
@@ -522,10 +551,10 @@ namespace sqlcon
                         tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
                     }
 
-                    var adapter = new CompareAdapter(both.ps1.side, both.ps2.side);
+                    var adapter = new CompareAdapter(cmd, both.ps1.side, both.ps2.side);
                     //stdio.WriteLine("start to {0} from {1} to {2}", sideType, tname1, tname2);
                     var sql = adapter.CompareTable(cmd.IsSchema ? ActionType.CompareSchema : ActionType.CompareData,
-                        sideType, tname1, tname2, mgr.Configuration.PK, cmd.Columns);
+                        sideType, tname1, tname2, cmd.PK, cmd.Columns);
 
                     if (sideType == CompareSideType.compare)
                     {
@@ -577,11 +606,13 @@ namespace sqlcon
                 cout.WriteLine("compare path1 [path2]  : compare data");
                 cout.WriteLine("compare [/s]           : compare schema");
                 cout.WriteLine("compare [/e]           : find common existing table names");
+                cout.WriteLine("        [/pk]          : if primary key doesn't exist");
+                cout.WriteLine("                         for example /pk:table1=pk1+pk2,table=pk1");
                 cout.WriteLine();
                 return;
             }
 
-            Configuration cfg = cmd.Configuration;
+            IConfiguration cfg = cmd.Configuration;
             PathBothSide both = new PathBothSide(mgr, cmd);
             string fileName = cmd.OutputFile();
             using (var writer = fileName.CreateStreamWriter(cmd.Append))
@@ -597,7 +628,7 @@ namespace sqlcon
                     return;
                 }
 
-                var adapter = new CompareAdapter(both.ps1.side, both.ps2.side);
+                var adapter = new CompareAdapter(cmd, both.ps1.side, both.ps2.side);
                 var T1 = both.ps1.MatchedTables;
                 var T2 = both.ps2.MatchedTables;
 
@@ -611,7 +642,7 @@ namespace sqlcon
                     T2 = T2.Where(t => C.Contains(t.ShortName.ToUpper())).ToArray();
                 }
 
-                var sql = adapter.Run(type, T1, T2, cfg, cmd.Columns);
+                var sql = adapter.Run(type, T1, T2, cmd);
                 writer.Write(sql);
             }
             cout.WriteLine($"result in \"{fileName}\"");
@@ -860,14 +891,15 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            if (this.mgr.Configuration.dictionarytables.Count == 0)
+            KeyValueTable setting = new KeyValueTable
             {
-                cerr.WriteLine("key-value tables is undefined");
-                return;
-            }
+                TableName = "Config",
+                KeyName = "Key",
+                ValueName = "Value",
+            };
 
             TableName tname = mgr.GetCurrentPath<TableName>();
-            var setting = this.mgr.Configuration.dictionarytables.FirstOrDefault(row => row.TableName.ToUpper() == tname.Name.ToUpper());
+
             if (setting == null)
             {
                 cerr.WriteLine("current table is not key-value tables");
@@ -926,7 +958,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void clean(ApplicationCommand cmd, Configuration cfg)
+        public void clean(ApplicationCommand cmd, IConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -944,9 +976,11 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             if (!Navigate(cmd.Path1))
                 return;
 
-
             if (pt.Item is TableName tname)
             {
+                if (IsReadonly(tname))
+                    return;
+
                 var dup = new DuplicatedTable(tname, cmd.Columns);
                 if (cmd.Has("d"))
                 {
@@ -967,8 +1001,12 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             if (pt.Item is DatabaseName dname)
             {
-                var m = new MatchedDatabase(dname, cmd.wildcard, cfg.compareIncludedTables);
-                var T = m.MatchedTableNames;
+                if (IsReadonly(dname))
+                    return;
+
+
+                var m = new MatchedDatabase(dname, cmd);
+                var T = m.TableNames();
 
                 CancelableWork.CanCancel(cts =>
                 {
@@ -1006,7 +1044,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             cerr.WriteLine("select database or table first");
         }
 
-        public void import(ApplicationCommand cmd, Configuration cfg, ShellContext context)
+        public void import(ApplicationCommand cmd, IConfiguration cfg, ShellContext context)
         {
             if (cmd.HasHelp)
             {
@@ -1111,7 +1149,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void export(ApplicationCommand cmd, Configuration cfg, ShellContext context)
+        public void export(ApplicationCommand cmd, IConfiguration cfg, ShellContext context)
         {
             if (cmd.HasHelp)
             {
@@ -1131,7 +1169,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cerr.WriteLine("select server, database or table first");
         }
 
-        public void mount(ApplicationCommand cmd, Configuration cfg)
+        public void mount(ApplicationCommand cmd, IConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1253,7 +1291,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void umount(ApplicationCommand cmd, Configuration cfg)
+        public void umount(ApplicationCommand cmd, IConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1315,7 +1353,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            var editor = new Windows.TableEditor(mgr.Configuration, new UniqueTable(null, dt));
+            var editor = new Windows.TableEditor(new UniqueTable(null, dt));
 
             editor.ShowDialog();
         }
@@ -1519,7 +1557,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             try
             {
-                var editor = new Windows.SqlEditor(cmd.Configuration, theSide.Provider, fileLink);
+                var editor = new Windows.SqlEditor(cmd.Configuration, theSide.Provider, mgr.ToString(), fileLink);
                 editor.ShowDialog();
             }
             catch (Exception ex)
@@ -1529,12 +1567,12 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void open(ApplicationCommand cmd, Configuration cfg)
+        public void open(ApplicationCommand cmd, IConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
-                cout.WriteLine("open files in the editor");
-                cout.WriteLine("open files");
+                cout.WriteLine("open file in the editor or open directory in the Explorer");
+                cout.WriteLine("open file or directory ");
                 cout.WriteLine("options:");
                 cout.WriteLine("   log              : open log file");
                 cout.WriteLine("   working          : open working directory");
@@ -1542,9 +1580,12 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("   output           : open output file");
                 cout.WriteLine("   config [/s]      : open user configure file, /s open system configurate");
                 cout.WriteLine("   dpo              : open table class output directory");
-                cout.WriteLine("   dc               : open data contract class output directory");
+                cout.WriteLine("   dc|dc1|dc2       : open data contract class output directory");
                 cout.WriteLine("   l2s              : open Linq to SQL class output directory");
                 cout.WriteLine("   release          : open release notes");
+                cout.WriteLine("   file-name.sqc    : open batch file");
+                cout.WriteLine("   file-name.sql    : open SQL script file");
+                cout.WriteLine("   file-name.sqt    : open Tie file");
 
                 return;
             }
@@ -1565,7 +1606,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     if (cmd.IsSchema)
                         stdio.OpenEditor("sqlcon.cfg");
                     else
-                        stdio.OpenEditor(cfg.CfgFile);
+                        stdio.OpenEditor(cfg.UserConfigurationFile);
                     break;
 
                 case "release":
@@ -1583,6 +1624,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     break;
 
                 case "dc":
+                case "dc1":
+                case "dc2":
                     path = cfg.GetValue<string>(ConfigKey._GENERATOR_DC_PATH, $"{Configuration.MyDocuments}\\DataModel\\DataContracts");
                     OpenDirectory(path, "data contract class");
                     break;
@@ -1597,14 +1640,31 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     break;
 
                 default:
+                    if (open(cmd.arg1))
+                        return;
+
                     cerr.WriteLine("invalid arguments");
                     return;
             }
 
+            bool open(string filename)
+            {
+                string[] EXT = new string[] { ".sqc", ".sql", ".sqt" };
+                foreach (string ext in EXT)
+                {
+                    string _path = cfg.WorkingDirectory.GetFullPath(filename, ext);
+                    if (File.Exists(_path))
+                    {
+                        stdio.OpenEditor(_path);
+                        return true;
+                    }
+                }
 
+                return false;
+            }
         }
 
-        public void save(ApplicationCommand cmd, Configuration cfg)
+        public void save(ApplicationCommand cmd, IConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1656,7 +1716,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 if (!cout.echo)
                     status = "off";
 
-                Console.WriteLine($"echo is {status}");
+                cout.WriteLine($"echo is {status}");
                 return;
             }
 
@@ -1745,7 +1805,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         }
 
 
-        public void last(ApplicationCommand cmd, Configuration cfg)
+        public void last(ApplicationCommand cmd, IConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1849,7 +1909,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     if (lake == null)
                         return;
 
-                    string output = cmd.OutputPath;
+                    string output = cmd.OutputPath();
                     if (output == null)
                     {
                         foreach (var kvp in lake)

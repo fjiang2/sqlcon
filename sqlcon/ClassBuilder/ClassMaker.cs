@@ -90,7 +90,7 @@ namespace sqlcon
 
         protected void PrintOutput(string text, string name, string ext)
         {
-            string path = cmd.OutputPath;
+            string path = cmd.OutputDirectory();
             if (path == null)
             {
                 cout.WriteLine(text);
@@ -117,7 +117,7 @@ namespace sqlcon
 
         protected string ReadAllText()
         {
-            string path = cmd.InputPath;
+            string path = cmd.InputPath();
             if (path == null)
                 return null;
 

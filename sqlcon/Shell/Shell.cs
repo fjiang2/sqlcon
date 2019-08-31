@@ -15,7 +15,7 @@ namespace sqlcon
     partial class Shell : ShellContext, IShell
     {
 
-        public Shell(Configuration cfg)
+        public Shell(IConfiguration cfg)
             : base(cfg)
         {
         }
@@ -579,7 +579,7 @@ namespace sqlcon
                     break;
 
                 case "vw":
-                    vnames = new MatchedDatabase(dname, arg2, null).DefaultViewNames;
+                    vnames = new MatchedDatabase(dname, arg2).ViewNames();
                     foreach (var vname in vnames)
                     {
                         DataTable dt = null;
@@ -595,7 +595,7 @@ namespace sqlcon
                     break;
 
                 case "view":
-                    vnames = new MatchedDatabase(dname, arg2, null).DefaultViewNames;
+                    vnames = new MatchedDatabase(dname, arg2).ViewNames();
                     vnames.Select(tname => new { Schema = tname.SchemaName, View = tname.Name })
                         .ToConsole();
                     break;

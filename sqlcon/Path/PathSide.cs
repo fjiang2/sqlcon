@@ -21,10 +21,12 @@ namespace sqlcon
         private TableName[] T;   //wildcard matched tables
 
         private PathManager mgr;
+        private ApplicationCommand cmd;
 
-        public PathSide(PathManager mgr)
+        public PathSide(PathManager mgr, ApplicationCommand cmd)
         {
             this.mgr = mgr;
+            this.cmd = cmd;
         }
 
         public TableName[] MatchedTables
@@ -39,10 +41,10 @@ namespace sqlcon
 
         public bool SetSource(string source)
         {
-            return SetSource(source,  "source");
+            return SetSource(source, "source");
         }
 
-        private bool SetSource(string source,  string sourceText)
+        private bool SetSource(string source, string sourceText)
         {
             if (source == null)
             {
@@ -73,8 +75,13 @@ namespace sqlcon
 
             if (path.wildcard != null)
             {
-                var m1 = new MatchedDatabase(dname, path.wildcard, mgr.Configuration.compareIncludedTables);
-                T = m1.MatchedTableNames;
+                var m1 = new MatchedDatabase(dname, path.wildcard)
+                {
+                    Includedtables = cmd.Includes,
+                    Excludedtables = cmd.Excludes
+                };
+
+                T = m1.TableNames();
             }
             else
             {
@@ -96,7 +103,7 @@ namespace sqlcon
         {
             if (sink != null)
             {
-                return SetSource(sink,"destination");
+                return SetSource(sink, "destination");
             }
             else
                 node = mgr.current;

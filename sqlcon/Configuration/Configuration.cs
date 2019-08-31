@@ -15,10 +15,10 @@ using Tie;
 
 namespace sqlcon
 {
-    class Configuration
+    class Configuration : IConnectionConfiguration, IConfiguration
     {
 
-        public const string _SERVER0 = "home";
+        const string _SERVER0 = "home";
 
         const string _FUNC_CONFIG = "config";
         const string _FUNC_CFG = "cfg";
@@ -33,28 +33,17 @@ namespace sqlcon
         const string _WORKING_DIRECTORY = "working.directory.commands";
 
         const string _LIMIT = "limit";
-        const string _COMPARE_INCLUDED_TABLES = "compare_included_tables";
-        const string _EXPORT_INCLUDED_TABLES = "export_included_tables";
-        const string _DICTIONARY_TABLES = "dictionarytables";
-
-        const string _QUEREY = "query";
-        const string _PRIMARY_KEY = "primary_key";
 
         private Memory Cfg = new Memory();
 
-        public string CfgFile { get; private set; } = "user.cfg";
+        public string UserConfigurationFile { get; private set; } = "user.cfg";
 
         public string OutputFile { get; set; }
         public string XmlDbDirectory { get; set; }
         public WorkingDirectory WorkingDirectory { get; }
 
-        public string[] compareIncludedTables = new string[] { };
-        public string[] exportIncludedTables = new string[] { };
-        public List<KeyValueTable> dictionarytables = new List<KeyValueTable>();
-        public int Limit_Top = 20;
-        public int Export_Max_Count = 2000;
-
-        public readonly Dictionary<string, string[]> PK = new Dictionary<string, string[]>();
+        public int TopLimit { get; set; } = 20;
+        public int MaxRows { get; set; } = 2000;
 
         public Configuration()
         {
@@ -140,7 +129,7 @@ namespace sqlcon
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("configuration file format error in {0}, {1}", cfgFile, ex.Message);
+                     cerr.WriteLine($"configuration file format error in {cfgFile}, {ex.Message}");
                     return false;
                 }
             }
@@ -169,11 +158,13 @@ namespace sqlcon
             return defaultValue;
         }
 
+        public string Home => GetValue<string>(_SERVER0);
+
         public string DefaultServerPath
         {
             get
             {
-                string path = GetValue<string>(Configuration._SERVER0);
+                string path = GetValue<string>(_SERVER0);
                 var provider = GetProvider(path);
                 path = string.Format("{0}\\{1}", provider.ServerName, provider.DefaultDatabaseName.Name);
                 return path;
@@ -241,23 +232,10 @@ namespace sqlcon
             return pvds;
         }
 
-
-        public List<ServerName> ServerNames
-        {
-            get
-            {
-                var names = Providers.Select(pvd => pvd.ServerName)
-                    .Distinct()
-                    .ToList();
-
-                return names;
-            }
-        }
-
         public ConnectionProvider GetProvider(string path)
         {
             string[] x = path.Split('\\');
-            if (x.Length != 3)
+            if (x.Length < 3)
             {
                 cerr.WriteLine($"invalid server path: {path}, correct format is server\\database");
                 return null;
@@ -292,7 +270,7 @@ namespace sqlcon
 
             if (!File.Exists(sysCfgFile))
             {
-                Console.WriteLine("configuration file {0} not found", sysCfgFile);
+                cerr.WriteLine($"configuration file {sysCfgFile} not found");
                 return false;
             }
 
@@ -302,21 +280,9 @@ namespace sqlcon
             //user.cfg is optional
             if (!string.IsNullOrEmpty(cfgFile) && File.Exists(cfgFile))
             {
-                this.CfgFile = cfgFile;
+                this.UserConfigurationFile = cfgFile;
                 TryReadCfg(cfgFile);
             }
-
-            this.compareIncludedTables = Cfg.GetValue<string[]>(_COMPARE_INCLUDED_TABLES, new string[] { });
-            this.exportIncludedTables = Cfg.GetValue<string[]>(_EXPORT_INCLUDED_TABLES, new string[] { });
-            if (Cfg.GetValue(_DICTIONARY_TABLES).Defined)
-            {
-                var d = Cfg.GetValue(_DICTIONARY_TABLES);
-                foreach (var t in d)
-                {
-                    dictionarytables.Add(new KeyValueTable { TableName = (string)t["table"], KeyName = (string)t["key"], ValueName = (string)t["value"] });
-                }
-            }
-
 
             this.OutputFile = Cfg.GetValue<string>(_FILE_OUTPUT, "script.sql");
             this.XmlDbDirectory = Cfg.GetValue<string>(_XML_DB_FOLDER, "db");
@@ -324,10 +290,10 @@ namespace sqlcon
 
             var limit = Cfg[_LIMIT];
             if (limit["top"].Defined)
-                this.Limit_Top = (int)limit["top"];
+                this.TopLimit = (int)limit["top"];
 
             if (limit["export_max_count"].Defined)
-                this.Export_Max_Count = (int)limit["export_max_count"];
+                this.MaxRows = (int)limit["export_max_count"];
 
 
             var log = Cfg[_FILE_LOG];
@@ -335,26 +301,6 @@ namespace sqlcon
 
             var editor = Cfg.GetValue<string>(_FILE_EDITOR, "notepad.exe");
             Context.DS.Add(_FILE_EDITOR, new VAL(editor));
-
-
-            var pk = Cfg[_PRIMARY_KEY];
-            if (pk.Defined)
-            {
-                foreach (var item in pk)
-                {
-                    string tableName = (string)item[0];
-                    PK.Add(tableName.ToUpper(), (string[])item[1].HostValue);
-                }
-            }
-
-
-
-            var x = Cfg[_QUEREY];
-            if (x.Defined)
-            {
-                foreach (var pair in x)
-                    Context.DS.Add((string)pair[0], pair[1]);
-            }
 
             return true;
 
@@ -364,13 +310,13 @@ namespace sqlcon
         {
             if (val.Size != 3)
             {
-                Console.WriteLine("required 2 parameters on function config(file,path,value), 1: app.config/web.config name; 2: path to reach connection string; 3:connection string attribute");
+                cerr.WriteLine("required 2 parameters on function config(file,path,value), 1: app.config/web.config name; 2: path to reach connection string; 3:connection string attribute");
                 return null;
             }
 
             if (val[0].VALTYPE != VALTYPE.stringcon || val[1].VALTYPE != VALTYPE.stringcon || val[2].VALTYPE != VALTYPE.stringcon)
             {
-                Console.WriteLine("error on function config(file,path,value) argument type, 1: string, 2: string, 3:string");
+                cerr.WriteLine("error on function config(file,path,value) argument type, 1: string, 2: string, 3:string");
                 return null;
             }
 
@@ -384,7 +330,7 @@ namespace sqlcon
             }
             catch (Exception)
             {
-                Console.WriteLine("cannot find connection string on {0}, path={1}", xmlFile, path);
+                cerr.WriteLine($"cannot find connection string on {xmlFile}, path={path}");
                 return null;
             }
         }
@@ -400,7 +346,7 @@ namespace sqlcon
         {
             if (!File.Exists(xmlFile))
             {
-                Console.WriteLine("warning: not found {0}", xmlFile);
+                cerr.WriteLine($"warning: not found {xmlFile}");
                 return null;
             }
 
@@ -446,7 +392,7 @@ namespace sqlcon
         {
             if (val.Size != 1 || val[0].VALTYPE != VALTYPE.stringcon)
             {
-                Console.WriteLine("required 1 parameters on function include(file), file can be local disk file, hyperlink, and ftp link");
+                cerr.WriteLine("required 1 parameters on function include(file), file can be local disk file, hyperlink, and ftp link");
                 return;
             }
 
@@ -462,13 +408,13 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                Console.WriteLine("configuration file {0} doesn't exist, {1}", link, ex.Message);
+                cerr.WriteLine($"configuration file {link} doesn't exist, {ex.Message}");
                 return;
             }
 
             if (!exists)
             {
-                Console.WriteLine("configuration file {0} doesn't exist", link);
+                cerr.WriteLine($"configuration file {link} doesn't exist");
                 return;
             }
 
@@ -479,7 +425,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                Console.WriteLine("failed to load configuration file {0}, {1}", link, ex.Message);
+                cerr.WriteLine($"failed to load configuration file {link}, {ex.Message}");
                 return;
             }
 
@@ -492,7 +438,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                Console.WriteLine("configuration file format error in {0}, {1}", link, ex.Message);
+                cerr.WriteLine($"configuration file format error in {link}, {ex.Message}");
             }
         }
 
@@ -500,13 +446,13 @@ namespace sqlcon
         {
             if (val.Size != 2)
             {
-                Console.WriteLine("required 2 parameters on function cfg(file,variable), 1: app.cfg/web.cfg name; 2: variable to reach connection string");
+                cerr.WriteLine("required 2 parameters on function cfg(file,variable), 1: app.cfg/web.cfg name; 2: variable to reach connection string");
                 return null;
             }
 
             if (val[0].VALTYPE != VALTYPE.stringcon || val[1].VALTYPE != VALTYPE.stringcon)
             {
-                Console.WriteLine("error on function cfg(file,variable) argument type, 1: string, 2: string");
+                cerr.WriteLine("error on function cfg(file,variable) argument type, 1: string, 2: string");
                 return null;
             }
 
@@ -527,26 +473,26 @@ namespace sqlcon
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("configuration file format error in {0}, {1}", cfgFile, ex.Message);
+                            cerr.WriteLine($"configuration file format error in {cfgFile}, {ex.Message}");
                             return null;
                         }
                     }
                 }
                 else
                 {
-                    Console.WriteLine("cannot find configuration file: {0}", cfgFile);
+                    cerr.WriteLine($"cannot find configuration file: {cfgFile}");
                     return null;
                 }
 
                 VAL value = localDS.GetValue(variable);
                 if (value.Undefined)
                 {
-                    Console.WriteLine("undefined variable {0}", variable);
+                    cerr.WriteLine($"undefined variable {variable}");
                     return null;
                 }
                 else if (!(value.Value is string))
                 {
-                    Console.WriteLine("connection string must be string, {0}={1}", variable, value.ToString());
+                    cerr.WriteLine($"connection string must be string, {variable}={value}");
                     return null;
                 }
                 else
@@ -554,7 +500,7 @@ namespace sqlcon
             }
             catch (Exception)
             {
-                Console.WriteLine("cannot find connection string on {0}, variable={1}", cfgFile, variable);
+                cerr.WriteLine($"cannot find connection string on {cfgFile}, variable={variable}");
                 return null;
             }
         }

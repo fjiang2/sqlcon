@@ -19,8 +19,12 @@ namespace sqlcon
         public Side Side1 { get; private set; }
         public Side Side2 { get; private set; }
 
-        public CompareAdapter(Side side1, Side side2)
+        private readonly ApplicationCommand cmd;
+
+        public CompareAdapter(ApplicationCommand cmd, Side side1, Side side2)
         {
+            this.cmd = cmd;
+
             this.Side1 = side1;
             this.Side2 = side2;
         }
@@ -48,8 +52,10 @@ namespace sqlcon
         }
 
 
-        public string Run(ActionType compareType, TableName[] N1, TableName[] N2, Configuration cfg, string[] exceptColumns)
+        public string Run(ActionType compareType, TableName[] N1, TableName[] N2, ApplicationCommand cmd)
         {
+            string[] exceptColumns = cmd.Columns;
+
             DatabaseName dname1 = Side1.DatabaseName;
             DatabaseName dname2 = Side2.DatabaseName;
 
@@ -63,6 +69,8 @@ namespace sqlcon
             builder.AppendFormat("-- sqlcon:", Side1.Provider.DataSource, dname1.Name).AppendLine();
             builder.AppendFormat("-- compare server={0} db={1}", Side1.Provider.DataSource, dname1.Name).AppendLine();
             builder.AppendFormat("--         server={0} db={1} @ {2}", Side2.Provider.DataSource, dname2.Name, DateTime.Now).AppendLine();
+
+            Wildcard<TableName> match = MatchedDatabase.CreateWildcard(cmd);
 
             CancelableWork.CanCancel(cts =>
             {
@@ -82,14 +90,23 @@ namespace sqlcon
                             tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
                     }
 
-                    if (compareType == ActionType.CompareData && !MatchedDatabase.Includes(cfg.compareIncludedTables, tname1))
+                    if (compareType == ActionType.CompareData && !match.Contains(tname1))
                     {
                         cout.WriteLine("{0} is excluded", tname1);
                         continue;
                     }
 
                     if (tname2.Exists())
-                        builder.Append(CompareTable(compareType, CompareSideType.compare, tname1, tname2, cfg.PK, exceptColumns));
+                    {
+                        try
+                        {
+                            builder.Append(CompareTable(compareType, CompareSideType.compare, tname1, tname2, cmd.PK, exceptColumns));
+                        }
+                        catch(Exception ex)
+                        {
+                            cerr.WriteLine(ex.Message);
+                        }
+                    }
                     else
                     {
                         if (compareType == ActionType.CompareSchema)
@@ -127,7 +144,7 @@ namespace sqlcon
         }
 
 
-        public string CompareTable(ActionType actiontype, CompareSideType sidetype, TableName tname1, TableName tname2, Dictionary<string, string[]> pk, string[] exceptColumns)
+        public string CompareTable(ActionType actiontype, CompareSideType sidetype, TableName tname1, TableName tname2, IDictionary<string, string[]> pk, string[] exceptColumns)
         {
             TableSchema schema1 = new TableSchema(tname1);
             TableSchema schema2 = new TableSchema(tname2);

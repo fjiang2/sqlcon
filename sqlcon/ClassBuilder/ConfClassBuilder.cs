@@ -70,7 +70,8 @@ namespace sqlcon
             {
                 bool isExpression = ctype == ClassType.JsonDataContract;
 
-                if (cmd.InputPath != null && Path.GetExtension(cmd.InputPath).ToLower() == ".json")
+                string inputPath = cmd.InputPath();
+                if (inputPath != null && Path.GetExtension(inputPath).ToLower() == ".json")
                     isExpression = true;
 
                 ConvertJson2CS(code, builder, cname, isExpression);
@@ -194,7 +195,7 @@ namespace sqlcon
         private string LoadCode()
         {
             string code;
-            if (cmd.InputPath != null)
+            if (cmd.InputPath() != null)
                 code = ReadAllText();
             else
                 code = ReadCode(dt);

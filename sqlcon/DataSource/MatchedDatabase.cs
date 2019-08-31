@@ -11,77 +11,70 @@ namespace sqlcon
 {
     class MatchedDatabase
     {
-        private string namePattern;
+        private string Pattern;
+        private DatabaseName DatabaseName;
 
-        public readonly DatabaseName DatabaseName;
-        public readonly string[] includedtables;
+        public string[] Includedtables { get; set; }
+        public string[] Excludedtables { get; set; }
 
-        public MatchedDatabase(DatabaseName databaseName, string namePattern, string[] includedtables)
+        public MatchedDatabase(DatabaseName databaseName, ApplicationCommand cmd)
+            : this(databaseName, cmd.wildcard)
         {
-            this.namePattern = namePattern;
+            this.Includedtables = cmd.Includes;
+            this.Excludedtables = cmd.Excludes;
+        }
+
+        public MatchedDatabase(DatabaseName databaseName, string pattern)
+        {
+            this.Pattern = pattern;
             this.DatabaseName = databaseName;
-
-            if (includedtables != null)
-                this.includedtables = includedtables;
         }
 
-
-
-
-        public TableName[] MatchedTableNames
+        public TableName[] TableNames()
         {
-            get
+            TableName[] names = this.DatabaseName.GetDependencyTableNames();
+            return Search(names);
+        }
+
+        public TableName[] ViewNames()
+        {
+            TableName[] names = this.DatabaseName.GetViewNames();
+            return Search(names);
+        }
+
+        private TableName[] Search(TableName[] names)
+        {
+            var selector = KeySelector(Pattern);
+            Wildcard<TableName> match = new Wildcard<TableName>(selector)
             {
-                TableName[] names = this.DatabaseName.GetDependencyTableNames();
+                Pattern = Pattern,
+                Includes = Includedtables,
+                Excludes = Excludedtables,
+            };
 
-                names = names.Where(name => Includes(name)).ToArray();
-                if (namePattern == null)
-                    return names;
-
-                names = Search(namePattern, names);
-
-                return names;
-            }
+            return match.Results(names);
         }
 
-        public TableName[] DefaultViewNames
+        public static Wildcard<TableName> CreateWildcard(ApplicationCommand cmd)
         {
-            get
+            var selector = KeySelector(cmd.wildcard);
+            Wildcard<TableName> match = new Wildcard<TableName>(selector)
             {
-                TableName[] names = this.DatabaseName.GetViewNames();
+                Pattern = cmd.wildcard,
+                Includes = cmd.Includes,
+                Excludes = cmd.Excludes,
+            };
 
-                names = names.Where(name => Includes(name)).ToArray();
-                if (namePattern == null)
-                    return names;
-
-                names = Search(namePattern, names);
-
-                return names;
-            }
+            return match;
         }
 
-        public bool Includes(TableName tableName)
+        private static Func<TableName, string> KeySelector(string pattern)
         {
-            return Includes(includedtables, tableName);
+            if (pattern != null && pattern.IndexOf(".") > 0)
+                return x => x.Path;
+            else
+                return x => x.ShortName;
         }
-
-        public static bool Includes(string[] includedtables, TableName tableName)
-        {
-            if (includedtables == null || includedtables.Length == 0)
-                return true;
-
-            return includedtables.IsMatch(tableName.ShortName);
-        }
-
-        public static TableName[] Search(string pattern, TableName[] tableNames)
-        {
-            Regex regex = pattern.WildcardRegex();
-            var result = tableNames.Where(tname => regex.IsMatch(tname.Name)).ToArray();
-
-            return result;
-        }
-
-
 
     }
 }

@@ -12,12 +12,12 @@ namespace sqlcon
     {
         private const string EXT = ".sqc";
         private string path;
-        private Configuration cfg;
+        private IConfiguration cfg;
 
 
         public bool IsBatch { get; } = false;
 
-        public Batch(Configuration cfg, string path)
+        public Batch(IConfiguration cfg, string path)
         {
             this.cfg = cfg;
             this.path = cfg.WorkingDirectory.GetFullPath(path, EXT);
