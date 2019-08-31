@@ -6,23 +6,15 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Input;
-using System.Windows.Markup;
-using System.Windows.Documents;
 using System.Windows.Controls.Primitives;
-using System.IO;
-using System.Data;
-
 
 using Sys;
 using Sys.Data;
-using Sys.Data.IO;
-using System.ComponentModel;
 
 namespace sqlcon.Windows
 {
-    partial class SqlEditor : Window
+    public partial class SqlEditor : Window
     {
         private TextBlock lblMessage = new TextBlock { Width = 300 };
         private TextBlock lblCursorPosition = new TextBlock { Width = 200, HorizontalAlignment = HorizontalAlignment.Left };
@@ -32,7 +24,7 @@ namespace sqlcon.Windows
         private DbTreeUI treeView;
         private ScriptResultControl scriptTabControl;
 
-        private void InitializeComponent(Configuration cfg)
+        private void InitializeComponent(IConnectionConfiguration cfg)
         {
             this.Width = 1280;
             this.Height = 768;

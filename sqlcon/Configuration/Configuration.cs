@@ -15,7 +15,7 @@ using Tie;
 
 namespace sqlcon
 {
-    class Configuration
+    class Configuration : IConnectionConfiguration
     {
 
         const string _SERVER0 = "home";
@@ -230,19 +230,6 @@ namespace sqlcon
             }
 
             return pvds;
-        }
-
-
-        public List<ServerName> ServerNames
-        {
-            get
-            {
-                var names = Providers.Select(pvd => pvd.ServerName)
-                    .Distinct()
-                    .ToList();
-
-                return names;
-            }
         }
 
         public ConnectionProvider GetProvider(string path)

@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Input;
 
 using Sys.Data;
@@ -14,16 +13,14 @@ using System.ComponentModel;
 
 namespace sqlcon.Windows
 {
-    partial class SqlEditor : Window
+    public partial class SqlEditor : Window
     {
-        private ApplicationCommand cmd;
-        internal Configuration cfg;
+        internal IConnectionConfiguration cfg;
         private ConnectionProvider provider;
 
-        public SqlEditor(ApplicationCommand cmd, ConnectionProvider provider, string currentPath, FileLink link)
+        public SqlEditor(IConnectionConfiguration cfg, ConnectionProvider provider, string currentPath, FileLink link)
         {
-            this.cmd = cmd;
-            this.cfg = cmd.Configuration;
+            this.cfg = cfg;
 
             InitializeComponent(cfg);
             scriptTabControl.SelectionChanged += ScriptTabControl_SelectionChanged;

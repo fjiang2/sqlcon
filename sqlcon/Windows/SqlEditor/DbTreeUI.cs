@@ -5,14 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
-using System.Windows.Input;
-using System.Windows.Markup;
-using System.Windows.Documents;
-using System.Windows.Controls.Primitives;
-using System.IO;
 using System.Data;
-using System.Data.SqlClient;
+
 using Sys.Data;
 using Sys.Stdio;
 using Sys;
@@ -51,7 +45,7 @@ namespace sqlcon.Windows
         }
 
 
-        internal void CreateTree(Configuration cfg)
+        internal void CreateTree(IConnectionConfiguration cfg)
         {
             this.mgr = new PathManager(cfg);
             createTree(cfg, this);
@@ -156,7 +150,7 @@ namespace sqlcon.Windows
             }
         }
 
-        private void createTree(Configuration cfg, TreeView treeView)
+        private void createTree(IConnectionConfiguration cfg, TreeView treeView)
         {
             var L = cfg.Providers.OrderBy(x => x.ServerName.Path);
             foreach (var pvd in L)

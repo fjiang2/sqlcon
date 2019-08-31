@@ -1557,7 +1557,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             try
             {
-                var editor = new Windows.SqlEditor(cmd, theSide.Provider, mgr.ToString(), fileLink);
+                var editor = new Windows.SqlEditor(cmd.Configuration, theSide.Provider, mgr.ToString(), fileLink);
                 editor.ShowDialog();
             }
             catch (Exception ex)
