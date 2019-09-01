@@ -67,10 +67,10 @@ namespace sqlcon
             PrintOutput(builder, ClassName);
         }
 
-        public string COLUMN(DataColumn column) => $"_{column.ColumnName.ToUpper()}";
+        public static string COLUMN(DataColumn column) => $"_{column.ColumnName.ToUpper()}";
 
 
-        public static void CreateTableNameAndPrimaryKey(DataTable dt, Class clss, Func<DataColumn, string> COLUMN)
+        public static void CreateTableNameAndPrimaryKey(DataTable dt, Class clss)
         {
             Field field;
 

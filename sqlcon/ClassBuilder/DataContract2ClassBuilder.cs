@@ -219,7 +219,7 @@ namespace sqlcon
             sent.AppendFormat("return string.Format({0});", sb);
             clss.AppendLine();
 
-            CreateTableNameAndPrimaryKey(dt, clss, COLUMN);
+            CreateTableNameAndPrimaryKey(dt, clss);
             clss.AppendLine();
 
             //Const Field
