@@ -75,23 +75,18 @@ namespace sqlcon
             builder.AddClass(clss);
 
 
-
             foreach (DataColumn column in dt.Columns)
             {
                 clss.Add(new Property(dict[column], column.ColumnName) { Modifier = Modifier.Public });
             }
 
 
-
             int i;
             int count;
             Statement sent;
 
-            Func<DataColumn, string> COLUMN = column => "_" + column.ColumnName.ToUpper();
 
             Method method;
-
-
 
             Method mtdFillObject = new Method("FillObject")
             {
@@ -222,6 +217,9 @@ namespace sqlcon
                 );
 
             sent.AppendFormat("return string.Format({0});", sb);
+            clss.AppendLine();
+
+            CreateTableNameAndPrimaryKey(dt, clss, COLUMN);
             clss.AppendLine();
 
             //Const Field

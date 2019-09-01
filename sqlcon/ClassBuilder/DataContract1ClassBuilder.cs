@@ -16,7 +16,6 @@ namespace sqlcon
         private DataTable dt;
 
         public string mtd { get; set; }
-        public string[] keys { get; set; }
 
         private const string _ToDataTable = "ToDataTable";
         private bool isReadOnly = false;
@@ -61,39 +60,10 @@ namespace sqlcon
             clss = new Class(cname + "Extension") { Modifier = Modifier.Public | Modifier.Static };
             builder.AddClass(clss);
 
-            Func<DataColumn, string> COLUMN = column => $"_{column.ColumnName.ToUpper()}";
-
+            
 
             //Const Field
-            Field field;
-
-
-            if (dt.TableName != null)
-            {
-                field = new Field(new TypeInfo { Type = typeof(string) }, "TableName", new Value(dt.TableName))
-                {
-                    Modifier = Modifier.Public | Modifier.Const
-                };
-                clss.Add(field);
-            }
-
-            //primary keys
-            DataColumn[] pk = dt.PrimaryKey;
-            if (pk == null || pk.Length == 0)
-            {
-                pk = dt.PrimaryKeys(keys);
-
-                if (pk.Length == 0)
-                    pk = new DataColumn[] { dt.Columns[0] };
-            }
-
-            string pks = string.Join(", ", pk.Select(key => COLUMN(key)));
-            field = new Field(new TypeInfo { Type = typeof(string[]) }, "Keys")
-            {
-                Modifier = Modifier.Public | Modifier.Static | Modifier.Readonly,
-                UserValue = $"new string[] {LP} {pks} {RP}"
-            };
-            clss.Add(field);
+            CreateTableNameAndPrimaryKey(dt, clss, COLUMN);
 
             Method method = new Method($"To{cname}Collection")
             {
@@ -279,6 +249,7 @@ namespace sqlcon
             clss.AddUtilsMethod(cname, dict.Keys.Select(column => new PropertyInfo { PropertyName = column.ColumnName }), UtilsStaticMethod.CopyTo | UtilsStaticMethod.CompareTo | UtilsStaticMethod.ToSimpleString);
             clss.AppendLine();
 
+            Field field;
             foreach (DataColumn column in dt.Columns)
             {
                 field = new Field(new TypeInfo { Type = typeof(string) }, COLUMN(column), new Value(column.ColumnName))
@@ -288,5 +259,6 @@ namespace sqlcon
                 clss.Add(field);
             }
         }
+
     }
 }

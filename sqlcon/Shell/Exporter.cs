@@ -497,6 +497,21 @@ namespace sqlcon
             string mtd = cmd.GetValue("method");
             string[] keys = cmd.Columns;
 
+            DataColumn[] pk = dt.PrimaryKey;
+            if (pk == null || pk.Length == 0)
+            {
+                pk = dt.PrimaryKeys(keys);
+
+                if (pk.Length == 0)
+                {
+                    dt.PrimaryKey = new DataColumn[] { dt.Columns[0] };
+                    cout.WriteLine($"no primary key found on Table: \"{dt.TableName}\"");
+                }
+
+                dt.PrimaryKey = pk;
+            }
+
+
             if (version == 0)
             {
                 var builder = new DataContractClassBuilder(cmd, dt, allowDbNull)
@@ -516,9 +531,8 @@ namespace sqlcon
                     ns = ns,
                     cname = className,
                     mtd = mtd,
-                    keys = keys
                 };
-
+            
                 string file = builder.WriteFile(path);
                 cout.WriteLine("code generated on {0}", file);
             }

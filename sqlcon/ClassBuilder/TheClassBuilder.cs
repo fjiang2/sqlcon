@@ -66,5 +66,36 @@ namespace sqlcon
             createClass();
             PrintOutput(builder, ClassName);
         }
+
+        public string COLUMN(DataColumn column) => $"_{column.ColumnName.ToUpper()}";
+
+
+        public static void CreateTableNameAndPrimaryKey(DataTable dt, Class clss, Func<DataColumn, string> COLUMN)
+        {
+            Field field;
+
+
+            if (dt.TableName != null)
+            {
+                field = new Field(new TypeInfo { Type = typeof(string) }, "TableName", new Value(dt.TableName))
+                {
+                    Modifier = Modifier.Public | Modifier.Const
+                };
+                clss.Add(field);
+            }
+
+            //primary keys
+            DataColumn[] pk = dt.PrimaryKey;
+
+            string pks = string.Join(", ", pk.Select(key => COLUMN(key)));
+            field = new Field(new TypeInfo { Type = typeof(string[]) }, "Keys")
+            {
+                Modifier = Modifier.Public | Modifier.Static | Modifier.Readonly,
+                UserValue = $"new string[] {LP} {pks} {RP}"
+            };
+
+            clss.Add(field);
+        }
+
     }
 }
