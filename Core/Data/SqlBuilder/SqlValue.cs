@@ -24,7 +24,7 @@ namespace Sys.Data
     /// <summary>
     /// a value can be used on SQL statement
     /// </summary>
-    class SqlValue
+    public class SqlValue
     {
         private const string DELIMETER = "'";
         private const string NULL = "NULL";
@@ -35,6 +35,8 @@ namespace Sys.Data
         {
             this.value = value;
         }
+
+        public object Value => value;
 
         private static bool gb2312text(string text)
         {

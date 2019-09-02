@@ -6,38 +6,96 @@ using System.Threading.Tasks;
 
 namespace Sys.Data
 {
-    class SqlMaker
+    public class SqlMaker
     {
         public TableName TableName { get; }
         public List<ColumnValuePair> Columns { get; } = new List<ColumnValuePair>();
-        public IPrimaryKeys PK { get; set; }
+        public IPrimaryKeys PrimaryKeys { get; set; }
 
         private SqlTemplate template;
+
         public SqlMaker(TableName tableName)
         {
-            TableName = tableName;
-            Columns = new List<ColumnValuePair>();
-
+            this.TableName = tableName;
+            this.Columns = new List<ColumnValuePair>();
             this.template = new SqlTemplate(TableName);
         }
 
-        public SqlMaker(IDictionary<string, object> map)
+        /// <summary>
+        /// Add all properties of data contract class
+        /// </summary>
+        /// <param name="data"></param>
+        public void AddRange(object data)
+        {
+            foreach (var propertyInfo in data.GetType().GetProperties())
+            {
+                object value = propertyInfo.GetValue(data) ?? DBNull.Value;
+                Add(propertyInfo.Name, value);
+            }
+        }
+
+        public void AddRange(IDictionary<string, object> map)
         {
             foreach (var kvp in map)
             {
-                Columns.Add(new ColumnValuePair(kvp.Key, kvp.Value));
+                Add(kvp.Key, kvp.Value);
             }
         }
 
-        public SqlMaker(DataRow row)
+        public void AddRange(DataRow row)
         {
             foreach (DataColumn column in row.Table.Columns)
             {
-                Columns.Add(new ColumnValuePair(column.ColumnName, row[column]));
+                Add(column.ColumnName, row[column]);
             }
         }
 
-        private string[] primaryKeys => PK.Keys;
+        public void AddRange<T>(string columnPrefix, T[] values)
+        {
+            for (int i = 0; i < values.Length; i++)
+            {
+                string column = $"{columnPrefix}{i + 1}";
+                Add(column, values[i]);
+            }
+        }
+
+        public void AddRange(string columnPrefix, object[] values)
+        {
+            for (int i = 0; i < values.Length; i++)
+            {
+                string column = $"{columnPrefix}{i + 1}";
+                Add(column, values[i]);
+            }
+        }
+
+        public void AddRange(string[] columns, object[] values)
+        {
+            for (int i = 0; i < values.Length; i++)
+            {
+                Add(columns[i], values[i]);
+            }
+        }
+
+        public void Add(string name, object value)
+        {
+            ColumnValuePair found = Columns.Find(c => c.ColumnName == name);
+            if (found != null)
+            {
+                found.Value = new SqlValue(value);
+            }
+            else
+            {
+                Columns.Add(new ColumnValuePair(name, value));
+            }
+        }
+
+        public IDictionary<string, object> ToDictionary()
+        {
+            return Columns.ToDictionary(c => c.ColumnName, c => c.Value.Value);
+        }
+
+
+        private string[] primaryKeys => PrimaryKeys.Keys;
 
         private string[] notUpdateColumns => Columns.Where(p => !p.Field.Saved).Select(p => p.Field.Name).ToArray();
 
@@ -105,7 +163,8 @@ namespace Sys.Data
         public class ColumnValuePair
         {
             public DataField Field { get; set; }
-            public SqlValue Value;
+            public SqlValue Value { get; set; }
+
 
             public ColumnValuePair(string columnName, object value)
             {

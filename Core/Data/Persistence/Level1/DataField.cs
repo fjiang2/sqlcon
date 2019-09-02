@@ -24,52 +24,29 @@ namespace Sys.Data
 {
     public class DataField
     {
-        private string fieldName;
-        private string caption;
-       
-        private Type dbType;
-
+        private readonly string fieldName;
         private bool saved = true;
         private bool identity = false;
-        private bool primary = false;
 
+        public Type DataType { get; }
+        public bool Primary { get; set; }
+        public string Caption { get; set; }
 
         public DataField(string columnName, Type dbType)
         {
             this.fieldName = columnName;
             this.Caption = columnName;
-
-            this.dbType = dbType;
+            this.DataType = dbType;
         }
 
-      
-        public override string ToString()
-        {
-            return fieldName;
-        }
-
-       
-
-        public string Name
-        {
-            get
-            {
-                return this.fieldName;
-            }
-        }
-
-        public string Caption
-        {
-            get { return caption; }
-            set { caption = value; }
-        }
+        public string Name => this.fieldName;
+        public string ParameterName => fieldName.SqlParameterName();
 
         public bool Saved
         {
             get { return this.saved; }
             set { this.saved = value; }
         }
-
 
         public bool Identity
         {
@@ -82,37 +59,6 @@ namespace Sys.Data
             }
         }
 
-        public bool Primary
-        {
-            get
-            {
-                return this.primary;
-            }
-            set
-            {
-                this.primary = value;
-            }
-        }
-
-      
-
-
-        public Type DataType
-        {
-            get { return this.dbType; }
-        }
-
-       
-        public string ParameterName
-        {
-            get
-            {
-                return fieldName.SqlParameterName();
-            }
-        }
-
-      
-
         internal string[] InsertString()
         {
             string[] s = new string[2];
@@ -121,12 +67,14 @@ namespace Sys.Data
             return s;
         }
 
-
-
         internal string UpdateString()
         {
             return string.Format("[{0}]={1}", fieldName, ParameterName);
         }
 
+        public override string ToString()
+        {
+            return fieldName;
+        }
     }
 }

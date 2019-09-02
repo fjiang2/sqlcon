@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace Sys.Data
 {
-    enum SqlTemplateFormat
-    {
-        SingleLine,
-        Indent,
-    }
 
     class SqlTemplate
     {
@@ -48,45 +43,50 @@ namespace Sys.Data
         }
 
 
-        public string IfNotExistsInsert(string where, string insert) 
+        public string IfNotExistsInsert(string where, string insert)
             => $"IF NOT EXISTS(SELECT * FROM {tname} WHERE {where}) {NewLine}{insert}";
-        public string IfNotExistsInsertElseUpdate(string where, string insert, string update) 
+        public string IfNotExistsInsertElseUpdate(string where, string insert, string update)
             => $@"IF NOT EXISTS(SELECT * FROM {tname} WHERE {where}) {NewLine}{insert} {NewLine}ELSE {NewLine}{update}";
 
-        public string IfExistsUpdate(string where, string update) 
+        public string IfExistsUpdate(string where, string update)
             => $"IF EXISTS(SELECT * FROM {tname} WHERE {where}) {NewLine}{update}";
-        public string IfExistsUpdateElseInsert(string where, string update, string insert) 
+        public string IfExistsUpdateElseInsert(string where, string update, string insert)
             => $"IF EXISTS(SELECT * FROM {tname} WHERE {where}) {update} ELSE {insert}";
 
-        public string Select(string select) 
+        public string Select(string select)
             => $"SELECT {select} {NewLine}FROM {tname}";
-        public string Select(string select, string where) 
+        public string Select(string select, string where)
             => $"SELECT {select} {NewLine}FROM {tname} {NewLine}WHERE {where}";
 
-        public string Update(string set, string where) 
+        public string Update(string set, string where)
             => $"UPDATE {tname} {NewLine}SET {set} {NewLine}WHERE {where}";
-        public string Insert(string columns, string values) 
-            => $"INSERT INTO {tname}({columns}) {NewLine}VALUES({values})";
 
-        public string Delete(string where) 
+        public string Insert(string columns, string values)
+            => $"INSERT INTO {tname}({columns}) {NewLine}VALUES({values})";
+        public string Insert(string columns, string values, string identity)
+            => $"INSERT INTO {tname}({columns}) {NewLine}VALUES({values}){identity}";
+        public string InsertWithIdentityOff(string columns, string values)
+            => $"SET IDENTITY_INSERT {tname} ON; {Insert(columns, values)}; SET IDENTITY_INSERT {tname} OFF";
+
+        public string Delete(string where)
             => $"DELETE FROM {tname} {NewLine}WHERE {where}";
-        public string Delete() 
+        public string Delete()
             => $"DELETE FROM {tname} {NewLine}";
 
 
-        public string AddPrimaryKey(string primaryKey) 
+        public string AddPrimaryKey(string primaryKey)
             => $"ALTER TABLE {tname} ADD PRIMARY KEY ({primaryKey})";
-        public string DropPrimaryKey(string constraintName) 
+        public string DropPrimaryKey(string constraintName)
             => $"ALTER TABLE {tname} DROP CONSTRAINT ({constraintName})";
 
-        public string DropForeignKey(string constraintName) 
+        public string DropForeignKey(string constraintName)
             => $"ALTER TABLE {tname} DROP CONSTRAINT ({constraintName})";
 
-        public string AddColumn(string column) 
+        public string AddColumn(string column)
             => $"ALTER TABLE {tname} ADD {column}";
-        public string AlterColumn(string column) 
+        public string AlterColumn(string column)
             => $"ALTER TABLE {tname} ALTER COLUMN {column}";
-        public string DropColumn(string column) 
+        public string DropColumn(string column)
             => $"ALTER TABLE {tname} DROP COLUMN {column}";
 
 

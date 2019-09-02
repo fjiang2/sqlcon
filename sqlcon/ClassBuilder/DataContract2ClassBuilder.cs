@@ -222,6 +222,8 @@ namespace sqlcon
             CreateTableNameAndPrimaryKey(dt, clss);
             clss.AppendLine();
 
+            CreateSQL(dt, clss);
+
             //Const Field
             foreach (DataColumn column in dt.Columns)
             {
@@ -234,5 +236,13 @@ namespace sqlcon
 
         }
 
+        public void CreateSQL(DataTable dt, Class clss)
+        {
+            TableName tname = new TableName(null, dt.TableName);
+            SqlMaker maker = new SqlMaker(tname)
+            {
+                PrimaryKeys = new PrimaryKeys(dt.PrimaryKey.Select(x => x.ColumnName).ToArray())
+            };
+        }
     }
 }

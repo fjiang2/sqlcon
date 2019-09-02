@@ -32,6 +32,7 @@ namespace Sys.Data
 
         private DataRow loadedRow = null;    //existing row
         private bool? exists = null;
+        private SqlTemplate template;
 
         public BaseRowAdapter(TableName tname, Locator locator)
         {
@@ -40,12 +41,10 @@ namespace Sys.Data
 
             this.tableName = tname;
             this.locator = locator;
+            this.template = new SqlTemplate(tname);
         }
 
-        public TableName TableName
-        {
-            get { return this.tableName; }
-        }
+        public TableName TableName => this.tableName;
 
         protected void UpdateWhere(Locator where)
         {
@@ -85,10 +84,10 @@ namespace Sys.Data
                     IColumn metaColumn = metaTable.Columns[field.Name];
 
                     if (!metaColumn.Nullable && (column.Value == System.DBNull.Value || column.Value == null))
-                        throw new Sys.MessageException("Column[{0}] value cannot be null", field.Name);
+                        throw new MessageException("Column[{0}] value cannot be null", field.Name);
 
                     if (metaColumn.Oversize(column.Value))
-                        throw new Sys.MessageException("Column[{0}] is oversize, limit={1}, actual={2}", field.Name, metaColumn.Length, ((string)(column.Value)).Length);
+                        throw new MessageException("Column[{0}] is oversize, limit={1}, actual={2}", field.Name, metaColumn.Length, ((string)(column.Value)).Length);
                 }
             }
         }
@@ -114,20 +113,6 @@ namespace Sys.Data
         }
 
 
-        #region private SQL Query String Template
-        private string selectCommandTemplate => $"SELECT {{0}} FROM {tableName} WHERE {locator}";
-
-        private string updateCommandTemplate => $"UPDATE {tableName} SET {{0}} WHERE {locator}";
-        private string updateOrInsertCommandTemplate1 => $"IF NOT EXISTS(SELECT * FROM {tableName} WHERE {locator}) {{0}}";
-        private string updateOrInsertCommandTemplate2 => $"IF EXISTS(SELECT * FROM {tableName} WHERE {locator}) {{0}} ELSE {{1}}";
-
-
-        private string insertCommandTemplate => $"INSERT {tableName}({{0}}) VALUES({{1}}){{2}}";
-
-        private string deleteCommandTemplate => $"DELETE FROM {tableName} WHERE {locator}";
-
-
-        #endregion
 
 
         #region private Select/Update/Insert/Delete/Where Query String
@@ -149,7 +134,7 @@ namespace Sys.Data
                 }
             }
 
-            SQL = string.Format(updateCommandTemplate, SQL);
+            SQL = template.Update(SQL, locator.ToString());
 
             return good;
         }
@@ -194,11 +179,10 @@ namespace Sys.Data
 
             if (this.InsertIdentityOn && hasIdentity)
             {
-                string SQL = string.Format(insertCommandTemplate, SQL0, SQL1, "");
-                return string.Format("SET IDENTITY_INSERT {0} ON; {1}; SET IDENTITY_INSERT {0} OFF", tableName, SQL);
+                return template.InsertWithIdentityOff(SQL0, SQL1);
             }
 
-            return string.Format(insertCommandTemplate, SQL0, SQL1, SQL2);
+            return template.Insert(SQL0, SQL1, SQL2);
         }
 
         protected string insertOrUpdateQuery()
@@ -207,20 +191,20 @@ namespace Sys.Data
             bool result = tryUpdateQuery(out update);
 
             if (!result)
-                return string.Format(updateOrInsertCommandTemplate1, insertQuery());
+                return template.IfNotExistsInsert(locator.ToString(), insertQuery());
             else
-                return string.Format(updateOrInsertCommandTemplate2, update, insertQuery());
+                return template.IfExistsUpdateElseInsert(locator.ToString(), update, insertQuery());
         }
 
         protected string selectQuery()
         {
             string selector = string.Join(",", fields.Select(field => string.Format("[{0}]", field.Name))); ;
-            return string.Format(selectCommandTemplate, selector);
+            return template.Insert(selector, locator.ToString());
         }
 
         protected string deleteQuery()
         {
-            return deleteCommandTemplate;
+            return template.Delete(locator.ToString());
         }
 
         #endregion
