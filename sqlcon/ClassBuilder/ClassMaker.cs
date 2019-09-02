@@ -15,14 +15,24 @@ namespace sqlcon
         protected const string LP = "{";
         protected const string RP = "}";
 
-        public string ns { get; set; }
-        public string cname { get; set; }
+        private string ns;
+        private string cname;
 
         protected ApplicationCommand cmd;
 
         public ClassMaker(ApplicationCommand cmd)
         {
             this.cmd = cmd;
+        }
+
+        public void SetNamespace(string ns)
+        {
+            this.ns = ns;
+        }
+
+        public void SetClassName(string cname)
+        {
+            this.cname = ident.Identifier(cname);
         }
 
         protected string NameSpace

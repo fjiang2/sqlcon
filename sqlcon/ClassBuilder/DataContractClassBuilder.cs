@@ -38,7 +38,7 @@ namespace sqlcon
         protected override void CreateClass()
         {
 
-            var clss = new Class(cname)
+            var clss = new Class(ClassName)
             {
                 Modifier = Modifier.Public | Modifier.Partial
             };

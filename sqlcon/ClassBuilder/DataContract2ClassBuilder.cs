@@ -68,7 +68,7 @@ namespace sqlcon
         protected override void CreateClass()
         {
 
-            var clss = new Class(cname, new TypeInfo { Type = typeof(IDataContractRow) }, new TypeInfo { UserType = $"IEquatable<{cname}>" })
+            var clss = new Class(ClassName, new TypeInfo { Type = typeof(IDataContractRow) }, new TypeInfo { UserType = $"IEquatable<{ClassName}>" })
             {
                 Modifier = Modifier.Public | Modifier.Partial
             };
@@ -105,7 +105,7 @@ namespace sqlcon
             Method mtdCopyTo = new Method("CopyTo")
             {
                 Modifier = Modifier.Public,
-                Params = new Parameters().Add(cname, "obj")
+                Params = new Parameters().Add(ClassName, "obj")
             };
             clss.Add(mtdCopyTo);
 
@@ -138,7 +138,7 @@ namespace sqlcon
             {
                 Modifier = Modifier.Public,
                 Type = new TypeInfo { Type = typeof(bool) },
-                Params = new Parameters().Add(cname, "obj")
+                Params = new Parameters().Add(ClassName, "obj")
             };
             clss.Add(mtdEquals);
             sent = mtdEquals.Statement;
@@ -153,13 +153,13 @@ namespace sqlcon
             Method mtdNewObject = new Method("NewObject")
             {
                 Modifier = Modifier.Public | Modifier.Static,
-                Type = new TypeInfo { UserType = cname },
+                Type = new TypeInfo { UserType = ClassName },
                 Params = new Parameters().Add(typeof(DataRow), "row"),
                 IsExtensionMethod = false
             };
             clss.Add(mtdNewObject);
             sent = mtdNewObject.Statement;
-            sent.AppendLine($"return new {cname}");
+            sent.AppendLine($"return new {ClassName}");
             sent.Begin();
 
             count = dt.Columns.Count;

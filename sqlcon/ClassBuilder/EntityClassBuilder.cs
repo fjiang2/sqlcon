@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using Sys.Data.Manager;
 using Sys.Stdio;
 
 namespace sqlcon
@@ -21,7 +22,7 @@ namespace sqlcon
             : base(cmd)
         {
             this.tname = tname;
-            this.cname = tname.Name;
+            this.SetClassName(tname.ToClassName(rule: null));
 
             builder.AddUsing("System");
             builder.AddUsing("System.Collections.Generic");
@@ -39,7 +40,7 @@ namespace sqlcon
 
             TypeInfo[] baseClass = OptionalBaseType();
 
-            var clss = new Class(cname, OptionalBaseType())
+            var clss = new Class(ClassName, OptionalBaseType())
             {
                 Modifier = Modifier.Public | Modifier.Partial
             };
@@ -113,7 +114,7 @@ namespace sqlcon
                     .Select(column => new PropertyInfo { PropertyName = column.ColumnName })
                     .ToArray();
 
-                clss.AddUtilsMethod(cname, columns, UtilsThisMethod.Map);
+                clss.AddUtilsMethod(ClassName, columns, UtilsThisMethod.Map);
             }
 
             if (methods.Contains("Copy"))
@@ -146,7 +147,7 @@ namespace sqlcon
                     })
                     .ToArray();
 
-                clss.AddUtilsMethod(cname, columns, option);
+                clss.AddUtilsMethod(ClassName, columns, option);
             }
         }
     }

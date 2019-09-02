@@ -514,40 +514,35 @@ namespace sqlcon
             }
 
 
+            TheClassBuilder gen = null;
             if (version == 0)
             {
-                var builder = new DataContractClassBuilder(cmd, dt, allowDbNull)
+                gen = new DataContractClassBuilder(cmd, dt, allowDbNull)
                 {
-                    ns = ns,
-                    cname = className,
                     mtd = mtd
                 };
-
-                string file = builder.WriteFile(path);
-                cout.WriteLine("code generated on {0}", file);
             }
             else if (version == 1)
             {
-                var builder = new DataContract1ClassBuilder(cmd, dt, allowDbNull)
+                gen = new DataContract1ClassBuilder(cmd, dt, allowDbNull)
                 {
-                    ns = ns,
-                    cname = className,
                     mtd = mtd,
                 };
-            
-                string file = builder.WriteFile(path);
-                cout.WriteLine("code generated on {0}", file);
             }
             else
             {
-                var builder = new DataContract2ClassBuilder(cmd, dt, allowDbNull)
+                gen = new DataContract2ClassBuilder(cmd, dt, allowDbNull)
                 {
-                    ns = ns,
-                    cname = className,
                     mtd = mtd
                 };
 
-                string file = builder.WriteFile(path);
+            }
+
+            if (gen != null)
+            {
+                gen.SetNamespace(ns);
+                gen.SetClassName(className);
+                string file = gen.WriteFile(path);
                 cout.WriteLine("code generated on {0}", file);
             }
         }
@@ -568,8 +563,8 @@ namespace sqlcon
                 cout.WriteLine("start to generate {0} entity framework class file", tname);
                 var builder = new EntityClassBuilder(cmd, tname)
                 {
-                    ns = ns
                 };
+                builder.SetNamespace(ns);
 
                 string file = builder.WriteFile(path);
                 cout.WriteLine("completed {0} => {1}", tname.ShortName, file);
@@ -590,8 +585,8 @@ namespace sqlcon
                         {
                             var builder = new EntityClassBuilder(cmd, tn)
                             {
-                                ns = ns
                             };
+                            builder.SetNamespace(ns);
 
                             string file = builder.WriteFile(path);
                             cout.WriteLine("generated for {0} at {1}", tn.ShortName, path);
@@ -625,8 +620,9 @@ namespace sqlcon
             {
                 var builder = new Linq2SQLClassBuilder(cmd, tname, schemas)
                 {
-                    ns = ns
                 };
+                builder.SetNamespace(ns);
+
                 string file = builder.WriteFile(path);
                 cout.WriteLine("code generated on {0}", file);
             }
@@ -638,8 +634,8 @@ namespace sqlcon
                 {
                     var builder = new Linq2SQLClassBuilder(cmd, tname, schemas)
                     {
-                        ns = ns
                     };
+                    builder.SetNamespace(ns);
 
                     string file = builder.WriteFile(path);
                     cout.WriteLine("code generated on {0}", file);

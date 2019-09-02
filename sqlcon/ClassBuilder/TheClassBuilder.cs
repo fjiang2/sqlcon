@@ -33,7 +33,7 @@ namespace sqlcon
                 string[] items = _base.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string item in items)
                 {
-                    string type = item.Replace("~", cname);
+                    string type = item.Replace("~", ClassName);
                     bases.Add(new TypeInfo { UserType = type });
                 }
             }
@@ -53,9 +53,9 @@ namespace sqlcon
         {
             createClass();
 
-            base.PrintOutput(builder, cname);
+            base.PrintOutput(builder, ClassName);
             string code = $"{builder}";
-            string file = Path.ChangeExtension(Path.Combine(path, cname), "cs");
+            string file = Path.ChangeExtension(Path.Combine(path, ClassName), "cs");
             code.WriteIntoFile(file);
 
             return file;

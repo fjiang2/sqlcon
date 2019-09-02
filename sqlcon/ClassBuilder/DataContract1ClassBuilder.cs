@@ -42,7 +42,7 @@ namespace sqlcon
 
         protected override void CreateClass()
         {
-            var clss = new Class(cname) { Modifier = Modifier.Public | Modifier.Partial };
+            var clss = new Class(ClassName) { Modifier = Modifier.Public | Modifier.Partial };
 
             builder.AddClass(clss);
 
@@ -57,7 +57,7 @@ namespace sqlcon
             int count;
             Statement sent;
 
-            clss = new Class(cname + "Extension") { Modifier = Modifier.Public | Modifier.Static };
+            clss = new Class(ClassName + "Extension") { Modifier = Modifier.Public | Modifier.Static };
             builder.AddClass(clss);
 
             
@@ -65,10 +65,10 @@ namespace sqlcon
             //Const Field
             CreateTableSchemaFields(dt, clss);
 
-            Method method = new Method($"To{cname}Collection")
+            Method method = new Method($"To{ClassName}Collection")
             {
                 Modifier = Modifier.Public | Modifier.Static,
-                Type = new TypeInfo { UserType = $"List<{cname}>" },
+                Type = new TypeInfo { UserType = $"List<{ClassName}>" },
                 Params = new Parameters().Add(typeof(DataTable), "dt"),
                 IsExtensionMethod = true
             };
@@ -81,13 +81,13 @@ namespace sqlcon
             Method method0 = new Method("NewObject")
             {
                 Modifier = Modifier.Public | Modifier.Static,
-                Type = new TypeInfo { UserType = cname },
+                Type = new TypeInfo { UserType = ClassName },
                 Params = new Parameters().Add(typeof(DataRow), "row"),
                 IsExtensionMethod = false
             };
             clss.Add(method0);
             sent = method0.Statement;
-            sent.AppendLine($"return new {cname}");
+            sent.AppendLine($"return new {ClassName}");
             sent.Begin();
 
             count = dt.Columns.Count;
@@ -113,7 +113,7 @@ namespace sqlcon
                 Method method1 = new Method("FillObject")
                 {
                     Modifier = Modifier.Public | Modifier.Static,
-                    Params = new Parameters().Add(cname, "item").Add(typeof(DataRow), "row"),
+                    Params = new Parameters().Add(ClassName, "item").Add(typeof(DataRow), "row"),
                     IsExtensionMethod = true
                 };
                 clss.Add(method1);
@@ -121,7 +121,7 @@ namespace sqlcon
                 Method method2 = new Method("UpdateRow")
                 {
                     Modifier = Modifier.Public | Modifier.Static,
-                    Params = new Parameters().Add(cname, "item").Add(typeof(DataRow), "row"),
+                    Params = new Parameters().Add(ClassName, "item").Add(typeof(DataRow), "row"),
                     IsExtensionMethod = true
                 };
                 clss.Add(method2);
@@ -165,7 +165,7 @@ namespace sqlcon
                 method = new Method(_ToDataTable)
                 {
                     Modifier = Modifier.Public | Modifier.Static,
-                    Params = new Parameters().Add($"IEnumerable<{cname}>", "items").Add(typeof(DataTable), "dt"),
+                    Params = new Parameters().Add($"IEnumerable<{ClassName}>", "items").Add(typeof(DataTable), "dt"),
                     IsExtensionMethod = true
                 };
                 clss.Add(method);
@@ -183,7 +183,7 @@ namespace sqlcon
                 {
                     Modifier = Modifier.Public | Modifier.Static,
                     Type = new TypeInfo { Type = typeof(DataTable) },
-                    Params = new Parameters().Add($"IEnumerable<{cname}>", "items"),
+                    Params = new Parameters().Add($"IEnumerable<{ClassName}>", "items"),
                     IsExtensionMethod = true
                 };
                 clss.Add(method);
@@ -198,7 +198,7 @@ namespace sqlcon
             {
                 Modifier = Modifier.Public | Modifier.Static,
                 Type = new TypeInfo { Type = typeof(IDictionary<string, object>) },
-                Params = new Parameters().Add(cname, "item"),
+                Params = new Parameters().Add(ClassName, "item"),
                 IsExtensionMethod = true
             };
             clss.Add(method);
@@ -223,13 +223,13 @@ namespace sqlcon
             method = new Method("FromDictionary")
             {
                 Modifier = Modifier.Public | Modifier.Static,
-                Type = new TypeInfo { UserType = cname },
+                Type = new TypeInfo { UserType = ClassName },
                 Params = new Parameters().Add(typeof(IDictionary<string, object>), "dict"),
                 IsExtensionMethod = true
             };
             clss.Add(method);
             sent = method.Statement;
-            sent.AppendLine($"return new {cname}");
+            sent.AppendLine($"return new {ClassName}");
             sent.Begin();
             count = dt.Columns.Count;
             i = 0;
@@ -246,7 +246,7 @@ namespace sqlcon
             sent.End(";");
 
 
-            clss.AddUtilsMethod(cname, dict.Keys.Select(column => new PropertyInfo { PropertyName = column.ColumnName }), UtilsStaticMethod.CopyTo | UtilsStaticMethod.CompareTo | UtilsStaticMethod.ToSimpleString);
+            clss.AddUtilsMethod(ClassName, dict.Keys.Select(column => new PropertyInfo { PropertyName = column.ColumnName }), UtilsStaticMethod.CopyTo | UtilsStaticMethod.CompareTo | UtilsStaticMethod.ToSimpleString);
             clss.AppendLine();
 
             Field field;
