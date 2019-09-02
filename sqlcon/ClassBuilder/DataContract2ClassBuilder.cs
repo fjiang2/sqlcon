@@ -193,6 +193,8 @@ namespace sqlcon
             sent.AppendLine();
             sent.AppendLine("return dt;");
 
+          //  CreateCRUD(dt, clss);
+
 
             method = new Method(new TypeInfo { Type = typeof(string) }, "ToString")
             {
@@ -219,10 +221,9 @@ namespace sqlcon
             sent.AppendFormat("return string.Format({0});", sb);
             clss.AppendLine();
 
-            CreateTableNameAndPrimaryKey(dt, clss);
+            CreateTableSchemaFields(dt, clss);
             clss.AppendLine();
 
-            //CreateSQL(dt, clss);
 
             //Const Field
             foreach (DataColumn column in dt.Columns)
@@ -236,13 +237,53 @@ namespace sqlcon
 
         }
 
-        public void CreateSQL(DataTable dt, Class clss)
+        public void CreateCRUD(DataTable dt, Class clss)
         {
-            TableName tname = new TableName(null, dt.TableName);
-            SqlMaker maker = new SqlMaker(tname)
+            var provider = ConnectionProviderManager.DefaultProvider;
+            TableName tname = new TableName(provider, dt.TableName);
+
+            SqlMaker gen = new SqlMaker(tname)
             {
                 PrimaryKeys = new PrimaryKeys(dt.PrimaryKey.Select(x => x.ColumnName).ToArray())
             };
+
+            foreach (DataColumn column in dt.Columns)
+            {
+                string cname = column.ColumnName;
+                gen.Add(cname, "{" + cname + "}");
+            }
+
+            Method method = new Method("Insert")
+            {
+                Modifier = Modifier.Public,
+                Type = new TypeInfo(typeof(string)),
+            };
+            method.Statement.AppendLine("return $\"" + gen.Insert() + "\";");
+            clss.Add(method);
+
+            method = new Method("Update")
+            {
+                Modifier = Modifier.Public,
+                Type = new TypeInfo(typeof(string)),
+            };
+            method.Statement.AppendLine("return $\"" + gen.Update() + "\";");
+            clss.Add(method);
+
+            method = new Method("InsertOrUpdate")
+            {
+                Modifier = Modifier.Public,
+                Type = new TypeInfo(typeof(string)),
+            };
+            method.Statement.AppendLine("return $\"" + gen.InsertOrUpdate() + "\";");
+            clss.Add(method);
+
+            method = new Method("Delete")
+            {
+                Modifier = Modifier.Public,
+                Type = new TypeInfo(typeof(string)),
+            };
+            method.Statement.AppendLine("return $\"" + gen.Delete() + "\";");
+            clss.Add(method);
         }
     }
 }

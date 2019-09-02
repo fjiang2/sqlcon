@@ -70,11 +70,11 @@ namespace sqlcon
         public static string COLUMN(DataColumn column) => $"_{column.ColumnName.ToUpper()}";
 
 
-        public static void CreateTableNameAndPrimaryKey(DataTable dt, Class clss)
+        public static void CreateTableSchemaFields(DataTable dt, Class clss)
         {
             Field field;
 
-
+            //table name
             if (dt.TableName != null)
             {
                 field = new Field(new TypeInfo { Type = typeof(string) }, "TableName", new Value(dt.TableName))
@@ -86,16 +86,19 @@ namespace sqlcon
 
             //primary keys
             DataColumn[] pk = dt.PrimaryKey;
-
-            string pks = string.Join(", ", pk.Select(key => COLUMN(key)));
-            field = new Field(new TypeInfo { Type = typeof(string[]) }, "Keys")
+            if (pk.Length > 0)
             {
-                Modifier = Modifier.Public | Modifier.Static | Modifier.Readonly,
-                UserValue = $"new string[] {LP} {pks} {RP}"
-            };
+                string pks = string.Join(", ", pk.Select(key => COLUMN(key)));
+                field = new Field(new TypeInfo { Type = typeof(string[]) }, "Keys")
+                {
+                    Modifier = Modifier.Public | Modifier.Static | Modifier.Readonly,
+                    UserValue = $"new string[] {LP} {pks} {RP}"
+                };
 
-            clss.Add(field);
+                clss.Add(field);
+            }
 
+            //identity keys
             DataColumn[] ik = dt.Columns.OfType<DataColumn>().Where(c => c.AutoIncrement).ToArray();
             if (ik.Length > 0)
             {

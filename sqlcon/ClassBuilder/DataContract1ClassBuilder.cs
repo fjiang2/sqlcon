@@ -63,7 +63,7 @@ namespace sqlcon
             
 
             //Const Field
-            CreateTableNameAndPrimaryKey(dt, clss);
+            CreateTableSchemaFields(dt, clss);
 
             Method method = new Method($"To{cname}Collection")
             {
