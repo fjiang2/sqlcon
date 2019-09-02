@@ -95,6 +95,19 @@ namespace sqlcon
             };
 
             clss.Add(field);
+
+            DataColumn[] ik = dt.Columns.OfType<DataColumn>().Where(c => c.AutoIncrement).ToArray();
+            if (ik.Length > 0)
+            {
+                string iks = string.Join(", ", ik.Select(key => COLUMN(key)));
+                field = new Field(new TypeInfo { Type = typeof(string[]) }, "Identity")
+                {
+                    Modifier = Modifier.Public | Modifier.Static | Modifier.Readonly,
+                    UserValue = $"new string[] {LP} {iks} {RP}"
+                };
+                clss.Add(field);
+            }
+
         }
 
     }

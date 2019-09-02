@@ -93,7 +93,9 @@ namespace sqlcon
             dt.PrimaryKeys(schema.PrimaryKeys.Keys);
             foreach (IColumn column in schema.Columns)
             {
-                dt.Columns[column.ColumnName].AllowDBNull = column.Nullable;
+                DataColumn col = dt.Columns[column.ColumnName];
+                col.AllowDBNull = column.Nullable;
+                col.AutoIncrement = column.IsIdentity;
             }
 
             if (dt.Rows.Count > 0)

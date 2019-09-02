@@ -222,7 +222,7 @@ namespace sqlcon
             CreateTableNameAndPrimaryKey(dt, clss);
             clss.AppendLine();
 
-            CreateSQL(dt, clss);
+            //CreateSQL(dt, clss);
 
             //Const Field
             foreach (DataColumn column in dt.Columns)
