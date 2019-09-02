@@ -14,9 +14,7 @@ namespace sqlcon
     {
 
         private DataTable dt;
-
-        public string mtd { get; set; }
-
+        
         private const string _ToDataTable = "ToDataTable";
         private bool isReadOnly = false;
         private IDictionary<DataColumn, TypeInfo> dict { get; }
@@ -93,8 +91,8 @@ namespace sqlcon
             count = dt.Columns.Count;
             i = 0;
             string _GetField = "Field";
-            if (mtd != null)
-                _GetField = mtd;
+            if (base.MethodName != null)
+                _GetField = base.MethodName;
 
             foreach (DataColumn column in dt.Columns)
             {

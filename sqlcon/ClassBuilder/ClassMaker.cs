@@ -17,6 +17,7 @@ namespace sqlcon
 
         private string ns;
         private string cname;
+        private string mtd;
 
         protected ApplicationCommand cmd;
 
@@ -35,7 +36,12 @@ namespace sqlcon
             this.cname = ident.Identifier(cname);
         }
 
-        protected string NameSpace
+        public void SetMethod(string mtd)
+        {
+            this.mtd = mtd;
+        }
+
+        protected string NamespaceName
         {
             get
             {
@@ -63,6 +69,9 @@ namespace sqlcon
                 return nameof(DataTable);
             }
         }
+
+        public string MethodName => this.mtd;
+
 
         protected string[] Usings
         {

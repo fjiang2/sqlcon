@@ -61,7 +61,7 @@ namespace sqlcon
             string _ConstKeyClassName = cmd.GetValue("kc");
             string _DefaultValueClassName = cmd.GetValue("dc");
 
-            var builder = new CSharpBuilder { Namespace = NameSpace };
+            var builder = new CSharpBuilder { Namespace = NamespaceName };
             builder.AddUsing("System");
             builder.AddUsing("System.Collections.Generic");
             string cname = ClassName;
@@ -178,7 +178,7 @@ namespace sqlcon
 
         private CSharpBuilder CreateClass(IEnumerable<Buildable> elements)
         {
-            CSharpBuilder builder = new CSharpBuilder { Namespace = NameSpace };
+            CSharpBuilder builder = new CSharpBuilder { Namespace = NamespaceName };
             Class clss = new Class(ClassName)
             {
                 Modifier = Modifier.Public | Modifier.Static | Modifier.Partial

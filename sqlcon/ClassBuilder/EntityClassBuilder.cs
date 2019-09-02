@@ -14,9 +14,7 @@ namespace sqlcon
 
     class EntityClassBuilder : TheClassBuilder
     {
-
         private TableName tname;
-
 
         public EntityClassBuilder(ApplicationCommand cmd, TableName tname)
             : base(cmd)

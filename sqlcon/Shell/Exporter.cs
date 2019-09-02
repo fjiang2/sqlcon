@@ -438,9 +438,6 @@ namespace sqlcon
 
         public void ExportDataContract(int version)
         {
-            string path = cmd.OutputPath(ConfigKey._GENERATOR_DC_PATH, $"{Configuration.MyDocuments}\\dc");
-            string ns = cmd.GetValue("ns", ConfigKey._GENERATOR_DC_NS, "Sys.DataModel.DataContract");
-            string clss = cmd.GetValue("class");
             bool last = cmd.Has("last");
 
             List<DataTable> list = new List<DataTable>();
@@ -452,6 +449,7 @@ namespace sqlcon
                 if (ds != null)
                 {
                     string[] items = new string[] { };
+                    string clss = cmd.GetValue("class");
                     if (clss != null)
                         items = clss.Split(',');
 
@@ -488,15 +486,14 @@ namespace sqlcon
 
             foreach (DataTable dt in list)
             {
-                ExportDataContractClass(path, version, dt, ns, className: dt.TableName);
+                ExportDataContractClass(version, dt);
             }
         }
 
 
-        private void ExportDataContractClass(string path, int version, DataTable dt, string ns, string className)
+        private void ExportDataContractClass(int version, DataTable dt)
         {
             bool allowDbNull = cmd.Has("NULL");
-            string mtd = cmd.GetValue("method");
             string[] keys = cmd.Columns;
 
             DataColumn[] pk = dt.PrimaryKey;
@@ -516,32 +513,21 @@ namespace sqlcon
 
             TheClassBuilder gen = null;
             if (version == 0)
-            {
-                gen = new DataContractClassBuilder(cmd, dt, allowDbNull)
-                {
-                    mtd = mtd
-                };
-            }
+                gen = new DataContractClassBuilder(cmd, dt, allowDbNull);
             else if (version == 1)
-            {
-                gen = new DataContract1ClassBuilder(cmd, dt, allowDbNull)
-                {
-                    mtd = mtd,
-                };
-            }
+                gen = new DataContract1ClassBuilder(cmd, dt, allowDbNull);
             else
-            {
-                gen = new DataContract2ClassBuilder(cmd, dt, allowDbNull)
-                {
-                    mtd = mtd
-                };
-
-            }
+                gen = new DataContract2ClassBuilder(cmd, dt, allowDbNull);
 
             if (gen != null)
             {
+                string path = cmd.OutputPath(ConfigKey._GENERATOR_DC_PATH, $"{Configuration.MyDocuments}\\dc");
+                string ns = cmd.GetValue("ns", ConfigKey._GENERATOR_DC_NS, "Sys.DataModel.DataContract");
+                string mtd = cmd.GetValue("method");
+
                 gen.SetNamespace(ns);
-                gen.SetClassName(className);
+                gen.SetClassName(dt.TableName);
+                gen.SetMethod(mtd);
                 string file = gen.WriteFile(path);
                 cout.WriteLine("code generated on {0}", file);
             }

@@ -16,7 +16,6 @@ namespace sqlcon
     {
         private DataTable dt;
 
-        public string mtd { get; set; }
         private IDictionary<DataColumn, TypeInfo> dict { get; }
 
         public DataContractClassBuilder(ApplicationCommand cmd, DataTable dt, bool allowDbNull)

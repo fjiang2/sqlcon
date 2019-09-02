@@ -45,7 +45,7 @@ namespace sqlcon
 
         private void createClass()
         {
-            builder.Namespace = NameSpace;
+            builder.Namespace = NamespaceName;
             CreateClass();
         }
 
