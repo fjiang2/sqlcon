@@ -551,9 +551,11 @@ namespace sqlcon
                 {
                 };
                 builder.SetNamespace(ns);
-
-                string file = builder.WriteFile(path);
-                cout.WriteLine("completed {0} => {1}", tname.ShortName, file);
+                if (!builder.IsAssocication)
+                {
+                    string file = builder.WriteFile(path);
+                    cout.WriteLine("completed {0} => {1}", tname.ShortName, file);
+                }
             }
             else if (dname != null)
             {
@@ -569,13 +571,13 @@ namespace sqlcon
 
                         try
                         {
-                            var builder = new EntityClassBuilder(cmd, tn)
-                            {
-                            };
+                            var builder = new EntityClassBuilder(cmd, tn);
                             builder.SetNamespace(ns);
-
-                            string file = builder.WriteFile(path);
-                            cout.WriteLine("generated for {0} at {1}", tn.ShortName, path);
+                            if (!builder.IsAssocication)
+                            {
+                                string file = builder.WriteFile(path);
+                                cout.WriteLine("generated for {0} at {1}", tn.ShortName, path);
+                            }
                         }
                         catch (Exception ex)
                         {

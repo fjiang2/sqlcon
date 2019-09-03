@@ -15,6 +15,7 @@ namespace sqlcon
     class EntityClassBuilder : TheClassBuilder
     {
         private TableName tname;
+        public bool IsAssocication { get; private set; }
 
         public EntityClassBuilder(ApplicationCommand cmd, TableName tname)
             : base(cmd)
@@ -30,8 +31,31 @@ namespace sqlcon
             AddOptionalUsing();
         }
 
+        /// <summary>
+        /// check it is associative table
+        /// </summary>
+        /// <returns></returns>
+        private bool Associate()
+        {
+            TableSchema schema = new TableSchema(tname);
+            if (schema.Columns.Count != 2)
+                return false;
+
+            IColumn c1 = schema.Columns[0];
+            IColumn c2 = schema.Columns[1];
+
+            if (!c1.IsPrimary || !c2.IsPrimary)
+                return false;
+
+            var fk = schema.ForeignKeys;
+            return fk.Length == 2;
+        }
+
         protected override void CreateClass()
         {
+            IsAssocication = Associate();
+            if (IsAssocication)
+                return;
 
             TableSchema schema = new TableSchema(tname);
             Func<IColumn, string> COLUMN = column => "_" + column.ColumnName.ToUpper();
