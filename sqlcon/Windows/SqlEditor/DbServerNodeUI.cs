@@ -42,7 +42,7 @@ namespace sqlcon.Windows
                 return;
             }
 
-            foreach (DatabaseName dname in sname.GetDatabaseNames())
+            foreach (DatabaseName dname in sname.GetDatabaseNames().OrderBy(d => d.Name))
             {
                 DbTreeNodeUI item = new DbDatabaseNodeUI(tree, dname);
                 theItem.Items.Add(item);

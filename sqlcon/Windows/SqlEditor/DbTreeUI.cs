@@ -185,13 +185,13 @@ namespace sqlcon.Windows
             if (item.Path is TableName)
             {
                 TableName tname = (TableName)item.Path;
-                bool macthed = tname.ShortName.IsMatch(wildcard);
-                if (macthed)
+                bool matched = tname.ShortName.IsMatch(wildcard);
+                if (matched)
                     item.Visibility = Visibility.Visible;
                 else
                     item.Visibility = Visibility.Collapsed;
 
-                return macthed;
+                return matched;
             }
 
             bool found = false;
