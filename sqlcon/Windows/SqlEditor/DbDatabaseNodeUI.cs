@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Sys;
 using Sys.Data;
 
 namespace sqlcon.Windows
@@ -55,5 +56,12 @@ namespace sqlcon.Windows
 
             e.Handled = true;
         }
+
+        public override bool IsMatch(string wildcard)
+        {
+            DatabaseName dname = (DatabaseName)Path;
+            return dname.Name.IsMatch(wildcard);
+        }
+
     }
 }

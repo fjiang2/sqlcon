@@ -184,14 +184,8 @@ namespace sqlcon.Windows
         {
             if (item.Path is TableName)
             {
-                TableName tname = (TableName)item.Path;
-                bool matched = tname.ShortName.IsMatch(wildcard);
-                if (matched)
-                    item.Visibility = Visibility.Visible;
-                else
-                    item.Visibility = Visibility.Collapsed;
-
-                return matched;
+                bool matched = item.IsMatch(wildcard);
+                return SetVisibility(item, matched);
             }
 
             bool found = false;
@@ -204,12 +198,17 @@ namespace sqlcon.Windows
                 }
             }
 
-            if (found)
-                item.Visibility = Visibility.Visible;
-            else
-                item.Visibility = Visibility.Collapsed;
+            return SetVisibility(item, found);
+        }
 
-            return found;
+        private static bool SetVisibility(UIElement uiElement, bool visible)
+        {
+            if (visible)
+                uiElement.Visibility = Visibility.Visible;
+            else
+                uiElement.Visibility = Visibility.Collapsed;
+
+            return visible;
         }
 
         private void ShowAllNodes()
