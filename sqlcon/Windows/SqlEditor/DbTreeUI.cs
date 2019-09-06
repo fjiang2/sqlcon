@@ -42,6 +42,22 @@ namespace sqlcon.Windows
                 CommandParameter = 0,
             };
             ContextMenu.Items.Add(menuItem);
+
+            ContextMenu.Items.Add(new Separator());
+
+            menuItem = new MenuItem
+            {
+                Header = "Expand All",
+            };
+            menuItem.Click += (sender, e) => ApplyAllNodes((DbTreeNodeUI)this.SelectedItem, x => x.IsExpanded = true);
+            ContextMenu.Items.Add(menuItem);
+
+            menuItem = new MenuItem
+            {
+                Header = "Collapse All",
+            };
+            menuItem.Click += (sender, e) => ApplyAllNodes((DbTreeNodeUI)this.SelectedItem, x => x.IsExpanded = false);
+            ContextMenu.Items.Add(menuItem);
         }
 
 
@@ -213,15 +229,18 @@ namespace sqlcon.Windows
         private void ShowAllNodes()
         {
             foreach (DbTreeNodeUI item in this.Items)
-                ShowAllNodes(item);
+                ApplyAllNodes(item, x => x.Visibility = Visibility.Visible);
         }
 
-        private void ShowAllNodes(DbTreeNodeUI item)
+        private void ApplyAllNodes(DbTreeNodeUI item, Action<DbTreeNodeUI> action)
         {
-            item.Visibility = Visibility.Visible;
+            if (item == null)
+                return;
+
+            action(item);
             foreach (DbTreeNodeUI theItem in item.Items)
             {
-                ShowAllNodes(theItem);
+                ApplyAllNodes(theItem, action);
             }
         }
     }
