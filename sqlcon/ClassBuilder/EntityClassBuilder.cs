@@ -92,16 +92,7 @@ namespace sqlcon
 
             UtilsThisMethod option = UtilsThisMethod.Undefined;
 
-            string optionMethod = cmd.GetValue("method");
-            if (optionMethod == null)
-            {
-                cerr.WriteLine("invalid option /method");
-                return;
-            }
-
-            string[] methods = optionMethod.Split(',');
-
-            if (methods.Contains("Map"))
+            if (ContainsMethod("Map"))
             {
                 string identityColumn = schema.Columns
                     .Where(column => column.IsIdentity)
@@ -139,25 +130,25 @@ namespace sqlcon
                 clss.AddUtilsMethod(ClassName, columns, UtilsThisMethod.Map);
             }
 
-            if (methods.Contains("Copy"))
+            if (ContainsMethod("Copy"))
                 option |= UtilsThisMethod.Copy;
 
-            if (methods.Contains("Clone"))
+            if (ContainsMethod("Clone"))
                 option |= UtilsThisMethod.Clone;
 
-            if (methods.Contains("Equals"))
+            if (ContainsMethod("Equals"))
                 option |= UtilsThisMethod.Equals;
 
-            if (methods.Contains("GetHashCode"))
+            if (ContainsMethod("GetHashCode"))
                 option |= UtilsThisMethod.GetHashCode;
 
-            if (methods.Contains("Compare"))
+            if (ContainsMethod("Compare"))
                 option |= UtilsThisMethod.Compare;
 
-            if (methods.Contains("ToDictionary"))
+            if (ContainsMethod("ToDictionary"))
                 option |= UtilsThisMethod.ToDictionary;
 
-            if (methods.Contains("ToString"))
+            if (ContainsMethod("ToString"))
                 option |= UtilsThisMethod.ToString;
 
             {

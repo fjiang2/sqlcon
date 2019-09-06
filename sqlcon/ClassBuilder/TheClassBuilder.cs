@@ -69,7 +69,6 @@ namespace sqlcon
 
         public static string COLUMN(DataColumn column) => $"_{column.ColumnName.ToUpper()}";
 
-
         public static void CreateTableSchemaFields(DataTable dt, Class clss)
         {
             Field field;
@@ -113,5 +112,23 @@ namespace sqlcon
 
         }
 
+
+        private string[] optionMethods = null;
+        public bool ContainsMethod(string methodName)
+        {
+            if (optionMethods == null)
+            {
+                string optionMethod = cmd.GetValue("methods");
+                if (optionMethod != null)
+                    optionMethods = optionMethod.Split(',');
+                else
+                    optionMethods = new string[] { };
+            }
+
+            if (optionMethods.Length == 0)
+                return true;
+
+            return optionMethods.Contains(methodName);
+        }
     }
 }

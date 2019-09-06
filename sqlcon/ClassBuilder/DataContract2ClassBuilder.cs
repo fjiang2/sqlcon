@@ -79,14 +79,21 @@ namespace sqlcon
                 clss.Add(new Property(dict[column], column.ColumnName) { Modifier = Modifier.Public });
             }
 
-            Method_FillObject(clss);
-            Method_UpdateRow(clss);
-            Method_CopyTo(clss);
-            Method_Equals(clss);
-            Method_NewObject(clss);
-            Method_CreateTable(clss);
+            if (ContainsMethod("FillObject"))
+                Method_FillObject(clss);
+            if (ContainsMethod("UpdateRow"))
+                Method_UpdateRow(clss);
+            if (ContainsMethod("CopyTo"))
+                Method_CopyTo(clss);
+            if (ContainsMethod("Equals"))
+                Method_Equals(clss);
+            if (ContainsMethod("NewObject"))
+                Method_NewObject(clss);
+            if (ContainsMethod("CreateTable"))
+                Method_CreateTable(clss);
             //Method_CRUD(dt, clss);
-            Method_ToString(clss);
+            if (ContainsMethod("ToString"))
+                Method_ToString(clss);
 
 
             //Const Field
