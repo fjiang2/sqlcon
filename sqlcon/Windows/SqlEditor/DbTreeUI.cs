@@ -157,9 +157,9 @@ namespace sqlcon.Windows
             {
                 ServerName sname = pvd.ServerName;
                 DbTreeNodeUI item = new DbServerNodeUI(this, sname);
-                
+
                 treeView.Items.Add(item);
-             }
+            }
 
             return;
         }
@@ -182,11 +182,10 @@ namespace sqlcon.Windows
 
         private bool SetVisibility(DbTreeNodeUI item, string wildcard)
         {
-            if (item.Path is TableName)
-            {
-                bool matched = item.IsMatch(wildcard);
+            bool matched = item.IsMatch(wildcard);
+            //leave node
+            if (item.Items.Count == 0)
                 return SetVisibility(item, matched);
-            }
 
             bool found = false;
             foreach (DbTreeNodeUI theItem in item.Items)
