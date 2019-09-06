@@ -29,6 +29,7 @@ namespace sqlcon
             builder.AddUsing("System.Linq");
 
             AddOptionalUsing();
+            IsAssocication = Associate();
         }
 
         /// <summary>
@@ -53,7 +54,6 @@ namespace sqlcon
 
         protected override void CreateClass()
         {
-            IsAssocication = Associate();
             if (IsAssocication)
                 return;
 
