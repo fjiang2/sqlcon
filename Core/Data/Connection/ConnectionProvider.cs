@@ -137,7 +137,7 @@ namespace Sys.Data
 
         public string ToSimpleString()
         {
-            return string.Format("{0}\\{1}", this.Name, this.InitialCatalog);
+            return $"Provider={Type}, DataSource={DataSource}, InitialCatalog={InitialCatalog}";
         }
 
         public static explicit operator int(ConnectionProvider provider)

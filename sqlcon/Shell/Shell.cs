@@ -610,10 +610,10 @@ namespace sqlcon
 
                 case "connection":
                     {
-                        var list = cfg.GetValue("servers");
-                        if (list.Defined)
+                        var L = cfg.Providers.OrderBy(x => x.ServerName.Path);
+                        if (L.Count() > 0)
                         {
-                            list.Select(kvp => new { Alias = (string)kvp[0].HostValue, Connection = kvp[1].ToString() })
+                            L.Select(pvd => new { Alias = pvd.ServerName.Path, Connection = pvd.ToSimpleString() })
                             .ToConsole();
                         }
                         else
