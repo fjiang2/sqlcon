@@ -297,7 +297,15 @@ namespace sqlcon
 
             CopyVariableContext(stdio.FILE_LOG);
             CopyVariableContext(stdio.FILE_EDITOR);
-            CopyVariableContext("GitHub");
+
+            VAL context = Cfg["Context"];
+            if (context.Defined && context.IsAssociativeArray())
+            {
+                foreach (Member member in context.Members)
+                {
+                    Context.DS.Add(member.Name, member.Value);
+                }
+            }
 
             return true;
         }
