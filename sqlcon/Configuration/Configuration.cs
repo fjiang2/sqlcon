@@ -27,8 +27,6 @@ namespace sqlcon
         const string _FILE_SYSTEM_CONFIG = "sqlcon.cfg";
         const string _FILE_OUTPUT = "output";
         const string _XML_DB_FOLDER = "xmldb";
-        const string _FILE_LOG = "log";
-        const string _FILE_EDITOR = "editor";
 
         const string _WORKING_DIRECTORY = "working.directory.commands";
 
@@ -130,7 +128,7 @@ namespace sqlcon
                 }
                 catch (Exception ex)
                 {
-                     cerr.WriteLine($"configuration file format error in {cfgFile}, {ex.Message}");
+                    cerr.WriteLine($"configuration file format error in {cfgFile}, {ex.Message}");
                     return false;
                 }
             }
@@ -297,15 +295,21 @@ namespace sqlcon
                 this.MaxRows = (int)limit["export_max_count"];
 
 
-            var log = Cfg[_FILE_LOG];
-            if (log.Defined)
-                Context.DS.Add(_FILE_LOG, log);
-
-            var editor = Cfg.GetValue<string>(_FILE_EDITOR, "notepad.exe");
-            Context.DS.Add(_FILE_EDITOR, new VAL(editor));
+            CopyVariableContext(stdio.FILE_LOG);
+            CopyVariableContext(stdio.FILE_EDITOR);
+            CopyVariableContext("GitHub");
 
             return true;
+        }
 
+        private void CopyVariableContext(string from, string to = null)
+        {
+            if (to == null)
+                to = from;
+
+            VAL val = Cfg.GetValue(from);
+            if (val.Defined)
+                Context.DS.Add(to, val);
         }
 
         private static string SearchXmlConnectionString(VAL val)
