@@ -203,17 +203,32 @@ namespace sqlcon.Windows
             if (item.Items.Count == 0)
                 return SetVisibility(item, matched);
 
-            bool found = false;
-            foreach (DbTreeNodeUI theItem in item.Items)
+            //current node is matched
+            if (matched)
             {
-                if (SetVisibility(theItem, wildcard))
+                foreach (DbTreeNodeUI theItem in item.Items)
                 {
-                    if (!found)
-                        found = true;
+                    SetVisibility(theItem, wildcard);
                 }
-            }
 
-            return SetVisibility(item, found);
+                //must be visible
+                return SetVisibility(item, true);
+            }
+            else
+            {
+                bool found = false;
+                foreach (DbTreeNodeUI theItem in item.Items)
+                {
+                    if (SetVisibility(theItem, wildcard))
+                    {
+                        if (!found)
+                            found = true;
+                    }
+                }
+
+                //be visible if any child node is visible
+                return SetVisibility(item, found);
+            }
         }
 
         private static bool SetVisibility(UIElement uiElement, bool visible)
