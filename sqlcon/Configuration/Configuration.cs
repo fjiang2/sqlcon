@@ -37,11 +37,11 @@ namespace sqlcon
         public string UserConfigurationFile { get; private set; } = "user.cfg";
 
         public string OutputFile { get; set; }
-        public string XmlDbDirectory { get; set; }
+        public string XmlDbDirectory { get; private set; }
         public WorkingDirectory WorkingDirectory { get; }
 
-        public int TopLimit { get; set; } = 20;
-        public int MaxRows { get; set; } = 2000;
+        public int TopLimit { get; private set; } = 20;
+        public int MaxRows { get; private set; } = 2000;
         private static TextWriter cerr = Console.Error;
 
         public Configuration()
@@ -298,7 +298,13 @@ namespace sqlcon
             CopyVariableContext(stdio.FILE_LOG);
             CopyVariableContext(stdio.FILE_EDITOR);
 
-            VAL context = Cfg["Context"];
+            CopyContext(Cfg["Context"]);
+
+            return true;
+        }
+
+        private static void CopyContext(VAL context)
+        {
             if (context.Defined && context.IsAssociativeArray())
             {
                 foreach (Member member in context.Members)
@@ -306,8 +312,6 @@ namespace sqlcon
                     Context.DS.Add(member.Name, member.Value);
                 }
             }
-
-            return true;
         }
 
         private void CopyVariableContext(string from, string to = null)
