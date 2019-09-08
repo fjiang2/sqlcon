@@ -75,13 +75,43 @@ namespace sqlcon
             }
         }
 
+   
+        public static string SearchXmlConnectionString(VAL val)
+        {
+            if (val.Size != 3)
+            {
+                cerr.WriteLine("required 2 parameters on function config(file,path,value), 1: app.config/web.config name; 2: path to reach connection string; 3:connection string attribute");
+                return null;
+            }
+
+            if (val[0].VALTYPE != VALTYPE.stringcon || val[1].VALTYPE != VALTYPE.stringcon || val[2].VALTYPE != VALTYPE.stringcon)
+            {
+                cerr.WriteLine("error on function config(file,path,value) argument type, 1: string, 2: string, 3:string");
+                return null;
+            }
+
+            string xmlFile = (string)val[0];
+            string path = (string)val[1];
+            string value = (string)val[2];
+
+            try
+            {
+                return SearchConnectionString(xmlFile, path, value);
+            }
+            catch (Exception)
+            {
+                cerr.WriteLine($"cannot find connection string on {xmlFile}, path={path}");
+                return null;
+            }
+        }
+
         /// <summary>
         /// search *.config file
         /// </summary>
         /// <param name="xmlFile"></param>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static string SearchConnectionString(string xmlFile, string path, string valueAttr)
+        private static string SearchConnectionString(string xmlFile, string path, string valueAttr)
         {
             if (!File.Exists(xmlFile))
             {
@@ -106,34 +136,6 @@ namespace sqlcon
             return cleanConnectionString(connectionString);
         }
 
-        internal static string SearchXmlConnectionString(VAL val)
-        {
-            if (val.Size != 3)
-            {
-                cerr.WriteLine("required 2 parameters on function config(file,path,value), 1: app.config/web.config name; 2: path to reach connection string; 3:connection string attribute");
-                return null;
-            }
-
-            if (val[0].VALTYPE != VALTYPE.stringcon || val[1].VALTYPE != VALTYPE.stringcon || val[2].VALTYPE != VALTYPE.stringcon)
-            {
-                cerr.WriteLine("error on function config(file,path,value) argument type, 1: string, 2: string, 3:string");
-                return null;
-            }
-
-            string xmlFile = (string)val[0];
-            string path = (string)val[1];
-            string value = (string)val[2];
-
-            try
-            {
-                return ConnectionString.SearchConnectionString(xmlFile, path, value);
-            }
-            catch (Exception)
-            {
-                cerr.WriteLine($"cannot find connection string on {xmlFile}, path={path}");
-                return null;
-            }
-        }
 
         private static string cleanConnectionString(string connectionString)
         {
