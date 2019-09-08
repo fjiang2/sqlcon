@@ -38,9 +38,10 @@ namespace sqlcon
                     case "/i":
                         if (i < args.Length && !args[i].StartsWith("/"))
                         {
+                            IConnectionConfiguration connection = cfg.Connection;
                             string inputfile = args[i++];
-                            string server = cfg.Home;
-                            var pvd = cfg.GetProvider(server);
+                            string server = connection.Home;
+                            var pvd = connection.GetProvider(server);
                             var theSide = new Side(pvd);
                             theSide.ExecuteScript(inputfile);
                             break;

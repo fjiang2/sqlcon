@@ -271,7 +271,7 @@ namespace sqlcon
                     return NextStep.COMPLETED;
 
                 case "execute":
-                    commandee.execute(cmd, theSide);
+                    commandee.execute(cmd, cfg, theSide);
                     if (commandee.ErrorCode == CommandState.OK)
                         return NextStep.COMPLETED;
                     else
@@ -283,7 +283,7 @@ namespace sqlcon
 
                 case "compare":
                     {
-                        commandee.compare(cmd);
+                        commandee.compare(cmd, cfg);
                         return NextStep.COMPLETED;
                     }
 
@@ -371,7 +371,7 @@ namespace sqlcon
                                         }
                                     }
 
-                                    string _path = cmd.OutputFile();
+                                    string _path = cmd.OutputFile(cfg);
                                     System.IO.File.WriteAllText(_path, builder.ToString());
                                     cout.WriteLine($"Memory dumps to \"{_path}\"");
                                 }
@@ -402,15 +402,15 @@ namespace sqlcon
                     return NextStep.COMPLETED;
 
                 case "mount":
-                    commandee.mount(cmd, cfg);
+                    commandee.mount(cmd, connection);
                     return NextStep.COMPLETED;
 
                 case "umount":
-                    commandee.umount(cmd, cfg);
+                    commandee.umount(cmd, connection);
                     return NextStep.COMPLETED;
 
                 case "edit":
-                    commandee.edit(cmd, theSide);
+                    commandee.edit(cmd, cfg, connection, theSide);
                     return NextStep.COMPLETED;
 
                 case "last":
@@ -610,7 +610,7 @@ namespace sqlcon
 
                 case "connection":
                     {
-                        var L = cfg.Providers.OrderBy(x => x.ServerName.Path);
+                        var L = connection.Providers.OrderBy(x => x.ServerName.Path);
                         if (L.Count() > 0)
                         {
                             L.Select(pvd => new { Alias = pvd.ServerName.Path, Connection = pvd.ToSimpleString() })

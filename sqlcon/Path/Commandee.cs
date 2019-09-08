@@ -598,7 +598,7 @@ namespace sqlcon
             });
         }
 
-        public void compare(ApplicationCommand cmd)
+        public void compare(ApplicationCommand cmd, IConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -612,9 +612,8 @@ namespace sqlcon
                 return;
             }
 
-            IConfiguration cfg = cmd.Configuration;
             PathBothSide both = new PathBothSide(mgr, cmd);
-            string fileName = cmd.OutputFile();
+            string fileName = cmd.OutputFile(cfg);
             using (var writer = fileName.CreateStreamWriter(cmd.Append))
             {
                 ActionType type;
@@ -1162,14 +1161,14 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             if (pt.Item is TableName || pt.Item is Locator || pt.Item is DatabaseName || pt.Item is ServerName)
             {
-                var exporter = new Exporter(mgr, pt, cmd);
+                var exporter = new Exporter(mgr, pt, cmd, cfg);
                 exporter.Run();
             }
             else
                 cerr.WriteLine("select server, database or table first");
         }
 
-        public void mount(ApplicationCommand cmd, IConfiguration cfg)
+        public void mount(ApplicationCommand cmd, IConnectionConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1291,7 +1290,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void umount(ApplicationCommand cmd, IConfiguration cfg)
+        public void umount(ApplicationCommand cmd, IConnectionConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1471,7 +1470,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             });
         }
 
-        public void execute(ApplicationCommand cmd, Side theSide)
+        public void execute(ApplicationCommand cmd, IConfiguration cfg, Side theSide)
         {
             if (cmd.HasHelp)
             {
@@ -1484,7 +1483,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             string inputfile;
             if (cmd.arg1 != null)
-                inputfile = cmd.Configuration.WorkingDirectory.GetFullPath(cmd.arg1, ".sql");
+                inputfile = cfg.WorkingDirectory.GetFullPath(cmd.arg1, ".sql");
             else
             {
                 cerr.WriteLine("input undefined");
@@ -1497,7 +1496,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 ErrorCode = CommandState.SQL_FAILS;
         }
 
-        public void edit(ApplicationCommand cmd, Side theSide)
+        public void edit(ApplicationCommand cmd, IConfiguration cfg, IConnectionConfiguration connection, Side theSide)
         {
             if (cmd.HasHelp)
             {
@@ -1524,7 +1523,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 {
                     if (Path.GetDirectoryName(inputfile) == string.Empty)
                     {
-                        string path = cmd.Configuration.GetValue<string>("MyDocuments", Directory.GetCurrentDirectory());
+                        string path = cfg.GetValue<string>("MyDocuments", Directory.GetCurrentDirectory());
                         inputfile = $"{path}\\{inputfile}";
                     }
                 }
@@ -1557,7 +1556,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             try
             {
-                var editor = new Windows.SqlEditor(cmd.Configuration, theSide.Provider, mgr.ToString(), fileLink);
+                var editor = new Windows.SqlEditor(connection, theSide.Provider, mgr.ToString(), fileLink);
                 editor.ShowDialog();
             }
             catch (Exception ex)

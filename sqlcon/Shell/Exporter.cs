@@ -25,11 +25,11 @@ namespace sqlcon
         private ServerName sname;
 
         XmlDbCreator xmlDbFile;
-        public Exporter(PathManager mgr, TreeNode<IDataPath> pt, ApplicationCommand cmd)
+        public Exporter(PathManager mgr, TreeNode<IDataPath> pt, ApplicationCommand cmd, IConfiguration cfg)
         {
             this.mgr = mgr;
             this.cmd = cmd;
-            this.cfg = cmd.Configuration;
+            this.cfg = cfg;
 
             this.xmlDbFile = new XmlDbCreator
             {
@@ -62,7 +62,7 @@ namespace sqlcon
             }
 
         }
-        private string fileName => cmd.OutputFile();
+        private string fileName => cmd.OutputFile(cfg);
 
         private TableName[] getTableNames(ApplicationCommand cmd)
         {
