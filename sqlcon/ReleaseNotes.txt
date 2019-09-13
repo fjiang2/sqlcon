@@ -1,9 +1,16 @@
 ﻿sqlcon release notes
 
+9/12/2019 v2.2.5.0
+	Improvements/Enhancements:
+	1. Key "Context" in .cfg file defined Context Variables which can be used on the command line through command "let" or "{variable}"
+	2. Methods in data Contract class generation can be selected through option "/methods:xxx,xxx,xxx"
+	3. SQL editor:
+	     Supports dictionary of System.Data.DataSet
+
 8/24/2019 v2.2.4.0
 	Improvements/Enhancements:
-	1.add command option /include:xxx and /exclude:xxx. option value could be wildcard table name list
-	2.SQL editor:
+	1. add command option /include:xxx and /exclude:xxx. option value could be wildcard table name list
+	2. SQL editor:
 	     Supports multiple script files and windows
 	     Search bar to serach table names
 		 Add [Home] button to reach home directory
