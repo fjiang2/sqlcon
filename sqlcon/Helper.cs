@@ -14,7 +14,7 @@ namespace sqlcon
 {
     static class Helper
     {
-        public static string OutputFile(this ApplicationCommand cmd)
+        public static string OutputFile(this ApplicationCommand cmd, IConfiguration cfg)
         {
             string outputFile = cmd.OutputPath();
             if (!string.IsNullOrEmpty(outputFile))
@@ -23,7 +23,7 @@ namespace sqlcon
                 {
                     if (Directory.Exists(outputFile))
                     {
-                        string file = Path.GetFileName(cmd.Configuration.OutputFile);
+                        string file = Path.GetFileName(cfg.OutputFile);
                         return Path.Combine(outputFile, "sqlcon.out");
                     }
                     else
@@ -43,7 +43,7 @@ namespace sqlcon
                 }
             }
 
-            return cmd.Configuration.OutputFile;
+            return cfg.OutputFile;
         }
 
 

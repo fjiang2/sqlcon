@@ -26,6 +26,11 @@ namespace sqlcon.Windows
             image.Source = WpfUtils.NewBitmapImage(imageName);
         }
 
+        public virtual bool IsMatch(string wildcard)
+        {
+            return true;
+        }
+
         public override string ToString()
         {
             return Path.Path;

@@ -123,7 +123,7 @@ namespace sqlcon
 
             string dataclass = cmd.GetValue("dataclass") ?? "DbReadOnly";
 
-            var builder = new CSharpBuilder { Namespace = NameSpace };
+            var builder = new CSharpBuilder { Namespace = NamespaceName };
             builder.AddUsing("System.Collections.Generic");
             string cname = ClassName;
 
@@ -294,7 +294,7 @@ namespace sqlcon
 
             CSharpBuilder builder = new CSharpBuilder()
             {
-                Namespace = NameSpace
+                Namespace = NamespaceName
             };
 
             string cname = ClassName;

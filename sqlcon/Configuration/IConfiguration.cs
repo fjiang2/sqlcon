@@ -2,7 +2,7 @@
 
 namespace sqlcon
 {
-    interface IConfiguration : IConnectionConfiguration
+    interface IConfiguration 
     {
         string UserConfigurationFile { get; }
         string OutputFile { get; }
@@ -12,5 +12,6 @@ namespace sqlcon
         int MaxRows { get; }
         VAL GetValue(VAR variable);
         T GetValue<T>(string variable, T defaultValue = default);
+        IConnectionConfiguration Connection { get; }
     }
 }

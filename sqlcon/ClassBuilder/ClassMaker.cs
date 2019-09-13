@@ -15,8 +15,9 @@ namespace sqlcon
         protected const string LP = "{";
         protected const string RP = "}";
 
-        public string ns { get; set; }
-        public string cname { get; set; }
+        private string ns;
+        private string cname;
+        private string mtd;
 
         protected ApplicationCommand cmd;
 
@@ -25,7 +26,22 @@ namespace sqlcon
             this.cmd = cmd;
         }
 
-        protected string NameSpace
+        public void SetNamespace(string ns)
+        {
+            this.ns = ns;
+        }
+
+        public void SetClassName(string cname)
+        {
+            this.cname = ident.Identifier(cname);
+        }
+
+        public void SetMethod(string mtd)
+        {
+            this.mtd = mtd;
+        }
+
+        protected string NamespaceName
         {
             get
             {
@@ -53,6 +69,9 @@ namespace sqlcon
                 return nameof(DataTable);
             }
         }
+
+        public string MethodName => this.mtd;
+
 
         protected string[] Usings
         {

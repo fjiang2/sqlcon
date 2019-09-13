@@ -70,19 +70,19 @@ namespace sqlcon
                 return;
             }
 
-            if (val.IsList)
-            {
-                prefix = MakeVariableName(prefix, key);
+            //if (val.IsList)
+            //{
+            //    prefix = MakeVariableName(prefix, key);
 
-                int index = 0;
-                foreach (var item in val)
-                {
-                    createConfigKeyMap(clss, prefix, $"[{index}]", item);
-                    index++;
-                }
+            //    int index = 0;
+            //    foreach (var item in val)
+            //    {
+            //        createConfigKeyMap(clss, prefix, $"[{index}]", item);
+            //        index++;
+            //    }
 
-                return;
-            }
+            //    return;
+            //}
 
             if(val.IsFunction)
             {
@@ -178,10 +178,18 @@ namespace sqlcon
             ConstKeyFields.Add(field);
 
             //default value field
+            Modifier modifier = Modifier.Public | Modifier.Const;
+            string value = val.ToString();
+            if (val.IsList)
+            {
+                modifier = Modifier.Public | Modifier.Readonly | Modifier.Static;
+                value = $"new {ty} " + value;
+            }
+
             field = new Field(ty, defaultKey)
             {
-                Modifier = Modifier.Public | Modifier.Const,
-                UserValue = val.ToString(),
+                Modifier = modifier,
+                UserValue = value,
                 Comment = comment
             };
             DefaultValueFields.Add(field);

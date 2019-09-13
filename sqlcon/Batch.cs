@@ -70,9 +70,19 @@ namespace sqlcon
                 if (cmd == string.Empty)
                     continue;
 
-                for (int i = 1; i < args.Length; i++)
+                for (int i = 0; i < args.Length; i++)
                 {
                     cmd = cmd.Replace($"%{i}", args[i]);
+                }
+
+                //replace unassigned parameter by string.Empty
+                int k = args.Length;
+                while (cmd.IndexOf("%") > 0)
+                {
+                    cmd = cmd.Replace($"%{k}", string.Empty);
+                    k++;
+                    if (k > 100)
+                        break;
                 }
 
                 L.Add(cmd);

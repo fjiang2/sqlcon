@@ -15,7 +15,6 @@ namespace sqlcon
     {
         private DataTable dt;
 
-        public string mtd { get; set; }
         private IDictionary<DataColumn, TypeInfo> dict { get; }
 
         public DataContract2ClassBuilder(ApplicationCommand cmd, DataTable dt, bool allowDbNull)
@@ -68,12 +67,11 @@ namespace sqlcon
         protected override void CreateClass()
         {
 
-            var clss = new Class(cname, new TypeInfo { Type = typeof(IDataContractRow) }, new TypeInfo { UserType = $"IEquatable<{cname}>" })
+            var clss = new Class(ClassName, new TypeInfo { Type = typeof(IDataContractRow) }, new TypeInfo { UserType = $"IEquatable<{ClassName}>" })
             {
                 Modifier = Modifier.Public | Modifier.Partial
             };
             builder.AddClass(clss);
-
 
 
             foreach (DataColumn column in dt.Columns)
@@ -81,48 +79,45 @@ namespace sqlcon
                 clss.Add(new Property(dict[column], column.ColumnName) { Modifier = Modifier.Public });
             }
 
+            if (ContainsMethod("FillObject"))
+                Method_FillObject(clss);
+            if (ContainsMethod("UpdateRow"))
+                Method_UpdateRow(clss);
+            if (ContainsMethod("CopyTo"))
+                Method_CopyTo(clss);
+            if (ContainsMethod("Equals"))
+                Method_Equals(clss);
+            if (ContainsMethod("NewObject"))
+                Method_NewObject(clss);
+            if (ContainsMethod("CreateTable"))
+                Method_CreateTable(clss);
+            //Method_CRUD(dt, clss);
+            if (ContainsMethod("ToString"))
+                Method_ToString(clss);
 
 
-            int i;
-            int count;
-            Statement sent;
+            //Const Field
+            foreach (DataColumn column in dt.Columns)
+            {
+                Field field = new Field(new TypeInfo { Type = typeof(string) }, COLUMN(column), new Value(column.ColumnName))
+                {
+                    Modifier = Modifier.Public | Modifier.Const
+                };
+                clss.Add(field);
+            }
 
-            Func<DataColumn, string> COLUMN = column => "_" + column.ColumnName.ToUpper();
+        }
 
-            Method method;
-
-
-
+        private void Method_FillObject(Class clss)
+        {
             Method mtdFillObject = new Method("FillObject")
             {
                 Modifier = Modifier.Public,
                 Params = new Parameters().Add(typeof(DataRow), "row")
             };
             clss.Add(mtdFillObject);
+            var sent = mtdFillObject.Statement;
 
-            Method mtdUpdateRow = new Method("UpdateRow")
-            {
-                Modifier = Modifier.Public,
-                Params = new Parameters().Add(typeof(DataRow), "row")
-            };
-            clss.Add(mtdUpdateRow);
-
-            Method mtdCopyTo = new Method("CopyTo")
-            {
-                Modifier = Modifier.Public,
-                Params = new Parameters().Add(cname, "obj")
-            };
-            clss.Add(mtdCopyTo);
-
-
-
-
-            var sent1 = mtdFillObject.Statement;
-            var sent2 = mtdUpdateRow.Statement;
-            var sent3 = mtdCopyTo.Statement;
-
-            count = dt.Columns.Count;
-            i = 0;
             foreach (DataColumn column in dt.Columns)
             {
                 var type = dict[column];
@@ -130,45 +125,87 @@ namespace sqlcon
                 var name = column.ColumnName;
 
                 var line = $"this.{name} = row.Field<{type}>({NAME});";
-                sent1.AppendLine(line);
-
-                line = $"row.SetField({NAME}, this.{name});";
-                sent2.AppendLine(line);
-
-                line = $"obj.{name} = this.{name};";
-                sent3.AppendLine(line);
+                sent.AppendLine(line);
             }
+        }
 
+        private void Method_UpdateRow(Class clss)
+        {
+            Method mtdUpdateRow = new Method("UpdateRow")
+            {
+                Modifier = Modifier.Public,
+                Params = new Parameters().Add(typeof(DataRow), "row")
+            };
+            clss.Add(mtdUpdateRow);
+            var sent = mtdUpdateRow.Statement;
+            foreach (DataColumn column in dt.Columns)
+            {
+                var type = dict[column];
+                var NAME = COLUMN(column);
+                var name = column.ColumnName;
+
+                var line = $"row.SetField({NAME}, this.{name});";
+                sent.AppendLine(line);
+            }
+        }
+
+        private void Method_CopyTo(Class clss)
+        {
+            Method mtdCopyTo = new Method("CopyTo")
+            {
+                Modifier = Modifier.Public,
+                Params = new Parameters().Add(ClassName, "obj")
+            };
+            clss.Add(mtdCopyTo);
+            var sent = mtdCopyTo.Statement;
+
+            foreach (DataColumn column in dt.Columns)
+            {
+                var type = dict[column];
+                var NAME = COLUMN(column);
+                var name = column.ColumnName;
+
+                var line = $"obj.{name} = this.{name};";
+                sent.AppendLine(line);
+            }
+        }
+
+        private void Method_Equals(Class clss)
+        {
             Method mtdEquals = new Method("Equals")
             {
                 Modifier = Modifier.Public,
                 Type = new TypeInfo { Type = typeof(bool) },
-                Params = new Parameters().Add(cname, "obj")
+                Params = new Parameters().Add(ClassName, "obj")
             };
             clss.Add(mtdEquals);
-            sent = mtdEquals.Statement;
+            Statement sent = mtdEquals.Statement;
             sent.AppendLine("return ");
-            var variables = dict.Keys.Select(column => column.ColumnName);
+            IEnumerable<string> variables = dict.Keys.Select(column => column.ColumnName);
             variables.ForEach(
-               variable => sent.Append($"this.{variable} == obj.{variable}"),
-               variable => sent.AppendLine("&& ")
-               );
-            sent.Append(";");
+                variable => sent.Append($"this.{variable} == obj.{variable}"),
+                variable => sent.AppendLine("&& ")
+            );
 
+            sent.Append(";");
+        }
+
+        private void Method_NewObject(Class clss)
+        {
             Method mtdNewObject = new Method("NewObject")
             {
                 Modifier = Modifier.Public | Modifier.Static,
-                Type = new TypeInfo { UserType = cname },
+                Type = new TypeInfo { UserType = ClassName },
                 Params = new Parameters().Add(typeof(DataRow), "row"),
                 IsExtensionMethod = false
             };
             clss.Add(mtdNewObject);
-            sent = mtdNewObject.Statement;
-            sent.AppendLine($"return new {cname}");
+            Statement sent = mtdNewObject.Statement;
+            sent.AppendLine($"return new {ClassName}");
             sent.Begin();
 
-            count = dt.Columns.Count;
-            i = 0;
+            int count = dt.Columns.Count;
+            int i = 0;
             foreach (DataColumn column in dt.Columns)
             {
                 var type = dict[column];
@@ -180,14 +217,18 @@ namespace sqlcon
                 sent.AppendLine(line);
             }
             sent.End(";");
+        }
 
-            method = new Method("CreateTable")
+        private void Method_CreateTable(Class clss)
+        {
+            Method method = new Method("CreateTable")
             {
                 Modifier = Modifier.Public | Modifier.Static,
                 Type = new TypeInfo { Type = typeof(DataTable) }
             };
             clss.Add(method);
-            sent = method.Statement;
+
+            Statement sent = method.Statement;
             sent.AppendLine("DataTable dt = new DataTable();");
             foreach (DataColumn column in dt.Columns)
             {
@@ -197,16 +238,18 @@ namespace sqlcon
             }
             sent.AppendLine();
             sent.AppendLine("return dt;");
+        }
 
-
-            method = new Method(new TypeInfo { Type = typeof(string) }, "ToString")
+        private void Method_ToString(Class clss)
+        {
+            Method method = new Method(new TypeInfo { Type = typeof(string) }, "ToString")
             {
                 Modifier = Modifier.Public | Modifier.Override
             };
             clss.Add(method);
-            sent = method.Statement;
+            Statement sent = method.Statement;
 
-
+            IEnumerable<string> variables = dict.Keys.Select(column => column.ColumnName);
             StringBuilder sb = new StringBuilder("\"{{");
             int index = 0;
             variables.ForEach(
@@ -224,17 +267,57 @@ namespace sqlcon
             sent.AppendFormat("return string.Format({0});", sb);
             clss.AppendLine();
 
-            //Const Field
-            foreach (DataColumn column in dt.Columns)
-            {
-                Field field = new Field(new TypeInfo { Type = typeof(string) }, COLUMN(column), new Value(column.ColumnName))
-                {
-                    Modifier = Modifier.Public | Modifier.Const
-                };
-                clss.Add(field);
-            }
-
+            CreateTableSchemaFields(dt, clss);
+            clss.AppendLine();
         }
 
+        public void Method_CRUD(DataTable dt, Class clss)
+        {
+            var provider = ConnectionProviderManager.DefaultProvider;
+            TableName tname = new TableName(provider, dt.TableName);
+
+            SqlMaker gen = new SqlMaker(tname)
+            {
+                PrimaryKeys = new PrimaryKeys(dt.PrimaryKey.Select(x => x.ColumnName).ToArray())
+            };
+
+            foreach (DataColumn column in dt.Columns)
+            {
+                string cname = column.ColumnName;
+                gen.Add(cname, "{" + cname + "}");
+            }
+
+            Method method = new Method("Insert")
+            {
+                Modifier = Modifier.Public,
+                Type = new TypeInfo(typeof(string)),
+            };
+            method.Statement.AppendLine("return $\"" + gen.Insert() + "\";");
+            clss.Add(method);
+
+            method = new Method("Update")
+            {
+                Modifier = Modifier.Public,
+                Type = new TypeInfo(typeof(string)),
+            };
+            method.Statement.AppendLine("return $\"" + gen.Update() + "\";");
+            clss.Add(method);
+
+            method = new Method("InsertOrUpdate")
+            {
+                Modifier = Modifier.Public,
+                Type = new TypeInfo(typeof(string)),
+            };
+            method.Statement.AppendLine("return $\"" + gen.InsertOrUpdate() + "\";");
+            clss.Add(method);
+
+            method = new Method("Delete")
+            {
+                Modifier = Modifier.Public,
+                Type = new TypeInfo(typeof(string)),
+            };
+            method.Statement.AppendLine("return $\"" + gen.Delete() + "\";");
+            clss.Add(method);
+        }
     }
 }

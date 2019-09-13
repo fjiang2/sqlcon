@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using Sys.Data.Manager;
 using Sys.Stdio;
 
 namespace sqlcon
@@ -13,15 +14,14 @@ namespace sqlcon
 
     class EntityClassBuilder : TheClassBuilder
     {
-
         private TableName tname;
-
+        public bool IsAssocication { get; private set; }
 
         public EntityClassBuilder(ApplicationCommand cmd, TableName tname)
             : base(cmd)
         {
             this.tname = tname;
-            this.cname = tname.Name;
+            this.SetClassName(tname.ToClassName(rule: null));
 
             builder.AddUsing("System");
             builder.AddUsing("System.Collections.Generic");
@@ -29,17 +29,40 @@ namespace sqlcon
             builder.AddUsing("System.Linq");
 
             AddOptionalUsing();
+            IsAssocication = Associate();
+        }
+
+        /// <summary>
+        /// check it is associative table
+        /// </summary>
+        /// <returns></returns>
+        private bool Associate()
+        {
+            TableSchema schema = new TableSchema(tname);
+            if (schema.Columns.Count != 2)
+                return false;
+
+            IColumn c1 = schema.Columns[0];
+            IColumn c2 = schema.Columns[1];
+
+            if (!c1.IsPrimary || !c2.IsPrimary)
+                return false;
+
+            var fk = schema.ForeignKeys;
+            return fk.Length == 2;
         }
 
         protected override void CreateClass()
         {
+            if (IsAssocication)
+                return;
 
             TableSchema schema = new TableSchema(tname);
             Func<IColumn, string> COLUMN = column => "_" + column.ColumnName.ToUpper();
 
             TypeInfo[] baseClass = OptionalBaseType();
 
-            var clss = new Class(cname, OptionalBaseType())
+            var clss = new Class(ClassName, OptionalBaseType())
             {
                 Modifier = Modifier.Public | Modifier.Partial
             };
@@ -69,16 +92,7 @@ namespace sqlcon
 
             UtilsThisMethod option = UtilsThisMethod.Undefined;
 
-            string optionMethod = cmd.GetValue("method");
-            if (optionMethod == null)
-            {
-                cerr.WriteLine("invalid option /method");
-                return;
-            }
-
-            string[] methods = optionMethod.Split(',');
-
-            if (methods.Contains("Map"))
+            if (ContainsMethod("Map"))
             {
                 string identityColumn = schema.Columns
                     .Where(column => column.IsIdentity)
@@ -113,28 +127,28 @@ namespace sqlcon
                     .Select(column => new PropertyInfo { PropertyName = column.ColumnName })
                     .ToArray();
 
-                clss.AddUtilsMethod(cname, columns, UtilsThisMethod.Map);
+                clss.AddUtilsMethod(ClassName, columns, UtilsThisMethod.Map);
             }
 
-            if (methods.Contains("Copy"))
+            if (ContainsMethod("Copy"))
                 option |= UtilsThisMethod.Copy;
 
-            if (methods.Contains("Clone"))
+            if (ContainsMethod("Clone"))
                 option |= UtilsThisMethod.Clone;
 
-            if (methods.Contains("Equals"))
+            if (ContainsMethod("Equals"))
                 option |= UtilsThisMethod.Equals;
 
-            if (methods.Contains("GetHashCode"))
+            if (ContainsMethod("GetHashCode"))
                 option |= UtilsThisMethod.GetHashCode;
 
-            if (methods.Contains("Compare"))
+            if (ContainsMethod("Compare"))
                 option |= UtilsThisMethod.Compare;
 
-            if (methods.Contains("ToDictionary"))
+            if (ContainsMethod("ToDictionary"))
                 option |= UtilsThisMethod.ToDictionary;
 
-            if (methods.Contains("ToString"))
+            if (ContainsMethod("ToString"))
                 option |= UtilsThisMethod.ToString;
 
             {
@@ -146,7 +160,7 @@ namespace sqlcon
                     })
                     .ToArray();
 
-                clss.AddUtilsMethod(cname, columns, option);
+                clss.AddUtilsMethod(ClassName, columns, option);
             }
         }
     }

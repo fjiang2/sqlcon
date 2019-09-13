@@ -114,6 +114,8 @@
     <Compile Include="Configuration\Config`1.cs" />
     <Compile Include="Configuration\ConfigDefaultValue.cs" />
     <Compile Include="Configuration\ConfigKey.cs" />
+    <Compile Include="Configuration\ConnectionConfiguration.cs" />
+    <Compile Include="Configuration\ConnectionString.cs" />
     <Compile Include="Configuration\IConfiguration.cs" />
     <Compile Include="Configuration\IConnectionConfiguration.cs" />
     <Compile Include="Data\CsvFile.cs" />
@@ -247,6 +249,7 @@
       <DefaultIcon>Tie.ico</DefaultIcon>
     </FileAssociation>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

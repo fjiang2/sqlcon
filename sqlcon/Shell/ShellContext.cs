@@ -10,6 +10,7 @@ namespace sqlcon
     {
         public Side theSide { get; set; }
         public IConfiguration cfg { get; }
+        public IConnectionConfiguration connection { get; }
         public PathManager mgr { get; }
         public Commandee commandee { get; }
         public const string THESIDE = "$TheSide";
@@ -17,23 +18,24 @@ namespace sqlcon
         public ShellContext(IConfiguration cfg)
         {
             this.cfg = cfg;
-            this.mgr = new PathManager(cfg);
+            this.connection = cfg.Connection;
+            this.mgr = new PathManager(connection);
             this.commandee = new Commandee(mgr);
 
-            string server = cfg.Home;
+            string server = connection.Home;
 
             ConnectionProvider pvd = null;
             if (!string.IsNullOrEmpty(server))
-                pvd = cfg.GetProvider(server);
+                pvd = connection.GetProvider(server);
 
             if (pvd != null)
             {
                 theSide = new Side(pvd);
                 ChangeSide(theSide);
             }
-            else if (cfg.Providers.Count() > 0)
+            else if (connection.Providers.Count() > 0)
             {
-                theSide = new Side(cfg.Providers.First());
+                theSide = new Side(connection.Providers.First());
                 ChangeSide(theSide);
             }
             else

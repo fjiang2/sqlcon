@@ -5,9 +5,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using Sys.Data;
+
 using Sys.Data.IO;
 using Sys.Networking;
 using Sys.Stdio;
@@ -15,20 +13,17 @@ using Tie;
 
 namespace sqlcon
 {
-    class Configuration : IConnectionConfiguration, IConfiguration
+    class Configuration : IConfiguration
     {
-
         const string _SERVER0 = "home";
+        const string _SERVERS = "servers";
 
         const string _FUNC_CONFIG = "config";
         const string _FUNC_CFG = "cfg";
-        const string _SERVERS = "servers";
 
         const string _FILE_SYSTEM_CONFIG = "sqlcon.cfg";
         const string _FILE_OUTPUT = "output";
         const string _XML_DB_FOLDER = "xmldb";
-        const string _FILE_LOG = "log";
-        const string _FILE_EDITOR = "editor";
 
         const string _WORKING_DIRECTORY = "working.directory.commands";
 
@@ -39,11 +34,13 @@ namespace sqlcon
         public string UserConfigurationFile { get; private set; } = "user.cfg";
 
         public string OutputFile { get; set; }
-        public string XmlDbDirectory { get; set; }
+        public string XmlDbDirectory { get; private set; }
         public WorkingDirectory WorkingDirectory { get; }
 
-        public int TopLimit { get; set; } = 20;
-        public int MaxRows { get; set; } = 2000;
+        public int TopLimit { get; private set; } = 20;
+        public int MaxRows { get; private set; } = 2000;
+        private static TextWriter cerr = Console.Error;
+
 
         public Configuration()
         {
@@ -54,11 +51,16 @@ namespace sqlcon
             WorkingDirectory = new WorkingDirectory();
         }
 
-        public static string MyDocuments
+        public static string MyDocuments => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\sqlcon";
+
+        private IConnectionConfiguration connection = null;
+        public IConnectionConfiguration Connection
         {
             get
             {
-                return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\sqlcon";
+                if (connection == null)
+                    connection = new ConnectionConfiguration(GetValue<string>(_SERVER0), Cfg.GetValue(_SERVERS));
+                return connection;
             }
         }
 
@@ -70,14 +72,14 @@ namespace sqlcon
             switch (func)
             {
                 case _FUNC_CONFIG:
-                    conn = SearchXmlConnectionString(parameters);
+                    conn = ConnectionString.SearchXmlConnectionString(parameters);
                     if (conn != null)
                         return new VAL(conn);
                     else
                         return new VAL();
 
                 case _FUNC_CFG:
-                    conn = SearchTieConnectionString(parameters, DS);
+                    conn = ConnectionString.SearchTieConnectionString(parameters, DS);
                     if (conn != null)
                         return new VAL(conn);
                     else
@@ -129,7 +131,7 @@ namespace sqlcon
                 }
                 catch (Exception ex)
                 {
-                     cerr.WriteLine($"configuration file format error in {cfgFile}, {ex.Message}");
+                    cerr.WriteLine($"configuration file format error in {cfgFile}, {ex.Message}");
                     return false;
                 }
             }
@@ -158,109 +160,7 @@ namespace sqlcon
             return defaultValue;
         }
 
-        public string Home => GetValue<string>(_SERVER0);
 
-        public string DefaultServerPath
-        {
-            get
-            {
-                string path = GetValue<string>(_SERVER0);
-                var provider = GetProvider(path);
-                path = string.Format("{0}\\{1}", provider.ServerName, provider.DefaultDatabaseName.Name);
-                return path;
-            }
-        }
-
-        private static string PeelOleDb(string connectionString)
-        {
-            if (connectionString.ToLower().IndexOf("sqloledb") >= 0)
-            {
-                var x1 = new OleDbConnectionStringBuilder(connectionString);
-                var x2 = new SqlConnectionStringBuilder();
-                x2.DataSource = x1.DataSource;
-                x2.InitialCatalog = (string)x1["Initial Catalog"];
-                x2.UserID = (string)x1["User Id"];
-                x2.Password = (string)x1["Password"];
-                return x2.ConnectionString;
-            }
-
-            return connectionString;
-        }
-
-        private List<ConnectionProvider> providers = null;
-        public List<ConnectionProvider> Providers
-        {
-            get
-            {
-                if (providers == null)
-                    providers = GetConnectionProviders();
-
-                return providers;
-            }
-        }
-
-        private List<ConnectionProvider> GetConnectionProviders()
-        {
-            List<ConnectionProvider> pvds = new List<ConnectionProvider>();
-
-            var machines = Cfg.GetValue(_SERVERS);
-            if (machines.Undefined)
-                return pvds;
-
-            foreach (var pair in machines)
-            {
-                if (pair[0].IsNull || pair[1].IsNull)
-                {
-                    string text = pair[0].ToSimpleString();
-                    cerr.WriteLine($"warning: undefined connection string at servers.{text}");
-                    continue;
-                }
-
-                string serverName = pair[0].Str;
-                string connectionString = PeelOleDb(pair[1].Str);
-                try
-                {
-                    ConnectionProvider provider = ConnectionProviderManager.Register(serverName, connectionString);
-                    pvds.Add(provider);
-                }
-                catch (Exception ex)
-                {
-                    cerr.WriteLine(ex.Message);
-                }
-            }
-
-            return pvds;
-        }
-
-        public ConnectionProvider GetProvider(string path)
-        {
-            string[] x = path.Split('\\');
-            if (x.Length < 3)
-            {
-                cerr.WriteLine($"invalid server path: {path}, correct format is server\\database");
-                return null;
-            }
-
-            return GetProvider(x[1], x[2]);
-        }
-
-
-        private ConnectionProvider GetProvider(string serverName, string databaseName)
-        {
-            var provider = Providers.Find(x => x.Name == serverName);
-            if (provider != null)
-            {
-                if (databaseName == "~")
-                    databaseName = provider.DefaultDatabaseName.Name;
-
-                return ConnectionProviderManager.CloneConnectionProvider(provider, serverName, databaseName);
-            }
-            else
-            {
-                cerr.WriteLine($"invalid server path: \\{serverName}\\{databaseName}");
-                return null;
-            }
-        }
 
         public bool Initialize(string cfgFile)
         {
@@ -296,91 +196,38 @@ namespace sqlcon
                 this.MaxRows = (int)limit["export_max_count"];
 
 
-            var log = Cfg[_FILE_LOG];
-            if (log.Defined) Context.DS.Add(_FILE_LOG, log);
+            CopyVariableContext(stdio.FILE_LOG);
+            CopyVariableContext(stdio.FILE_EDITOR);
 
-            var editor = Cfg.GetValue<string>(_FILE_EDITOR, "notepad.exe");
-            Context.DS.Add(_FILE_EDITOR, new VAL(editor));
+            CopyContext(Cfg["Context"]);
 
             return true;
-
         }
 
-        private static string SearchXmlConnectionString(VAL val)
+        private static void CopyContext(VAL context)
         {
-            if (val.Size != 3)
+            if (context.Defined && context.IsAssociativeArray())
             {
-                cerr.WriteLine("required 2 parameters on function config(file,path,value), 1: app.config/web.config name; 2: path to reach connection string; 3:connection string attribute");
-                return null;
-            }
-
-            if (val[0].VALTYPE != VALTYPE.stringcon || val[1].VALTYPE != VALTYPE.stringcon || val[2].VALTYPE != VALTYPE.stringcon)
-            {
-                cerr.WriteLine("error on function config(file,path,value) argument type, 1: string, 2: string, 3:string");
-                return null;
-            }
-
-            string xmlFile = (string)val[0];
-            string path = (string)val[1];
-            string value = (string)val[2];
-
-            try
-            {
-                return SearchConnectionString(xmlFile, path, value);
-            }
-            catch (Exception)
-            {
-                cerr.WriteLine($"cannot find connection string on {xmlFile}, path={path}");
-                return null;
-            }
-        }
-
-
-        /// <summary>
-        /// search *.config file
-        /// </summary>
-        /// <param name="xmlFile"></param>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        private static string SearchConnectionString(string xmlFile, string path, string valueAttr)
-        {
-            if (!File.Exists(xmlFile))
-            {
-                cerr.WriteLine($"warning: not found {xmlFile}");
-                return null;
-            }
-
-            string[] segments = path.Split('|');
-            XElement X = XElement.Load(xmlFile);
-            for (int i = 0; i < segments.Length - 1; i++)
-            {
-                X = X.Element(segments[i]);
-            }
-
-            string attr = segments.Last();
-            string[] pair = attr.Split('=');
-            var connectionString = X.Elements()
-                .Where(x => x.Attribute(pair[0]).Value == pair[1])
-                .Select(x => x.Attribute(valueAttr).Value)
-                .FirstOrDefault();
-
-            return cleanConnectionString(connectionString);
-        }
-
-        private static string cleanConnectionString(string connectionString)
-        {
-            string[] L = connectionString.Split(';');
-            for (int i = 0; i < L.Length; i++)
-            {
-                if (L[i].ToUpper() == "Provider=sqloledb".ToUpper())
+                foreach (Member member in context.Members)
                 {
-                    connectionString = connectionString.Replace(L[i] + ";", "");
-                    break;
+                    Context.DS.Add(member.Name, member.Value);
                 }
             }
-
-            return connectionString;
         }
+
+        private void CopyVariableContext(string from, string to = null)
+        {
+            if (to == null)
+                to = from;
+
+            VAL val = Cfg.GetValue(from);
+            if (val.Defined)
+                Context.DS.Add(to, val);
+        }
+
+
+
+
 
 
         /// <summary>
@@ -442,68 +289,7 @@ namespace sqlcon
             }
         }
 
-        private static string SearchTieConnectionString(VAL val, Memory DS)
-        {
-            if (val.Size != 2)
-            {
-                cerr.WriteLine("required 2 parameters on function cfg(file,variable), 1: app.cfg/web.cfg name; 2: variable to reach connection string");
-                return null;
-            }
 
-            if (val[0].VALTYPE != VALTYPE.stringcon || val[1].VALTYPE != VALTYPE.stringcon)
-            {
-                cerr.WriteLine("error on function cfg(file,variable) argument type, 1: string, 2: string");
-                return null;
-            }
-
-            string cfgFile = (string)val[0];
-            string variable = (string)val[1];
-
-            try
-            {
-                Memory localDS = new Memory();
-                if (File.Exists(cfgFile))
-                {
-                    using (var reader = new StreamReader(cfgFile))
-                    {
-                        string code = reader.ReadToEnd();
-                        try
-                        {
-                            Script.Execute(code, localDS);
-                        }
-                        catch (Exception ex)
-                        {
-                            cerr.WriteLine($"configuration file format error in {cfgFile}, {ex.Message}");
-                            return null;
-                        }
-                    }
-                }
-                else
-                {
-                    cerr.WriteLine($"cannot find configuration file: {cfgFile}");
-                    return null;
-                }
-
-                VAL value = localDS.GetValue(variable);
-                if (value.Undefined)
-                {
-                    cerr.WriteLine($"undefined variable {variable}");
-                    return null;
-                }
-                else if (!(value.Value is string))
-                {
-                    cerr.WriteLine($"connection string must be string, {variable}={value}");
-                    return null;
-                }
-                else
-                    return cleanConnectionString((string)value);
-            }
-            catch (Exception)
-            {
-                cerr.WriteLine($"cannot find connection string on {cfgFile}, variable={variable}");
-                return null;
-            }
-        }
 
     }
 }

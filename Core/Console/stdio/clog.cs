@@ -14,7 +14,7 @@ namespace Sys.Stdio
 
         static clog()
         {
-            string fileName = Context.GetValue<string>("log", "clog.log");
+            string fileName = Context.GetValue<string>(stdio.FILE_LOG, "clog.log");
             writer = NewStreamWriter(fileName);
         }
 

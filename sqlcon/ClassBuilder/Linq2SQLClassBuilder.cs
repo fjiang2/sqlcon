@@ -22,7 +22,7 @@ namespace sqlcon
             : base(cmd)
         {
             this.tname = tname;
-            this.cname = tname.ToClassName(null);
+            this.SetClassName(tname.ToClassName(rule: null));
             this.schemas = schemas;
 
             builder.AddUsing("System");
@@ -49,7 +49,7 @@ namespace sqlcon
         protected override void CreateClass()
         {
 
-            var clss = new Class(cname)
+            var clss = new Class(ClassName)
             {
                 Modifier = Modifier.Public | Modifier.Partial
             };
@@ -98,7 +98,7 @@ namespace sqlcon
             {
                 clss.AppendLine();
 
-                constructor = new Constructor(this.cname);
+                constructor = new Constructor(this.ClassName);
             }
 
 
@@ -142,7 +142,7 @@ namespace sqlcon
         private Property AddEntitySet(Class clss, Constructor constructor, IForeignKey key)
         {
             TableName fk_tname = new TableName(tname.DatabaseName, key.FK_Schema, key.FK_Table);
-            string fk_cname = fk_tname.ToClassName(null);
+            string fk_cname = fk_tname.ToClassName(rule: null);
             string pname;
 
             Property prop;
@@ -166,7 +166,7 @@ namespace sqlcon
                 prop.AddAttribute(new AttributeInfo("Association",
                  new
                  {
-                     Name = $"{this.cname}_{fk_cname}",
+                     Name = $"{this.ClassName}_{fk_cname}",
                      Storage = $"_{pname}",
                      ThisKey = key.PK_Column,
                      OtherKey = key.FK_Column,
@@ -190,7 +190,7 @@ namespace sqlcon
                 prop.AddAttribute(new AttributeInfo("Association",
                  new
                  {
-                     Name = $"{this.cname}_{fk_cname}",
+                     Name = $"{this.ClassName}_{fk_cname}",
                      Storage = $"_{pname}",
                      ThisKey = key.PK_Column,
                      OtherKey = key.FK_Column,
@@ -213,7 +213,7 @@ namespace sqlcon
         /// <returns></returns>
         private Property AddEntityRef(Class clss, IForeignKey key)
         {
-            string pk_cname = new TableName(tname.DatabaseName, key.PK_Schema, key.PK_Table).ToClassName(null);
+            string pk_cname = new TableName(tname.DatabaseName, key.PK_Schema, key.PK_Table).ToClassName(rule: null);
             string pname = clss.MakeUniqueName(pk_cname);
 
             var field = new Field(new TypeInfo { UserType = $"EntityRef<{pk_cname}>" }, $"_{pname}") { Modifier = Modifier.Private };
@@ -225,7 +225,7 @@ namespace sqlcon
             prop.AddAttribute(new AttributeInfo("Association",
                 new
                 {
-                    Name = $"{pk_cname}_{this.cname}",
+                    Name = $"{pk_cname}_{this.ClassName}",
                     Storage = $"_{pname}",
                     ThisKey = key.FK_Column,
                     OtherKey = key.PK_Column,

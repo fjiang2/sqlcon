@@ -25,11 +25,11 @@ namespace sqlcon
         private ServerName sname;
 
         XmlDbCreator xmlDbFile;
-        public Exporter(PathManager mgr, TreeNode<IDataPath> pt, ApplicationCommand cmd)
+        public Exporter(PathManager mgr, TreeNode<IDataPath> pt, ApplicationCommand cmd, IConfiguration cfg)
         {
             this.mgr = mgr;
             this.cmd = cmd;
-            this.cfg = cmd.Configuration;
+            this.cfg = cfg;
 
             this.xmlDbFile = new XmlDbCreator
             {
@@ -62,7 +62,7 @@ namespace sqlcon
             }
 
         }
-        private string fileName => cmd.OutputFile();
+        private string fileName => cmd.OutputFile(cfg);
 
         private TableName[] getTableNames(ApplicationCommand cmd)
         {
@@ -93,7 +93,9 @@ namespace sqlcon
             dt.PrimaryKeys(schema.PrimaryKeys.Keys);
             foreach (IColumn column in schema.Columns)
             {
-                dt.Columns[column.ColumnName].AllowDBNull = column.Nullable;
+                DataColumn col = dt.Columns[column.ColumnName];
+                col.AllowDBNull = column.Nullable;
+                col.AutoIncrement = column.IsIdentity;
             }
 
             if (dt.Rows.Count > 0)
@@ -436,9 +438,6 @@ namespace sqlcon
 
         public void ExportDataContract(int version)
         {
-            string path = cmd.OutputPath(ConfigKey._GENERATOR_DC_PATH, $"{Configuration.MyDocuments}\\dc");
-            string ns = cmd.GetValue("ns", ConfigKey._GENERATOR_DC_NS, "Sys.DataModel.DataContract");
-            string clss = cmd.GetValue("class");
             bool last = cmd.Has("last");
 
             List<DataTable> list = new List<DataTable>();
@@ -450,6 +449,7 @@ namespace sqlcon
                 if (ds != null)
                 {
                     string[] items = new string[] { };
+                    string clss = cmd.GetValue("class");
                     if (clss != null)
                         items = clss.Split(',');
 
@@ -486,52 +486,49 @@ namespace sqlcon
 
             foreach (DataTable dt in list)
             {
-                ExportDataContractClass(path, version, dt, ns, className: dt.TableName);
+                ExportDataContractClass(version, dt);
             }
         }
 
 
-        private void ExportDataContractClass(string path, int version, DataTable dt, string ns, string className)
+        private void ExportDataContractClass(int version, DataTable dt)
         {
             bool allowDbNull = cmd.Has("NULL");
-            string mtd = cmd.GetValue("method");
             string[] keys = cmd.Columns;
 
+            DataColumn[] pk = dt.PrimaryKey;
+            if (pk == null || pk.Length == 0)
+            {
+                pk = dt.PrimaryKeys(keys);
+
+                if (pk.Length == 0)
+                {
+                    dt.PrimaryKey = new DataColumn[] { dt.Columns[0] };
+                    cout.WriteLine($"no primary key found on Table: \"{dt.TableName}\"");
+                }
+
+                dt.PrimaryKey = pk;
+            }
+
+
+            TheClassBuilder gen = null;
             if (version == 0)
-            {
-                var builder = new DataContractClassBuilder(cmd, dt, allowDbNull)
-                {
-                    ns = ns,
-                    cname = className,
-                    mtd = mtd
-                };
-
-                string file = builder.WriteFile(path);
-                cout.WriteLine("code generated on {0}", file);
-            }
+                gen = new DataContractClassBuilder(cmd, dt, allowDbNull);
             else if (version == 1)
-            {
-                var builder = new DataContract1ClassBuilder(cmd, dt, allowDbNull)
-                {
-                    ns = ns,
-                    cname = className,
-                    mtd = mtd,
-                    keys = keys
-                };
-
-                string file = builder.WriteFile(path);
-                cout.WriteLine("code generated on {0}", file);
-            }
+                gen = new DataContract1ClassBuilder(cmd, dt, allowDbNull);
             else
-            {
-                var builder = new DataContract2ClassBuilder(cmd, dt, allowDbNull)
-                {
-                    ns = ns,
-                    cname = className,
-                    mtd = mtd
-                };
+                gen = new DataContract2ClassBuilder(cmd, dt, allowDbNull);
 
-                string file = builder.WriteFile(path);
+            if (gen != null)
+            {
+                string path = cmd.OutputPath(ConfigKey._GENERATOR_DC_PATH, $"{Configuration.MyDocuments}\\dc");
+                string ns = cmd.GetValue("ns", ConfigKey._GENERATOR_DC_NS, "Sys.DataModel.DataContract");
+                string mtd = cmd.GetValue("method");
+
+                gen.SetNamespace(ns);
+                gen.SetClassName(dt.TableName);
+                gen.SetMethod(mtd);
+                string file = gen.WriteFile(path);
                 cout.WriteLine("code generated on {0}", file);
             }
         }
@@ -552,11 +549,13 @@ namespace sqlcon
                 cout.WriteLine("start to generate {0} entity framework class file", tname);
                 var builder = new EntityClassBuilder(cmd, tname)
                 {
-                    ns = ns
                 };
-
-                string file = builder.WriteFile(path);
-                cout.WriteLine("completed {0} => {1}", tname.ShortName, file);
+                builder.SetNamespace(ns);
+                if (!builder.IsAssocication)
+                {
+                    string file = builder.WriteFile(path);
+                    cout.WriteLine("completed {0} => {1}", tname.ShortName, file);
+                }
             }
             else if (dname != null)
             {
@@ -572,13 +571,13 @@ namespace sqlcon
 
                         try
                         {
-                            var builder = new EntityClassBuilder(cmd, tn)
+                            var builder = new EntityClassBuilder(cmd, tn);
+                            builder.SetNamespace(ns);
+                            if (!builder.IsAssocication)
                             {
-                                ns = ns
-                            };
-
-                            string file = builder.WriteFile(path);
-                            cout.WriteLine("generated for {0} at {1}", tn.ShortName, path);
+                                string file = builder.WriteFile(path);
+                                cout.WriteLine("generated for {0} at {1}", tn.ShortName, path);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -609,8 +608,9 @@ namespace sqlcon
             {
                 var builder = new Linq2SQLClassBuilder(cmd, tname, schemas)
                 {
-                    ns = ns
                 };
+                builder.SetNamespace(ns);
+
                 string file = builder.WriteFile(path);
                 cout.WriteLine("code generated on {0}", file);
             }
@@ -622,8 +622,8 @@ namespace sqlcon
                 {
                     var builder = new Linq2SQLClassBuilder(cmd, tname, schemas)
                     {
-                        ns = ns
                     };
+                    builder.SetNamespace(ns);
 
                     string file = builder.WriteFile(path);
                     cout.WriteLine("code generated on {0}", file);
@@ -808,17 +808,19 @@ namespace sqlcon
             cout.WriteLine("   /l2s     : generate C# Linq to SQL class");
             cout.WriteLine("   /dc      : generate C# data contract class");
             cout.WriteLine("   /dc1     : generate C# data contract class and extension class");
+            cout.WriteLine("      [/methods:NewObject,FillObject,UpdateRow,CreateTable,ToDataTable,ToDictionary,FromDictionary,CopyTo,CompareTo,ToSimpleString]");
             cout.WriteLine("   /dc2     : generate C# data contract class and extension class");
             cout.WriteLine("      option of data contract /[dc|dc1|dc2] :");
             cout.WriteLine("      [/readonly]: contract class for reading only");
             cout.WriteLine("      [/last]: generate C# data contract from last result");
             cout.WriteLine("      [/method:name] default convert method is defined on the .cfg");
+            cout.WriteLine("      [/methods:NewObject,FillObject,UpdateRow,Equals,CopyTo,CreateTable,ToString]");
             cout.WriteLine("      [/NULL] allow column type be nullable");
             cout.WriteLine("      [/col:pk1,pk2] default primary key is the first column");
             cout.WriteLine("   /entity  : generate C# method copy/compare/clone for Entity framework");
             cout.WriteLine("      [/base:type] define base class or interface, use ~ to represent generic class itself, delimited by ;");
             cout.WriteLine("      [/field:constMap] create const fields for name of columns");
-            cout.WriteLine("      [/method:Map,Copy,Equals,Clone,GetHashCode,ToString] create Copy,Equals,Clone,GetHashCode, and ToString method");
+            cout.WriteLine("      [/methods:Map,Copy,Equals,Clone,GetHashCode,ToString] create Copy,Equals,Clone,GetHashCode, and ToString method");
             cout.WriteLine("   /c#      : generate C# data from last result");
             cout.WriteLine("      [/type:dict|list|array|enum] data type, default is list");
             cout.WriteLine("      [/code-column:col1=usertype1;col2=usertyp2] define user type for columns");

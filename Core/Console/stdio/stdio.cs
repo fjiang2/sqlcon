@@ -9,6 +9,8 @@ namespace Sys.Stdio
 {
     public sealed class stdio
     {
+        public const string FILE_EDITOR = "editor";
+        public const string FILE_LOG = "log";
 
         static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
@@ -28,7 +30,7 @@ namespace Sys.Stdio
                 return;
             }
 
-            string editor = Context.GetValue<string>("editor", notepad);
+            string editor = Context.GetValue<string>(FILE_EDITOR, notepad);
             if (!Launch(fileName, editor))
             {
                 if (editor != notepad)

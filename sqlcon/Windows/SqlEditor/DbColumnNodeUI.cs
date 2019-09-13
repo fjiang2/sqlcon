@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Sys;
 using Sys.Data;
 
 namespace sqlcon.Windows
@@ -52,5 +53,12 @@ namespace sqlcon.Windows
             string line = string.Join(", ", list);
             return $"{column.ColumnName} ({line})";
         }
+
+        public override bool IsMatch(string wildcard)
+        {
+            ColumnSchema cname = (ColumnSchema)Path;
+            return cname.ColumnName.IsMatch(wildcard);
+        }
+
     }
 }

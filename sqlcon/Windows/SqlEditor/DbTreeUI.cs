@@ -42,6 +42,22 @@ namespace sqlcon.Windows
                 CommandParameter = 0,
             };
             ContextMenu.Items.Add(menuItem);
+
+            ContextMenu.Items.Add(new Separator());
+
+            menuItem = new MenuItem
+            {
+                Header = "Expand All",
+            };
+            menuItem.Click += (sender, e) => ApplyAllNodes((DbTreeNodeUI)this.SelectedItem, x => x.IsExpanded = true);
+            ContextMenu.Items.Add(menuItem);
+
+            menuItem = new MenuItem
+            {
+                Header = "Collapse All",
+            };
+            menuItem.Click += (sender, e) => ApplyAllNodes((DbTreeNodeUI)this.SelectedItem, x => x.IsExpanded = false);
+            ContextMenu.Items.Add(menuItem);
         }
 
 
@@ -157,9 +173,9 @@ namespace sqlcon.Windows
             {
                 ServerName sname = pvd.ServerName;
                 DbTreeNodeUI item = new DbServerNodeUI(this, sname);
-                
+
                 treeView.Items.Add(item);
-             }
+            }
 
             return;
         }
@@ -182,48 +198,64 @@ namespace sqlcon.Windows
 
         private bool SetVisibility(DbTreeNodeUI item, string wildcard)
         {
-            if (item.Path is TableName)
-            {
-                TableName tname = (TableName)item.Path;
-                bool macthed = tname.ShortName.IsMatch(wildcard);
-                if (macthed)
-                    item.Visibility = Visibility.Visible;
-                else
-                    item.Visibility = Visibility.Collapsed;
+            bool matched = item.IsMatch(wildcard);
+            //leave node
+            if (item.Items.Count == 0)
+                return SetVisibility(item, matched);
 
-                return macthed;
-            }
-
-            bool found = false;
-            foreach (DbTreeNodeUI theItem in item.Items)
+            //current node is matched
+            if (matched)
             {
-                if (SetVisibility(theItem, wildcard))
+                foreach (DbTreeNodeUI theItem in item.Items)
                 {
-                    if (!found)
-                        found = true;
+                    SetVisibility(theItem, wildcard);
                 }
+
+                //must be visible
+                return SetVisibility(item, true);
             }
-
-            if (found)
-                item.Visibility = Visibility.Visible;
             else
-                item.Visibility = Visibility.Collapsed;
+            {
+                bool found = false;
+                foreach (DbTreeNodeUI theItem in item.Items)
+                {
+                    if (SetVisibility(theItem, wildcard))
+                    {
+                        if (!found)
+                            found = true;
+                    }
+                }
 
-            return found;
+                //be visible if any child node is visible
+                return SetVisibility(item, found);
+            }
+        }
+
+        private static bool SetVisibility(UIElement uiElement, bool visible)
+        {
+            if (visible)
+                uiElement.Visibility = Visibility.Visible;
+            else
+                uiElement.Visibility = Visibility.Collapsed;
+
+            return visible;
         }
 
         private void ShowAllNodes()
         {
             foreach (DbTreeNodeUI item in this.Items)
-                ShowAllNodes(item);
+                ApplyAllNodes(item, x => x.Visibility = Visibility.Visible);
         }
 
-        private void ShowAllNodes(DbTreeNodeUI item)
+        private void ApplyAllNodes(DbTreeNodeUI item, Action<DbTreeNodeUI> action)
         {
-            item.Visibility = Visibility.Visible;
+            if (item == null)
+                return;
+
+            action(item);
             foreach (DbTreeNodeUI theItem in item.Items)
             {
-                ShowAllNodes(theItem);
+                ApplyAllNodes(theItem, action);
             }
         }
     }

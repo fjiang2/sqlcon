@@ -16,7 +16,6 @@ namespace sqlcon
     {
         private DataTable dt;
 
-        public string mtd { get; set; }
         private IDictionary<DataColumn, TypeInfo> dict { get; }
 
         public DataContractClassBuilder(ApplicationCommand cmd, DataTable dt, bool allowDbNull)
@@ -38,7 +37,7 @@ namespace sqlcon
         protected override void CreateClass()
         {
 
-            var clss = new Class(cname)
+            var clss = new Class(ClassName)
             {
                 Modifier = Modifier.Public | Modifier.Partial
             };
