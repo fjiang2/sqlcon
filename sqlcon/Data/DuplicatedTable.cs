@@ -22,11 +22,20 @@ namespace sqlcon
 
             if (columns.Length == 0)
             {
+                CType[] ctypes = new CType[] 
+                { 
+                    CType.Image, 
+                    CType.Text,
+                    CType.NText,
+                    CType.Xml 
+                };
+
                 _columns = new TableSchema(tname)
                     .Columns
-                    .Where(column => column.CType != CType.Image && column.CType != CType.Text && column.CType != CType.NText)
+                    .Where(column => !ctypes.Contains(column.CType))
                     .Select(column => column.ColumnName)
                     .ToArray();
+
                 AllColumnsSelected = true;
             }
             else
