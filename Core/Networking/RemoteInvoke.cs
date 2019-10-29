@@ -53,9 +53,9 @@ namespace Sys.Networking
    
         public void Execute(string code)
         {
-            string json = DataContractJson.Serialize(new RemoteInputBlock { method = "Execute", code = code, mem = DS.Serialize() });
+            string json = Json.Serialize(new RemoteInputBlock { method = "Execute", code = code, mem = DS.Serialize() });
             string result = RemoteAccess(uri, json);
-            RemoteOutputBlock output = DataContractJson.Deserialize<RemoteOutputBlock>(result);
+            RemoteOutputBlock output = Json.Deserialize<RemoteOutputBlock>(result);
 
             if (!string.IsNullOrEmpty(output.err))
             {
@@ -70,9 +70,9 @@ namespace Sys.Networking
 
         public object Evaluate(string code)
         {
-            string json = DataContractJson.Serialize(new RemoteInputBlock { method = "Evaluate", code = code, mem = DS.Serialize() });
+            string json = Json.Serialize(new RemoteInputBlock { method = "Evaluate", code = code, mem = DS.Serialize() });
             string result = RemoteAccess(uri, json);
-            RemoteOutputBlock output = DataContractJson.Deserialize<RemoteOutputBlock>(result);
+            RemoteOutputBlock output = Json.Deserialize<RemoteOutputBlock>(result);
 
             if (!string.IsNullOrEmpty(output.err))
             {

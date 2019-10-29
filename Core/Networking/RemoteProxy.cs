@@ -32,7 +32,7 @@ namespace Sys.Networking
 
         public string Dispatcher(string json)
         {
-            var input = DataContractJson.Deserialize<RemoteInputBlock>(json);
+            var input = Json.Deserialize<RemoteInputBlock>(json);
 
             switch (input.method)
             {
@@ -67,7 +67,7 @@ namespace Sys.Networking
                 result.err = ex.Message;
             }
 
-            return DataContractJson.Serialize(result);
+            return Json.Serialize(result);
         }
 
         private string EvaluateOnServer(RemoteInputBlock input)
@@ -92,7 +92,7 @@ namespace Sys.Networking
                 result.err = ex.Message;
             }
 
-            return DataContractJson.Serialize(result);
+            return Json.Serialize(result);
         }
 
     }

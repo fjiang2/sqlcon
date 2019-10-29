@@ -2,14 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.IO;
 using Tie;
 
 namespace Sys
 {
-    public static class DataContractJson
+    public static class Json
     {
+        private static readonly DataContractJsonSerializerSettings setting = new DataContractJsonSerializerSettings
+        {
+            DateTimeFormat = new DateTimeFormat("yyyy-MM-dd'T'HH:mm:ssK"),
+            SerializeReadOnlyTypes = false,
+        };
+
         public static T Deserialize<T>(this string json)
         {
             return (T)Deserialize(typeof(T), json);
@@ -22,7 +29,7 @@ namespace Sys
 
         public static object Deserialize(Type type, string json)
         {
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer(type);
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(type, setting);
             using (MemoryStream stream = new MemoryStream())
             using (StreamWriter writer = new StreamWriter(stream))
             {
@@ -35,7 +42,7 @@ namespace Sys
 
         public static string Serialize(Type type, object graph)
         {
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer(type);
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(type, setting);
 
             using (MemoryStream stream = new MemoryStream())
             {
