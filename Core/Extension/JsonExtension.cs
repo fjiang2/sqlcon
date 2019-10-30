@@ -55,10 +55,6 @@ namespace Sys
             }
         }
 
-    }
-
-    public static class TieJson
-    {
         public static T ReadObject<T>(this string json)
         {
             if (json == null)
