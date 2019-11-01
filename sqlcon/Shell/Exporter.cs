@@ -822,7 +822,7 @@ namespace sqlcon
             cout.WriteLine("      [/field:constMap] create const fields for name of columns");
             cout.WriteLine("      [/methods:Map,Copy,Equals,Clone,GetHashCode,ToString] create Copy,Equals,Clone,GetHashCode, and ToString method");
             cout.WriteLine("   /c#      : generate C# data from last result");
-            cout.WriteLine("      [/type:dict|list|array|enum] data type, default is list");
+            cout.WriteLine("      [/type:dict|list|array|enum|const] data type, default is list");
             cout.WriteLine("      [/code-column:col1=usertype1;col2=usertyp2] define user type for columns");
             cout.WriteLine("   /conf    : generate Config C# class");
             cout.WriteLine("      [/type:k|d|f|p|F|P] C# class type, default is kdP");

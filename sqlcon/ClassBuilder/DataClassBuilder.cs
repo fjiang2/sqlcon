@@ -17,7 +17,8 @@ namespace sqlcon
         Array,
         List,
         Dictionary,
-        Enum
+        Enum,
+        Constant
     }
 
     class DataClassBuilder : ClassMaker
@@ -44,6 +45,10 @@ namespace sqlcon
                 case DataClassType.Enum:
                     ExportEnum(dt);
                     return;
+
+                case DataClassType.Constant:
+                    ExportConstant(dt);
+                    return;
             }
         }
 
@@ -59,6 +64,7 @@ namespace sqlcon
                     case "list": return DataClassType.List;
                     case "dict": return DataClassType.Dictionary;
                     case "enum": return DataClassType.Enum;
+                    case "const": return DataClassType.Constant;
                 }
 
                 return DataClassType.Undefined;
@@ -369,6 +375,50 @@ namespace sqlcon
 
         }
 
+
+        private void ExportConstant(DataTable dt)
+        {
+            CSharpBuilder builder = new CSharpBuilder()
+            {
+                Namespace = NamespaceName
+            };
+
+            string cname = ClassName;
+            Class clss = new Class(cname)
+            {
+                Modifier = Modifier.Public | Modifier.Static
+            };
+            builder.AddClass(clss);
+            List<string> rows = new List<string>();
+            if (cmd.Columns.Length > 0)
+            {
+                foreach (string column in cmd.Columns)
+                {
+                    rows.AddRange(dt.AsEnumerable()
+                        .Where(row => row[column] != DBNull.Value)
+                        .Select(row => row.Field<string>(column))
+                    );
+                }
+            }
+            else
+            {
+                cerr.WriteLine("missing parameter /col:c1,c2");
+                return;
+            }
+
+            var L = rows.Distinct().OrderBy(x => x);
+            foreach (string fieldName in L)
+            {
+                Field field = new Field(new TypeInfo("string"), fieldName, new Value(fieldName))
+                {
+                    Modifier = Modifier.Public | Modifier.Const
+                };
+
+                clss.Add(field);
+            }
+
+            PrintOutput(builder, cname);
+        }
     }
 
 
