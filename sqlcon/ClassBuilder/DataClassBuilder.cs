@@ -378,6 +378,12 @@ namespace sqlcon
 
         private void ExportConstant(DataTable dt)
         {
+            if (cmd.Columns.Length == 0)
+            {
+                cerr.WriteLine("missing parameter /col:c1,c2");
+                return;
+            }
+
             CSharpBuilder builder = new CSharpBuilder()
             {
                 Namespace = NamespaceName
@@ -389,27 +395,33 @@ namespace sqlcon
                 Modifier = Modifier.Public | Modifier.Static
             };
             builder.AddClass(clss);
+
             List<string> rows = new List<string>();
-            if (cmd.Columns.Length > 0)
+            Type type = null;
+            foreach (string column in cmd.Columns)
             {
-                foreach (string column in cmd.Columns)
+                Type ty = dt.Columns[column].DataType;
+                if (type == null)
                 {
-                    rows.AddRange(dt.AsEnumerable()
-                        .Where(row => row[column] != DBNull.Value)
-                        .Select(row => row.Field<string>(column))
-                    );
+                    type = ty;
                 }
-            }
-            else
-            {
-                cerr.WriteLine("missing parameter /col:c1,c2");
-                return;
+                else if (type != ty)
+                {
+                    cerr.WriteLine($"column [{column}] data type is imcompatible");
+                    continue;
+                }
+
+                rows.AddRange(dt.AsEnumerable()
+                    .Where(row => row[column] != DBNull.Value)
+                    .Select(row => row.Field<string>(column))
+                );
             }
 
             var L = rows.Distinct().OrderBy(x => x);
+
             foreach (string fieldName in L)
             {
-                Field field = new Field(new TypeInfo("string"), fieldName, new Value(fieldName))
+                Field field = new Field(new TypeInfo(type), fieldName, new Value(fieldName))
                 {
                     Modifier = Modifier.Public | Modifier.Const
                 };
