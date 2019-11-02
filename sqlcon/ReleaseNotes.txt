@@ -1,5 +1,11 @@
 ﻿sqlcon release notes
 
+11/1/2019 v2.2.6.0
+	Improvements/Enhancements:
+	1. add command to export constant class 
+	2. for example:
+	   export /c# /type:const /field:col1,col2 /value:col3,col4
+
 9/12/2019 v2.2.5.0
 	Improvements/Enhancements:
 	1. Key "Context" in .cfg file defined Context Variables which can be used on the command line through command "let" or "{variable}"
