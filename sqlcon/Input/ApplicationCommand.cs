@@ -30,7 +30,6 @@ namespace sqlcon
 
 
         private bool hasRowId;
-        private string columns;
         private IConfiguration cfg;
 
         public ApplicationCommand(IConfiguration cfg, string line)
@@ -113,11 +112,6 @@ namespace sqlcon
 
                         return true;
                     }
-                    else if (a.StartsWith("/col:"))
-                    {
-                        columns = a.Substring(5);
-                        return true;
-                    }
 
                     return false;
             }
@@ -167,52 +161,25 @@ namespace sqlcon
         }
 
 
-        public string[] Columns
+        public string[] Columns => GetStringArray("col");
+
+        public string[] Includes => GetStringArray("include");
+
+        public string[] Excludes => GetStringArray("exclude");
+
+        public string[] GetStringArray(string name)
         {
-            get
+            string value = GetValue(name);
+            try
             {
-                if (this.columns == null)
-                    return new string[] { };
+                if (value != null)
+                    return value.Split(',');
                 else
-                    return this.columns.Split(',');
+                    return new string[] { };
             }
-        }
-
-        public string[] Includes
-        {
-            get
+            catch (Exception ex)
             {
-                string include = GetValue("include");
-                try
-                {
-                    if (include != null)
-                        return include.Split(',');
-                    else
-                        return new string[] { };
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception($"invalid arugment /include:{include}, {ex.Message}");
-                }
-            }
-        }
-
-        public string[] Excludes
-        {
-            get
-            {
-                string include = GetValue("exclude");
-                try
-                {
-                    if (include != null)
-                        return include.Split(',');
-                    else
-                        return new string[] { };
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception($"invalid arugment /exclude:{include}, {ex.Message}");
-                }
+                throw new Exception($"invalid arugment /{name}:{value}, {ex.Message}");
             }
         }
 
