@@ -17,7 +17,8 @@ namespace sqlcon
         Array,
         List,
         Dictionary,
-        Enum
+        Enum,
+        Constant
     }
 
     class DataClassBuilder : ClassMaker
@@ -44,6 +45,10 @@ namespace sqlcon
                 case DataClassType.Enum:
                     ExportEnum(dt);
                     return;
+
+                case DataClassType.Constant:
+                    ExportConstant(dt);
+                    return;
             }
         }
 
@@ -59,6 +64,7 @@ namespace sqlcon
                     case "list": return DataClassType.List;
                     case "dict": return DataClassType.Dictionary;
                     case "enum": return DataClassType.Enum;
+                    case "const": return DataClassType.Constant;
                 }
 
                 return DataClassType.Undefined;
@@ -369,6 +375,85 @@ namespace sqlcon
 
         }
 
+
+        private void ExportConstant(DataTable dt)
+        {
+            //command: export /c# /type:const /field:col1,col2 /value:col3,col4
+            string[] optionColumns = cmd.GetStringArray("field");
+            string[] optionConstants = cmd.GetStringArray("value");
+
+            if (optionColumns.Length == 0)
+            {
+                cerr.WriteLine("missing parameter /field:col1,col2");
+                return;
+            }
+
+            if (optionConstants.Length == 0)
+            {
+                optionConstants = optionColumns;
+            }
+            else if (optionColumns.Length != optionConstants.Length)
+            {
+                cerr.WriteLine($"invalid parameter /value:{string.Join(",", optionConstants)}");
+                return;
+            }
+
+            CSharpBuilder builder = new CSharpBuilder()
+            {
+                Namespace = NamespaceName
+            };
+
+            string cname = ClassName;
+            Class clss = new Class(cname)
+            {
+                Modifier = Modifier.Public | Modifier.Static
+            };
+            builder.AddClass(clss);
+
+            SortedDictionary<string, object> dict = new SortedDictionary<string, object>();
+            Type type = null;
+
+            int i = 0;
+            foreach (string column in optionColumns)
+            {
+                string constant = optionConstants[i++];
+
+                Type _type = dt.Columns[constant].DataType;
+                if (type == null)
+                {
+                    type = _type;
+                }
+                else if (type != _type)
+                {
+                    cerr.WriteLine($"column [{constant}] data type is imcompatible");
+                    continue;
+                }
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    if (row[column] == DBNull.Value)
+                        continue;
+
+                    string key = row.Field<string>(column);
+                    if (!dict.ContainsKey(key))
+                        dict.Add(key, row[constant]);
+                }
+            }
+
+            foreach (var kvp in dict)
+            {
+                string fieldName = kvp.Key;
+
+                Field field = new Field(new TypeInfo(type), fieldName, new Value(kvp.Value))
+                {
+                    Modifier = Modifier.Public | Modifier.Const
+                };
+
+                clss.Add(field);
+            }
+
+            PrintOutput(builder, cname);
+        }
     }
 
 
