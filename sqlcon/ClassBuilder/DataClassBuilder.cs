@@ -378,9 +378,13 @@ namespace sqlcon
 
         private void ExportConstant(DataTable dt)
         {
-            if (cmd.Columns.Length == 0)
+            //command: export /c# /type:const /field:col1,col2 /value:col3,col4
+            string[] optionColumns = cmd.GetStringArray("field");
+            string[] optionConstants = cmd.GetStringArray("value");
+
+            if (optionColumns.Length == 0)
             {
-                cerr.WriteLine("missing parameter /col:c1,c2");
+                cerr.WriteLine("missing parameter /field:col1,col2");
                 return;
             }
 
@@ -396,10 +400,18 @@ namespace sqlcon
             };
             builder.AddClass(clss);
 
-            List<string> rows = new List<string>();
+            SortedDictionary<string, object> dict = new SortedDictionary<string, object>();
             Type type = null;
-            foreach (string column in cmd.Columns)
+
+            int i = 0;
+            foreach (string column in optionColumns)
             {
+                string constant = column;
+                if (i < optionConstants.Length)
+                    constant = optionConstants[i];
+
+                i++;
+
                 Type ty = dt.Columns[column].DataType;
                 if (type == null)
                 {
@@ -411,17 +423,22 @@ namespace sqlcon
                     continue;
                 }
 
-                rows.AddRange(dt.AsEnumerable()
-                    .Where(row => row[column] != DBNull.Value)
-                    .Select(row => row.Field<string>(column))
-                );
+                foreach (DataRow row in dt.Rows)
+                {
+                    if (row[column] == DBNull.Value)
+                        continue;
+
+                    string key = row.Field<string>(column);
+                    if (!dict.ContainsKey(key))
+                        dict.Add(key, row[constant]);
+                }
             }
 
-            var L = rows.Distinct().OrderBy(x => x);
-
-            foreach (string fieldName in L)
+            foreach (var kvp in dict)
             {
-                Field field = new Field(new TypeInfo(type), fieldName, new Value(fieldName))
+                string fieldName = kvp.Key;
+
+                Field field = new Field(new TypeInfo(type), fieldName, new Value(kvp.Value))
                 {
                     Modifier = Modifier.Public | Modifier.Const
                 };
