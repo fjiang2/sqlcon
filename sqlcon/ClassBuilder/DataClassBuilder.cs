@@ -388,6 +388,16 @@ namespace sqlcon
                 return;
             }
 
+            if (optionConstants.Length == 0)
+            {
+                optionConstants = optionColumns;
+            }
+            else if (optionColumns.Length != optionConstants.Length)
+            {
+                cerr.WriteLine($"invalid parameter /value:{string.Join(",", optionConstants)}");
+                return;
+            }
+
             CSharpBuilder builder = new CSharpBuilder()
             {
                 Namespace = NamespaceName
@@ -406,20 +416,16 @@ namespace sqlcon
             int i = 0;
             foreach (string column in optionColumns)
             {
-                string constant = column;
-                if (i < optionConstants.Length)
-                    constant = optionConstants[i];
+                string constant = optionConstants[i++];
 
-                i++;
-
-                Type ty = dt.Columns[column].DataType;
+                Type _type = dt.Columns[constant].DataType;
                 if (type == null)
                 {
-                    type = ty;
+                    type = _type;
                 }
-                else if (type != ty)
+                else if (type != _type)
                 {
-                    cerr.WriteLine($"column [{column}] data type is imcompatible");
+                    cerr.WriteLine($"column [{constant}] data type is imcompatible");
                     continue;
                 }
 
