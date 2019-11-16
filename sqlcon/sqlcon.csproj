@@ -207,9 +207,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core\Sys.Core.csproj">
+    <ProjectReference Include="..\syscore\syscore.csproj">
       <Project>{58332852-369d-4045-93c2-5cfe9cfb2313}</Project>
-      <Name>Sys.Core</Name>
+      <Name>syscore</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
