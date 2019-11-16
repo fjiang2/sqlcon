@@ -73,12 +73,14 @@ namespace sqlcon
                 return;
             }
 
+#if WINDOWS
             if (cmd.Has("edit"))
             {
                 var editor = new Windows.TableEditor(udt);
                 editor.ShowDialog();
                 return;
             }
+#endif
 
             int maxColumnWidth = Config.console.table.grid.MaxColumnWidth;
 

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿#if WINDOWS
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -38,3 +39,6 @@ using System.Runtime.InteropServices;
 #if DEBUG
 [assembly: InternalsVisibleTo("UnitTestProject")]
 #endif
+
+#endif
+

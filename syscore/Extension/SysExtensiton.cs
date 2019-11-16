@@ -30,13 +30,14 @@ namespace Sys
         {
             get
             {
+#if WINDOWS			
                 if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
                 {
                     System.Deployment.Application.ApplicationDeployment ad = System.Deployment.Application.ApplicationDeployment.CurrentDeployment;
                     Version version = ad.CurrentVersion;
                     return version;
                 }
-
+#endif
                 return System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
             }
         }
