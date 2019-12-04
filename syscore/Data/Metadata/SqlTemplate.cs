@@ -84,6 +84,13 @@ namespace Sys.Data
 
         public string AddColumn(string column)
             => $"ALTER TABLE {tname} ADD {column}";
+
+        public string AddColumn(string column, object defaultValue)
+        {
+            string value = new SqlValue(defaultValue).ToString("N");
+            return $"ALTER TABLE {tname} ADD {column} DEFAULT({value})";
+        }
+
         public string AlterColumn(string column)
             => $"ALTER TABLE {tname} ALTER COLUMN {column}";
         public string DropColumn(string column)
