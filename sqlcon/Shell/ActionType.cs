@@ -10,10 +10,14 @@ namespace sqlcon
     {
         CompareSchema = 1,
         CompareData = 2,
-        Shell = 3,
+        CompareRowCount = 3,
+        
+        Shell = 4,
+
         GenerateTableRows = 10,
         GenerateScript = 11,
         GenerateSchema = 12,
+
         Execute = 20
     }
 }

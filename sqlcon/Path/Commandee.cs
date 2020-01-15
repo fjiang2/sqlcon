@@ -606,6 +606,7 @@ namespace sqlcon
                 cout.WriteLine("compare path1 [path2]  : compare data");
                 cout.WriteLine("compare [/s]           : compare schema");
                 cout.WriteLine("compare [/e]           : find common existing table names");
+                cout.WriteLine("compare [/count]       : compare number of rows");
                 cout.WriteLine("        [/pk]          : if primary key doesn't exist");
                 cout.WriteLine("                         for example /pk:table1=pk1+pk2,table=pk1");
                 cout.WriteLine();
@@ -621,6 +622,9 @@ namespace sqlcon
                     type = ActionType.CompareSchema;
                 else
                     type = ActionType.CompareData;
+
+                if (cmd.Has("count"))
+                    type = ActionType.CompareRowCount;
 
                 if (both.Invalid)
                 {

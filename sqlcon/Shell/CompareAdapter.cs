@@ -102,7 +102,7 @@ namespace sqlcon
                         {
                             builder.Append(CompareTable(compareType, CompareSideType.compare, tname1, tname2, cmd.PK, exceptColumns));
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             cerr.WriteLine(ex.Message);
                         }
@@ -162,7 +162,7 @@ namespace sqlcon
                 sql = Compare.TableSchemaDifference(sidetype, tname1, tname2);
                 cout.WriteLine("completed to {0} table schema {1} => {2}", sidetype, tname1, tname2);
             }
-            else if (actiontype == ActionType.CompareData)
+            else if (actiontype == ActionType.CompareData || actiontype == ActionType.CompareRowCount)
             {
                 if (!Exists(tname2))
                 {
@@ -175,28 +175,20 @@ namespace sqlcon
                     return string.Empty;
                 }
 
-                bool hasPk = schema1.PrimaryKeys.Length > 0;
-                sql = Compare.TableDifference(sidetype, schema1, schema2, schema1.PrimaryKeys.Keys, exceptColumns);
-
-                if (!hasPk)
+                if (actiontype == ActionType.CompareData)
                 {
-                    cout.WriteLine("warning: no primary key found : {0}", tname1);
-
-                    string key = tname1.Name.ToUpper();
-                    if (pk.ContainsKey(key))
-                    {
-                        cout.WriteLine("use predefine keys defined in ini file: {0}", tname1);
-                        sql = Compare.TableDifference(sidetype, schema1, schema2, pk[key], exceptColumns);
-                    }
-                    else
-                    {
-                        cout.WriteLine("use entire row as primary keys:{0}", tname1);
-                        var keys = schema1.Columns.Select(row => row.ColumnName).ToArray();
-                        sql = Compare.TableDifference(sidetype, schema1, schema2, keys, exceptColumns);
-                    }
+                    sql = CompareData(sidetype, schema1, tname1, schema2, tname2, pk, exceptColumns);
                 }
+                else
+                {
+                    long count1 = new TableReader(tname1).Count;
+                    long count2 = new TableReader(tname2).Count;
 
-                cout.WriteLine("completed to {0} table data {1} => {2}", sidetype, tname1, tname2);
+                    if (count1 != count2)
+                        cout.WriteLine(ConsoleColor.Red, $"completed to {sidetype} table count {tname1} => {tname2} count={count1} != {count2}");
+                    else
+                        cout.WriteLine($"completed to {sidetype} table count {tname1} => {tname2} count={count1}");
+                }
             }
 
             if (sql != string.Empty && sidetype == CompareSideType.compare)
@@ -205,5 +197,32 @@ namespace sqlcon
             return sql;
         }
 
+        private static string CompareData(CompareSideType sidetype, TableSchema schema1, TableName tname1, TableSchema schema2, TableName tname2, IDictionary<string, string[]> pk, string[] exceptColumns)
+        {
+            string sql;
+            bool hasPk = schema1.PrimaryKeys.Length > 0;
+            sql = Compare.TableDifference(sidetype, schema1, schema2, schema1.PrimaryKeys.Keys, exceptColumns);
+
+            if (!hasPk)
+            {
+                cout.WriteLine("warning: no primary key found : {0}", tname1);
+
+                string key = tname1.Name.ToUpper();
+                if (pk.ContainsKey(key))
+                {
+                    cout.WriteLine("use predefine keys defined in ini file: {0}", tname1);
+                    sql = Compare.TableDifference(sidetype, schema1, schema2, pk[key], exceptColumns);
+                }
+                else
+                {
+                    cout.WriteLine("use entire row as primary keys:{0}", tname1);
+                    var keys = schema1.Columns.Select(row => row.ColumnName).ToArray();
+                    sql = Compare.TableDifference(sidetype, schema1, schema2, keys, exceptColumns);
+                }
+            }
+
+            cout.WriteLine("completed to {0} table data {1} => {2}", sidetype, tname1, tname2);
+            return sql;
+        }
     }
 }
