@@ -143,17 +143,20 @@ namespace sqlcon
             return Compare.DatabaseDifference(sideType, db1, db2, excludedtables);
         }
 
-
         public string CompareTable(ActionType actiontype, CompareSideType sidetype, TableName tname1, TableName tname2, IDictionary<string, string[]> pk, string[] exceptColumns)
         {
-            TableSchema schema1 = new TableSchema(tname1);
-            TableSchema schema2 = new TableSchema(tname2);
-
             if (!Exists(tname1))
             {
                 return string.Empty;
             }
 
+            if (actiontype == ActionType.CompareRowCount)
+            {
+                return CompareRowCount(tname1, tname2);
+            }
+
+            TableSchema schema1 = new TableSchema(tname1);
+            TableSchema schema2 = new TableSchema(tname2);
 
             string sql = string.Empty;
 
@@ -162,7 +165,7 @@ namespace sqlcon
                 sql = Compare.TableSchemaDifference(sidetype, tname1, tname2);
                 cout.WriteLine("completed to {0} table schema {1} => {2}", sidetype, tname1, tname2);
             }
-            else if (actiontype == ActionType.CompareData || actiontype == ActionType.CompareRowCount)
+            else if (actiontype == ActionType.CompareData)
             {
                 if (!Exists(tname2))
                 {
@@ -175,26 +178,38 @@ namespace sqlcon
                     return string.Empty;
                 }
 
-                if (actiontype == ActionType.CompareData)
-                {
-                    sql = CompareData(sidetype, schema1, tname1, schema2, tname2, pk, exceptColumns);
-                }
-                else
-                {
-                    long count1 = new TableReader(tname1).Count;
-                    long count2 = new TableReader(tname2).Count;
-
-                    if (count1 != count2)
-                        cout.WriteLine(ConsoleColor.Red, $"completed to {sidetype} table count {tname1} => {tname2} count={count1} != {count2}");
-                    else
-                        cout.WriteLine($"completed to {sidetype} table count {tname1} => {tname2} count={count1}");
-                }
+                sql = CompareData(sidetype, schema1, tname1, schema2, tname2, pk, exceptColumns);
             }
 
             if (sql != string.Empty && sidetype == CompareSideType.compare)
                 cout.WriteLine(sql);
 
             return sql;
+        }
+
+        private static string CompareRowCount(TableName tname1, TableName tname2)
+        {
+            string text = string.Empty;
+            if (!Exists(tname2))
+            {
+                text = $"warning: {tname2} doesn't exist";
+                cout.WriteLine(ConsoleColor.DarkRed, text);
+                return text;
+            }
+
+            long count1 = new TableReader(tname1).Count;
+            long count2 = new TableReader(tname2).Count;
+
+            if (count1 != count2)
+            {
+                text = $"{tname1} => {tname2} count={count1} != {count2}";
+                cout.WriteLine(ConsoleColor.Red, $"completed table count {text}");
+                return text + Environment.NewLine;
+            }
+            else
+                cout.WriteLine($"completed table count {tname1} => {tname2} count={count1}");
+
+            return text;
         }
 
         private static string CompareData(CompareSideType sidetype, TableSchema schema1, TableName tname1, TableSchema schema2, TableName tname2, IDictionary<string, string[]> pk, string[] exceptColumns)

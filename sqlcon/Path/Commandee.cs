@@ -1472,7 +1472,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     }
 
                     if (!cts.IsCancellationRequested)
-                        cout.WriteLine(", Done.");
+                        cout.WriteLine($", Done on rows({_cnt}).");
                 }
             });
         }
