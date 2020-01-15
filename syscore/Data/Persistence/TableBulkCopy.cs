@@ -63,7 +63,7 @@ namespace Sys.Data
         private static void BulkCopy(DataTable table1, TableName tname2, SqlBulkCopyColumnMapping[] mappings)
         {
             table1.AcceptChanges();
-            table1.TableName = tname2.Name;
+            table1.TableName = tname2.FormalName;
 
             string connectionString = tname2.Provider.ConnectionString;
             using (SqlBulkCopy bulkCopy = new SqlBulkCopy(connectionString))
