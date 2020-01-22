@@ -82,7 +82,7 @@ namespace sqlcon
 
             Func<bool> stopOnError = () =>
             {
-                return !cin.YesOrNo("are you sure to contune (yes/no)?");
+                return !cin.YesOrNo("are you sure to continue (yes/no)?");
             };
 
             script.Execute(stopOnError);

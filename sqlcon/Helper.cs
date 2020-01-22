@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
 using System.Data.Common;
-using System.Windows.Media;
 using System.IO;
 using Sys.Stdio;
 

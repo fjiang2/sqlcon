@@ -1,5 +1,14 @@
 ﻿sqlcon release notes
 
+1/21/2019 v2.2.7.0
+	Improvements/Enhancements:
+	1. compare number of table rows.
+	Examples:
+	  compare ~\product /count
+	
+	Bug Fixes:
+	1. cannot bulk copy if table schema is not dbo
+
 11/1/2019 v2.2.6.0
 	Improvements/Enhancements:
 	1. add command to export constant class 

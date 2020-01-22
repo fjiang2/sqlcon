@@ -44,7 +44,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;WINDOWS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -95,9 +95,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Tie, Version=2.0.7.0, Culture=neutral, PublicKeyToken=783687458c7c579a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Tie.2.0.7\lib\net45\Tie.dll</HintPath>
-    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -191,7 +188,6 @@
     <Resource Include="Windows\images\server_error.png" />
     <Resource Include="Windows\images\key.png" />
     <Resource Include="Windows\images\AlignHorizontalTop_16x16.png" />
-    <None Include="packages.config" />
     <None Include="sqlcon_TemporaryKey.pfx" />
     <Resource Include="Windows\images\New_16x16.png" />
     <Resource Include="Windows\images\Next_16x16.png" />
@@ -207,9 +203,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core\Sys.Core.csproj">
+    <ProjectReference Include="..\syscore\syscore.csproj">
       <Project>{58332852-369d-4045-93c2-5cfe9cfb2313}</Project>
-      <Name>Sys.Core</Name>
+      <Name>syscore</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -249,7 +245,11 @@
       <DefaultIcon>Tie.ico</DefaultIcon>
     </FileAssociation>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <PackageReference Include="Tie">
+      <Version>2.0.7</Version>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

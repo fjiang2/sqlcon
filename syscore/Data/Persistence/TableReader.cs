@@ -76,7 +76,7 @@ namespace Sys.Data
                 string query;
                 if (tableName.Provider.Type == ConnectionProviderType.SqlServer)
                 {
-                    query = $"SELECT CONVERT(bigint, rows) FROM sysindexes WHERE id = OBJECT_ID('{tableName.Name}') AND indid < 2";
+                    query = $"SELECT CONVERT(bigint, rows) FROM sysindexes WHERE id = OBJECT_ID('{tableName.ShortName}') AND indid < 2";
                 }
                 else
                 {

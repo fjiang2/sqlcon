@@ -71,7 +71,11 @@ namespace Sys.Data
 
         public static DataTable CreateTable(DbDataReader reader)
         {
-            DataTable table = new DataTable();
+            DataTable table = new DataTable
+            {
+                CaseSensitive = true,
+            };
+
             for (int i = 0; i < reader.FieldCount; i++)
             {
                 DataColumn column = new DataColumn(reader.GetName(i), reader.GetFieldType(i));
