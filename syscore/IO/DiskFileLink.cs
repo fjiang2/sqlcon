@@ -32,6 +32,8 @@ namespace Sys.Data.IO
             }
         }
 
+        public string FileName => fileName;
+
 
         public override string PathCombine(string path1, string path2)
         {

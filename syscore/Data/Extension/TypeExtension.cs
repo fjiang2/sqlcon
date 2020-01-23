@@ -30,7 +30,8 @@ namespace Sys.Data
             foreach (Type clss in classes)
             {
                 DataTable dt = CreateDataTable(clss);
-                ds.Tables.Add(dt);
+                if (dt != null)
+                    ds.Tables.Add(dt);
             }
 
             return ds;
@@ -38,12 +39,17 @@ namespace Sys.Data
 
         public static DataTable CreateDataTable(this Type clss)
         {
+
+            var properties = clss.GetProperties();
+            if (properties.Length == 0)
+                return null;
+
             DataTable dt = new DataTable
             {
                 TableName = clss.Name,
             };
 
-            foreach (var propertyInfo in clss.GetProperties())
+            foreach (var propertyInfo in properties)
             {
                 Type type = propertyInfo.PropertyType;
                 bool isNullable = Nullable.GetUnderlyingType(type) != null;
