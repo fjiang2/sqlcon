@@ -59,6 +59,13 @@ namespace Sys.Data
             else if (type == typeof(Guid))
                 return CType.UniqueIdentifier;
 
+            if (type.IsEnum)
+                return CType.Int;
+
+            if (type.IsArray)
+                return CType.NVarChar;
+                //return ToCType(type.GetElementType());
+
             throw new MessageException("Type {0} cannot be converted into SqlDbType", type.FullName);
         }
 

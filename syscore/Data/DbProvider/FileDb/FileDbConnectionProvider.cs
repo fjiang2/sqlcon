@@ -22,6 +22,8 @@ namespace Sys.Data
         {
             this.DbFileType = fileType;
             this.FileLink = FileLink.CreateLink(DataSource, this.UserId, this.Password);
+            this.FileLink.Options = ConnectionBuilder;
+
             this.DataFile = DbFile.Create(DbFileType, FileLink);
         }
 

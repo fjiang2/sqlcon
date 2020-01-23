@@ -1193,11 +1193,14 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("        file/assembly       .Net assembly dll");
                 cout.WriteLine("        file/c#             C# data contract classes");
                 cout.WriteLine("        riadb               Remote Invoke Agent");
+                cout.WriteLine("   /namespace:xxx           wildcard of namespace name filter on assembly");
+                cout.WriteLine("   /class:xxxx              wildcard of class name filter on assembly");
                 cout.WriteLine("example:");
                 cout.WriteLine("  mount ip100=192.168.0.100\\sqlexpress /u:sa /p:p@ss");
                 cout.WriteLine("  mount web=http://192.168.0.100/db/northwind.xml /u:sa /p:p@ss");
                 cout.WriteLine("  mount xml=file://c:\\db\\northwind.xml");
                 cout.WriteLine("  mount cs=file://c:\\db\\northwind.cs /pvd:file/c#");
+                cout.WriteLine("  mount dll=file://c:\\db\\any.dll /pvd:file/assembly /namespace:Sys* /class:Employee*");
                 return;
             }
 
@@ -1226,7 +1229,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     return;
                 }
 
-                builder.AppendFormat("provider={0};", pvd);
+                builder.Append($"provider={pvd};");
             }
             else
             {
@@ -1239,16 +1242,19 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             string db = cmd.GetValue("db");
             if (db != null)
-                builder.AppendFormat("initial catalog={0};", db);
+                builder.Append($"initial catalog={db};");
             else
                 builder.Append("initial catalog=master;");
 
             string userId = cmd.GetValue("u");
             string password = cmd.GetValue("p");
 
+        
+
+
             if (userId == null && password == null)
             {
-                builder.Append("integrated security=SSPI;packet size=4096");
+                builder.Append("integrated security=SSPI;packet size=4096;");
             }
             else
             {
@@ -1258,9 +1264,19 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     builder.Append("User Id=sa;");
 
                 if (password != null)
-                    builder.AppendFormat("Password={0}", password);
+                    builder.AppendFormat("Password={0};", password);
                 else
-                    builder.Append("Password=");
+                    builder.Append("Password=;");
+            }
+
+            append("namespace");
+            append("class");
+
+            void append(string key)
+            {
+                string value = cmd.GetValue(key);
+                if (value != null)
+                    builder.Append($"{key}={value};");
             }
 
             string connectionString = builder.ToString();
