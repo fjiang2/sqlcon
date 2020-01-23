@@ -203,6 +203,7 @@
     <Compile Include="Data\Extension\SqlExceptionExtension.cs" />
     <Compile Include="Data\Extension\CTypeExtension.cs" />
     <Compile Include="Data\Extension\SqlTypeExtension.cs" />
+    <Compile Include="Data\Extension\TypeExtension.cs" />
     <Compile Include="Data\IDataPath.cs" />
     <Compile Include="Data\ILockable.cs" />
     <Compile Include="Data\Metadata\ColumnCollection.cs" />

@@ -25,7 +25,7 @@ namespace Sys.Data
             {
                 string code = fileLink.ReadAllText();
                 Assembly assembly = Compile(fileLink.Name, code);
-                this.data = CreateSchema(assembly);
+                this.data = TypeExtension.CreateDataSet(assembly, type => type.IsClass);
 
                 var schema = new DbSchemaBuilder(dbSchema);
                 schema.AddSchema(data);
@@ -66,42 +66,6 @@ namespace Sys.Data
             return csc.GetAssembly();
         }
 
-        private static DataSet CreateSchema(Assembly assembly)
-        {
-            var classes = assembly.GetTypes().Where(type => type.IsClass).ToArray();
-
-            DataSet ds = new DataSet
-            {
-                DataSetName = assembly.GetName().Name,
-            };
-
-            foreach (var clss in classes)
-            {
-                DataTable dt = new DataTable
-                {
-                    TableName = clss.Name,
-                };
-
-                ds.Tables.Add(dt);
-                foreach (var propertyInfo in clss.GetProperties())
-                {
-                    Type type = propertyInfo.PropertyType;
-                    bool isNullable = Nullable.GetUnderlyingType(type) != null;
-                    if (isNullable)
-                        type = Nullable.GetUnderlyingType(type);
-
-                    DataColumn column = new DataColumn(propertyInfo.Name, type)
-                    {
-                        AllowDBNull = isNullable,
-                        Unique = false,
-                        AutoIncrement = false,
-                    };
-
-                    dt.Columns.Add(column);
-                }
-            }
-
-            return ds;
-        }
+       
     }
 }
