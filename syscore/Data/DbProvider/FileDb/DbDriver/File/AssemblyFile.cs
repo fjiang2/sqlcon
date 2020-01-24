@@ -10,11 +10,11 @@ using Sys.Data.IO;
 
 namespace Sys.Data
 {
-    class CSharpFile : DbFile
+    class AssemblyFile : DbFile
     {
         DataSet data = new DataSet();
 
-        public CSharpFile(FileLink link)
+        public AssemblyFile(FileLink link)
             : base(link)
         {
         }
@@ -23,9 +23,31 @@ namespace Sys.Data
         {
             try
             {
-                string code = fileLink.ReadAllText();
-                Assembly assembly = Compile(fileLink.Name, code);
-                this.data = TypeExtension.CreateDataSet(assembly, type => type.IsClass);
+                string assemblyFile = (fileLink as DiskFileLink).FileName;
+                if (assemblyFile == null)
+                    throw new Exception($"assemly must be local file, {fileLink}");
+                if (!File.Exists(assemblyFile))
+                    throw new Exception($"assemly file doesn't exist, {fileLink}");
+
+                string ns = fileLink.Options.Contains("namespace") ? fileLink.Options["namespace"] as string : null;
+                string clss = fileLink.Options.Contains("class") ? fileLink.Options["class"] as string : null;
+
+                bool typeFilter(Type type)
+                {
+                    if (!type.IsClass)
+                        return false;
+
+                    if (ns != null && !type.Namespace.IsMatch(ns))
+                        return false;
+
+                    if (clss != null && !type.Name.IsMatch(clss))
+                        return false;
+
+                    return true;
+                }
+
+                Assembly assembly = Assembly.LoadFrom(assemblyFile);
+                this.data = TypeExtension.CreateDataSet(assembly, typeFilter);
 
                 var schema = new DbSchemaBuilder(dbSchema);
                 schema.AddSchema(data);
@@ -66,6 +88,6 @@ namespace Sys.Data
             return csc.GetAssembly();
         }
 
-       
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data;
@@ -14,6 +15,7 @@ namespace Sys.Data.IO
     {
 
         protected string url;
+        public IDictionary Options { get; set; }
 
         protected FileLink(string url)
         {
