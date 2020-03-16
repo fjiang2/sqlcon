@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+3/15/2020 v2.2.8.0
+	Improvements/Enhancements:
+	1. command: export /json [/ds-name:DataSetName] [/dt-names:DataTableName1,DataTableName2,...] [/out:directroy]|[/out:filename]
+
 1/21/2019 v2.2.7.0
 	Improvements/Enhancements:
 	1. compare number of table rows.

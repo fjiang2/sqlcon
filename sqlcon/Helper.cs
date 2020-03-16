@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
-using System.Data.Common;
 using System.IO;
 using Sys.Stdio;
 
@@ -22,7 +21,11 @@ namespace sqlcon
                 {
                     if (Directory.Exists(outputFile))
                     {
-                        return Path.Combine(outputFile, "sqlcon.out");
+                        string directory = outputFile;
+                        if (string.IsNullOrEmpty(defaultOutputFile) || Path.IsPathRooted(defaultOutputFile))
+                            return Path.Combine(directory, "sqlcon.out");
+                        else
+                            return Path.Combine(directory, defaultOutputFile);
                     }
                     else
                     {

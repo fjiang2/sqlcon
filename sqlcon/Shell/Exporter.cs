@@ -664,6 +664,19 @@ namespace sqlcon
             if (ds == null)
                 return;
 
+            string ds_name = cmd.GetValue("ds-name");
+            string[] dt_names = cmd.GetStringArray("dt-names");
+
+            if (ds_name != null)
+                ds.DataSetName = ds_name;
+
+            if (dt_names != null)
+            {
+                int min = Math.Min(ds.Tables.Count, dt_names.Length);
+                for (int i = 0; i < min; i++)
+                    ds.Tables[i].TableName = dt_names[i];
+            }
+
             string file = FileName($"{ds.DataSetName}.json");
             using (var writer = file.CreateStreamWriter(cmd.Append))
             {
@@ -809,6 +822,8 @@ namespace sqlcon
             cout.WriteLine("   /csv     : generate table csv file");
             cout.WriteLine("   /ds      : generate data set xml file");
             cout.WriteLine("   /json    : generate json from last result");
+            cout.WriteLine("      [/ds-name:]: data set name");
+            cout.WriteLine("      [/dt-names:]: data table name list");
             cout.WriteLine("option of code generation:");
             cout.WriteLine("   /dpo     : generate C# table class");
             cout.WriteLine("   /l2s     : generate C# Linq to SQL class");
