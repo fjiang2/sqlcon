@@ -371,7 +371,7 @@ namespace sqlcon
                                         }
                                     }
 
-                                    string _path = cmd.OutputFile(cfg);
+                                    string _path = cmd.OutputFile("dump.txt");
                                     System.IO.File.WriteAllText(_path, builder.ToString());
                                     cout.WriteLine($"Memory dumps to \"{_path}\"");
                                 }

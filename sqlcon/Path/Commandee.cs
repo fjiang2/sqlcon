@@ -614,7 +614,7 @@ namespace sqlcon
             }
 
             PathBothSide both = new PathBothSide(mgr, cmd);
-            string fileName = cmd.OutputFile(cfg);
+            string fileName = cmd.OutputFile(cfg.OutputFile);
             using (var writer = fileName.CreateStreamWriter(cmd.Append))
             {
                 ActionType type;

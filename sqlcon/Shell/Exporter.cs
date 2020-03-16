@@ -62,7 +62,8 @@ namespace sqlcon
             }
 
         }
-        private string fileName => cmd.OutputFile(cfg);
+        private string SqlFileName => cmd.OutputFile(cfg.OutputFile);
+        private string FileName(string defaultOutputFile) => cmd.OutputFile(defaultOutputFile);
 
         private TableName[] getTableNames(ApplicationCommand cmd)
         {
@@ -109,7 +110,7 @@ namespace sqlcon
         {
             if (tname != null)
             {
-                using (var writer = fileName.CreateStreamWriter(cmd.Append))
+                using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
                 {
                     string sql = Compare.GenerateTemplate(new TableSchema(tname), type, cmd.HasIfExists);
                     cout.WriteLine(sql);
@@ -128,12 +129,12 @@ namespace sqlcon
             if (tname != null)
             {
                 cout.WriteLine("start to generate CREATE TABLE script: {0}", dname);
-                using (var writer = fileName.CreateStreamWriter(cmd.Append))
+                using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
                 {
                     writer.WriteLine(tname.GenerateIfDropClause());
                     writer.WriteLine(tname.GenerateClause());
                 }
-                cout.WriteLine("completed to generate script on file: {0}", fileName);
+                cout.WriteLine("completed to generate script on file: {0}", SqlFileName);
                 return;
             }
 
@@ -155,7 +156,7 @@ namespace sqlcon
                             queue.Enqueue(tname.GenerateClause());
                         }
 
-                        using (var writer = fileName.CreateStreamWriter(cmd.Append))
+                        using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
                         {
                             while (stack.Count > 0)
                                 writer.WriteLine(stack.Pop());
@@ -173,13 +174,13 @@ namespace sqlcon
                 else
                 {
                     cout.WriteLine("start to generate CREATE TABLE script: {0}", dname);
-                    using (var writer = fileName.CreateStreamWriter(cmd.Append))
+                    using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
                     {
                         writer.WriteLine(dname.GenerateClause());
                     }
                 }
 
-                cout.WriteLine("completed to generate script on file: {0}", fileName);
+                cout.WriteLine("completed to generate script on file: {0}", SqlFileName);
                 return;
             }
 
@@ -193,26 +194,26 @@ namespace sqlcon
                 var node = mgr.GetCurrentNode<Locator>();
                 int count;
 
-                using (var writer = fileName.CreateStreamWriter(cmd.Append))
+                using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
                 {
                     if (node != null)
                     {
-                        cout.WriteLine("start to generate {0} INSERT script to file: {1}", tname, fileName);
+                        cout.WriteLine("start to generate {0} INSERT script to file: {1}", tname, SqlFileName);
                         Locator locator = mgr.GetCombinedLocator(node);
                         count = Compare.GenerateRows(type, writer, new TableSchema(tname), locator, cmd.HasIfExists);
-                        cout.WriteLine($"{type} clauses (SELECT * FROM {tname} WHERE {locator}) generated to \"{fileName}\"");
+                        cout.WriteLine($"{type} clauses (SELECT * FROM {tname} WHERE {locator}) generated to \"{SqlFileName}\"");
                     }
                     else
                     {
                         count = Compare.GenerateRows(type, writer, new TableSchema(tname), null, cmd.HasIfExists);
-                        cout.WriteLine($"{type} clauses (SELECT * FROM {tname}) generated to \"{fileName}\"");
+                        cout.WriteLine($"{type} clauses (SELECT * FROM {tname}) generated to \"{SqlFileName}\"");
                     }
                 }
             }
             else if (dname != null)
             {
-                cout.WriteLine("start to generate {0} script to file: {1}", dname, fileName);
-                using (var writer = fileName.CreateStreamWriter(cmd.Append))
+                cout.WriteLine("start to generate {0} script to file: {1}", dname, SqlFileName);
+                using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
                 {
                     var md = new MatchedDatabase(dname, cmd);
                     TableName[] tnames = md.TableNames();
@@ -237,7 +238,7 @@ namespace sqlcon
                             cout.WriteLine($"{count,10} row(s) generated on {tn.ShortName}");
                         }
 
-                        cout.WriteLine($"completed to generate {type} clauses to \"{fileName}\"");
+                        cout.WriteLine($"completed to generate {type} clauses to \"{SqlFileName}\"");
 
                     });
                 }
@@ -663,7 +664,12 @@ namespace sqlcon
             if (ds == null)
                 return;
 
-            cout.WriteLine(ds.WriteJson());
+            string file = FileName($"{ds.DataSetName}.json");
+            using (var writer = file.CreateStreamWriter(cmd.Append))
+            {
+                writer.WriteLine(ds.WriteJson());
+                cout.WriteLine($"completed to generate json on file: \"{file}\"");
+            }
         }
 
         /// <summary>
