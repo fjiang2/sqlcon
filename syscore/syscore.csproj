@@ -155,6 +155,7 @@
     <Compile Include="Data\DataContract\IDataContractRow.cs" />
     <Compile Include="Data\DataLake\DataLakeExtension.cs" />
     <Compile Include="Data\DataLake\DataLake.cs" />
+    <Compile Include="Data\DataLake\JsonStyle.cs" />
     <Compile Include="Data\DbProvider\FileDb\DbDriver\File\AssemblyFile.cs" />
     <Compile Include="Data\DbProvider\FileDb\DbDriver\File\CSharpFile.cs" />
     <Compile Include="Data\DbProvider\FileDb\DbDriver\DbCreator\XmlDbCreator.cs" />

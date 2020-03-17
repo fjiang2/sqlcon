@@ -51,7 +51,7 @@ namespace sqlcon
 
             if (Path.GetExtension(path) == ".json")
             {
-                string json = ds.WriteJson();
+                string json = ds.WriteJson(JsonStyle.Normal);
                 File.WriteAllText(path, json);
             }
             else

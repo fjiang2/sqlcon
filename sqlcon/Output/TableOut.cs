@@ -69,7 +69,7 @@ namespace sqlcon
 
             if (cmd.Has("json"))
             {
-                cout.WriteLine(table.WriteJson());
+                cout.WriteLine(table.WriteJson(JsonStyle.Normal));
                 return;
             }
 

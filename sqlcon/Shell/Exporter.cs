@@ -677,12 +677,28 @@ namespace sqlcon
                     ds.Tables[i].TableName = dt_names[i];
             }
 
-            string file = FileName($"{ds.DataSetName}.json");
-            using (var writer = file.CreateStreamWriter(cmd.Append))
+            JsonStyle style = cmd.GetEnum("style", JsonStyle.Normal);
+
+            if (ds.Tables.Count == 1)
             {
-                writer.WriteLine(ds.WriteJson());
-                cout.WriteLine($"completed to generate json on file: \"{file}\"");
+                var dt = ds.Tables[0];
+                string file = FileName($"{dt.TableName}.json");
+                using (var writer = file.CreateStreamWriter(cmd.Append))
+                {
+                    writer.WriteLine(dt.WriteJson(style));
+                    cout.WriteLine($"completed to generate json on file: \"{file}\"");
+                }
             }
+            else
+            {
+                string file = FileName($"{ds.DataSetName}.json");
+                using (var writer = file.CreateStreamWriter(cmd.Append))
+                {
+                    writer.WriteLine(ds.WriteJson(style));
+                    cout.WriteLine($"completed to generate json on file: \"{file}\"");
+                }
+            }
+
         }
 
         /// <summary>
@@ -824,6 +840,7 @@ namespace sqlcon
             cout.WriteLine("   /json    : generate json from last result");
             cout.WriteLine("      [/ds-name:]: data set name");
             cout.WriteLine("      [/dt-names:]: data table name list");
+            cout.WriteLine("      [/style:]: json style: normal|extended|coded");
             cout.WriteLine("option of code generation:");
             cout.WriteLine("   /dpo     : generate C# table class");
             cout.WriteLine("   /l2s     : generate C# Linq to SQL class");
