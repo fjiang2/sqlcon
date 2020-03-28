@@ -2100,7 +2100,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                         }
                     }
 
-                    string _path = cmd.OutputFile("dump.txt");
+                    string _path = cmd.OutputFile("dump.txt", createDirectoryIfNotExists: false);
                     _path = cmd.Configuration.WorkingDirectory.GetFullPath(_path);
                     File.WriteAllText(_path, builder.ToString());
                     cout.WriteLine($"Memory dumps to \"{_path}\"");
