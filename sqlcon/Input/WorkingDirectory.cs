@@ -39,6 +39,7 @@ namespace sqlcon
 
         public string GetFullPath(string path, string ext)
         {
+            // if path starts with "./", it uses application directory. Otherwise, it uses working directory.
             if (path.StartsWith(@".\"))
             {
                 return path;
