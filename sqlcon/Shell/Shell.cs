@@ -338,59 +338,10 @@ namespace sqlcon
                     return NextStep.COMPLETED;
 
                 case "call":
-                    if (cmd.arg1 != null)
-                    {
-                        string path = cfg.WorkingDirectory.GetFullPath(cmd.arg1, ".sqt");
-                        if (!File.Exists(path))
-                        {
-                            cerr.WriteLine($"cannot find the file: {path}");
-                        }
-                        else
-                        {
-                            bool dump = cmd.Has("dump");
-                            try
-                            {
-                                Memory DS = Context.DS;
-                                if (dump)
-                                    DS = new Memory();
-
-                                string code = File.ReadAllText(path);
-                                Script.Execute(code, DS);
-
-                                if (dump)
-                                {
-                                    StringBuilder builder = new StringBuilder();
-                                    foreach (VAR var in DS.Names)
-                                    {
-                                        VAL val = DS[var];
-                                        try
-                                        {
-                                            builder.AppendLine($"{var} = {val.ToExJson()};").AppendLine();
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            builder.AppendLine($"error on the variable \"{var}\", {ex.AllMessages()}");
-                                        }
-                                    }
-
-                                    string _path = cmd.OutputFile("dump.txt");
-                                    _path = cfg.WorkingDirectory.GetFullPath(_path);
-                                    File.WriteAllText(_path, builder.ToString());
-                                    cout.WriteLine($"Memory dumps to \"{_path}\"");
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                cerr.WriteLine($"execute error: {ex.Message}");
-                                return NextStep.ERROR;
-                            }
-                        }
-                    }
+                    if (!commandee.call(cmd))
+                        return NextStep.ERROR;
                     else
-                    {
-                        cerr.WriteLine($"missing file name");
-                    }
-                    return NextStep.COMPLETED;
+                        return NextStep.COMPLETED;
 
                 case "export":
                     commandee.export(cmd, cfg, this);

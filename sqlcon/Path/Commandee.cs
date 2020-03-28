@@ -2046,5 +2046,63 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
         }
 
+        public bool call(ApplicationCommand cmd)
+        {
+            if (cmd.arg1 != null)
+            {
+                string path = cmd.Configuration.WorkingDirectory.GetFullPath(cmd.arg1, ".sqt");
+                if (!File.Exists(path))
+                {
+                    cerr.WriteLine($"cannot find the file: {path}");
+                }
+                else
+                {
+                    bool dump = cmd.Has("dump");
+                    try
+                    {
+                        Memory DS = Context.DS;
+                        if (dump)
+                            DS = new Memory();
+
+                        string code = File.ReadAllText(path);
+                        Script.Execute(code, DS);
+
+                        if (dump)
+                        {
+                            StringBuilder builder = new StringBuilder();
+                            foreach (VAR var in DS.Names)
+                            {
+                                VAL val = DS[var];
+                                try
+                                {
+                                    builder.AppendLine($"{var} = {val.ToExJson()};").AppendLine();
+                                }
+                                catch (Exception ex)
+                                {
+                                    builder.AppendLine($"error on the variable \"{var}\", {ex.AllMessages()}");
+                                }
+                            }
+
+                            string _path = cmd.OutputFile("dump.txt");
+                            _path = cmd.Configuration.WorkingDirectory.GetFullPath(_path);
+                            File.WriteAllText(_path, builder.ToString());
+                            cout.WriteLine($"Memory dumps to \"{_path}\"");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        cerr.WriteLine($"execute error: {ex.Message}");
+                        return false;   //NextStep.ERROR;
+                    }
+                }
+            }
+            else
+            {
+                cerr.WriteLine($"missing file name");
+            }
+
+            return true; // NextStep.COMPLETED;
+        }
+
     }
 }
