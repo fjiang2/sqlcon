@@ -32,9 +32,14 @@ namespace sqlcon
                 CurrentDirectory = Path.GetFullPath(path);
         }
 
+        public string GetFullPath(string path)
+        {
+            return GetFullPath(path, string.Empty);
+        }
+
         public string GetFullPath(string path, string ext)
         {
-            if (path.StartsWith(@".\") || path.StartsWith(@"..\"))
+            if (path.StartsWith(@".\"))
             {
                 return path;
             }

@@ -4,6 +4,8 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+
 using Sys;
 using Sys.Data;
 using Sys.Data.Comparison;
@@ -339,7 +341,7 @@ namespace sqlcon
                     if (cmd.arg1 != null)
                     {
                         string path = cfg.WorkingDirectory.GetFullPath(cmd.arg1, ".sqt");
-                        if (!System.IO.File.Exists(path))
+                        if (!File.Exists(path))
                         {
                             cerr.WriteLine($"cannot find the file: {path}");
                         }
@@ -352,7 +354,7 @@ namespace sqlcon
                                 if (dump)
                                     DS = new Memory();
 
-                                string code = System.IO.File.ReadAllText(path);
+                                string code = File.ReadAllText(path);
                                 Script.Execute(code, DS);
 
                                 if (dump)
@@ -372,7 +374,8 @@ namespace sqlcon
                                     }
 
                                     string _path = cmd.OutputFile("dump.txt");
-                                    System.IO.File.WriteAllText(_path, builder.ToString());
+                                    _path = cfg.WorkingDirectory.GetFullPath(_path);
+                                    File.WriteAllText(_path, builder.ToString());
                                     cout.WriteLine($"Memory dumps to \"{_path}\"");
                                 }
                             }
