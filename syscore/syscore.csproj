@@ -290,6 +290,7 @@
     <Compile Include="EventArgs\MessageExceptionEventArgs.cs" />
     <Compile Include="EventArgs\MessageEventArgs.cs" />
     <Compile Include="Extension\Iteratable.cs" />
+    <Compile Include="IO\FileName.cs" />
     <Compile Include="Sys\Wildcard\IWildcard.cs" />
     <Compile Include="Extension\JsonExtension.cs" />
     <Compile Include="Sys\Wildcard\Matchable.cs" />
