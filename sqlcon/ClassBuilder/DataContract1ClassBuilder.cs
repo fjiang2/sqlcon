@@ -42,7 +42,7 @@ namespace sqlcon
             builder.AddClass(clss);
             foreach (DataColumn column in dt.Columns)
             {
-                clss.Add(new Property(dict[column], column.ColumnName) { Modifier = Modifier.Public });
+                clss.Add(new Property(dict[column], PropertyName(column)) { Modifier = Modifier.Public });
             }
         }
 
@@ -84,7 +84,7 @@ namespace sqlcon
             if (ContainsMethod("ToSimpleString"))
                 option |= UtilsStaticMethod.ToSimpleString;
 
-            clss.AddUtilsMethod(ClassName, dict.Keys.Select(column => new PropertyInfo { PropertyName = column.ColumnName }), option);
+            clss.AddUtilsMethod(ClassName, dict.Keys.Select(column => new PropertyInfo { PropertyName = PropertyName(column) }), option);
             clss.AppendLine();
 
             Field field;
@@ -140,7 +140,7 @@ namespace sqlcon
             {
                 var type = dict[column];
                 var name = COLUMN(column);
-                var line = $"{column.ColumnName} = row.{_GetField}<{type}>({name})";
+                var line = $"{PropertyName(column)} = row.{_GetField}<{type}>({name})";
                 if (++i < count)
                     line += ",";
 
@@ -167,7 +167,7 @@ namespace sqlcon
             {
                 var type = dict[column];
                 var name = COLUMN(column);
-                var line = $"item.{column.ColumnName} = row.{_GetField}<{type}>({name});";
+                var line = $"item.{PropertyName(column)} = row.{_GetField}<{type}>({name});";
 
                 sent1.AppendLine(line);
             }
@@ -187,7 +187,7 @@ namespace sqlcon
             foreach (DataColumn column in dt.Columns)
             {
                 var name = COLUMN(column);
-                var line = $"row.SetField({name}, item.{column.ColumnName});";
+                var line = $"row.SetField({name}, item.{PropertyName(column)});";
                 sent.AppendLine(line);
             }
         }
@@ -267,7 +267,7 @@ namespace sqlcon
             {
                 Type ty = dict[column].Type;
                 var name = COLUMN(column);
-                var line = $"[{name}] = item.{column.ColumnName}";
+                var line = $"[{name}] = item.{PropertyName(column)}";
                 if (++i < count)
                     line += ",";
 
@@ -295,7 +295,7 @@ namespace sqlcon
             {
                 var type = dict[column];
                 var name = COLUMN(column);
-                var line = $"{column.ColumnName} = ({type})dict[{name}]";
+                var line = $"{PropertyName(column)} = ({type})dict[{name}]";
                 if (++i < count)
                     line += ",";
 

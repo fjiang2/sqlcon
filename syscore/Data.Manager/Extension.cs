@@ -15,8 +15,10 @@ namespace Sys.Data.Manager
             string columnName = column.ColumnName;
             return ToFieldName(columnName);
         }
-
         public static string ToFieldName(this string columnName)
+            => ToFieldName(columnName, "_");
+
+        public static string ToFieldName(this string columnName, string prefix)
         {
             string fieldName = columnName;
             if (columnName.IndexOf("#") != -1
@@ -27,7 +29,7 @@ namespace Sys.Data.Manager
                 fieldName = columnName.Replace("#", "_").Replace(" ", "_").Replace("/", "_");
 
                 if (!Char.IsLetter(columnName[0]))
-                    fieldName = "_" + fieldName;
+                    fieldName = prefix + fieldName;
             }
 
             return fieldName;

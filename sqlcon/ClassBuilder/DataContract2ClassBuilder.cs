@@ -76,7 +76,7 @@ namespace sqlcon
 
             foreach (DataColumn column in dt.Columns)
             {
-                clss.Add(new Property(dict[column], column.ColumnName) { Modifier = Modifier.Public });
+                clss.Add(new Property(dict[column], PropertyName(column)) { Modifier = Modifier.Public });
             }
 
             if (ContainsMethod("FillObject"))
@@ -122,7 +122,7 @@ namespace sqlcon
             {
                 var type = dict[column];
                 var NAME = COLUMN(column);
-                var name = column.ColumnName;
+                var name = PropertyName(column);
 
                 var line = $"this.{name} = row.Field<{type}>({NAME});";
                 sent.AppendLine(line);
@@ -142,7 +142,7 @@ namespace sqlcon
             {
                 var type = dict[column];
                 var NAME = COLUMN(column);
-                var name = column.ColumnName;
+                var name = PropertyName(column);
 
                 var line = $"row.SetField({NAME}, this.{name});";
                 sent.AppendLine(line);
@@ -163,7 +163,7 @@ namespace sqlcon
             {
                 var type = dict[column];
                 var NAME = COLUMN(column);
-                var name = column.ColumnName;
+                var name = PropertyName(column);
 
                 var line = $"obj.{name} = this.{name};";
                 sent.AppendLine(line);
@@ -181,7 +181,7 @@ namespace sqlcon
             clss.Add(mtdEquals);
             Statement sent = mtdEquals.Statement;
             sent.AppendLine("return ");
-            IEnumerable<string> variables = dict.Keys.Select(column => column.ColumnName);
+            IEnumerable<string> variables = dict.Keys.Select(column => PropertyName(column));
             variables.ForEach(
                 variable => sent.Append($"this.{variable} == obj.{variable}"),
                 variable => sent.AppendLine("&& ")
@@ -210,7 +210,7 @@ namespace sqlcon
             {
                 var type = dict[column];
                 var NAME = COLUMN(column);
-                var line = $"{column.ColumnName} = row.Field<{type}>({NAME})";
+                var line = $"{PropertyName(column)} = row.Field<{type}>({NAME})";
                 if (++i < count)
                     line += ",";
 
@@ -249,7 +249,7 @@ namespace sqlcon
             clss.Add(method);
             Statement sent = method.Statement;
 
-            IEnumerable<string> variables = dict.Keys.Select(column => column.ColumnName);
+            IEnumerable<string> variables = dict.Keys.Select(column => PropertyName(column));
             StringBuilder sb = new StringBuilder("\"{{");
             int index = 0;
             variables.ForEach(

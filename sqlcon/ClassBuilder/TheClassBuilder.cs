@@ -5,6 +5,7 @@ using System.Data;
 using System.IO;
 using Sys;
 using Sys.CodeBuilder;
+using Sys.Data.Manager;
 
 namespace sqlcon
 {
@@ -129,6 +130,11 @@ namespace sqlcon
                 return true;
 
             return optionMethods.Contains(methodName);
+        }
+
+        public string PropertyName(DataColumn column)
+        {
+            return column.ColumnName.ToFieldName("C");
         }
     }
 }
