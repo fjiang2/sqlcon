@@ -72,7 +72,7 @@ namespace sqlcon
 #else
             try
             {
-                var site = new Main(cfg);
+                var site = new Main(Configuration);
                 site.Run(args);
             }
             catch (Exception ex)
