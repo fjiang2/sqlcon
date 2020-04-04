@@ -280,5 +280,87 @@ namespace Sys.Stdio
 
             return true;
         }
+
+        public int GetInt32(string name, int defaultValue)
+        {
+            var obj = GetInt32(name);
+            if (obj != null)
+                return (int)obj;
+            else
+                return defaultValue;
+        }
+
+        public int? GetInt32(string name)
+        {
+            string value = GetValue(name);
+            if (value == null)
+                return null;
+
+            if (int.TryParse(value, out int a))
+                return a;
+
+            throw new InvalidCastException($"invalid integer {name}={value}");
+        }
+
+        public double GetDouble(string name, double defaultValue)
+        {
+            var obj = GetDouble(name);
+            if (obj != null)
+                return (double)obj;
+            else
+                return defaultValue;
+        }
+
+        public double? GetDouble(string name)
+        {
+            string value = GetValue(name);
+            if (value == null)
+                return null;
+
+            if (double.TryParse(value, out double a))
+                return a;
+
+            throw new InvalidCastException($"invalid double {name}={value}");
+        }
+
+        public bool GetBoolean(string name, bool defaultValue)
+        {
+            var obj = GetBoolean(name);
+            if (obj != null)
+                return (bool)obj;
+            else
+                return defaultValue;
+        }
+
+        public bool? GetBoolean(string name)
+        {
+            string value = GetValue(name);
+            if (value == null)
+                return null;
+
+            if (bool.TryParse(value, out bool a))
+                return a;
+
+            throw new InvalidCastException($"invalid boolean {name}={value}");
+        }
+
+        public T GetEnum<T>(string name, T defaultValue) where T : struct
+        {
+            string value = GetValue(name);
+            if (value == null)
+                return defaultValue;
+
+            if (int.TryParse(value, out int d))
+            {
+                return (T)Enum.ToObject(typeof(T), d);
+            }
+            else if (Enum.TryParse<T>(value, true, out T e))
+            {
+                return e;
+            }
+
+            return defaultValue;
+        }
+
     }
 }

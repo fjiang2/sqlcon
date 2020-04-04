@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
-using System.Data.Common;
 using System.IO;
 using Sys.Stdio;
 
@@ -13,7 +12,7 @@ namespace sqlcon
 {
     static class Helper
     {
-        public static string OutputFile(this ApplicationCommand cmd, IConfiguration cfg)
+        public static string OutputFile(this ApplicationCommand cmd, string defaultOutputFile, bool createDirectoryIfNotExists = true)
         {
             string outputFile = cmd.OutputPath();
             if (!string.IsNullOrEmpty(outputFile))
@@ -22,15 +21,26 @@ namespace sqlcon
                 {
                     if (Directory.Exists(outputFile))
                     {
-                        string file = Path.GetFileName(cfg.OutputFile);
-                        return Path.Combine(outputFile, "sqlcon.out");
+                        string directory = outputFile;
+                        if (string.IsNullOrEmpty(defaultOutputFile))
+                        {
+                            return Path.Combine(directory, "sqlcon.out");
+                        }
+                        else
+                        {
+                            if (Path.IsPathRooted(defaultOutputFile))
+                                return Path.Combine(directory, Path.GetFileName(defaultOutputFile));
+                            else
+                                return Path.Combine(directory, defaultOutputFile);
+                        }
                     }
                     else
                     {
                         string directory = Path.GetDirectoryName(outputFile);
                         if (directory != string.Empty && !Directory.Exists(directory))
                         {
-                            Directory.CreateDirectory(directory);
+                            if (createDirectoryIfNotExists)
+                                Directory.CreateDirectory(directory);
                         }
 
                         return outputFile;
@@ -38,11 +48,18 @@ namespace sqlcon
                 }
                 catch (Exception ex)
                 {
-                    cerr.WriteLine($"invalid file \"{outputFile}\", {ex.Message}");
+                    cerr.WriteLine($"invalid file or directory \"{outputFile}\", {ex.Message}");
                 }
             }
 
-            return cfg.OutputFile;
+            if (Path.IsPathRooted(defaultOutputFile))
+            {
+                return defaultOutputFile;
+            }
+            else
+            {
+                return Path.Combine(Directory.GetCurrentDirectory(), defaultOutputFile);
+            }
         }
 
 

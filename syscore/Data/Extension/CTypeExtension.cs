@@ -15,24 +15,31 @@ namespace Sys.Data
             if (type == typeof(Boolean))
                 return CType.Bit;
 
-            else if (type == typeof(Int16))
-                return CType.SmallInt;
-
             else if (type == typeof(Byte))
                 return CType.TinyInt;
+            else if (type == typeof(SByte))
+                return CType.SmallInt;
+
+            else if (type == typeof(Int16))
+                return CType.SmallInt;
+            else if (type == typeof(UInt16))
+                return CType.Int;
 
             else if (type == typeof(Int32))
                 return CType.Int;
+            else if (type == typeof(UInt32))
+                return CType.BigInt;
 
             else if (type == typeof(Int64))
                 return CType.BigInt;
-
-            else if (type == typeof(Double))
-                return CType.Float;
+            else if (type == typeof(UInt64))
+                return CType.Decimal;
 
             else if (type == typeof(Single))
+                return CType.Real;
+            else if (type == typeof(Double))
                 return CType.Float;
-
+            
             else if (type == typeof(Decimal))
                 return CType.Decimal;
 
@@ -41,12 +48,23 @@ namespace Sys.Data
 
             else if (type == typeof(DateTime))
                 return CType.DateTime;
+            else if (type == typeof(DateTimeOffset))
+                return CType.DateTimeOffset;
+            else if (type == typeof(TimeSpan))
+                return CType.Time;
 
             else if (type == typeof(Byte[]))
                 return CType.Binary;
 
             else if (type == typeof(Guid))
                 return CType.UniqueIdentifier;
+
+            if (type.IsEnum)
+                return CType.Int;
+
+            if (type.IsArray)
+                return CType.NVarChar;
+                //return ToCType(type.GetElementType());
 
             throw new MessageException("Type {0} cannot be converted into SqlDbType", type.FullName);
         }

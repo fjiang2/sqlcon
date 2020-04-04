@@ -155,6 +155,8 @@
     <Compile Include="Data\DataContract\IDataContractRow.cs" />
     <Compile Include="Data\DataLake\DataLakeExtension.cs" />
     <Compile Include="Data\DataLake\DataLake.cs" />
+    <Compile Include="Data\DataLake\JsonStyle.cs" />
+    <Compile Include="Data\DbProvider\FileDb\DbDriver\File\AssemblyFile.cs" />
     <Compile Include="Data\DbProvider\FileDb\DbDriver\File\CSharpFile.cs" />
     <Compile Include="Data\DbProvider\FileDb\DbDriver\DbCreator\XmlDbCreator.cs" />
     <Compile Include="Data\DbProvider\FileDb\DbDriver\DbCreator\IDbCreator.cs" />
@@ -203,6 +205,7 @@
     <Compile Include="Data\Extension\SqlExceptionExtension.cs" />
     <Compile Include="Data\Extension\CTypeExtension.cs" />
     <Compile Include="Data\Extension\SqlTypeExtension.cs" />
+    <Compile Include="Data\Extension\TypeExtension.cs" />
     <Compile Include="Data\IDataPath.cs" />
     <Compile Include="Data\ILockable.cs" />
     <Compile Include="Data\Metadata\ColumnCollection.cs" />
@@ -287,6 +290,7 @@
     <Compile Include="EventArgs\MessageExceptionEventArgs.cs" />
     <Compile Include="EventArgs\MessageEventArgs.cs" />
     <Compile Include="Extension\Iteratable.cs" />
+    <Compile Include="IO\FileName.cs" />
     <Compile Include="Sys\Wildcard\IWildcard.cs" />
     <Compile Include="Extension\JsonExtension.cs" />
     <Compile Include="Sys\Wildcard\Matchable.cs" />

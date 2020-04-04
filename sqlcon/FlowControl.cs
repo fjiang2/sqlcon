@@ -92,6 +92,9 @@ namespace sqlcon
 
         private bool OnError()
         {
+            if (SP >= lines.Length)
+                return true;
+
             if (!cin.YesOrNo($"continue to run \"{lines[SP]}\" (y/n)?"))
             {
                 cerr.WriteLine("interupted.");

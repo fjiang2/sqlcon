@@ -9,9 +9,24 @@ using Tie;
 
 namespace Sys.Data
 {
+
     public static class DataLakeExtension
     {
-        public static string WriteJson(this DataLake lake)
+        private static string ToJson(JsonStyle style, VAL val)
+        {
+            switch (style)
+            {
+                case JsonStyle.Coded:
+                    return val.ToString();
+
+                case JsonStyle.Extended:
+                    return val.ToExJson();
+            }
+
+            return val.ToJson();
+        }
+
+        public static string WriteJson(this DataLake lake, JsonStyle style)
         {
             VAL val = new VAL();
             foreach (var kvp in lake)
@@ -20,43 +35,44 @@ namespace Sys.Data
                 VAL _ds = new VAL();
                 foreach (DataTable dt in ds.Tables)
                 {
-                    var _dt = WriteVAL(dt);
+                    var _dt = WriteVAL(dt, style);
                     _ds.AddMember(dt.TableName, _dt);
                 }
 
                 val.AddMember(kvp.Key, _ds);
             }
 
-            return val.ToJson();
+            return ToJson(style, val);
         }
 
-        public static string WriteJson(this DataSet ds)
+        public static string WriteJson(this DataSet ds, JsonStyle style)
         {
             VAL val = new VAL();
             foreach (DataTable dt in ds.Tables)
             {
-                var _dt = WriteVAL(dt);
+                var _dt = WriteVAL(dt, style);
                 val.AddMember(dt.TableName, _dt);
             }
 
-            return val.ToJson();
+            return ToJson(style, val);
         }
 
-        public static string WriteJson(this DataTable dt)
+        public static string WriteJson(this DataTable dt, JsonStyle style)
         {
             if (dt.Columns.Count == 1)
             {
-                string json = VAL.Boxing(dt.ToArray(row => row[0])).ToJson();
+                string json = ToJson(style, VAL.Boxing(dt.ToArray(row => row[0])));
                 return json;
             }
 
-            VAL _dt = WriteVAL(dt);
+            VAL _dt = WriteVAL(dt, style);
             VAL val = new VAL();
             val.AddMember(dt.TableName, _dt);
-            return val.ToJson();
+
+            return ToJson(style, val);
         }
 
-        private static VAL WriteVAL(DataTable dt)
+        private static VAL WriteVAL(DataTable dt, JsonStyle style)
         {
             string[] columns = dt.Columns.Cast<DataColumn>().Select(col => col.ColumnName).ToArray();
             VAL L = new VAL();
@@ -108,7 +124,7 @@ namespace Sys.Data
             ReadVAL(dt, val);
         }
 
-       
+
         private static void ReadVAL(DataTable dt, VAL val)
         {
             Dictionary<string, Type> dict = new Dictionary<string, Type>();

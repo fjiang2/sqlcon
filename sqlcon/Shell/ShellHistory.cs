@@ -18,6 +18,7 @@ namespace sqlcon
         public static void SetLastResult(DataTable dt)
         {
             LastResult = dt.DataSet;
+            LastResult.DataSetName = dt.TableName;
         }
 
         public static void SetLastResult(DataSet ds)
@@ -40,6 +41,7 @@ namespace sqlcon
 
                 var dt = new SqlCmd(tname.Provider, sql).FillDataTable();
                 dt.TableName = tname.Name;
+                dt.DataSet.DataSetName = dt.TableName;
                 return dt.DataSet;
             }
 

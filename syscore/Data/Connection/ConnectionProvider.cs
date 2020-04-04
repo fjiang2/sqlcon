@@ -31,7 +31,7 @@ namespace Sys.Data
         internal const int DEFAULT_HANDLE = 0;
         internal const int USER_HANDLE_BASE = DEFAULT_HANDLE + 1000;
 
-        private DbConnectionStringBuilder ConnectionBuilder;
+        protected DbConnectionStringBuilder ConnectionBuilder;
         private DatabaseName _defaultDatabaseName = null;
 
         protected ConnectionProvider(string name, ConnectionProviderType type, string connectionString)

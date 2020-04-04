@@ -614,7 +614,7 @@ namespace sqlcon
             }
 
             PathBothSide both = new PathBothSide(mgr, cmd);
-            string fileName = cmd.OutputFile(cfg);
+            string fileName = cmd.OutputFile(cfg.OutputFile);
             using (var writer = fileName.CreateStreamWriter(cmd.Append))
             {
                 ActionType type;
@@ -1193,11 +1193,14 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("        file/assembly       .Net assembly dll");
                 cout.WriteLine("        file/c#             C# data contract classes");
                 cout.WriteLine("        riadb               Remote Invoke Agent");
+                cout.WriteLine("   /namespace:xxx           wildcard of namespace name filter on assembly");
+                cout.WriteLine("   /class:xxxx              wildcard of class name filter on assembly");
                 cout.WriteLine("example:");
                 cout.WriteLine("  mount ip100=192.168.0.100\\sqlexpress /u:sa /p:p@ss");
                 cout.WriteLine("  mount web=http://192.168.0.100/db/northwind.xml /u:sa /p:p@ss");
                 cout.WriteLine("  mount xml=file://c:\\db\\northwind.xml");
                 cout.WriteLine("  mount cs=file://c:\\db\\northwind.cs /pvd:file/c#");
+                cout.WriteLine("  mount dll=file://c:\\db\\any.dll /pvd:file/assembly /namespace:Sys* /class:Employee*");
                 return;
             }
 
@@ -1226,7 +1229,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     return;
                 }
 
-                builder.AppendFormat("provider={0};", pvd);
+                builder.Append($"provider={pvd};");
             }
             else
             {
@@ -1239,16 +1242,19 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             string db = cmd.GetValue("db");
             if (db != null)
-                builder.AppendFormat("initial catalog={0};", db);
+                builder.Append($"initial catalog={db};");
             else
                 builder.Append("initial catalog=master;");
 
             string userId = cmd.GetValue("u");
             string password = cmd.GetValue("p");
 
+
+
+
             if (userId == null && password == null)
             {
-                builder.Append("integrated security=SSPI;packet size=4096");
+                builder.Append("integrated security=SSPI;packet size=4096;");
             }
             else
             {
@@ -1258,9 +1264,19 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     builder.Append("User Id=sa;");
 
                 if (password != null)
-                    builder.AppendFormat("Password={0}", password);
+                    builder.AppendFormat("Password={0};", password);
                 else
-                    builder.Append("Password=");
+                    builder.Append("Password=;");
+            }
+
+            append("namespace");
+            append("class");
+
+            void append(string key)
+            {
+                string value = cmd.GetValue(key);
+                if (value != null)
+                    builder.Append($"{key}={value};");
             }
 
             string connectionString = builder.ToString();
@@ -2028,6 +2044,75 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 Tools.FindName(dname.Provider, new DatabaseName[] { dname }, match);
             }
 
+        }
+
+        public bool call(ApplicationCommand cmd)
+        {
+            if (cmd.HasHelp)
+            {
+                cout.WriteLine("call command script file");
+                cout.WriteLine("call [path]                :");
+                cout.WriteLine("options:");
+                cout.WriteLine("  /dump               : dump variables memory to output file");
+                cout.WriteLine("  /out                : define output file or directory");
+                cout.WriteLine("example:");
+                cout.WriteLine("  call script.sqt     : run script");
+                cout.WriteLine("  call script         : run script, default extension is .sqt");
+                return true;
+            }
+
+            if (cmd.arg1 == null)
+            {
+                cerr.WriteLine($"missing file name");
+                return true;
+            }
+
+            string path = cmd.Configuration.WorkingDirectory.GetFullPath(cmd.arg1, ".sqt");
+            if (!File.Exists(path))
+            {
+                cerr.WriteLine($"cannot find the file: \"{path}\"");
+                return true;
+            }
+
+            bool dump = cmd.Has("dump");
+            try
+            {
+                Memory DS = Context.DS;
+                if (dump)
+                    DS = new Memory();
+
+                string code = File.ReadAllText(path);
+                Script.Execute(code, DS);
+
+                if (dump)
+                {
+                    StringBuilder builder = new StringBuilder();
+                    foreach (VAR var in DS.Names)
+                    {
+                        VAL val = DS[var];
+                        try
+                        {
+                            builder.AppendLine($"{var} = {val.ToExJson()};").AppendLine();
+                        }
+                        catch (Exception ex)
+                        {
+                            builder.AppendLine($"error on the variable \"{var}\", {ex.AllMessages()}");
+                        }
+                    }
+
+                    string _path = cmd.OutputFile("dump.txt", createDirectoryIfNotExists: false);
+                    _path = cmd.Configuration.WorkingDirectory.GetFullPath(_path);
+                    File.WriteAllText(_path, builder.ToString());
+                    cout.WriteLine($"Memory dumps to \"{_path}\"");
+                }
+            }
+            catch (Exception ex)
+            {
+                cerr.WriteLine($"execute error: {ex.Message}");
+                return false;   //NextStep.ERROR;
+            }
+
+            return true; // NextStep.COMPLETED;
         }
 
     }

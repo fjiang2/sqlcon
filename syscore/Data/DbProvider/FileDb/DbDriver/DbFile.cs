@@ -52,6 +52,9 @@ namespace Sys.Data
 
                 case DbFileType.CSharp:
                     return new CSharpFile(link);
+
+                case DbFileType.Assembly:
+                    return new AssemblyFile(link);
             }
 
             return null;
