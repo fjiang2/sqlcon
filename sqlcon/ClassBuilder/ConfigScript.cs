@@ -166,12 +166,13 @@ namespace sqlcon
             Method method = new Method(ty, name)
             {
                 Modifier = Modifier.Public | Modifier.Static,
-                IsExpressionBodied = true,
                 Params = new Parameters(new Parameter[] { parm }),
+                IsExpressionBodied = true,
+                NextLine = false,
                 Comment = comment
             };
 
-            method.Statement.Append($"=> {mtd(ty, var)};");
+            method.Statement.Append($"{mtd(ty, var)};");
             return method;
         }
 
