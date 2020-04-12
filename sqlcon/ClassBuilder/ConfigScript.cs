@@ -153,12 +153,21 @@ namespace sqlcon
 
         private Method createMethod(string name, TypeInfo ty, string var)
         {
-            Comment comment = new Comment(var) { Alignment = Alignment.Top };
+            Comment comment = new Comment(var)
+            {
+                Alignment = Alignment.Top
+            };
+
+            Parameter parm = new Parameter(ty, "value")
+            {
+                Value = $"default({ty})"
+            };
+
             Method method = new Method(ty, name)
             {
                 Modifier = Modifier.Public | Modifier.Static,
                 IsExpressionBodied = true,
-                Params = new Parameters(new Parameter[] { new Parameter(ty, "value") }),
+                Params = new Parameters(new Parameter[] { parm }),
                 Comment = comment
             };
 
