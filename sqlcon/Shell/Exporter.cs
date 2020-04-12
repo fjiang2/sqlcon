@@ -870,8 +870,10 @@ namespace sqlcon
             cout.WriteLine("          d : generate class of default value");
             cout.WriteLine("          P : generate class of static property");
             cout.WriteLine("          F : generate class of static field");
+            cout.WriteLine("          M : generate class of static method");
             cout.WriteLine("          p : generate class of hierarchial property");
             cout.WriteLine("          f : generate class of hierarchial field");
+            cout.WriteLine("          m : generate class of hierarchial method");
             cout.WriteLine("          t : generate data contract classes");
             cout.WriteLine("          j : geneerat data classes from JSON");
             cout.WriteLine("      [/method:name] GetValue method name, default is \"GetValue<>\"");

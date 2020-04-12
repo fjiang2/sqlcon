@@ -24,6 +24,7 @@ namespace Sys.CodeBuilder
     public class Method  : Member, IBuildable
     {
         public bool IsExtensionMethod { get; set; } = false;
+        public bool IsExpressionBodied  { get; set; } = false;
 
         public Method(TypeInfo returnType, string methodName)
             :base(methodName)
@@ -50,7 +51,17 @@ namespace Sys.CodeBuilder
                 }
             }
         }
+        protected override void BuildBlock(CodeBlock block)
+        {
+            if (IsExpressionBodied)
+            {
+                block.AppendLine(signature);
+                block.Add(Statement);
+                return;
+            }
+            
+            base.BuildBlock(block);
+        }
 
-       
     }
 }
