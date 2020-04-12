@@ -168,7 +168,7 @@ namespace sqlcon
                 Modifier = Modifier.Public | Modifier.Static,
                 Params = new Parameters(new Parameter[] { parm }),
                 IsExpressionBodied = true,
-                NextLine = false,
+                NextLine = true,
                 Comment = comment
             };
 
