@@ -84,7 +84,7 @@ namespace sqlcon
             //    return;
             //}
 
-            if(val.IsFunction)
+            if (val.IsFunction)
             {
                 return;
             }
@@ -201,7 +201,22 @@ namespace sqlcon
         private static string ToKey(string key) => key.Replace(".", "_").Replace("[", "_").Replace("]", "");
         private static string TOKEY(string key) => ToKey(key).ToUpper();
         private static string tokey(string key) => ToKey(key).ToLower();
-        private static string toPascal(string key) => ToKey(key).Split('_').Select(k => char.ToUpper(k[0]) + k.Substring(1).ToLower()).Aggregate((x, y) => $"{x}_{y}");
+        private static string toPascal(string key)
+        {
+            string _toPascal(string k)
+            {
+                if (k.Length == 0)
+                    return k;
+                else
+                    return char.ToUpper(k[0]) + k.Substring(1).ToLower();
+            }
+
+            return ToKey(key)
+                .Split('_')
+                .Select(k => _toPascal(k))
+                .Aggregate((x, y) => $"{x}_{y}");
+        }
+
         private static string ToConstKey(string key) => TOKEY(key);
         private static string ToDefaultKey(string key) => "_" + TOKEY(key);
 
