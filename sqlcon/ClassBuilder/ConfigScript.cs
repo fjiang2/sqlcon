@@ -202,8 +202,8 @@ namespace sqlcon
         private static string TOKEY(string key) => ToKey(key).ToUpper();
         private static string tokey(string key) => ToKey(key).ToLower();
         private static string toPascal(string key) => ToKey(key).Split('_').Select(k => char.ToUpper(k[0]) + k.Substring(1).ToLower()).Aggregate((x, y) => $"{x}_{y}");
-        private static string ToConstKey(string key) => "_" + TOKEY(key);
-        private static string ToDefaultKey(string key) => "__" + TOKEY(key);
+        private static string ToConstKey(string key) => TOKEY(key);
+        private static string ToDefaultKey(string key) => "_" + TOKEY(key);
 
 
         public string GenerateTieScript(bool flat)
