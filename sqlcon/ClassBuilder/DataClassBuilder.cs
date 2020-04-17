@@ -139,7 +139,8 @@ namespace sqlcon
                 Modifier = Modifier.Public | Modifier.Partial
             };
 
-            builder.AddClass(clss);
+            if (!cmd.GetBoolean("dataonly", false))
+                builder.AddClass(clss);
 
             Property prop;
             foreach (DataColumn column in dt.Columns)

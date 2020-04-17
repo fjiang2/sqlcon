@@ -109,7 +109,7 @@ namespace sqlcon
 
         protected void PrintOutput(string text, string name, string ext)
         {
-            string path = cmd.OutputDirectory();
+            string path = cmd.OutputFile($"{name}.cs");
             if (path == null)
             {
                 cout.WriteLine(text);
