@@ -322,7 +322,8 @@ namespace Sys.Data
                 }
                 finally
                 {
-                    reader.Close();
+                    if (reader != null)
+                        reader.Close();
                 }
             }
         }

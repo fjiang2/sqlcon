@@ -42,7 +42,7 @@ namespace Sys
             return builder.ToString();
         }
 
-     
+
         /// <summary>
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -69,6 +69,12 @@ namespace Sys
             return Split(text, convert, ",");
         }
 
+        public static IEnumerable<T2> ToEnumerable<T1, T2>(this IEnumerable collection, Func<T1, T2> func)
+        {
+            foreach (T1 item in collection)
+            {
+                yield return func(item);
+            }
+        }
     }
-
 }

@@ -41,7 +41,41 @@ namespace Sys.Data.Comparison
             SqlCmd cmd = new SqlCmd(tableName.Provider, sql);
 
             count = 0;
-            cmd.Read(reader => GenerateByDbReader(reader, writer));
+            cmd.Read(reader => Generate(cmd, reader, writer));
+            return count;
+        }
+
+        private void Generate(SqlCmd cmd, DbDataReader reader, StreamWriter writer)
+        {
+            if (reader != null)
+            {
+                GenerateByDbReader(reader, writer);
+                return;
+            }
+
+            var dt = cmd.FillDataTable();
+            GenerateByDbTable(dt, writer);
+        }
+
+        private int GenerateByDbTable(DataTable dt, StreamWriter writer)
+        {
+            string[] columns = dt.Columns.ToEnumerable<DataColumn, string>(col => col.ColumnName).ToArray();
+            object[] values = new object[columns.Length];
+
+            foreach (DataRow row in dt.Rows)
+            {
+                values = row.ItemArray;
+                var pairs = new ColumnPairCollection(columns, values);
+                GenerateRow(writer, pairs);
+
+                count++;
+                if (count % 5000 == 0)
+                    writer.WriteLine(TableClause.GO);
+            }
+
+            if (count != 0)
+                writer.WriteLine(TableClause.GO);
+
             return count;
         }
 
