@@ -139,7 +139,7 @@ namespace sqlcon
                 Modifier = Modifier.Public | Modifier.Partial
             };
 
-            if (!cmd.GetBoolean("dataonly", false))
+            if (!cmd.Has("dataonly"))
                 builder.AddClass(clss);
 
             Property prop;
@@ -163,10 +163,11 @@ namespace sqlcon
 
             string[] columns = dt.Columns.Cast<DataColumn>().Select(col => col.ColumnName).ToArray();
 
+            string fieldName = cmd.GetValue("dataname") ?? $"{cname}Data";
 
             if (dataType == DataClassType.List || dataType == DataClassType.Array)
             {
-                Field field = CreateListOrArrayField(dataType, dt, cname, columns, codeColumns);
+                Field field = CreateListOrArrayField(fieldName, dataType, dt, cname, columns, codeColumns);
                 clss.Add(field);
             }
             else
@@ -177,17 +178,15 @@ namespace sqlcon
                     return;
                 }
 
-                Field field = CreateDictionaryField(dt, cname, columns, codeColumns);
+                Field field = CreateDictionaryField(fieldName, dt, cname, columns, codeColumns);
                 clss.Add(field);
             }
 
             PrintOutput(builder, cname);
         }
 
-
-        private static Field CreateDictionaryField(DataTable dt, string cname, string[] columns, IDictionary<string, TypeInfo> codeColumns)
+        private static Field CreateDictionaryField(string fieldName, DataTable dt, string cname, string[] columns, IDictionary<string, TypeInfo> codeColumns)
         {
-            string fieldName = $"{cname}Data";
 
             List<KeyValuePair<object, object>> L = new List<KeyValuePair<object, object>>();
             var keyType = new TypeInfo(dt.Columns[0].DataType);
@@ -257,9 +256,8 @@ namespace sqlcon
             return field;
         }
 
-        private static Field CreateListOrArrayField(DataClassType dataType, DataTable dt, string cname, string[] columns, IDictionary<string, TypeInfo> codeColumns)
+        private static Field CreateListOrArrayField(string fieldName, DataClassType dataType, DataTable dt, string cname, string[] columns, IDictionary<string, TypeInfo> codeColumns)
         {
-            string fieldName = $"{cname}Data";
 
             List<Value> L = new List<Value>();
             TypeInfo type = new TypeInfo { UserType = $"{cname}" };
