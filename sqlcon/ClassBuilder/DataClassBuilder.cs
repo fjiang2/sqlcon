@@ -52,7 +52,6 @@ namespace sqlcon
             }
         }
 
-
         private DataClassType dataType
         {
             get
@@ -129,8 +128,13 @@ namespace sqlcon
 
             string dataclass = cmd.GetValue("dataclass") ?? "DbReadOnly";
 
-            var builder = new CSharpBuilder { Namespace = NamespaceName };
-            builder.AddUsing("System.Collections.Generic");
+            CSharpBuilder builder = new CSharpBuilder
+            {
+                Namespace = NamespaceName
+            };
+            
+            builder.AddUsingRange(base.Usings);
+
             string cname = ClassName;
 
             Dictionary<string, TypeInfo> codeColumns = CodeColumnDef();
@@ -301,6 +305,7 @@ namespace sqlcon
             {
                 Namespace = NamespaceName
             };
+            builder.AddUsingRange(base.Usings);
 
             string cname = ClassName;
             if (count > 2)
@@ -401,6 +406,7 @@ namespace sqlcon
             {
                 Namespace = NamespaceName
             };
+            builder.AddUsingRange(base.Usings);
 
             string cname = ClassName;
             Class clss = new Class(cname)
