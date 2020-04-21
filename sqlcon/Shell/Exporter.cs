@@ -685,7 +685,8 @@ namespace sqlcon
                 string file = FileName($"{dt.TableName}.json");
                 using (var writer = file.CreateStreamWriter(cmd.Append))
                 {
-                    writer.WriteLine(dt.WriteJson(style));
+                    bool excludeTableName = cmd.Has("exclude-table");
+                    writer.WriteLine(dt.WriteJson(style, excludeTableName));
                     cout.WriteLine($"completed to generate json on file: \"{file}\"");
                 }
             }
@@ -841,6 +842,7 @@ namespace sqlcon
             cout.WriteLine("      [/ds-name:]: data set name");
             cout.WriteLine("      [/dt-names:]: data table name list");
             cout.WriteLine("      [/style:]: json style: normal|extended|coded");
+            cout.WriteLine("      [/exclude-table]: exclude table name in json");
             cout.WriteLine("option of code generation:");
             cout.WriteLine("   /dpo     : generate C# table class");
             cout.WriteLine("   /l2s     : generate C# Linq to SQL class");
