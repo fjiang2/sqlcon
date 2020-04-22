@@ -1,5 +1,15 @@
 ﻿sqlcon release notes
 
+4/21/2020 v2.2.10.0
+	Improvements/Enhancements:
+	1. Generate method like public static bool Keyxxxx(bool value = default(bool)) in command export .cfg to C# class
+	2. Generate JSON array without table-name wrapped when option /exclude-name is used.
+
+	Bug Fixes:
+	1. cannot redirect console into stream when 3rd party software accesses sqlcon.exe
+	2. cannot generate CRUD SQL clauses when database provider is XML file.
+
+
 4/4/2020 v2.2.9.0
 	Bug Fixes:
 	1. cannot export data contract class correctly when column contains invalid letters
