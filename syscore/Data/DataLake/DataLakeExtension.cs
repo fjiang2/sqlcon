@@ -57,7 +57,7 @@ namespace Sys.Data
             return ToJson(style, val);
         }
 
-        public static string WriteJson(this DataTable dt, JsonStyle style)
+        public static string WriteJson(this DataTable dt, JsonStyle style, bool excludeTableName)
         {
             if (dt.Columns.Count == 1)
             {
@@ -66,9 +66,11 @@ namespace Sys.Data
             }
 
             VAL _dt = WriteVAL(dt, style);
+            if (excludeTableName)
+                return ToJson(style, _dt);
+            
             VAL val = new VAL();
             val.AddMember(dt.TableName, _dt);
-
             return ToJson(style, val);
         }
 

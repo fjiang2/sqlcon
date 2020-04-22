@@ -16,7 +16,7 @@ namespace Sys.Stdio
 
         static cout()
         {
-            if (IsConsole)
+            if (!Console.IsOutputRedirected && IsConsole)
                 WindowWidth = Console.BufferWidth;
         }
 

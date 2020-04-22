@@ -685,7 +685,8 @@ namespace sqlcon
                 string file = FileName($"{dt.TableName}.json");
                 using (var writer = file.CreateStreamWriter(cmd.Append))
                 {
-                    writer.WriteLine(dt.WriteJson(style));
+                    bool excludeTableName = cmd.Has("exclude-table");
+                    writer.WriteLine(dt.WriteJson(style, excludeTableName));
                     cout.WriteLine($"completed to generate json on file: \"{file}\"");
                 }
             }
@@ -841,6 +842,7 @@ namespace sqlcon
             cout.WriteLine("      [/ds-name:]: data set name");
             cout.WriteLine("      [/dt-names:]: data table name list");
             cout.WriteLine("      [/style:]: json style: normal|extended|coded");
+            cout.WriteLine("      [/exclude-table]: exclude table name in json");
             cout.WriteLine("option of code generation:");
             cout.WriteLine("   /dpo     : generate C# table class");
             cout.WriteLine("   /l2s     : generate C# Linq to SQL class");
@@ -870,8 +872,10 @@ namespace sqlcon
             cout.WriteLine("          d : generate class of default value");
             cout.WriteLine("          P : generate class of static property");
             cout.WriteLine("          F : generate class of static field");
+            cout.WriteLine("          M : generate class of static method");
             cout.WriteLine("          p : generate class of hierarchial property");
             cout.WriteLine("          f : generate class of hierarchial field");
+            cout.WriteLine("          m : generate class of hierarchial method");
             cout.WriteLine("          t : generate data contract classes");
             cout.WriteLine("          j : geneerat data classes from JSON");
             cout.WriteLine("      [/method:name] GetValue method name, default is \"GetValue<>\"");

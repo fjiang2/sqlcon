@@ -21,18 +21,20 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Method  : Member, IBuildable
+    public class Method : Member, IBuildable
     {
         public bool IsExtensionMethod { get; set; } = false;
+        public bool IsExpressionBodied { get; set; } = false;
+        public bool NextLine { get; set; } = false;
 
         public Method(TypeInfo returnType, string methodName)
-            :base(methodName)
+            : base(methodName)
         {
             base.Type = returnType;
         }
 
         public Method(string methodName)
-            :base(methodName)
+            : base(methodName)
         {
         }
 
@@ -50,7 +52,23 @@ namespace Sys.CodeBuilder
                 }
             }
         }
+        protected override void BuildBlock(CodeBlock block)
+        {
+            if (IsExpressionBodied)
+            {
+                block.Append(signature);
 
-       
+                //print in next line
+                if (NextLine)
+                    block.AppendLine();
+
+                block.Append($"=> {Statement}");
+
+                return;
+            }
+
+            base.BuildBlock(block);
+        }
+
     }
 }

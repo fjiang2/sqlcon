@@ -19,13 +19,17 @@ namespace sqlcon
 
             ConstKey = 0x01,                // public const string _MATH_PI = "Math.PI";
             DefaultValue = 0x02,            // public static double __MATH_PI = 3.14;
-            StaticField = 0x04,             // public static double MATH_PI = GetValue<double>(_MATH_PI, __MATH_PI);
-            StaticPropery = 0x08,           // public static double MATH_PI => GetValue<double>(_MATH_PI, __MATH_PI);
-            HierarchicalField = 0x10,       // public static Math { public static class Pi = GetValue<double>(_MATH_PI, __MATH_PI); }
-            HierarchicalProperty = 0x20,    // public static Math { public static class Pi => GetValue<double>(_MATH_PI, __MATH_PI); }
 
-            TieDataContract = 0x40,
-            JsonDataContract = 0x80,
+            StaticField = 0x10,             // public static double MATH_PI = GetValue<double>(_MATH_PI, __MATH_PI);
+            StaticPropery = 0x20,           // public static double MATH_PI => GetValue<double>(_MATH_PI, __MATH_PI);
+            StaticMethod = 0x40,            // public static double MATH_PI(double value) => GetValue<double>(_MATH_PI, value);
+
+            HierarchicalField = 0x100,       // public static Math { public static class Pi = GetValue<double>(_MATH_PI, __MATH_PI); }
+            HierarchicalProperty = 0x200,    // public static Math { public static class Pi => GetValue<double>(_MATH_PI, __MATH_PI); }
+            HierarchicalMethod = 0x400,      // public static Math { public static class Pi(double value) => GetValue<double>(_MATH_PI, value); }
+
+            TieDataContract = 0x1000,
+            JsonDataContract = 0x2000,
         }
 
         private DataTable dt;
@@ -79,7 +83,12 @@ namespace sqlcon
             }
 
             var maker = new ConfigScript(code);
-            maker.IsHierarchicalProperty = (ctype & ClassType.HierarchicalProperty) == ClassType.HierarchicalProperty;
+            if ((ctype & ClassType.HierarchicalProperty) == ClassType.HierarchicalProperty)
+                maker.HierarchicalMemberType = CodeMemberType.Property;
+            else if ((ctype & ClassType.HierarchicalMethod) == ClassType.HierarchicalMethod)
+                maker.HierarchicalMemberType = CodeMemberType.Method;
+            else
+                maker.HierarchicalMemberType = CodeMemberType.Field;
 
             if (_GetValueMethodName != null)
                 maker.GetValueMethodName = _GetValueMethodName;
@@ -101,13 +110,18 @@ namespace sqlcon
                 builder = CreateClass(maker.StaticFields);
             else if (ctype == ClassType.StaticPropery)
                 builder = CreateClass(maker.StaticProperties);
-            else if (ctype == ClassType.HierarchicalField || ctype == ClassType.HierarchicalProperty)
+            else if (ctype == ClassType.StaticMethod)
+                builder = CreateClass(maker.StaticMethods);
+            else if (ctype == ClassType.HierarchicalField || ctype == ClassType.HierarchicalProperty || ctype == ClassType.HierarchicalMethod)
             {
                 //skip, because clss has created class already
             }
             else
             {
-                if ((ctype & ClassType.HierarchicalField) != ClassType.HierarchicalField && (ctype & ClassType.HierarchicalProperty) != ClassType.HierarchicalProperty)
+                if ((ctype & ClassType.HierarchicalField) != ClassType.HierarchicalField
+                    && (ctype & ClassType.HierarchicalProperty) != ClassType.HierarchicalProperty
+                    && (ctype & ClassType.HierarchicalMethod) != ClassType.HierarchicalMethod
+                    )
                     clss.Clear();
 
                 if ((ctype & ClassType.StaticField) == ClassType.StaticField)
@@ -115,6 +129,9 @@ namespace sqlcon
 
                 if ((ctype & ClassType.StaticPropery) == ClassType.StaticPropery)
                     clss.AddRange(maker.StaticProperties);
+
+                if ((ctype & ClassType.StaticMethod) == ClassType.StaticMethod)
+                    clss.AddRange(maker.StaticMethods);
 
                 if ((ctype & ClassType.ConstKey) == ClassType.ConstKey)
                     clss.AddRange(maker.ConstKeyFields);
@@ -156,12 +173,20 @@ namespace sqlcon
                         ctype |= ClassType.StaticPropery;
                         break;
 
+                    case 'M':
+                        ctype |= ClassType.StaticMethod;
+                        break;
+
                     case 'f':
                         ctype |= ClassType.HierarchicalField;
                         break;
 
                     case 'p':
                         ctype |= ClassType.HierarchicalProperty;
+                        break;
+
+                    case 'm':
+                        ctype |= ClassType.HierarchicalMethod;
                         break;
 
                     case 't':

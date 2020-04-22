@@ -8,6 +8,13 @@ using Tie;
 
 namespace sqlcon
 {
+    enum CodeMemberType
+    {
+        Field = 0x01,
+        Property = 0x02,
+        Method = 0x04,
+    };
+
     internal class ConfigScript
     {
         private Memory DS = new Memory();
@@ -15,7 +22,7 @@ namespace sqlcon
         /// <summary>
         /// create hierachical property or field?
         /// </summary>
-        public bool IsHierarchicalProperty { get; set; } = true;
+        public CodeMemberType HierarchicalMemberType { get; set; } = CodeMemberType.Property;
 
         /// <summary>
         /// class name of const key 
@@ -52,6 +59,7 @@ namespace sqlcon
         public List<Field> DefaultValueFields { get; } = new List<Field>();
         public List<Field> StaticFields { get; } = new List<Field>();
         public List<Property> StaticProperties { get; } = new List<Property>();
+        public List<Method> StaticMethods { get; } = new List<Method>();
 
         private void createConfigKeyMap(Class clss, string prefix, string key, VAL val)
         {
@@ -84,7 +92,7 @@ namespace sqlcon
             //    return;
             //}
 
-            if(val.IsFunction)
+            if (val.IsFunction)
             {
                 return;
             }
@@ -98,15 +106,22 @@ namespace sqlcon
 
             string var = MakeVariableName(prefix, key);
 
-            if (IsHierarchicalProperty)
+            switch (HierarchicalMemberType)
             {
-                Property prop = createProperty(key, ty, var);
-                clss.Add(prop);
-            }
-            else
-            {
-                Field fld = createField(key, ty, var);
-                clss.Add(fld);
+                case CodeMemberType.Property:
+                    Property prop = createProperty(key, ty, var);
+                    clss.Add(prop);
+                    break;
+
+                case CodeMemberType.Method:
+                    Method mtd = createMethod(key, ty, var);
+                    clss.Add(mtd);
+                    break;
+
+                default:
+                    Field fld = createField(key, ty, var);
+                    clss.Add(fld);
+                    break;
             }
 
             Other(ty, var, val);
@@ -136,6 +151,31 @@ namespace sqlcon
             };
         }
 
+        private Method createMethod(string name, TypeInfo ty, string var)
+        {
+            Comment comment = new Comment(var)
+            {
+                Alignment = Alignment.Top
+            };
+
+            Parameter parm = new Parameter(ty, "value")
+            {
+                Value = $"default({ty})"
+            };
+
+            Method method = new Method(ty, name)
+            {
+                Modifier = Modifier.Public | Modifier.Static,
+                Params = new Parameters(new Parameter[] { parm }),
+                IsExpressionBodied = true,
+                NextLine = true,
+                Comment = comment
+            };
+
+            method.Statement.Append($"{mtd(ty, var)};");
+            return method;
+        }
+
         private Field createField(string name, TypeInfo ty, string var)
         {
             Comment comment = new Comment(var) { Alignment = Alignment.Top };
@@ -163,6 +203,15 @@ namespace sqlcon
             return $"{GetValueMethodName}<{ty}>({constKey}, {defaultKey})";
         }
 
+        private string mtd(TypeInfo ty, string var)
+        {
+            string constKey = ToConstKey(var);
+
+            if (!string.IsNullOrEmpty(ConstKeyClassName))
+                constKey = $"{ConstKeyClassName}.{constKey}";
+
+            return $"{GetValueMethodName}<{ty}>({constKey}, value)";
+        }
 
         private void Other(TypeInfo ty, string var, VAL val)
         {
@@ -196,14 +245,30 @@ namespace sqlcon
 
             StaticFields.Add(createField(TOKEY(var), ty, var));
             StaticProperties.Add(createProperty(toPascal(var), ty, var));
+            StaticMethods.Add(createMethod(toPascal(var), ty, var));
         }
 
         private static string ToKey(string key) => key.Replace(".", "_").Replace("[", "_").Replace("]", "");
         private static string TOKEY(string key) => ToKey(key).ToUpper();
         private static string tokey(string key) => ToKey(key).ToLower();
-        private static string toPascal(string key) => ToKey(key).Split('_').Select(k => char.ToUpper(k[0]) + k.Substring(1).ToLower()).Aggregate((x, y) => $"{x}_{y}");
-        private static string ToConstKey(string key) => "_" + TOKEY(key);
-        private static string ToDefaultKey(string key) => "__" + TOKEY(key);
+        private static string toPascal(string key)
+        {
+            string _toPascal(string k)
+            {
+                if (k.Length == 0)
+                    return k;
+                else
+                    return char.ToUpper(k[0]) + k.Substring(1).ToLower();
+            }
+
+            return ToKey(key)
+                .Split('_')
+                .Select(k => _toPascal(k))
+                .Aggregate((x, y) => $"{x}_{y}");
+        }
+
+        private static string ToConstKey(string key) => TOKEY(key);
+        private static string ToDefaultKey(string key) => "_" + TOKEY(key);
 
 
         public string GenerateTieScript(bool flat)

@@ -157,61 +157,13 @@ namespace Sys.Data.Comparison
 
         public static int GenerateRows(SqlScriptType type, StreamWriter writer, ITableSchema schema, Locator where, bool hasIfExists)
         {
-            TableName tableName = schema.TableName;
-            string sql = string.Format("SELECT * FROM {0}", tableName);
-            if (where != null)
-                sql = string.Format("SELECT * FROM {0} WHERE {1}", tableName, where);
+            SqlScriptGeneration gen = new SqlScriptGeneration(type, schema)
+            {
+                Where = where,
+                HasIfExists = hasIfExists
+            };
 
-            SqlCmd cmd = new SqlCmd(tableName.Provider, sql);
-            TableDataClause script = new TableDataClause(schema);
-
-            int count = 0;
-            cmd.Read(
-                reader =>
-                {
-                    DataTable schema1 = reader.GetSchemaTable();
-
-                    string[] columns = schema1.AsEnumerable().Select(row => row.Field<string>("ColumnName")).ToArray();
-                    object[] values = new object[columns.Length];
-
-                    while (reader.HasRows)
-                    {
-                        while (reader.Read())
-                        {
-                            reader.GetValues(values);
-                            var pairs = new ColumnPairCollection(columns, values);
-
-                            switch (type)
-                            {
-                                case SqlScriptType.INSERT:
-                                    if (hasIfExists)
-                                        writer.WriteLine(script.IF_NOT_EXISTS_INSERT(pairs));
-                                    else
-                                        writer.WriteLine(script.INSERT(pairs));
-                                    break;
-
-                                case SqlScriptType.UPDATE:
-                                    writer.WriteLine(script.UPDATE(pairs));
-                                    break;
-
-                                case SqlScriptType.INSERT_OR_UPDATE:
-                                    writer.WriteLine(script.IF_NOT_EXISTS_INSERT_ELSE_UPDATE(pairs));
-                                    break;
-                            }
-
-                            count++;
-                            if (count % 5000 == 0)
-                                writer.WriteLine(TableClause.GO);
-
-                        }
-                        reader.NextResult();
-                    }
-                });
-
-            if (count != 0)
-                writer.WriteLine(TableClause.GO);
-
-            return count;
+            return gen.Generate(writer);
         }
 
         public static string GenerateTemplate(ITableSchema schema, SqlScriptType type, bool ifExists)
