@@ -103,8 +103,7 @@ namespace Sys.Data
             {
                 var builder = new StringBuilder();
                 builder.AppendLine($"IF OBJECT_ID('{tname}') IS NOT NULL")
-                      .AppendLine($"  DROP TABLE {tname}")
-                      .AppendLine("GO");
+                      .AppendLine($"  DROP TABLE {tname}");
                 return builder.ToString();
             }
 
