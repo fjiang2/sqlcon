@@ -250,9 +250,9 @@ namespace Sys.Data
                 {
                     builder.AppendLine(ADD_FOREIGN_KEY(fk));
                 }
-
             }
 
+            builder.AppendLine(TableClause.GO);
             sql = builder.ToString();
             return sql;
         }
