@@ -48,7 +48,8 @@ namespace Sys.Data
             string DataType = column.DataType;
             int Length = column.Length;
 
-            switch (column.CType)
+            var ctype = DataType.GetCType();
+            switch (ctype)
             {
                 case CType.VarChar:
                 case CType.Char:

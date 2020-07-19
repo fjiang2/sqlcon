@@ -64,7 +64,8 @@ namespace sqlcon
 
         private bool CanConvertToInt32(DataTable dt, IColumn column)
         {
-            if (column.CType != CType.Decimal && column.CType != CType.Float && column.CType != CType.Real)
+            //ignore column with int
+            if (column.CType == CType.Int)
                 return false;
 
             string columnName = column.ColumnName;
@@ -74,16 +75,11 @@ namespace sqlcon
                 if (obj == DBNull.Value)
                     continue;
 
-                double x = Convert.ToDouble(obj);
-
-                if (x >= int.MaxValue || x <= int.MinValue)
+                string s = obj.ToString();
+                if (!int.TryParse(s, out var a))
+                {
                     return false;
-
-                string a = Convert.ToInt32(obj).ToString();
-                string b = obj.ToString();
-
-                if (a != b)
-                    return false;
+                }
             }
 
             return true;
