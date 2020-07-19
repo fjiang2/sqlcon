@@ -49,6 +49,12 @@ namespace sqlcon
                     isDirty = true;
                 }
 
+                if (ShrinkString(dt, column, out short length))
+                {
+                    cs.Length = length;
+                    isDirty = true;
+                }
+
                 if (isDirty)
                 {
                     string field = cs.GetSQLField();
@@ -61,6 +67,35 @@ namespace sqlcon
             return builder.ToString();
         }
 
+        private bool ShrinkString(DataTable dt, IColumn column, out short max)
+        {
+            max = 0;
+
+            if (column.CType != CType.NChar && column.CType != CType.NVarChar && column.CType != CType.Char && column.CType != CType.VarChar)
+                return false;
+
+            string columnName = column.ColumnName;
+            foreach (DataRow row in dt.Rows)
+            {
+                object obj = row[columnName];
+                if (obj == DBNull.Value)
+                    continue;
+
+                string s = obj.ToString();
+                if (s.Length > max)
+                {
+                    if (s.Length < short.MaxValue)
+                        max = (short)s.Length;
+                    else
+                        return false;
+                }
+            }
+            
+            if (column.CType == CType.NChar || column.CType == CType.NVarChar)
+                max += max;
+
+            return max < column.Length;
+        }
 
         private bool CanConvertToInt32(DataTable dt, IColumn column)
         {
