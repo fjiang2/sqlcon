@@ -829,12 +829,26 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            if(cmd.Has("refine"))
+            if (cmd.Has("refine"))
             {
                 TableName tname = (TableName)pt.Item;
                 TableSchemaRefinement refinement = new TableSchemaRefinement(tname);
                 string SQL = refinement.Refine();
-                cout.WriteLine(SQL);
+                if (!string.IsNullOrEmpty(SQL))
+                {
+                    string fileName = cmd.OutputFile(cmd.Configuration.OutputFile);
+                    using (var writer = fileName.CreateStreamWriter(cmd.Append))
+                    {
+                        writer.WriteLine(SQL);
+                        cout.WriteLine(SQL);
+                        cout.WriteLine($"table schema refinement for {tname.ShortName} at {fileName}");
+                    }
+                }
+                else
+                {
+                    cout.WriteLine($"no table schema refinement needed for {tname.ShortName}");
+                }
+
             }
         }
 
