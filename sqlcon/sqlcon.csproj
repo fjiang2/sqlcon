@@ -119,6 +119,7 @@
     <Compile Include="Data\DuplicatedTable.cs" />
     <Compile Include="ClassBuilder\EntityClassBuilder.cs" />
     <Compile Include="ClassBuilder\TheClassBuilder.cs" />
+    <Compile Include="Data\TableSchemaRefinement.cs" />
     <Compile Include="FlowControl.cs" />
     <Compile Include="Data\DataExtension.cs" />
     <Compile Include="Output\OutputDataTable.cs" />

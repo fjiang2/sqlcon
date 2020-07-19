@@ -690,6 +690,9 @@ namespace sqlcon
                 cout.WriteLine("identiy key:");
                 cout.WriteLine("  attrib [table] +i:col1                 : add identity");
                 cout.WriteLine("  attrib [table] -i:col1                 : remove identity");
+                cout.WriteLine("refine columns:");
+                cout.WriteLine("  attrib [table] /refine                 : refine column type and nullable");
+                cout.WriteLine("  attrib [table] /refine  /commit        : refine and save changes");
                 return;
             }
 
@@ -826,6 +829,13 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
+            if(cmd.Has("refine"))
+            {
+                TableName tname = (TableName)pt.Item;
+                TableSchemaRefinement refinement = new TableSchemaRefinement(tname);
+                string SQL = refinement.Refine();
+                cout.WriteLine(SQL);
+            }
         }
 
         private static int ExecuteNonQuery(ConnectionProvider provider, string sql)
