@@ -11,8 +11,8 @@ namespace sqlcon
     class Batch
     {
         private const string EXT = ".sqc";
-        private string path;
-        private IConfiguration cfg;
+        private readonly string path;
+        private readonly IConfiguration cfg;
 
 
         public bool IsBatch { get; } = false;

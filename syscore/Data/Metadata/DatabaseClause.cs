@@ -58,7 +58,9 @@ namespace Sys.Data
                 cout.WriteLine("generate CREATE TABLE {0}", tableName.FormalName);
                 try
                 {
-                    builder.AppendLine(tableName.GenerateClause());
+                    builder
+                        .AppendLine(tableName.GenerateClause())
+                        .AppendLine(TableClause.GO);
                 }
                 catch (Exception ex)
                 {
@@ -75,7 +77,8 @@ namespace Sys.Data
             StringBuilder builder = new StringBuilder();
             foreach (var tableName in history.Reverse())
             {
-                builder.AppendLine(new TableClause(new TableSchema(tableName)).IF_EXISTS_DROP_TABLE())
+                builder
+                    .AppendLine(new TableClause(new TableSchema(tableName)).IF_EXISTS_DROP_TABLE())
                     .AppendLine(TableClause.GO);
             }
 

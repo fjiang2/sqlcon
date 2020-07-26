@@ -1,5 +1,11 @@
 ﻿sqlcon release notes
 
+7/19/2020 v2.2.11.0
+	Improvements/Enhancements:
+	1. Improve table schema, change column property to NOT NULL, INT, BIT or shrink column size with string type if it is possible.
+	   use command:
+	   attrib /refine
+
 4/21/2020 v2.2.10.0
 	Improvements/Enhancements:
 	1. Generate method like public static bool Keyxxxx(bool value = default(bool)) in command export .cfg to C# class
