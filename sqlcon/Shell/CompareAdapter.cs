@@ -111,9 +111,11 @@ namespace sqlcon
                     {
                         if (compareType == ActionType.CompareSchema)
                         {
-                            string sql = tname1.GenerateClause();
+                            string sql = tname1.GenerateCreateTableClause(appendGO: false);
                             cout.WriteLine(sql);
-                            builder.Append(sql);
+                            builder
+                            .Append(sql)
+                            .AppendLine(SqlScript.GO);
                         }
                         else
                         {

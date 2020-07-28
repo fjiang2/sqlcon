@@ -10,6 +10,8 @@ namespace Sys.Data
 {
     public class SqlScript
     {
+        public const string GO = "GO";
+
         private string scriptFile;
         private ConnectionProvider provider;
 
@@ -66,7 +68,7 @@ namespace Sys.Data
                     || upperLine.StartsWith("CREATE")
                     || upperLine.StartsWith("DROP")
                     || upperLine.StartsWith("ALTER")
-                    || upperLine.StartsWith("GO")
+                    || upperLine.StartsWith(GO)
                     )
                 {
                     if (!ExecuteSql(reader.LineNumber, builder))
@@ -79,7 +81,7 @@ namespace Sys.Data
                     }
 
                     builder.Clear();
-                    if (!upperLine.StartsWith("GO"))
+                    if (!upperLine.StartsWith(GO))
                         builder.AppendLine(line);
                 }
                 else
@@ -93,7 +95,7 @@ namespace Sys.Data
 
                         upperLine = formatedLine.ToUpper();
 
-                        if (!upperLine.StartsWith("GO"))
+                        if (!upperLine.StartsWith(GO))
                             builder.AppendLine(line);
                         else
                         {

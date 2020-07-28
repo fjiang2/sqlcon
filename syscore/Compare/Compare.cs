@@ -103,7 +103,7 @@ namespace Sys.Data.Comparison
             }
             else
             {
-                sql = tableName1.GenerateClause();
+                sql = tableName1.GenerateCreateTableClause(appendGO : true);
             }
 
             return sql;
@@ -150,7 +150,7 @@ namespace Sys.Data.Comparison
             }
 
             if (table.Rows.Count > 0)
-                builder.AppendLine(TableClause.GO);
+                builder.AppendLine(SqlScript.GO);
 
             return builder.ToString();
         }

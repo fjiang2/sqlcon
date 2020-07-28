@@ -59,8 +59,8 @@ namespace Sys.Data
                 try
                 {
                     builder
-                        .AppendLine(tableName.GenerateClause())
-                        .AppendLine(TableClause.GO);
+                        .AppendLine(tableName.GenerateCreateTableClause(appendGO: false))
+                        .AppendLine(SqlScript.GO);
                 }
                 catch (Exception ex)
                 {
@@ -79,7 +79,7 @@ namespace Sys.Data
             {
                 builder
                     .AppendLine(new TableClause(new TableSchema(tableName)).IF_EXISTS_DROP_TABLE())
-                    .AppendLine(TableClause.GO);
+                    .AppendLine(SqlScript.GO);
             }
 
             return builder.ToString();

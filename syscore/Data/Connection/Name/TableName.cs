@@ -223,18 +223,22 @@ namespace Sys.Data
 
             StringBuilder builder = new StringBuilder();
             builder.Append(script.IF_EXISTS_DROP_TABLE())
-                .AppendLine(TableClause.GO);
+                .AppendLine(SqlScript.GO);
 
             return builder.ToString();
         }
 
 
-        public string GenerateClause()
+        public string GenerateCreateTableClause(bool appendGO)
         {
             TableSchema schema = new TableSchema(this);
             var script = new TableClause(schema);
 
-            return script.GenerateScript();
+            string SQL = script.GenerateCreateTableScript();
+            if (!appendGO)
+                return SQL;
+            else
+                return new StringBuilder(SQL).AppendLine(SqlScript.GO).ToString();
         }
     }
 }

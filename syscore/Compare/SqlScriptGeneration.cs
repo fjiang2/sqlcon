@@ -70,11 +70,11 @@ namespace Sys.Data.Comparison
 
                 count++;
                 if (count % 5000 == 0)
-                    writer.WriteLine(TableClause.GO);
+                    writer.WriteLine(SqlScript.GO);
             }
 
             if (count != 0)
-                writer.WriteLine(TableClause.GO);
+                writer.WriteLine(SqlScript.GO);
 
             return count;
         }
@@ -96,7 +96,7 @@ namespace Sys.Data.Comparison
 
                     count++;
                     if (count % 5000 == 0)
-                        writer.WriteLine(TableClause.GO);
+                        writer.WriteLine(SqlScript.GO);
 
                 }
 
@@ -104,7 +104,7 @@ namespace Sys.Data.Comparison
             }
 
             if (count != 0)
-                writer.WriteLine(TableClause.GO);
+                writer.WriteLine(SqlScript.GO);
 
             return count;
         }

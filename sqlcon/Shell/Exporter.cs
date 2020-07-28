@@ -132,7 +132,7 @@ namespace sqlcon
                 using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
                 {
                     writer.WriteLine(tname.GenerateIfDropClause());
-                    writer.WriteLine(tname.GenerateClause());
+                    writer.WriteLine(tname.GenerateCreateTableClause(appendGO: true));
                 }
                 cout.WriteLine("completed to generate script on file: {0}", SqlFileName);
                 return;
@@ -153,7 +153,7 @@ namespace sqlcon
                         {
                             cout.WriteLine("start to generate CREATE TABLE script: {0} ", tname);
                             stack.Push(tname.GenerateIfDropClause());
-                            queue.Enqueue(tname.GenerateClause());
+                            queue.Enqueue(tname.GenerateCreateTableClause(appendGO: true));
                         }
 
                         using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))

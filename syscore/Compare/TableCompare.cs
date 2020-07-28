@@ -97,7 +97,7 @@ namespace Sys.Data.Comparison
             }
 
             if (builder.ToString() != string.Empty && SideType == CompareSideType.compare)
-                builder.AppendLine(TableClause.GO);
+                builder.AppendLine(SqlScript.GO);
 
             return builder.ToString();
         }
