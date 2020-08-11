@@ -17,6 +17,7 @@ namespace Sys.Data.Comparison
         {
             AddRange(row);
         }
+
         public ColumnPairCollection(string[] columnName, object[] values)
         {
             AddRange(columnName, values);

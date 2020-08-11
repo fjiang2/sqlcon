@@ -61,6 +61,8 @@ namespace Sys.Data
         public string Update(string set, string where)
             => $"UPDATE {tname} {NewLine}SET {set} {NewLine}WHERE {where}";
 
+        public string Insert(string values)
+            => $"INSERT INTO {tname} VALUES({values})";
         public string Insert(string columns, string values)
             => $"INSERT INTO {tname}({columns}) {NewLine}VALUES({values})";
         public string Insert(string columns, string values, string identity)
