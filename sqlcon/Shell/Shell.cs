@@ -347,8 +347,8 @@ namespace sqlcon
                     commandee.export(cmd, cfg, this);
                     return NextStep.COMPLETED;
 
-                case "import":
-                    commandee.import(cmd, cfg, this);
+                case "load":
+                    commandee.load(cmd, cfg, this);
                     return NextStep.COMPLETED;
 
                 case "clean":

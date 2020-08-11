@@ -1071,11 +1071,11 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             cerr.WriteLine("select database or table first");
         }
 
-        public void import(ApplicationCommand cmd, IConfiguration cfg, ShellContext context)
+        public void load(ApplicationCommand cmd, IConfiguration cfg, ShellContext context)
         {
             if (cmd.HasHelp)
             {
-                cout.WriteLine("import file");
+                cout.WriteLine("load data file");
                 cout.WriteLine("option:");
                 cout.WriteLine("   /fmt:xml,ds   : load System.Data.DataSet xml file as last result");
                 cout.WriteLine("   /fmt:xml,dt   : load System.Data.DataTable xml file as last result");
@@ -1086,7 +1086,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("      [/key:column] column of key on config table");
                 cout.WriteLine("      [/value:column] column of value config table");
                 cout.WriteLine("      [/col:c1=v1,c2=v2,...] default values for not null columns");
-                cout.WriteLine("e.g. import c:\\conf.cfg /fmt:cfg /key:Key /value:Value /col:[Inactive]=0");
+                cout.WriteLine("e.g. load c:\\conf.cfg /fmt:cfg /key:Key /value:Value /col:[Inactive]=0");
                 return;
             }
 
