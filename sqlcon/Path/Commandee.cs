@@ -1079,10 +1079,10 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("option:");
                 cout.WriteLine("   /fmt:xml,ds   : load System.Data.DataSet xml file as last result");
                 cout.WriteLine("   /fmt:xml,dt   : load System.Data.DataTable xml file as last result");
-                cout.WriteLine("   /fmt:txt      : load text file and import into current table");
-                cout.WriteLine("   /fmt:csv      : import .csv data into current table");
+                cout.WriteLine("   /fmt:txt      : load text file and load into current table");
+                cout.WriteLine("   /fmt:csv      : load .csv data into current table");
                 cout.WriteLine("      [/col:c1,c2,...] csv columns mapping");
-                cout.WriteLine("   /fmt:cfg      : import .cfg data into current config table");
+                cout.WriteLine("   /fmt:cfg      : load .cfg data into current config table");
                 cout.WriteLine("      [/key:column] column of key on config table");
                 cout.WriteLine("      [/value:column] column of value config table");
                 cout.WriteLine("      [/col:c1=v1,c2=v2,...] default values for not null columns");
@@ -1152,18 +1152,18 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     TableName tname = mgr.GetCurrentPath<TableName>();
                     if (tname == null)
                     {
-                        cerr.WriteLine("cannot find the table to import data");
+                        cerr.WriteLine("cannot find the table to load data");
                         return;
                     }
 
                     int count = 0;
-                    var importer = new Importer(cmd);
+                    var importer = new Loader(cmd);
                     if (fmt == "csv")
-                        count = importer.ImportCsv(file, tname, cmd.Columns);
+                        count = importer.LoadCsv(file, tname, cmd.Columns);
                     else if (fmt == "cfg")
-                        count = importer.ImportCfg(file, tname);
+                        count = importer.LoadCfg(file, tname);
 
-                    cout.WriteLine($"{count} row(s) imported");
+                    cout.WriteLine($"{count} row(s) loaded");
                     break;
 
                 case "tie":
@@ -2139,5 +2139,31 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             return true; // NextStep.COMPLETED;
         }
 
+        public void import(ApplicationCommand cmd, IConfiguration cfg, ShellContext context)
+        {
+            if (cmd.HasHelp)
+            {
+                cout.WriteLine("import data");
+                cout.WriteLine("import [path]                :");
+                cout.WriteLine("options:");
+                cout.WriteLine("  /zip                     : dump variables memory to output file");
+                cout.WriteLine("  /out                     : define output file or directory");
+                cout.WriteLine("example:");
+                cout.WriteLine("  import insert.sql         : run script");
+                cout.WriteLine("  import insert.zip  /zip   : run script, default extension is .sqt");
+                return;
+            }
+
+            if (!Navigate(cmd.Path1))
+                return;
+
+            if (pt.Item is TableName || pt.Item is Locator || pt.Item is DatabaseName || pt.Item is ServerName)
+            {
+                var exporter = new Exporter(mgr, pt, cmd, cfg);
+                exporter.Run();
+            }
+            else
+                cerr.WriteLine("select server, database or table first");
+        }
     }
 }

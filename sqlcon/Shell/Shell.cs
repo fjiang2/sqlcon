@@ -343,6 +343,10 @@ namespace sqlcon
                     else
                         return NextStep.COMPLETED;
 
+                case "import":
+                    commandee.import(cmd, cfg, this);
+                    return NextStep.COMPLETED;
+
                 case "export":
                     commandee.export(cmd, cfg, this);
                     return NextStep.COMPLETED;

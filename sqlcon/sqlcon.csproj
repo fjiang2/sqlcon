@@ -124,7 +124,7 @@
     <Compile Include="Data\DataExtension.cs" />
     <Compile Include="Output\OutputDataTable.cs" />
     <Compile Include="Path\CommandState.cs" />
-    <Compile Include="Shell\Importer.cs" />
+    <Compile Include="Shell\Loader.cs" />
     <Compile Include="Shell\ShellHelp.cs" />
     <Compile Include="Shell\ShellHistory.cs" />
     <Compile Include="Windows\SqlEditor\DbDatabaseNodeUI.cs" />

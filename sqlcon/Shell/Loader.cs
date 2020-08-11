@@ -12,15 +12,15 @@ using Tie;
 
 namespace sqlcon
 {
-    class Importer
+    class Loader
     {
         private ApplicationCommand cmd;
-        public Importer(ApplicationCommand cmd)
+        public Loader(ApplicationCommand cmd)
         {
             this.cmd = cmd;
         }
 
-        public int ImportCsv(string path, TableName tname, string[] columns)
+        public int LoadCsv(string path, TableName tname, string[] columns)
         {
             //create column schema list
             TableSchema schema = new TableSchema(tname);
@@ -131,7 +131,7 @@ namespace sqlcon
         }
 
 
-        public int ImportCfg(string path, TableName tname)
+        public int LoadCfg(string path, TableName tname)
         {
             int count = 0;
             if (!File.Exists(path))

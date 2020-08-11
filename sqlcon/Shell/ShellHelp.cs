@@ -40,12 +40,13 @@ namespace sqlcon
             cout.WriteLine("          /e            : compare common existing tables only");
             cout.WriteLine("          /col:c1,c2    : skip columns defined during comparing");
             cout.WriteLine("sync table1 table2      : synchronize, make table2 is the same as table1");
+            cout.WriteLine("import /?               : import data into database");
             cout.WriteLine("export /?               : generate SQL script, JSON, C# code");
-            cout.WriteLine("import /?               : load JSON, XML data");
             cout.WriteLine("clean /?                : clean duplicated rows");
             cout.WriteLine("mount /?                : mount new database server");
             cout.WriteLine("umount /?               : unmount database server");
             cout.WriteLine("open /?                 : open result file");
+            cout.WriteLine("load /?                 : load JSON, XML data and cfg file");
             cout.WriteLine("save /?                 : save data");
             cout.WriteLine("edit /?                 : open GUI edit window");
             cout.WriteLine("chk,check /?            : check syntax of key-value table");
