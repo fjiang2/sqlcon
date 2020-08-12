@@ -7,8 +7,9 @@ using System.IO;
 using System.Data;
 using System.Data.Common;
 
-namespace Sys.Data.Comparison
+namespace Sys.Data
 {
+
     /// <summary>
     /// Generate INSERT,
     /// UPDATE
@@ -22,25 +23,11 @@ namespace Sys.Data.Comparison
         private int count;
 
         public Locator Where { get; set; }
-
-        /// <summary>
-        /// Generate SQL INSERT
-        /// if HasIfExists 
-        ///   "IF NOT EXISTS(SELECT * WHERE ...)
-        ///      INSERT INTO ...."
-        /// else generate SQL
-        ///    "INSERT INTO ..."
-        /// </summary>
-        public bool HasIfExists { get; set; }
-
-        /// <summary>
-        /// Generate SQL INSERT
-        /// if InsertWithoutColumns
-        ///   "INSERT INTO table-name VALUES (...)"
-        /// else  
-        ///   "INSERT INTO table-name(column,....) VALUES (...)"
-        /// </summary>
-        public bool InsertWithoutColumns { get; set; }
+        public SqlScriptGenerationOption Option { get; set; } = new SqlScriptGenerationOption
+        {
+            HasIfExists = false,
+            InsertWithoutColumns = false,
+        };
 
         public SqlScriptGeneration(SqlScriptType type, ITableSchema schema)
         {
@@ -132,7 +119,7 @@ namespace Sys.Data.Comparison
             switch (type)
             {
                 case SqlScriptType.INSERT:
-                    if (HasIfExists)
+                    if (Option.HasIfExists)
                         writer.WriteLine(script.IF_NOT_EXISTS_INSERT(pairs));
                     else
                         writer.WriteLine(script.INSERT(pairs));

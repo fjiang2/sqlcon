@@ -155,12 +155,12 @@ namespace Sys.Data.Comparison
             return builder.ToString();
         }
 
-        public static int GenerateRows(SqlScriptType type, StreamWriter writer, ITableSchema schema, Locator where, bool hasIfExists)
+        public static int GenerateRows(SqlScriptType type, StreamWriter writer, ITableSchema schema, Locator where, SqlScriptGenerationOption option)
         {
             SqlScriptGeneration gen = new SqlScriptGeneration(type, schema)
             {
                 Where = where,
-                HasIfExists = hasIfExists
+                Option = option,
             };
 
             return gen.Generate(writer);

@@ -189,6 +189,12 @@ namespace sqlcon
 
         public void ExportInsertOrUpdateData(SqlScriptType type)
         {
+            var option = new SqlScriptGenerationOption
+            {
+                HasIfExists = cmd.HasIfExists,
+                InsertWithoutColumns = cmd.Has("without-columns"),
+            };
+
             if (tname != null)
             {
                 var node = mgr.GetCurrentNode<Locator>();
@@ -200,12 +206,12 @@ namespace sqlcon
                     {
                         cout.WriteLine("start to generate {0} INSERT script to file: {1}", tname, SqlFileName);
                         Locator locator = mgr.GetCombinedLocator(node);
-                        count = Compare.GenerateRows(type, writer, new TableSchema(tname), locator, cmd.HasIfExists);
+                        count = Compare.GenerateRows(type, writer, new TableSchema(tname), locator, option);
                         cout.WriteLine($"{type} clauses (SELECT * FROM {tname} WHERE {locator}) generated to \"{SqlFileName}\"");
                     }
                     else
                     {
-                        count = Compare.GenerateRows(type, writer, new TableSchema(tname), null, cmd.HasIfExists);
+                        count = Compare.GenerateRows(type, writer, new TableSchema(tname), null, option);
                         cout.WriteLine($"{type} clauses (SELECT * FROM {tname}) generated to \"{SqlFileName}\"");
                     }
                 }
@@ -234,7 +240,7 @@ namespace sqlcon
                                 }
                             }
 
-                            count = Compare.GenerateRows(type, writer, new TableSchema(tn), null, cmd.HasIfExists);
+                            count = Compare.GenerateRows(type, writer, new TableSchema(tn), null, option);
                             cout.WriteLine($"{count,10} row(s) generated on {tn.ShortName}");
                         }
 
