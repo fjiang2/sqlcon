@@ -18,6 +18,7 @@ namespace Sys.Data
         public event EventHandler<EventArgs<int, string>> Reported;
         public event EventHandler<EventArgs> Completed;
         public event EventHandler<SqlExceptionEventArgs> Error;
+        public int MaxCount { get; set; } = 1;
 
         public SqlScript(ConnectionProvider provider, string scriptFile)
         {
