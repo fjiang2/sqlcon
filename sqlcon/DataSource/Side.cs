@@ -53,9 +53,9 @@ namespace sqlcon
             return DatabaseName.GenerateClause();
         }
 
-        public bool ExecuteScript(string scriptFile, int batchSize =1, bool verbose = false)
+        public bool ExecuteScript(string scriptFile, int batchSize = 1, bool verbose = false)
         {
-            return ExecuteSqlScript(this.Provider, scriptFile, batchSize , verbose);
+            return ExecuteSqlScript(this.Provider, scriptFile, batchSize, verbose);
         }
 
         private static bool ExecuteSqlScript(ConnectionProvider provider, string scriptFile, int batchSize, bool verbose)
@@ -75,7 +75,7 @@ namespace sqlcon
             script.Reported += (sender, e) =>
             {
                 if (verbose)
-                    cout.WriteLine("processed: {0}>{1}", e.Value1, e.Value2);
+                    cout.WriteLine($"processed line {e.Line}-{e.StopLine}");
             };
 
             bool hasError = false;
