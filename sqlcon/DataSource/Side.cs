@@ -53,12 +53,12 @@ namespace sqlcon
             return DatabaseName.GenerateClause();
         }
 
-        public bool ExecuteScript(string scriptFile, int maxCount=1, bool verbose = false)
+        public bool ExecuteScript(string scriptFile, int batchSize =1, bool verbose = false)
         {
-            return ExecuteSqlScript(this.Provider, scriptFile, maxCount, verbose);
+            return ExecuteSqlScript(this.Provider, scriptFile, batchSize , verbose);
         }
 
-        private static bool ExecuteSqlScript(ConnectionProvider provider, string scriptFile, int maxCount, bool verbose)
+        private static bool ExecuteSqlScript(ConnectionProvider provider, string scriptFile, int batchSize, bool verbose)
         {
             if (!File.Exists(scriptFile))
             {
@@ -69,7 +69,7 @@ namespace sqlcon
             cout.WriteLine("executing {0}", scriptFile);
             var script = new SqlScript(provider, scriptFile)
             {
-                MaxCount = maxCount
+                BatchSize = batchSize
             };
 
             script.Reported += (sender, e) =>

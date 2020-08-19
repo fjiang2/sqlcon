@@ -1540,9 +1540,9 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            int maxCount = cmd.GetInt32("max", 1);
+            int batchSize = cmd.GetInt32("max", 1);
             bool verbose = cmd.Has("verbose");
-            if (theSide.ExecuteScript(inputfile, maxCount, verbose))
+            if (theSide.ExecuteScript(inputfile, batchSize, verbose))
                 ErrorCode = CommandState.OK;
             else
                 ErrorCode = CommandState.SQL_FAILS;
