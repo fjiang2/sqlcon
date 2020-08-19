@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using System.Threading.Tasks;
 using System.Data.SqlClient;
 
 namespace Sys.Data
@@ -20,6 +18,8 @@ namespace Sys.Data
         public event EventHandler<EventArgs> Completed;
         public event EventHandler<SqlExceptionEventArgs> Error;
         public int BatchSize { get; set; } = 1;
+
+        private StringBuffer buffer;
 
         public SqlScript(ConnectionProvider provider, string scriptFile)
         {
@@ -50,13 +50,9 @@ namespace Sys.Data
                 throw e.Exception;
         }
 
-
-
-
         public void Execute(Func<bool> stopOnError)
         {
-            startLine = 0;
-            queue.Clear();
+            buffer = new StringBuffer(BatchSize);
 
             StringBuilder builder = new StringBuilder();
             var reader = new SqlScriptReader(scriptFile);
@@ -131,33 +127,24 @@ namespace Sys.Data
             OnCompleted(new EventArgs());
         }
 
-        private int startLine = 0;
-        private List<string> queue = new List<string>();
         private bool ExecuteSql(int line, StringBuilder builder, bool commit)
         {
             string sql = builder.ToString();
-            if (string.IsNullOrEmpty(sql))
+
+            if (buffer.Append(line, sql, commit))
                 return true;
 
-            if (commit)
-                return ExecuteSql(line, 1, sql);
-
-            if (queue.Count == 0)
-                startLine = line;
-
-            queue.Add(sql);
-
-            if (queue.Count < BatchSize)
-                return true;
-
-            sql = string.Join(string.Empty, queue);
-            bool result = ExecuteSql(startLine, queue.Count, sql);
-            queue.Clear();
+            bool result = ExecuteSql(buffer);
+            buffer.Clear();
             return result;
         }
 
-        private bool ExecuteSql(int line, int count, string sql)
+        private bool ExecuteSql(StringBuffer buffer)
         {
+            if (buffer.BatchSize == 0)
+                return true;
+
+            string sql = buffer.AllText;
             try
             {
                 var cmd = new SqlCmd(provider, sql);
@@ -165,11 +152,18 @@ namespace Sys.Data
             }
             catch (Exception ex)
             {
-                OnError(new SqlExceptionEventArgs(sql, ex) { Line = line });
+                OnError(new SqlExceptionEventArgs(sql, ex) { Line = buffer.BatchLine });
                 return false;
             }
 
-            OnReported(new SqlExecutionEventArgs(sql) { Line = line, BatchSize = count });
+            OnReported(new SqlExecutionEventArgs(sql)
+            {
+                BatchLine = buffer.BatchLine,
+                BatchSize = buffer.BatchSize,
+                Line = buffer.Line,
+                TotalSize = buffer.TotalSize
+            }); ;
+
             return true;
         }
 
@@ -223,6 +217,4 @@ namespace Sys.Data
         }
 
     }
-
-
 }

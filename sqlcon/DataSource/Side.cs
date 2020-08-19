@@ -75,7 +75,7 @@ namespace sqlcon
             script.Reported += (sender, e) =>
             {
                 if (verbose)
-                    cout.WriteLine($"processed line {e.Line}-{e.StopLine}");
+                    cout.WriteLine($"processed line:{e.Line} batch:{e.BatchLine}/{e.BatchSize} total:{e.TotalSize}");
             };
 
             bool hasError = false;
