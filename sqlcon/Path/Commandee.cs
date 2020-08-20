@@ -1524,7 +1524,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("execute sql script file");
                 cout.WriteLine("execute file (.sql)");
                 cout.WriteLine("options:");
-                cout.WriteLine("   /max:count                 : maximum number of statements in SQL bulk command");
+                cout.WriteLine("   /batch-size:count          : maximum number of statements in SQL bulk command");
                 cout.WriteLine("   /verbose                   : display details");
                 cout.WriteLine("examples:");
                 cout.WriteLine("  execute northwind.sql       : execute single sql script file");
@@ -1540,7 +1540,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            int batchSize = cmd.GetInt32("max", 1);
+            int batchSize = cmd.GetInt32("batch-size", 1);
             bool verbose = cmd.Has("verbose");
             if (theSide.ExecuteScript(inputfile, batchSize, verbose))
                 ErrorCode = CommandState.OK;
