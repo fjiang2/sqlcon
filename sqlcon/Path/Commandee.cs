@@ -1523,6 +1523,9 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             {
                 cout.WriteLine("execute sql script file");
                 cout.WriteLine("execute file (.sql)");
+                cout.WriteLine("options:");
+                cout.WriteLine("   /batch-size:count          : maximum number of statements in SQL bulk command");
+                cout.WriteLine("   /verbose                   : display details");
                 cout.WriteLine("examples:");
                 cout.WriteLine("  execute northwind.sql       : execute single sql script file");
                 return;
@@ -1537,7 +1540,9 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            if (theSide.ExecuteScript(inputfile))
+            int batchSize = cmd.GetInt32("batch-size", 1);
+            bool verbose = cmd.Has("verbose");
+            if (theSide.ExecuteScript(inputfile, batchSize, verbose))
                 ErrorCode = CommandState.OK;
             else
                 ErrorCode = CommandState.SQL_FAILS;
@@ -2144,26 +2149,45 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             if (cmd.HasHelp)
             {
                 cout.WriteLine("import data");
-                cout.WriteLine("import [path]                :");
+                cout.WriteLine("import [path]              :");
                 cout.WriteLine("options:");
                 cout.WriteLine("  /zip                     : dump variables memory to output file");
                 cout.WriteLine("  /out                     : define output file or directory");
                 cout.WriteLine("example:");
-                cout.WriteLine("  import insert.sql         : run script");
-                cout.WriteLine("  import insert.zip  /zip   : run script, default extension is .sqt");
+                cout.WriteLine("  import insert.sql        : run script");
+                cout.WriteLine("  import insert.zip  /zip  : run script, default extension is .sqt");
                 return;
             }
 
-            if (!Navigate(cmd.Path1))
-                return;
-
-            if (pt.Item is TableName || pt.Item is Locator || pt.Item is DatabaseName || pt.Item is ServerName)
+            string file = cmd.arg1;
+            if (file == null)
             {
-                var exporter = new Exporter(mgr, pt, cmd, cfg);
-                exporter.Run();
+                cerr.WriteLine("file name not specified");
+                return;
             }
-            else
-                cerr.WriteLine("select server, database or table first");
+
+            if (!File.Exists(file))
+            {
+                cerr.WriteLine($"cannot find the file \"{file}\"");
+                return;
+            }
+
+            bool zip = false;
+            if (Path.GetExtension(file) == ".zip")
+                zip = true;
+
+            if (cmd.Has("zip"))
+                zip = true;
+
+            using (var reader = new StreamReader(file))
+            {
+                if (zip)
+                {
+                    ZipFileReader.ProcessZipArchive(file, line => Console.WriteLine(line));
+                }
+            }
+
+
         }
     }
 }

@@ -13,7 +13,7 @@ using Sys;
 
 namespace sqlcon
 {
-    class Side  : IDataPath
+    class Side : IDataPath
     {
         public DatabaseName DatabaseName { get; private set; }
         private ConnectionProvider provider;
@@ -36,7 +36,7 @@ namespace sqlcon
             this.provider = provider;
             this.DatabaseName = new DatabaseName(provider, Provider.InitialCatalog);
         }
-      
+
         public ConnectionProvider Provider
         {
             get { return this.provider; }
@@ -53,12 +53,12 @@ namespace sqlcon
             return DatabaseName.GenerateClause();
         }
 
-        public bool ExecuteScript(string scriptFile)
+        public bool ExecuteScript(string scriptFile, int batchSize = 1, bool verbose = false)
         {
-            return ExecuteSqlScript(this.Provider, scriptFile);
+            return ExecuteSqlScript(this.Provider, scriptFile, batchSize, verbose);
         }
 
-        private static bool ExecuteSqlScript(ConnectionProvider provider, string scriptFile)
+        private static bool ExecuteSqlScript(ConnectionProvider provider, string scriptFile, int batchSize, bool verbose)
         {
             if (!File.Exists(scriptFile))
             {
@@ -67,10 +67,15 @@ namespace sqlcon
             }
 
             cout.WriteLine("executing {0}", scriptFile);
-            var script = new SqlScript(provider, scriptFile);
+            var script = new SqlScript(provider, scriptFile)
+            {
+                BatchSize = batchSize
+            };
+
             script.Reported += (sender, e) =>
             {
-                // stdio.WriteLine("processed: {0}>{1}", e.Value1, e.Value2);
+                if (verbose)
+                    cout.WriteLine($"processed line:{e.Line} batch:{e.BatchLine}/{e.BatchSize} total:{e.TotalSize}");
             };
 
             bool hasError = false;
@@ -91,11 +96,11 @@ namespace sqlcon
             return !hasError;
         }
 
-        
+
 
         public override string ToString()
         {
-            return string.Format("Server={0}, Db={1}",Provider.DataSource, this.DatabaseName.Name);
+            return string.Format("Server={0}, Db={1}", Provider.DataSource, this.DatabaseName.Name);
         }
 
     }

@@ -1,5 +1,11 @@
 ﻿sqlcon release notes
 
+8/19/2020 v2.2.12.0
+	Improvements/Enhancements:
+	1. command "execute" support batch-size to improve performace in very large Sql script file
+	   use command:
+	   execute file-name.sql /batch-size:1000 /verbose
+
 7/19/2020 v2.2.11.0
 	Improvements/Enhancements:
 	1. Improve table schema, change column property to NOT NULL, INT, BIT or shrink column size with string type if it is possible.

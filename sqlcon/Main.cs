@@ -43,7 +43,7 @@ namespace sqlcon
                             string server = connection.Home;
                             var pvd = connection.GetProvider(server);
                             var theSide = new Side(pvd);
-                            theSide.ExecuteScript(inputfile);
+                            theSide.ExecuteScript(inputfile, verbose: false);
                             break;
                         }
                         else

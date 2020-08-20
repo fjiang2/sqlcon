@@ -88,6 +88,8 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity.Design" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Windows" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
@@ -177,6 +179,7 @@
     <Compile Include="Windows\WpfExtension.cs" />
     <Compile Include="Windows\WpfUtils.cs" />
     <Compile Include="Input\WorkingDirectory.cs" />
+    <Compile Include="ZipFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Output\ConsoleGrid.cs" />
