@@ -693,6 +693,11 @@ namespace sqlcon
                 cout.WriteLine("refine columns:");
                 cout.WriteLine("  attrib [table] /refine                 : refine column type and nullable");
                 cout.WriteLine("  attrib [table] /refine  /commit        : refine and save changes");
+                cout.WriteLine("  refine option:");
+                cout.WriteLine("    /not-null                            : change to NOT NULL");
+                cout.WriteLine("    /int                                 : convert to int");
+                cout.WriteLine("    /bit                                 : convert to bit");
+                cout.WriteLine("    /string                              : shrink string(NVARCHAR,VARCHAR,NCHAR,CHAR)");
                 return;
             }
 
@@ -833,7 +838,15 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             {
                 TableName tname = (TableName)pt.Item;
                 TableSchemaRefinement refinement = new TableSchemaRefinement(tname);
-                string SQL = refinement.Refine();
+                SchemaRefineOption option = new SchemaRefineOption
+                {
+                    ChangeNotNull = cmd.Has("not-null"),
+                    ConvertInteger = cmd.Has("int"),
+                    ConvertBoolean = cmd.Has("bit"),
+                    ShrinkString = cmd.Has("string"),
+                };
+
+                string SQL = refinement.Refine(option);
                 if (!string.IsNullOrEmpty(SQL))
                 {
                     string fileName = cmd.OutputFile(cmd.Configuration.OutputFile);
