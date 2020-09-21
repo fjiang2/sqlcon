@@ -110,6 +110,7 @@
     <Compile Include="ClassBuilder\Json2CSharp.cs" />
     <Compile Include="ClassBuilder\TieClassBuilder.cs" />
     <Compile Include="Configuration\Config.cs" />
+    <Compile Include="Configuration\ConfigureFile.cs" />
     <Compile Include="Configuration\Config`1.cs" />
     <Compile Include="Configuration\ConfigDefaultValue.cs" />
     <Compile Include="Configuration\ConfigKey.cs" />

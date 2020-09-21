@@ -24,7 +24,7 @@ namespace sqlcon
             Constant.MAX_STRING_SIZE = 24 * 1024 * 1024;
             Constant.MAX_SRC_COL = 24 * 1024 * 1024;
             Constant.MAX_INSTRUCTION_NUM = 1 * 1024 * 1024;
-            string cfgFile = sqlcon.Main.PrepareConfigureFile(false);
+            string usercfgFile = ConfigureFile.PrepareUserConfigureFile(false);
 
             int i = 0;
             while (i < args.Length)
@@ -34,7 +34,7 @@ namespace sqlcon
                     case "/cfg":
                         if (i < args.Length && !args[i].StartsWith("/"))
                         {
-                            cfgFile = args[i++];
+                            usercfgFile = args[i++];
                             goto L1;
                         }
                         else
@@ -57,12 +57,12 @@ namespace sqlcon
             Configuration = new Configuration();
             try
             {
-                if (!Configuration.Initialize(cfgFile))
+                if (!Configuration.Initialize(usercfgFile))
                     return;
             }
             catch (Exception ex)
             {
-                cout.WriteLine("error on configuration file {0}, {1}:", cfgFile, ex.Message);
+                cout.WriteLine("error on configuration file {0}, {1}:", usercfgFile, ex.Message);
                 return;
             }
 

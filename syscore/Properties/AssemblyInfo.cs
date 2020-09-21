@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("Sys.Core")]
 [assembly: AssemblyDescription("System Core Library")]
-[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyConfiguration("datconn")]
 [assembly: AssemblyCompany("Datum Connect")]
 [assembly: AssemblyProduct("System Core")]
 [assembly: AssemblyCopyright("Copyright ©  DATCONN 2012-2020")]

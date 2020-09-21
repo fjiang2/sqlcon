@@ -13,7 +13,7 @@ using Tie;
 
 namespace sqlcon
 {
-    class Configuration : IConfiguration
+    public class Configuration : IConfiguration
     {
         const string _SERVER0 = "home";
         const string _SERVERS = "servers";
@@ -21,7 +21,6 @@ namespace sqlcon
         const string _FUNC_CONFIG = "config";
         const string _FUNC_CFG = "cfg";
 
-        const string _FILE_SYSTEM_CONFIG = "sqlcon.cfg";
         const string _FILE_OUTPUT = "output";
         const string _XML_DB_FOLDER = "xmldb";
 
@@ -177,6 +176,7 @@ namespace sqlcon
 
         public bool Initialize(string cfgFile)
         {
+            string _FILE_SYSTEM_CONFIG = $"{ConfigureFile.Product}.cfg";
 
             string theDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             string sysCfgFile = Path.Combine(theDirectory, _FILE_SYSTEM_CONFIG);
