@@ -9,6 +9,9 @@ namespace sqlcon
 {
     class ApplicationConfiguration : Configuration, IApplicationConfiguration
     {
+        private const string _SERVER0 = "home";
+        private const string _SERVERS = "servers";
+
         const string _FILE_OUTPUT = "output";
         const string _XML_DB_FOLDER = "xmldb";
         const string _LIMIT = "limit";
@@ -44,6 +47,17 @@ namespace sqlcon
                 this.MaxRows = (int)limit["export_max_count"];
 
             return true;
+        }
+
+        private IConnectionConfiguration connection = null;
+        public IConnectionConfiguration Connection
+        {
+            get
+            {
+                if (connection == null)
+                    connection = new ConnectionConfiguration(GetValue<string>(_SERVER0), Cfg.GetValue(_SERVERS));
+                return connection;
+            }
         }
 
     }

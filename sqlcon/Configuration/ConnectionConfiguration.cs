@@ -11,7 +11,7 @@ using Sys.Data;
 using Sys.Stdio;
 using Tie;
 
-namespace Sys
+namespace sqlcon
 {
     class ConnectionConfiguration : IConnectionConfiguration
     {

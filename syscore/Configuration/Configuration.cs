@@ -12,8 +12,6 @@ namespace Sys
 {
     public partial class Configuration  
     {
-        private const string _SERVER0 = "home";
-        private const string _SERVERS = "servers";
 
         private const string _FUNC_CONFIG = "config";
         private const string _FUNC_CFG = "cfg";
@@ -34,17 +32,7 @@ namespace Sys
 
         public static string MyDocuments => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + ProductName;
 
-        private IConnectionConfiguration connection = null;
-        public IConnectionConfiguration Connection
-        {
-            get
-            {
-                if (connection == null)
-                    connection = new ConnectionConfiguration(GetValue<string>(_SERVER0), Cfg.GetValue(_SERVERS));
-                return connection;
-            }
-        }
-
+        
         private static VAL functions(string func, VAL parameters, Memory DS)
         {
             const string _FUNC_LOCAL_IP = "localip";

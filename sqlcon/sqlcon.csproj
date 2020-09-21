@@ -114,7 +114,9 @@
     <Compile Include="Configuration\ConfigDefaultValue.cs" />
     <Compile Include="Configuration\ConfigKey.cs" />
     <Compile Include="Configuration\Config`1.cs" />
+    <Compile Include="Configuration\ConnectionConfiguration.cs" />
     <Compile Include="Configuration\IApplicationConfiguration.cs" />
+    <Compile Include="Configuration\IConnectionConfiguration.cs" />
     <Compile Include="Configuration\WorkingDirectory.cs" />
     <Compile Include="Data\CsvFile.cs" />
     <Compile Include="Data\DuplicatedTable.cs" />
