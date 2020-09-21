@@ -10,13 +10,13 @@ namespace sqlcon
     class ShellContext
     {
         public Side theSide { get; set; }
-        public IConfiguration cfg { get; }
+        public IApplicationConfiguration cfg { get; }
         public IConnectionConfiguration connection { get; }
         public PathManager mgr { get; }
         public Commandee commandee { get; }
         public const string THESIDE = "$TheSide";
 
-        public ShellContext(IConfiguration cfg)
+        public ShellContext(IApplicationConfiguration cfg)
         {
             this.cfg = cfg;
             this.connection = cfg.Connection;

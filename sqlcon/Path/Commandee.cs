@@ -598,7 +598,7 @@ namespace sqlcon
             });
         }
 
-        public void compare(ApplicationCommand cmd, IConfiguration cfg)
+        public void compare(ApplicationCommand cmd, IApplicationConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -998,7 +998,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void clean(ApplicationCommand cmd, IConfiguration cfg)
+        public void clean(ApplicationCommand cmd, IApplicationConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1084,7 +1084,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             cerr.WriteLine("select database or table first");
         }
 
-        public void load(ApplicationCommand cmd, IConfiguration cfg, ShellContext context)
+        public void load(ApplicationCommand cmd, IApplicationConfiguration cfg, ShellContext context)
         {
             if (cmd.HasHelp)
             {
@@ -1189,7 +1189,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void export(ApplicationCommand cmd, IConfiguration cfg, ShellContext context)
+        public void export(ApplicationCommand cmd, IApplicationConfiguration cfg, ShellContext context)
         {
             if (cmd.HasHelp)
             {
@@ -1530,7 +1530,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             });
         }
 
-        public void execute(ApplicationCommand cmd, IConfiguration cfg, Side theSide)
+        public void execute(ApplicationCommand cmd, IApplicationConfiguration cfg, Side theSide)
         {
             if (cmd.HasHelp)
             {
@@ -1561,7 +1561,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 ErrorCode = CommandState.SQL_FAILS;
         }
 
-        public void edit(ApplicationCommand cmd, IConfiguration cfg, IConnectionConfiguration connection, Side theSide)
+        public void edit(ApplicationCommand cmd, IApplicationConfiguration cfg, IConnectionConfiguration connection, Side theSide)
         {
             if (cmd.HasHelp)
             {
@@ -1634,7 +1634,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 #endif			
         }
 
-        public void open(ApplicationCommand cmd, IConfiguration cfg)
+        public void open(ApplicationCommand cmd, IApplicationConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1731,7 +1731,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void save(ApplicationCommand cmd, IConfiguration cfg)
+        public void save(ApplicationCommand cmd, IApplicationConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1874,7 +1874,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         }
 
 
-        public void last(ApplicationCommand cmd, IConfiguration cfg)
+        public void last(ApplicationCommand cmd, IApplicationConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -2157,7 +2157,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             return true; // NextStep.COMPLETED;
         }
 
-        public void import(ApplicationCommand cmd, IConfiguration cfg, ShellContext context)
+        public void import(ApplicationCommand cmd, IApplicationConfiguration cfg, ShellContext context)
         {
             if (cmd.HasHelp)
             {

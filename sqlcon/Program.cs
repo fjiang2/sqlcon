@@ -10,7 +10,7 @@ namespace sqlcon
 {
     class Program
     {
-        public static Configuration Configuration;
+        public static ApplicationConfiguration Configuration;
 
         [STAThread]
         static void Main(string[] args)
@@ -24,7 +24,7 @@ namespace sqlcon
             Constant.MAX_STRING_SIZE = 24 * 1024 * 1024;
             Constant.MAX_SRC_COL = 24 * 1024 * 1024;
             Constant.MAX_INSTRUCTION_NUM = 1 * 1024 * 1024;
-            string usercfgFile = Configuration.PrepareUserConfiguration(false);
+            string usercfgFile = ApplicationConfiguration.PrepareUserConfiguration(false);
 
             int i = 0;
             while (i < args.Length)
@@ -54,7 +54,7 @@ namespace sqlcon
             L1:
 
 
-            Configuration = new Configuration();
+            Configuration = new ApplicationConfiguration();
             try
             {
                 if (!Configuration.Initialize(usercfgFile))

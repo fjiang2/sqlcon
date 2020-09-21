@@ -11,10 +11,10 @@ namespace sqlcon
     class Main
     {
 
-        private Configuration cfg;
+        private ApplicationConfiguration cfg;
         public Shell Shell { get; private set; }
 
-        public Main(Configuration cfg)
+        public Main(ApplicationConfiguration cfg)
         {
             this.cfg = cfg;
         }

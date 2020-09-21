@@ -17,7 +17,7 @@ namespace sqlcon
     {
         private PathManager mgr;
         private ApplicationCommand cmd;
-        private IConfiguration cfg;
+        private IApplicationConfiguration cfg;
 
 
         private TableName tname;
@@ -25,7 +25,7 @@ namespace sqlcon
         private ServerName sname;
 
         XmlDbCreator xmlDbFile;
-        public Exporter(PathManager mgr, TreeNode<IDataPath> pt, ApplicationCommand cmd, IConfiguration cfg)
+        public Exporter(PathManager mgr, TreeNode<IDataPath> pt, ApplicationCommand cmd, IApplicationConfiguration cfg)
         {
             this.mgr = mgr;
             this.cmd = cmd;

@@ -1,8 +1,9 @@
 ﻿using Tie;
+using Sys;
 
-namespace Sys
+namespace sqlcon
 {
-    public interface IConfiguration 
+    public interface IApplicationConfiguration 
     {
         string UserConfigurationFile { get; }
         string OutputFile { get; }

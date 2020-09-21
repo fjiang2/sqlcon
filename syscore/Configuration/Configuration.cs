@@ -10,33 +10,19 @@ using Tie;
 
 namespace Sys
 {
-    public partial class Configuration : IConfiguration
+    public partial class Configuration  
     {
-        const string _SERVER0 = "home";
-        const string _SERVERS = "servers";
+        private const string _SERVER0 = "home";
+        private const string _SERVERS = "servers";
 
-        const string _FUNC_CONFIG = "config";
-        const string _FUNC_CFG = "cfg";
+        private const string _FUNC_CONFIG = "config";
+        private const string _FUNC_CFG = "cfg";
 
-        const string _FILE_OUTPUT = "output";
-        const string _XML_DB_FOLDER = "xmldb";
-
-        const string _WORKING_DIRECTORY = "working.directory.commands";
-
-        const string _LIMIT = "limit";
-
-        private Memory Cfg = new Memory();
-
-        public string UserConfigurationFile { get; private set; } = "user.cfg";
-
-        public string OutputFile { get; set; }
-        public string XmlDbDirectory { get; private set; }
-        public WorkingDirectory WorkingDirectory { get; }
-
-        public int TopLimit { get; private set; } = 20;
-        public int MaxRows { get; private set; } = 2000;
         private static TextWriter cerr = Console.Error;
 
+        protected Memory Cfg = new Memory();
+
+        public string UserConfigurationFile { get; private set; } = "user.cfg";
 
         public Configuration()
         {
@@ -44,7 +30,6 @@ namespace Sys
             HostType.Register(typeof(DateTime), true);
             HostType.Register(typeof(Environment), true);
             Cfg.AddObject("MyDocuments", MyDocuments);
-            WorkingDirectory = new WorkingDirectory();
         }
 
         public static string MyDocuments => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + ProductName;
@@ -171,7 +156,7 @@ namespace Sys
 
 
 
-        public bool Initialize(string cfgFile)
+        public virtual bool Initialize(string cfgFile)
         {
             string _FILE_SYSTEM_CONFIG = $"{ProductName}.cfg";
 
@@ -193,18 +178,6 @@ namespace Sys
                 this.UserConfigurationFile = cfgFile;
                 TryReadCfg(cfgFile);
             }
-
-            this.OutputFile = Cfg.GetValue<string>(_FILE_OUTPUT, "script.sql");
-            this.XmlDbDirectory = Cfg.GetValue<string>(_XML_DB_FOLDER, "db");
-            this.WorkingDirectory.SetCurrentDirectory(Cfg.GetValue<string>(_WORKING_DIRECTORY, "."));
-
-            var limit = Cfg[_LIMIT];
-            if (limit["top"].Defined)
-                this.TopLimit = (int)limit["top"];
-
-            if (limit["export_max_count"].Defined)
-                this.MaxRows = (int)limit["export_max_count"];
-
 
             CopyVariableContext(stdio.FILE_LOG);
             CopyVariableContext(stdio.FILE_EDITOR);
