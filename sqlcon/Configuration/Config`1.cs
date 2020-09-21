@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 #endif
 
+using Sys;
 using Sys.Stdio;
 
 namespace sqlcon

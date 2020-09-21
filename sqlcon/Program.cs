@@ -24,7 +24,7 @@ namespace sqlcon
             Constant.MAX_STRING_SIZE = 24 * 1024 * 1024;
             Constant.MAX_SRC_COL = 24 * 1024 * 1024;
             Constant.MAX_INSTRUCTION_NUM = 1 * 1024 * 1024;
-            string usercfgFile = ConfigureFile.PrepareUserConfigureFile(false);
+            string usercfgFile = Configuration.PrepareUserConfiguration(false);
 
             int i = 0;
             while (i < args.Length)

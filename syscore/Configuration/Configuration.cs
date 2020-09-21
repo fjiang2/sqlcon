@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.OleDb;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 using Sys.Data.IO;
 using Sys.Networking;
 using Sys.Stdio;
 using Tie;
 
-namespace sqlcon
+namespace Sys
 {
-    public class Configuration : IConfiguration
+    public partial class Configuration : IConfiguration
     {
         const string _SERVER0 = "home";
         const string _SERVERS = "servers";
@@ -50,7 +47,7 @@ namespace sqlcon
             WorkingDirectory = new WorkingDirectory();
         }
 
-        public static string MyDocuments => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\sqlcon";
+        public static string MyDocuments => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + ProductName;
 
         private IConnectionConfiguration connection = null;
         public IConnectionConfiguration Connection
@@ -176,7 +173,7 @@ namespace sqlcon
 
         public bool Initialize(string cfgFile)
         {
-            string _FILE_SYSTEM_CONFIG = $"{ConfigureFile.Product}.cfg";
+            string _FILE_SYSTEM_CONFIG = $"{ProductName}.cfg";
 
             string theDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             string sysCfgFile = Path.Combine(theDirectory, _FILE_SYSTEM_CONFIG);

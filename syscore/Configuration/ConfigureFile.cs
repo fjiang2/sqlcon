@@ -6,26 +6,24 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.IO;
 using Sys.Stdio;
-using Sys;
 
-namespace sqlcon
+namespace Sys
 {
-    public class ConfigureFile
+    public partial class Configuration
     {
-        private const string _USER_CFG_TEMPLATE = "user.ini";
+        private const string USER_CFG_TEMPLATE = "user.ini";
 
-        public const string _USER_CFG = "user.cfg";
+        public const string USER_CFG = "user.cfg";
 
         public readonly static string Company = GetAttribute<AssemblyConfigurationAttribute>().Configuration;
-        public readonly static string Product = GetAttribute<AssemblyProductAttribute>().Product;
+        public static string ProductName { get; private set; } = GetAttribute<AssemblyProductAttribute>().Product;
 
-        public ConfigureFile()
+        public static Configuration Load(string productName = null)
         {
-        }
+            if (productName != null)
+                ProductName = productName;
 
-        public static Configuration Load()
-        {
-            string usercfgFile = PrepareUserConfigureFile(false);
+            string usercfgFile = PrepareUserConfiguration(false);
 
             var Configuration = new Configuration();
             try
@@ -44,15 +42,15 @@ namespace sqlcon
 
         private static T GetAttribute<T>() where T : Attribute
         {
-            T[] attributes = (T[])Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(T), false);
+            T[] attributes = (T[])Assembly.GetEntryAssembly().GetCustomAttributes(typeof(T), false);
             return attributes[0];
         }
 
-        public static string PrepareUserConfigureFile(bool overwrite)
+        public static string PrepareUserConfiguration(bool overwrite)
         {
-            string cfgFile = _USER_CFG;
+            string cfgFile = USER_CFG;
             var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            folder = Path.Combine(folder, Company, Product);
+            folder = Path.Combine(folder, Company, ProductName);
             if (!Directory.Exists(folder))
                 Directory.CreateDirectory(folder);
 
@@ -64,10 +62,10 @@ namespace sqlcon
                 {
                     if (!exists)
                     {
-                        if (File.Exists(_USER_CFG_TEMPLATE))
+                        if (File.Exists(USER_CFG_TEMPLATE))
                         {
                             //copy user.cfg template
-                            File.Copy(_USER_CFG_TEMPLATE, file);
+                            File.Copy(USER_CFG_TEMPLATE, file);
                         }
                         else
                         {

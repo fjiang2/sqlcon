@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
 using Sys.Stdio;
+using Sys;
 
 namespace sqlcon
 {
@@ -97,7 +98,7 @@ namespace sqlcon
             cout.WriteLine("     [file] sqlcon command batch file name (.sqc)");
             cout.WriteLine();
             cout.WriteLine("/h,/?      : this help");
-            cout.WriteLine($"/cfg       : congfiguration file default file:{ConfigureFile._USER_CFG}]");
+            cout.WriteLine($"/cfg       : congfiguration file default file:{Configuration.USER_CFG}]");
             cout.WriteLine("/i         : input sql script file name");
             cout.WriteLine("/o         : result of sql script");
             cout.WriteLine("examples:");

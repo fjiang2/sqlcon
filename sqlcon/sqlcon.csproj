@@ -110,14 +110,9 @@
     <Compile Include="ClassBuilder\Json2CSharp.cs" />
     <Compile Include="ClassBuilder\TieClassBuilder.cs" />
     <Compile Include="Configuration\Config.cs" />
-    <Compile Include="Configuration\ConfigureFile.cs" />
-    <Compile Include="Configuration\Config`1.cs" />
     <Compile Include="Configuration\ConfigDefaultValue.cs" />
     <Compile Include="Configuration\ConfigKey.cs" />
-    <Compile Include="Configuration\ConnectionConfiguration.cs" />
-    <Compile Include="Configuration\ConnectionString.cs" />
-    <Compile Include="Configuration\IConfiguration.cs" />
-    <Compile Include="Configuration\IConnectionConfiguration.cs" />
+    <Compile Include="Configuration\Config`1.cs" />
     <Compile Include="Data\CsvFile.cs" />
     <Compile Include="Data\DuplicatedTable.cs" />
     <Compile Include="ClassBuilder\EntityClassBuilder.cs" />
@@ -159,7 +154,6 @@
     <Compile Include="Shell\CompareAdapter.cs" />
     <Compile Include="Shell\ActionType.cs" />
     <Compile Include="Main.cs" />
-    <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Output\OutputDataLine.cs" />
     <Compile Include="Input\ApplicationCommand.cs" />
     <Compile Include="Path\PathLevel.cs" />
@@ -179,7 +173,6 @@
     <Compile Include="Data\Tools.cs" />
     <Compile Include="Windows\WpfExtension.cs" />
     <Compile Include="Windows\WpfUtils.cs" />
-    <Compile Include="Input\WorkingDirectory.cs" />
     <Compile Include="ZipFile.cs" />
   </ItemGroup>
   <ItemGroup>
