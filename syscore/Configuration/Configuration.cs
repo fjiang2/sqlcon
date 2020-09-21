@@ -12,27 +12,25 @@ namespace Sys
 {
     public partial class Configuration  
     {
-
         private const string _FUNC_CONFIG = "config";
         private const string _FUNC_CFG = "cfg";
 
         private static TextWriter cerr = Console.Error;
 
-        protected Memory Cfg = new Memory();
+        protected Memory DS = new Memory();
 
-        public string UserConfigurationFile { get; private set; } = "user.cfg";
+        public string UserConfigFile { get; private set; } = "user.cfg";
 
         public Configuration()
         {
             Script.FunctionChain.Add(functions);
             HostType.Register(typeof(DateTime), true);
             HostType.Register(typeof(Environment), true);
-            Cfg.AddObject("MyDocuments", MyDocuments);
+            DS.AddObject("MyDocuments", MyDocuments);
         }
 
         public static string MyDocuments => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + ProductName;
 
-        
         private static VAL functions(string func, VAL parameters, Memory DS)
         {
             const string _FUNC_LOCAL_IP = "localip";
@@ -109,7 +107,7 @@ namespace Sys
 
                 try
                 {
-                    Script.Execute(code, Cfg);
+                    Script.Execute(code, DS);
                 }
                 catch (Exception ex)
                 {
@@ -123,12 +121,12 @@ namespace Sys
 
         public VAL GetValue(VAR variable)
         {
-            return Cfg[variable];
+            return DS[variable];
         }
 
         public T GetValue<T>(string variable, T defaultValue = default(T))
         {
-            VAL val = Cfg.GetValue(variable);
+            VAL val = DS.GetValue(variable);
             if (val.Defined)
             {
                 if (typeof(T) == typeof(VAL))
@@ -142,9 +140,7 @@ namespace Sys
             return defaultValue;
         }
 
-
-
-        public virtual bool Initialize(string cfgFile)
+        public virtual bool Initialize(string usercfg)
         {
             string _FILE_SYSTEM_CONFIG = $"{ProductName}.cfg";
 
@@ -161,16 +157,16 @@ namespace Sys
                 return false;
 
             //user.cfg is optional
-            if (!string.IsNullOrEmpty(cfgFile) && File.Exists(cfgFile))
+            if (!string.IsNullOrEmpty(usercfg) && File.Exists(usercfg))
             {
-                this.UserConfigurationFile = cfgFile;
-                TryReadCfg(cfgFile);
+                this.UserConfigFile = usercfg;
+                TryReadCfg(usercfg);
             }
 
             CopyVariableContext(stdio.FILE_LOG);
             CopyVariableContext(stdio.FILE_EDITOR);
 
-            CopyContext(Cfg["Context"]);
+            CopyContext(DS["Context"]);
 
             return true;
         }
@@ -191,15 +187,10 @@ namespace Sys
             if (to == null)
                 to = from;
 
-            VAL val = Cfg.GetValue(from);
+            VAL val = DS.GetValue(from);
             if (val.Defined)
                 Context.DS.Add(to, val);
         }
-
-
-
-
-
 
         /// <summary>
         /// load cfg file from ftp site or web site
@@ -259,8 +250,6 @@ namespace Sys
                 cerr.WriteLine($"configuration file format error in {link}, {ex.Message}");
             }
         }
-
-
 
     }
 }

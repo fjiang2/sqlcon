@@ -39,7 +39,7 @@ namespace sqlcon
             this.XmlDbDirectory = GetValue<string>(_XML_DB_FOLDER, "db");
             this.WorkingDirectory.SetCurrentDirectory(GetValue<string>(_WORKING_DIRECTORY, "."));
 
-            var limit = Cfg[_LIMIT];
+            var limit = DS[_LIMIT];
             if (limit["top"].Defined)
                 this.TopLimit = (int)limit["top"];
 
@@ -55,7 +55,7 @@ namespace sqlcon
             get
             {
                 if (connection == null)
-                    connection = new ConnectionConfiguration(GetValue<string>(_SERVER0), Cfg.GetValue(_SERVERS));
+                    connection = new ConnectionConfiguration(GetValue<string>(_SERVER0), DS.GetValue(_SERVERS));
                 return connection;
             }
         }

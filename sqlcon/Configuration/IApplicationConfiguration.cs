@@ -5,7 +5,7 @@ namespace sqlcon
 {
     public interface IApplicationConfiguration 
     {
-        string UserConfigurationFile { get; }
+        string UserConfigFile { get; }
         string OutputFile { get; }
         WorkingDirectory WorkingDirectory { get; }
         string XmlDbDirectory { get; }
