@@ -3,22 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Sys.CodeBuilder;
 
 namespace Sys.Data.Manager
 {
+
     public static class Extension
     {
 
-        public static string ToFieldName(this IColumn column)
+        public static string ToFieldName(this IColumn column, CodeStyle style = CodeStyle.Original)
         {
             string columnName = column.ColumnName;
-            return ToFieldName(columnName);
+            return ToFieldName(columnName, style);
         }
-        public static string ToFieldName(this string columnName)
-            => ToFieldName(columnName, "_");
 
-        public static string ToFieldName(this string columnName, string prefix)
+        public static string ToFieldName(this string columnName, CodeStyle style = CodeStyle.Original)
+            => ToFieldName(columnName, "_", style);
+
+        public static string ToFieldName(this string columnName, string prefix, CodeStyle style = CodeStyle.Original)
         {
             string fieldName = columnName;
             if (columnName.IndexOf("#") != -1
@@ -30,6 +32,20 @@ namespace Sys.Data.Manager
 
                 if (!Char.IsLetter(columnName[0]))
                     fieldName = prefix + fieldName;
+            }
+
+            char ch = fieldName[0];
+            switch (style)
+            {
+                case CodeStyle.Pascal:
+                    if (char.IsLower(ch))
+                        return char.ToUpper(ch) + fieldName.Substring(1);
+                    break;
+
+                case CodeStyle.Camel:
+                    if (char.IsUpper(ch))
+                        return char.ToLower(ch) + fieldName.Substring(1);
+                    break;
             }
 
             return fieldName;

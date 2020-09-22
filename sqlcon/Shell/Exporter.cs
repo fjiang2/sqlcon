@@ -852,6 +852,7 @@ namespace sqlcon
             cout.WriteLine("option of code generation:");
             cout.WriteLine("   /dpo     : generate C# table class");
             cout.WriteLine("   /l2s     : generate C# Linq to SQL class");
+            cout.WriteLine("      [/code-style]: orginal|pascal|camel");
             cout.WriteLine("   /dc      : generate C# data contract class");
             cout.WriteLine("   /dc1     : generate C# data contract class and extension class");
             cout.WriteLine("      [/methods:NewObject,FillObject,UpdateRow,CreateTable,ToDataTable,ToDictionary,FromDictionary,CopyTo,CompareTo,ToSimpleString]");
