@@ -17,7 +17,7 @@ namespace sqlcon
     {
         private PathManager mgr;
         private ApplicationCommand cmd;
-        private IConfiguration cfg;
+        private IApplicationConfiguration cfg;
 
 
         private TableName tname;
@@ -25,7 +25,7 @@ namespace sqlcon
         private ServerName sname;
 
         XmlDbCreator xmlDbFile;
-        public Exporter(PathManager mgr, TreeNode<IDataPath> pt, ApplicationCommand cmd, IConfiguration cfg)
+        public Exporter(PathManager mgr, TreeNode<IDataPath> pt, ApplicationCommand cmd, IApplicationConfiguration cfg)
         {
             this.mgr = mgr;
             this.cmd = cmd;
@@ -132,7 +132,7 @@ namespace sqlcon
                 using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
                 {
                     writer.WriteLine(tname.GenerateIfDropClause());
-                    writer.WriteLine(tname.GenerateClause());
+                    writer.WriteLine(tname.GenerateCreateTableClause(appendGO: true));
                 }
                 cout.WriteLine("completed to generate script on file: {0}", SqlFileName);
                 return;
@@ -153,7 +153,7 @@ namespace sqlcon
                         {
                             cout.WriteLine("start to generate CREATE TABLE script: {0} ", tname);
                             stack.Push(tname.GenerateIfDropClause());
-                            queue.Enqueue(tname.GenerateClause());
+                            queue.Enqueue(tname.GenerateCreateTableClause(appendGO: true));
                         }
 
                         using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
@@ -189,6 +189,12 @@ namespace sqlcon
 
         public void ExportInsertOrUpdateData(SqlScriptType type)
         {
+            var option = new SqlScriptGenerationOption
+            {
+                HasIfExists = cmd.HasIfExists,
+                InsertWithoutColumns = cmd.Has("without-columns"),
+            };
+
             if (tname != null)
             {
                 var node = mgr.GetCurrentNode<Locator>();
@@ -200,12 +206,12 @@ namespace sqlcon
                     {
                         cout.WriteLine("start to generate {0} INSERT script to file: {1}", tname, SqlFileName);
                         Locator locator = mgr.GetCombinedLocator(node);
-                        count = Compare.GenerateRows(type, writer, new TableSchema(tname), locator, cmd.HasIfExists);
+                        count = Compare.GenerateRows(type, writer, new TableSchema(tname), locator, option);
                         cout.WriteLine($"{type} clauses (SELECT * FROM {tname} WHERE {locator}) generated to \"{SqlFileName}\"");
                     }
                     else
                     {
-                        count = Compare.GenerateRows(type, writer, new TableSchema(tname), null, cmd.HasIfExists);
+                        count = Compare.GenerateRows(type, writer, new TableSchema(tname), null, option);
                         cout.WriteLine($"{type} clauses (SELECT * FROM {tname}) generated to \"{SqlFileName}\"");
                     }
                 }
@@ -234,7 +240,7 @@ namespace sqlcon
                                 }
                             }
 
-                            count = Compare.GenerateRows(type, writer, new TableSchema(tn), null, cmd.HasIfExists);
+                            count = Compare.GenerateRows(type, writer, new TableSchema(tn), null, option);
                             cout.WriteLine($"{count,10} row(s) generated on {tn.ShortName}");
                         }
 
@@ -846,6 +852,7 @@ namespace sqlcon
             cout.WriteLine("option of code generation:");
             cout.WriteLine("   /dpo     : generate C# table class");
             cout.WriteLine("   /l2s     : generate C# Linq to SQL class");
+            cout.WriteLine("      [/code-style]: orginal|pascal|camel");
             cout.WriteLine("   /dc      : generate C# data contract class");
             cout.WriteLine("   /dc1     : generate C# data contract class and extension class");
             cout.WriteLine("      [/methods:NewObject,FillObject,UpdateRow,CreateTable,ToDataTable,ToDictionary,FromDictionary,CopyTo,CompareTo,ToSimpleString]");

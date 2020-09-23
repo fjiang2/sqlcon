@@ -10,6 +10,14 @@ using Sys.Data;
 
 namespace sqlcon
 {
+    class SchemaRefineOption
+    {
+        public bool ChangeNotNull { get; set; }
+        public bool ConvertInteger { get; set; }
+        public bool ConvertBoolean { get; set; }
+        public bool ShrinkString { get; set; }
+    }
+
     class TableSchemaRefinement
     {
         private TableName tname;
@@ -21,7 +29,7 @@ namespace sqlcon
             this.schema = new TableSchema(tname);
         }
 
-        public string Refine()
+        public string Refine(SchemaRefineOption option)
         {
             string SQL = $"SELECT * FROM [{tname.Name}]";
             var dt = FillDataTable(SQL);
@@ -31,25 +39,25 @@ namespace sqlcon
             {
                 ColumnSchema cs = (ColumnSchema)column;
                 bool isDirty = false;
-                if (column.Nullable && !HasNull(dt, column))
+                if (option.ChangeNotNull && column.Nullable && !HasNull(dt, column))
                 {
                     cs.Nullable = false;
                     isDirty = true;
                 }
 
-                if (CanConvertToInt32(dt, column))
+                if (option.ConvertInteger && CanConvertToInt32(dt, column))
                 {
                     cs.DataType = "int";
                     isDirty = true;
                 }
 
-                if (CanConvertBoolean(dt, column))
+                if (option.ConvertBoolean && CanConvertBoolean(dt, column))
                 {
                     cs.DataType = "bit";
                     isDirty = true;
                 }
 
-                if (ShrinkString(dt, column, out short length))
+                if (option.ShrinkString && ShrinkString(dt, column, out short length))
                 {
                     cs.Length = length;
                     isDirty = true;
@@ -90,7 +98,7 @@ namespace sqlcon
                         return false;
                 }
             }
-            
+
             if (column.CType == CType.NChar || column.CType == CType.NVarChar)
                 max += max;
 

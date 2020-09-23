@@ -4,18 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
 using Sys.Stdio;
+using Sys;
 
 namespace sqlcon
 {
     class Main
     {
-        private const string _USER_CFG_TEMPLATE = "user.ini";
-        private const string _USER_CFG = "user.cfg";
 
-        private Configuration cfg;
+        private ApplicationConfiguration cfg;
         public Shell Shell { get; private set; }
 
-        public Main(Configuration cfg)
+        public Main(ApplicationConfiguration cfg)
         {
             this.cfg = cfg;
         }
@@ -43,7 +42,7 @@ namespace sqlcon
                             string server = connection.Home;
                             var pvd = connection.GetProvider(server);
                             var theSide = new Side(pvd);
-                            theSide.ExecuteScript(inputfile);
+                            theSide.ExecuteScript(inputfile, verbose: false);
                             break;
                         }
                         else
@@ -88,62 +87,7 @@ namespace sqlcon
             batch.Call(null, args);
         }
 
-        public static string PrepareConfigureFile(bool overwrite)
-        {
-            string cfgFile = _USER_CFG;
-            var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            folder = Path.Combine(folder, "datconn", "sqlcon");
-            if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder);
-
-            bool exists = File.Exists(cfgFile);
-            string file = Path.Combine(folder, cfgFile);
-            try
-            {
-                if (!File.Exists(file))
-                {
-                    if (!exists)
-                    {
-                        if (File.Exists(_USER_CFG_TEMPLATE))
-                        {
-                            //copy user.cfg template
-                            File.Copy(_USER_CFG_TEMPLATE, file);
-                        }
-                        else
-                        {
-                            //create empty text file if file is missing
-                            File.Create(file).Dispose();
-                        }
-                    }
-                    else
-                        File.Copy(cfgFile, file);
-
-                    return file;
-                }
-
-                if (exists)
-                {
-                    FileInfo f = new FileInfo(file);
-                    if (f.Length == 0)
-                        overwrite = true;
-
-                    if (!overwrite)
-                    {
-                        FileInfo c = new FileInfo(cfgFile);
-                        overwrite = c.LastWriteTime > f.LastWriteTime;
-                    }
-
-                    if (overwrite)
-                        File.Copy(cfgFile, file, true);
-                }
-            }
-            catch (Exception ex)
-            {
-                cerr.WriteLine($"failed to initialize {file}, {ex.Message}");
-            }
-
-            return file;
-        }
+     
 
         public static void ShowHelp()
         {
@@ -154,7 +98,7 @@ namespace sqlcon
             cout.WriteLine("     [file] sqlcon command batch file name (.sqc)");
             cout.WriteLine();
             cout.WriteLine("/h,/?      : this help");
-            cout.WriteLine($"/cfg       : congfiguration file default file:{_USER_CFG}]");
+            cout.WriteLine($"/cfg       : congfiguration file default file:{Configuration.USER_CFG}]");
             cout.WriteLine("/i         : input sql script file name");
             cout.WriteLine("/o         : result of sql script");
             cout.WriteLine("examples:");

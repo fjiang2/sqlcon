@@ -4,14 +4,11 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
-using Sys.Data.Comparison;
 
 namespace Sys.Data
 {
     class TableClause
     {
-        public const string GO = "GO";
-
         private ITableSchema schema;
         private TableName tableName;
         private SqlTemplate template;
@@ -116,7 +113,7 @@ namespace Sys.Data
         #endregion
 
         #region CREATE/DROP Table
-        public string CREATE_TABLE()
+        private string CREATE_TABLE()
         {
             TableSchema schema1 = new TableSchema(tableName);
             string format = TableClause.GenerateCREATE_TABLE(schema1);
@@ -236,7 +233,7 @@ namespace Sys.Data
         #endregion
 
 
-        public string GenerateScript()
+        public string GenerateCreateTableScript()
         {
             string sql;
             sql = CREATE_TABLE();
@@ -252,7 +249,6 @@ namespace Sys.Data
                 }
             }
 
-            builder.AppendLine(TableClause.GO);
             sql = builder.ToString();
             return sql;
         }

@@ -8,7 +8,7 @@ using System.IO;
 using Tie;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace Sys
 {
     class ConnectionString
     {

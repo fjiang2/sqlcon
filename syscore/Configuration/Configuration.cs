@@ -1,68 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.OleDb;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 using Sys.Data.IO;
 using Sys.Networking;
 using Sys.Stdio;
 using Tie;
 
-namespace sqlcon
+namespace Sys
 {
-    class Configuration : IConfiguration
+    public partial class Configuration  
     {
-        const string _SERVER0 = "home";
-        const string _SERVERS = "servers";
+        private const string _FUNC_CONFIG = "config";
+        private const string _FUNC_CFG = "cfg";
 
-        const string _FUNC_CONFIG = "config";
-        const string _FUNC_CFG = "cfg";
-
-        const string _FILE_SYSTEM_CONFIG = "sqlcon.cfg";
-        const string _FILE_OUTPUT = "output";
-        const string _XML_DB_FOLDER = "xmldb";
-
-        const string _WORKING_DIRECTORY = "working.directory.commands";
-
-        const string _LIMIT = "limit";
-
-        private Memory Cfg = new Memory();
-
-        public string UserConfigurationFile { get; private set; } = "user.cfg";
-
-        public string OutputFile { get; set; }
-        public string XmlDbDirectory { get; private set; }
-        public WorkingDirectory WorkingDirectory { get; }
-
-        public int TopLimit { get; private set; } = 20;
-        public int MaxRows { get; private set; } = 2000;
         private static TextWriter cerr = Console.Error;
 
+        protected Memory DS = new Memory();
+
+        public string UserConfigFile { get; private set; } = "user.cfg";
 
         public Configuration()
         {
             Script.FunctionChain.Add(functions);
             HostType.Register(typeof(DateTime), true);
             HostType.Register(typeof(Environment), true);
-            Cfg.AddObject("MyDocuments", MyDocuments);
-            WorkingDirectory = new WorkingDirectory();
+            DS.AddObject("MyDocuments", MyDocuments);
         }
 
-        public static string MyDocuments => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\sqlcon";
-
-        private IConnectionConfiguration connection = null;
-        public IConnectionConfiguration Connection
-        {
-            get
-            {
-                if (connection == null)
-                    connection = new ConnectionConfiguration(GetValue<string>(_SERVER0), Cfg.GetValue(_SERVERS));
-                return connection;
-            }
-        }
+        public static string MyDocuments => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + ProductName;
 
         private static VAL functions(string func, VAL parameters, Memory DS)
         {
@@ -140,7 +107,7 @@ namespace sqlcon
 
                 try
                 {
-                    Script.Execute(code, Cfg);
+                    Script.Execute(code, DS);
                 }
                 catch (Exception ex)
                 {
@@ -154,12 +121,12 @@ namespace sqlcon
 
         public VAL GetValue(VAR variable)
         {
-            return Cfg[variable];
+            return DS[variable];
         }
 
         public T GetValue<T>(string variable, T defaultValue = default(T))
         {
-            VAL val = Cfg.GetValue(variable);
+            VAL val = DS.GetValue(variable);
             if (val.Defined)
             {
                 if (typeof(T) == typeof(VAL))
@@ -173,10 +140,9 @@ namespace sqlcon
             return defaultValue;
         }
 
-
-
-        public bool Initialize(string cfgFile)
+        public virtual bool Initialize(string usercfg)
         {
+            string _FILE_SYSTEM_CONFIG = $"{ProductName}.cfg";
 
             string theDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             string sysCfgFile = Path.Combine(theDirectory, _FILE_SYSTEM_CONFIG);
@@ -191,28 +157,16 @@ namespace sqlcon
                 return false;
 
             //user.cfg is optional
-            if (!string.IsNullOrEmpty(cfgFile) && File.Exists(cfgFile))
+            if (!string.IsNullOrEmpty(usercfg) && File.Exists(usercfg))
             {
-                this.UserConfigurationFile = cfgFile;
-                TryReadCfg(cfgFile);
+                this.UserConfigFile = usercfg;
+                TryReadCfg(usercfg);
             }
-
-            this.OutputFile = Cfg.GetValue<string>(_FILE_OUTPUT, "script.sql");
-            this.XmlDbDirectory = Cfg.GetValue<string>(_XML_DB_FOLDER, "db");
-            this.WorkingDirectory.SetCurrentDirectory(Cfg.GetValue<string>(_WORKING_DIRECTORY, "."));
-
-            var limit = Cfg[_LIMIT];
-            if (limit["top"].Defined)
-                this.TopLimit = (int)limit["top"];
-
-            if (limit["export_max_count"].Defined)
-                this.MaxRows = (int)limit["export_max_count"];
-
 
             CopyVariableContext(stdio.FILE_LOG);
             CopyVariableContext(stdio.FILE_EDITOR);
 
-            CopyContext(Cfg["Context"]);
+            CopyContext(DS["Context"]);
 
             return true;
         }
@@ -233,15 +187,10 @@ namespace sqlcon
             if (to == null)
                 to = from;
 
-            VAL val = Cfg.GetValue(from);
+            VAL val = DS.GetValue(from);
             if (val.Defined)
                 Context.DS.Add(to, val);
         }
-
-
-
-
-
 
         /// <summary>
         /// load cfg file from ftp site or web site
@@ -301,8 +250,6 @@ namespace sqlcon
                 cerr.WriteLine($"configuration file format error in {link}, {ex.Message}");
             }
         }
-
-
 
     }
 }

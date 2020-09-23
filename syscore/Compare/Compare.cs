@@ -103,7 +103,7 @@ namespace Sys.Data.Comparison
             }
             else
             {
-                sql = tableName1.GenerateClause();
+                sql = tableName1.GenerateCreateTableClause(appendGO : true);
             }
 
             return sql;
@@ -150,17 +150,17 @@ namespace Sys.Data.Comparison
             }
 
             if (table.Rows.Count > 0)
-                builder.AppendLine(TableClause.GO);
+                builder.AppendLine(SqlScript.GO);
 
             return builder.ToString();
         }
 
-        public static int GenerateRows(SqlScriptType type, StreamWriter writer, ITableSchema schema, Locator where, bool hasIfExists)
+        public static int GenerateRows(SqlScriptType type, StreamWriter writer, ITableSchema schema, Locator where, SqlScriptGenerationOption option)
         {
             SqlScriptGeneration gen = new SqlScriptGeneration(type, schema)
             {
                 Where = where,
-                HasIfExists = hasIfExists
+                Option = option,
             };
 
             return gen.Generate(writer);

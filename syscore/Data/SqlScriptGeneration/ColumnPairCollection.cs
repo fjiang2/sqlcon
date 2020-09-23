@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data;
 
-namespace Sys.Data.Comparison
+namespace Sys.Data
 {
     class ColumnPairCollection : List<ColumnPair>
     {
@@ -17,6 +17,7 @@ namespace Sys.Data.Comparison
         {
             AddRange(row);
         }
+
         public ColumnPairCollection(string[] columnName, object[] values)
         {
             AddRange(columnName, values);

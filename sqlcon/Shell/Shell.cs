@@ -17,7 +17,7 @@ namespace sqlcon
     partial class Shell : ShellContext, IShell
     {
 
-        public Shell(IConfiguration cfg)
+        public Shell(IApplicationConfiguration cfg)
             : base(cfg)
         {
         }
@@ -343,12 +343,16 @@ namespace sqlcon
                     else
                         return NextStep.COMPLETED;
 
+                case "import":
+                    commandee.import(cmd, cfg, this);
+                    return NextStep.COMPLETED;
+
                 case "export":
                     commandee.export(cmd, cfg, this);
                     return NextStep.COMPLETED;
 
-                case "import":
-                    commandee.import(cmd, cfg, this);
+                case "load":
+                    commandee.load(cmd, cfg, this);
                     return NextStep.COMPLETED;
 
                 case "clean":

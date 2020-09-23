@@ -598,7 +598,7 @@ namespace sqlcon
             });
         }
 
-        public void compare(ApplicationCommand cmd, IConfiguration cfg)
+        public void compare(ApplicationCommand cmd, IApplicationConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -693,6 +693,11 @@ namespace sqlcon
                 cout.WriteLine("refine columns:");
                 cout.WriteLine("  attrib [table] /refine                 : refine column type and nullable");
                 cout.WriteLine("  attrib [table] /refine  /commit        : refine and save changes");
+                cout.WriteLine("  refine option:");
+                cout.WriteLine("    /not-null                            : change to NOT NULL");
+                cout.WriteLine("    /int                                 : convert to int");
+                cout.WriteLine("    /bit                                 : convert to bit");
+                cout.WriteLine("    /string                              : shrink string(NVARCHAR,VARCHAR,NCHAR,CHAR)");
                 return;
             }
 
@@ -833,7 +838,15 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             {
                 TableName tname = (TableName)pt.Item;
                 TableSchemaRefinement refinement = new TableSchemaRefinement(tname);
-                string SQL = refinement.Refine();
+                SchemaRefineOption option = new SchemaRefineOption
+                {
+                    ChangeNotNull = cmd.Has("not-null"),
+                    ConvertInteger = cmd.Has("int"),
+                    ConvertBoolean = cmd.Has("bit"),
+                    ShrinkString = cmd.Has("string"),
+                };
+
+                string SQL = refinement.Refine(option);
                 if (!string.IsNullOrEmpty(SQL))
                 {
                     string fileName = cmd.OutputFile(cmd.Configuration.OutputFile);
@@ -985,7 +998,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void clean(ApplicationCommand cmd, IConfiguration cfg)
+        public void clean(ApplicationCommand cmd, IApplicationConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1071,22 +1084,22 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             cerr.WriteLine("select database or table first");
         }
 
-        public void import(ApplicationCommand cmd, IConfiguration cfg, ShellContext context)
+        public void load(ApplicationCommand cmd, IApplicationConfiguration cfg, ShellContext context)
         {
             if (cmd.HasHelp)
             {
-                cout.WriteLine("import file");
+                cout.WriteLine("load data file");
                 cout.WriteLine("option:");
                 cout.WriteLine("   /fmt:xml,ds   : load System.Data.DataSet xml file as last result");
                 cout.WriteLine("   /fmt:xml,dt   : load System.Data.DataTable xml file as last result");
-                cout.WriteLine("   /fmt:txt      : load text file and import into current table");
-                cout.WriteLine("   /fmt:csv      : import .csv data into current table");
+                cout.WriteLine("   /fmt:txt      : load text file and load into current table");
+                cout.WriteLine("   /fmt:csv      : load .csv data into current table");
                 cout.WriteLine("      [/col:c1,c2,...] csv columns mapping");
-                cout.WriteLine("   /fmt:cfg      : import .cfg data into current config table");
+                cout.WriteLine("   /fmt:cfg      : load .cfg data into current config table");
                 cout.WriteLine("      [/key:column] column of key on config table");
                 cout.WriteLine("      [/value:column] column of value config table");
                 cout.WriteLine("      [/col:c1=v1,c2=v2,...] default values for not null columns");
-                cout.WriteLine("e.g. import c:\\conf.cfg /fmt:cfg /key:Key /value:Value /col:[Inactive]=0");
+                cout.WriteLine("e.g. load c:\\conf.cfg /fmt:cfg /key:Key /value:Value /col:[Inactive]=0");
                 return;
             }
 
@@ -1152,18 +1165,18 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     TableName tname = mgr.GetCurrentPath<TableName>();
                     if (tname == null)
                     {
-                        cerr.WriteLine("cannot find the table to import data");
+                        cerr.WriteLine("cannot find the table to load data");
                         return;
                     }
 
                     int count = 0;
-                    var importer = new Importer(cmd);
+                    var importer = new Loader(cmd);
                     if (fmt == "csv")
-                        count = importer.ImportCsv(file, tname, cmd.Columns);
+                        count = importer.LoadCsv(file, tname, cmd.Columns);
                     else if (fmt == "cfg")
-                        count = importer.ImportCfg(file, tname);
+                        count = importer.LoadCfg(file, tname);
 
-                    cout.WriteLine($"{count} row(s) imported");
+                    cout.WriteLine($"{count} row(s) loaded");
                     break;
 
                 case "tie":
@@ -1176,7 +1189,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void export(ApplicationCommand cmd, IConfiguration cfg, ShellContext context)
+        public void export(ApplicationCommand cmd, IApplicationConfiguration cfg, ShellContext context)
         {
             if (cmd.HasHelp)
             {
@@ -1517,12 +1530,15 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             });
         }
 
-        public void execute(ApplicationCommand cmd, IConfiguration cfg, Side theSide)
+        public void execute(ApplicationCommand cmd, IApplicationConfiguration cfg, Side theSide)
         {
             if (cmd.HasHelp)
             {
                 cout.WriteLine("execute sql script file");
                 cout.WriteLine("execute file (.sql)");
+                cout.WriteLine("options:");
+                cout.WriteLine("   /batch-size:count          : maximum number of statements in SQL bulk command");
+                cout.WriteLine("   /verbose                   : display details");
                 cout.WriteLine("examples:");
                 cout.WriteLine("  execute northwind.sql       : execute single sql script file");
                 return;
@@ -1537,13 +1553,15 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            if (theSide.ExecuteScript(inputfile))
+            int batchSize = cmd.GetInt32("batch-size", 1);
+            bool verbose = cmd.Has("verbose");
+            if (theSide.ExecuteScript(inputfile, batchSize, verbose))
                 ErrorCode = CommandState.OK;
             else
                 ErrorCode = CommandState.SQL_FAILS;
         }
 
-        public void edit(ApplicationCommand cmd, IConfiguration cfg, IConnectionConfiguration connection, Side theSide)
+        public void edit(ApplicationCommand cmd, IApplicationConfiguration cfg, IConnectionConfiguration connection, Side theSide)
         {
             if (cmd.HasHelp)
             {
@@ -1616,7 +1634,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 #endif			
         }
 
-        public void open(ApplicationCommand cmd, IConfiguration cfg)
+        public void open(ApplicationCommand cmd, IApplicationConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1655,7 +1673,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     if (cmd.IsSchema)
                         stdio.OpenEditor("sqlcon.cfg");
                     else
-                        stdio.OpenEditor(cfg.UserConfigurationFile);
+                        stdio.OpenEditor(cfg.UserConfigFile);
                     break;
 
                 case "release":
@@ -1713,7 +1731,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
         }
 
-        public void save(ApplicationCommand cmd, IConfiguration cfg)
+        public void save(ApplicationCommand cmd, IApplicationConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -1856,7 +1874,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         }
 
 
-        public void last(ApplicationCommand cmd, IConfiguration cfg)
+        public void last(ApplicationCommand cmd, IApplicationConfiguration cfg)
         {
             if (cmd.HasHelp)
             {
@@ -2139,5 +2157,50 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             return true; // NextStep.COMPLETED;
         }
 
+        public void import(ApplicationCommand cmd, IApplicationConfiguration cfg, ShellContext context)
+        {
+            if (cmd.HasHelp)
+            {
+                cout.WriteLine("import data");
+                cout.WriteLine("import [path]              :");
+                cout.WriteLine("options:");
+                cout.WriteLine("  /zip                     : dump variables memory to output file");
+                cout.WriteLine("  /out                     : define output file or directory");
+                cout.WriteLine("example:");
+                cout.WriteLine("  import insert.sql        : run script");
+                cout.WriteLine("  import insert.zip  /zip  : run script, default extension is .sqt");
+                return;
+            }
+
+            string file = cmd.arg1;
+            if (file == null)
+            {
+                cerr.WriteLine("file name not specified");
+                return;
+            }
+
+            if (!File.Exists(file))
+            {
+                cerr.WriteLine($"cannot find the file \"{file}\"");
+                return;
+            }
+
+            bool zip = false;
+            if (Path.GetExtension(file) == ".zip")
+                zip = true;
+
+            if (cmd.Has("zip"))
+                zip = true;
+
+            using (var reader = new StreamReader(file))
+            {
+                if (zip)
+                {
+                    ZipFileReader.ProcessZipArchive(file, line => Console.WriteLine(line));
+                }
+            }
+
+
+        }
     }
 }

@@ -1,21 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using System.Threading.Tasks;
 using System.Data.SqlClient;
 
 namespace Sys.Data
 {
+
     public class SqlScript
     {
+        public const string GO = "GO";
+
         private string scriptFile;
         private ConnectionProvider provider;
 
-        public event EventHandler<EventArgs<int, string>> Reported;
+        public event EventHandler<SqlExecutionEventArgs> Reported;
         public event EventHandler<EventArgs> Completed;
         public event EventHandler<SqlExceptionEventArgs> Error;
+        public int BatchSize { get; set; } = 1;
+
+        private StringBuffer buffer;
 
         public SqlScript(ConnectionProvider provider, string scriptFile)
         {
@@ -26,7 +30,7 @@ namespace Sys.Data
                 throw new FileNotFoundException("cannot find file", scriptFile);
         }
 
-        protected void OnReported(EventArgs<int, string> e)
+        protected void OnReported(SqlExecutionEventArgs e)
         {
             if (Reported != null)
                 Reported(this, e);
@@ -46,11 +50,10 @@ namespace Sys.Data
                 throw e.Exception;
         }
 
-
-
-
         public void Execute(Func<bool> stopOnError)
         {
+            buffer = new StringBuffer(BatchSize);
+
             StringBuilder builder = new StringBuilder();
             var reader = new SqlScriptReader(scriptFile);
 
@@ -66,10 +69,12 @@ namespace Sys.Data
                     || upperLine.StartsWith("CREATE")
                     || upperLine.StartsWith("DROP")
                     || upperLine.StartsWith("ALTER")
-                    || upperLine.StartsWith("GO")
+                    || upperLine.StartsWith(GO)
                     )
                 {
-                    if (!ExecuteSql(reader.LineNumber, builder))
+                    bool go = upperLine.StartsWith(GO);
+
+                    if (!ExecuteSql(reader.LineNumber, builder, go))
                     {
                         if (stopOnError != null && stopOnError())
                         {
@@ -79,7 +84,7 @@ namespace Sys.Data
                     }
 
                     builder.Clear();
-                    if (!upperLine.StartsWith("GO"))
+                    if (!upperLine.StartsWith(GO))
                         builder.AppendLine(line);
                 }
                 else
@@ -93,11 +98,11 @@ namespace Sys.Data
 
                         upperLine = formatedLine.ToUpper();
 
-                        if (!upperLine.StartsWith("GO"))
+                        if (!upperLine.StartsWith(GO))
                             builder.AppendLine(line);
                         else
                         {
-                            if (!ExecuteSql(reader.LineNumber, builder))
+                            if (!ExecuteSql(reader.LineNumber, builder, commit: true))
                             {
                                 if (stopOnError != null && stopOnError())
                                 {
@@ -116,37 +121,51 @@ namespace Sys.Data
 
             reader.Close();
 
-            if (!ExecuteSql(reader.LineNumber, builder))
+            if (!ExecuteSql(reader.LineNumber, builder, commit: true))
                 return;
 
             OnCompleted(new EventArgs());
         }
 
-        private bool ExecuteSql(int i, StringBuilder builder)
+        private bool ExecuteSql(int line, StringBuilder builder, bool commit)
         {
             string sql = builder.ToString();
 
-            if (string.IsNullOrEmpty(sql))
+            if (buffer.Append(line, sql, commit))
                 return true;
 
+            bool result = ExecuteSql(buffer);
+            buffer.Clear();
+            return result;
+        }
+
+        private bool ExecuteSql(StringBuffer buffer)
+        {
+            if (buffer.BatchSize == 0)
+                return true;
+
+            string sql = buffer.AllText;
             try
             {
                 var cmd = new SqlCmd(provider, sql);
-                //cmd.Error += (sender, e) => { OnError(e); };
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex)
             {
-                OnError(new SqlExceptionEventArgs(sql, ex) { Line = i });
+                OnError(new SqlExceptionEventArgs(sql, ex) { Line = buffer.BatchLine });
                 return false;
             }
 
-            OnReported(new EventArgs<int, string>(i, sql));
+            OnReported(new SqlExecutionEventArgs(sql)
+            {
+                BatchLine = buffer.BatchLine,
+                BatchSize = buffer.BatchSize,
+                Line = buffer.Line,
+                TotalSize = buffer.TotalSize
+            }); ;
+
             return true;
         }
-
-
-
 
         public void ExecuteTransaction(string[] clauses)
         {
@@ -198,6 +217,4 @@ namespace Sys.Data
         }
 
     }
-
-
 }

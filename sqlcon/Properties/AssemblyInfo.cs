@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("sqlcon")]
 [assembly: AssemblyDescription("SQL Server Console")]
-[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyConfiguration("datconn")]
 [assembly: AssemblyCompany("Datum Connect")]
 [assembly: AssemblyProduct("sqlcon")]
 [assembly: AssemblyCopyright("Copyright ©  DATCONN 2012-2020")]
@@ -33,7 +33,7 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.2.11.0")]
-[assembly: AssemblyFileVersion("2.2.11.0")]
+[assembly: AssemblyVersion("2.2.13.0")]
+[assembly: AssemblyFileVersion("2.2.13.0")]
 
 #endif

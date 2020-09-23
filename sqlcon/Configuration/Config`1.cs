@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 #endif
 
+using Sys;
 using Sys.Stdio;
 
 namespace sqlcon
 {
     public static partial class Config
     {
-        private static IConfiguration cfg = Program.Configuration;
+        private static IApplicationConfiguration cfg = Program.Configuration;
 
 #if WINDOWS
         public static Brush GetBrush(this string colorString, Color defaultColor)

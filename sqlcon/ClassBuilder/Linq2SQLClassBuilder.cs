@@ -68,7 +68,7 @@ namespace sqlcon
 
             builder.AddClass(clss);
 
-
+            CodeStyle camel = cmd.GetEnum<CodeStyle>("code-style", CodeStyle.Original);
             TableSchema schema = GetSchema(tname);
 
             Property prop;
@@ -76,7 +76,7 @@ namespace sqlcon
             {
                 TypeInfo ty = new TypeInfo { UserType = column.DataType.GetFieldType(column.Nullable) };
 
-                prop = new Property(ty, column.ToFieldName()) { Modifier = Modifier.Public };
+                prop = new Property(ty, column.ToFieldName(camel)) { Modifier = Modifier.Public };
 
                 List<object> args = new List<object>();
                 args.Add(new { Name = column.ColumnName });
