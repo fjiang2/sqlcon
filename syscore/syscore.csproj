@@ -89,6 +89,10 @@
     <Compile Include="CodeBuilder\UniqueNameMaker.cs" />
     <Compile Include="CodeBuilder\UtilsMethod.cs" />
     <Compile Include="CodeBuilder\Value.cs" />
+    <Compile Include="Configuration\Configuration.cs" />
+    <Compile Include="Configuration\ConfigureFile.cs" />
+    <Compile Include="Configuration\ConnectionString.cs" />
+    <Compile Include="CodeBuilder\CodeStyle.cs" />
     <Compile Include="Data\Persistence\Level0\StringBuffer.cs" />
     <Compile Include="Data\Persistence\Level0\SqlExecutionEventArgs.cs" />
     <Compile Include="Data\SqlScriptGeneration\ColumnPairCollection.cs" />

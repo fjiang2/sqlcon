@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using Sys.Stdio;
+using Sys;
 
 namespace sqlcon
 {
@@ -12,12 +13,12 @@ namespace sqlcon
     {
         private const string EXT = ".sqc";
         private readonly string path;
-        private readonly IConfiguration cfg;
+        private readonly IApplicationConfiguration cfg;
 
 
         public bool IsBatch { get; } = false;
 
-        public Batch(IConfiguration cfg, string path)
+        public Batch(IApplicationConfiguration cfg, string path)
         {
             this.cfg = cfg;
             this.path = cfg.WorkingDirectory.GetFullPath(path, EXT);

@@ -8,7 +8,7 @@ using Sys.Stdio;
 
 namespace sqlcon
 {
-    class WorkingDirectory
+    public class WorkingDirectory
     {
         public string CurrentDirectory { get; private set; } = Path.GetFullPath(".");
 

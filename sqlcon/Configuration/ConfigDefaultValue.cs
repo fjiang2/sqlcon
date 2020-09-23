@@ -1,5 +1,6 @@
 using System;
 using Sys.Data.Manager;
+using Sys;
 
 namespace sqlcon
 {

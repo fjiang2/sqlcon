@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
+using Sys;
 using Sys.Stdio;
 
 namespace sqlcon
@@ -30,9 +31,9 @@ namespace sqlcon
 
 
         private bool hasRowId;
-        private IConfiguration cfg;
+        private IApplicationConfiguration cfg;
 
-        public ApplicationCommand(IConfiguration cfg, string line)
+        public ApplicationCommand(IApplicationConfiguration cfg, string line)
         {
             this.cfg = cfg;
             this.Top = cfg.TopLimit;
@@ -117,7 +118,7 @@ namespace sqlcon
             }
         }
 
-        public IConfiguration Configuration => this.cfg;
+        public IApplicationConfiguration Configuration => this.cfg;
 
         public bool HasRowId => hasRowId || Has("edit");
 
