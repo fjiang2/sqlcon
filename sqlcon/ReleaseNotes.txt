@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+9/25/2020 v2.2.14.0
+	Improvements/Enhancements:
+	1. command "run" supports searching paths which is similar with Windows environment variable "PATH"
+
 9/23/2020 v2.2.13.0
 	Improvements/Enhancements:
 	1. command "export /l2s" support code-style: pascal|camel|original

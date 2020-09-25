@@ -16,6 +16,11 @@ namespace sqlcon
         {
         }
 
+        public WorkingDirectory(string currentDirectory)
+        {
+            this.CurrentDirectory = currentDirectory;
+        }
+
         public void SetCurrentDirectory(string currentDirectory)
         {
             this.CurrentDirectory = Path.GetFullPath(currentDirectory);

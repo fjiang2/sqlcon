@@ -1,5 +1,4 @@
 ﻿using Tie;
-using Sys;
 
 namespace sqlcon
 {
@@ -9,6 +8,7 @@ namespace sqlcon
         string OutputFile { get; }
         WorkingDirectory WorkingDirectory { get; }
         string XmlDbDirectory { get; }
+        string[] PATH { get; }
         int TopLimit { get; }
         int MaxRows { get; }
         VAL GetValue(VAR variable);
