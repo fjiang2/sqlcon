@@ -330,6 +330,17 @@ namespace sqlcon
                         cout.WriteLine("invalid arguments");
                     return NextStep.COMPLETED;
 
+                case "path":
+                    if (cmd.arg1 == null)
+                    {
+                        cout.WriteLine(cfg.Path);
+                    }
+                    else
+                    {
+                        Context.SetValue("path", cmd.arg1);
+                    }
+                    return NextStep.COMPLETED;
+
                 case "run":
                     if (cmd.arg1 != null)
                     {
@@ -463,7 +474,7 @@ namespace sqlcon
                     }
                     else
                     {
-                        new SqlCmd(theSide.Provider, text).Read(reader => reader.ToConsole(Context.GetValue<int>(Context.MAXROWS, 100)));
+                        new SqlCmd(theSide.Provider, text).Read(reader => reader.ToConsole(cfg.MaxRows));
                     }
                     break;
 

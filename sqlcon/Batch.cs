@@ -33,7 +33,12 @@ namespace sqlcon
                 return fullPath;
             }
 
-            foreach (string _path in cfg.PATH)
+            if (string.IsNullOrEmpty(cfg.Path))
+            {
+                return string.Empty;
+            }
+
+            foreach (string _path in cfg.Path.Split(';'))
             {
                 WorkingDirectory working = new WorkingDirectory(_path);
                 fullPath = working.GetFullPath(path, EXT);

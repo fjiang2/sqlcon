@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Sys;
+using Sys.Stdio;
 
 namespace sqlcon
 {
@@ -12,13 +13,15 @@ namespace sqlcon
         private const string _SERVER0 = "home";
         private const string _SERVERS = "servers";
 
+        private const string _PATH = "path";
+        private const string _MAXROWS = "maxrows";
+
+
         public int TopLimit { get; private set; } = 20;
-        public int MaxRows { get; private set; } = 2000;
 
         public string OutputFile { get; set; }
         public string XmlDbDirectory { get; private set; }
         public WorkingDirectory WorkingDirectory { get; }
-        public string[] PATH { get; private set; }
 
         public ApplicationConfiguration()
         {
@@ -33,7 +36,6 @@ namespace sqlcon
             const string _TOP = "top";
             const string _EXPORT_MAX_COUNT = "export_max_count";
             const string _WORKING_DIRECTORY = "working.directory.commands";
-            const string _PATH = "path";
 
             base.Initialize(cfgFile);
 
@@ -42,18 +44,19 @@ namespace sqlcon
             this.WorkingDirectory.SetCurrentDirectory(GetValue<string>(_WORKING_DIRECTORY, "."));
 
             var limit = DS[_LIMIT];
-            
+
             if (limit[_TOP].Defined)
                 this.TopLimit = (int)limit[_TOP];
-            
-            if (limit[_EXPORT_MAX_COUNT].Defined)
-                this.MaxRows = (int)limit[_EXPORT_MAX_COUNT];
 
-            string path = GetValue(_PATH, ".");
-            this.PATH = path.Split(';');
+            if (limit[_EXPORT_MAX_COUNT].Defined)
+                Context.SetValue(_MAXROWS, (int)limit[_EXPORT_MAX_COUNT]);
+
+            Context.SetValue(_PATH, GetValue(_PATH, "."));
             return true;
         }
 
+        public string Path => Context.GetValue(_PATH, string.Empty);
+        public int MaxRows => Context.GetValue(_MAXROWS, 2000);
 
 
         private IConnectionConfiguration connection = null;

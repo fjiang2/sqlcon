@@ -8,7 +8,7 @@ namespace sqlcon
         string OutputFile { get; }
         WorkingDirectory WorkingDirectory { get; }
         string XmlDbDirectory { get; }
-        string[] PATH { get; }
+        string Path { get; }
         int TopLimit { get; }
         int MaxRows { get; }
         VAL GetValue(VAR variable);

@@ -56,6 +56,7 @@ namespace sqlcon
             cout.WriteLine("lcd [path]              : change or display current directory");
             cout.WriteLine("ldir [path]             : display local files on the directory");
             cout.WriteLine("ltype [path]            : display local file content");
+            cout.WriteLine("path [path]             : set environment variable PATH");
             cout.WriteLine("run [path]file          : run a batch program (.sqc)");
             cout.WriteLine("call [path]file [/dump] : call Tie program (.sqt), if option /dump used, memory dumps to output file");
             cout.WriteLine("execute [path]file      : execute sql script(.sql)");
