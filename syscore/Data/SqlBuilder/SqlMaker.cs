@@ -10,7 +10,7 @@ namespace Sys.Data
     {
         public TableName TableName { get; }
         public List<ColumnValuePair> Columns { get; } = new List<ColumnValuePair>();
-        public IPrimaryKeys PrimaryKeys { get; set; }
+        public string[] PrimaryKeys { get; set; }
 
         private SqlTemplate template;
 
@@ -95,16 +95,15 @@ namespace Sys.Data
         }
 
 
-        private string[] primaryKeys => PrimaryKeys.Keys;
 
         private string[] notUpdateColumns => Columns.Where(p => !p.Field.Saved).Select(p => p.Field.Name).ToArray();
 
 
         public string Select()
         {
-            if (primaryKeys.Length > 0)
+            if (PrimaryKeys.Length > 0)
             {
-                var C1 = Columns.Where(c => primaryKeys.Contains(c.ColumnName));
+                var C1 = Columns.Where(c => PrimaryKeys.Contains(c.ColumnName));
                 var L1 = string.Join(" AND ", C1.Select(c => c.ToString()));
                 return template.Select("*", L1);
             }
@@ -114,10 +113,10 @@ namespace Sys.Data
 
         public string InsertOrUpdate()
         {
-            var C1 = Columns.Where(c => primaryKeys.Contains(c.ColumnName));
+            var C1 = Columns.Where(c => PrimaryKeys.Contains(c.ColumnName));
             var L1 = string.Join(" AND ", C1.Select(c => c.ToString()));
 
-            if (primaryKeys.Length + notUpdateColumns.Length == Columns.Count)
+            if (PrimaryKeys.Length + notUpdateColumns.Length == Columns.Count)
             {
                 return template.IfNotExistsInsert(L1, Insert());
             }
@@ -137,8 +136,8 @@ namespace Sys.Data
 
         public string Update()
         {
-            var C1 = Columns.Where(c => primaryKeys.Contains(c.ColumnName));
-            var C2 = Columns.Where(c => !primaryKeys.Contains(c.ColumnName) && !notUpdateColumns.Contains(c.ColumnName));
+            var C1 = Columns.Where(c => PrimaryKeys.Contains(c.ColumnName));
+            var C2 = Columns.Where(c => !PrimaryKeys.Contains(c.ColumnName) && !notUpdateColumns.Contains(c.ColumnName));
 
             var L1 = string.Join(" AND ", C1.Select(c => c.ToString()));
             var L2 = string.Join(",", C2.Select(c => c.ToString()));
@@ -148,7 +147,7 @@ namespace Sys.Data
 
         public string Delete()
         {
-            var C1 = Columns.Where(c => primaryKeys.Contains(c.ColumnName));
+            var C1 = Columns.Where(c => PrimaryKeys.Contains(c.ColumnName));
             var L1 = string.Join(" AND ", C1.Select(c => c.ToString()));
             return template.Delete(L1);
         }
@@ -159,10 +158,17 @@ namespace Sys.Data
             return template.Delete();
         }
 
+        private static string FormalName(string name)
+        {
+            if (name.StartsWith("[") && name.EndsWith("]"))
+                return name;
+
+            return $"[{name}]";
+        }
 
         public class ColumnValuePair
         {
-            public DataField Field { get; set; }
+            public DataField Field { get; }
             public SqlValue Value { get; set; }
 
 
@@ -174,7 +180,7 @@ namespace Sys.Data
 
             public string ColumnName => Field.Name;
 
-            public string ColumnFormalName => $"[{ColumnName}]";
+            public string ColumnFormalName => FormalName(ColumnName);
 
             public override string ToString()
             {
