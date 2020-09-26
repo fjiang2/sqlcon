@@ -128,8 +128,9 @@ namespace Sys.Data
 
         public string Insert()
         {
-            var L1 = string.Join(",", Columns.Select(c => c.ColumnFormalName));
-            var L2 = string.Join(",", Columns.Select(c => c.Value.ToString()));
+            var C = Columns.Where(c => !c.Value.IsNull);
+            var L1 = string.Join(",", C.Select(c => c.ColumnFormalName));
+            var L2 = string.Join(",", C.Select(c => c.Value.ToString()));
 
             return template.Insert(L1, L2);
         }

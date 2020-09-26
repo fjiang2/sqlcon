@@ -52,9 +52,10 @@ namespace Sys.Data
             return false;
         }
 
+        public bool IsNull => value == null || value == DBNull.Value;
         public string ToString(string format)
         {
-            if (value == null || value == DBNull.Value)
+            if (IsNull)
                 return NULL;
 
             StringBuilder sb = new StringBuilder();
