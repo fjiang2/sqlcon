@@ -7,6 +7,7 @@ namespace Sys.Data.Linq
 {
     class TableSchema : ITableSchema
     {
+        public string SchemaName { get; set; }
         public string TableName { get; set; }
         public string[] PrimaryKeys { get; set; }
         public string[] IdentityKeys { get; set; }

@@ -20,6 +20,7 @@ namespace Sys.Data.Linq
         private Lazy<SqlMaker> lazyGen;
 
         public DataContext Context { get; }
+        public string SchemaName { get; set; } = TableName.dbo;
 
         internal Table(DataContext context)
         {
@@ -43,6 +44,7 @@ namespace Sys.Data.Linq
 
             return new TableSchema
             {
+                SchemaName = SchemaName,
                 TableName = tableName,
                 PrimaryKeys = keys,
                 IdentityKeys = identity,
@@ -51,10 +53,11 @@ namespace Sys.Data.Linq
 
         private DataTable FillDataTable(string where)
         {
+            string tname =  $"{SchemaName}.[{entityName}]";
             if (where == null)
-                return Context.FillDataTable($"SELECT * FROM [{entityName}]");
+                return Context.FillDataTable($"SELECT * FROM {tname}");
             else
-                return Context.FillDataTable($"SELECT * FROM [{entityName}] WHERE {where}");
+                return Context.FillDataTable($"SELECT * FROM {tname} WHERE {where}");
         }
 
         private object Invoke(string name, object[] parameters)
@@ -123,11 +126,11 @@ namespace Sys.Data.Linq
         private void OperateOnSubmit(RowOperation operation, TEntity entity)
         {
             SqlMaker gen = lazyGen.Value;
-            
+
             var dict = ToDictionary(entity);
 
             //if method ToDictionary is undefined
-            if (dict != null)   
+            if (dict != null)
                 gen.AddRange(dict);
             else
                 gen.AddRange(entity);

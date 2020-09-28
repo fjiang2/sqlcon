@@ -22,7 +22,7 @@ namespace Sys.Data
 
         internal SqlMaker(ConnectionProvider provider, Sys.Data.Linq.ITableSchema schema)
         {
-            this.TableName = new TableName(provider, schema.TableName);
+            this.TableName = new TableName(provider, $"{schema.SchemaName}.[{schema.TableName}]");
             this.template = new SqlTemplate(TableName);
 
             this.PrimaryKeys = schema.PrimaryKeys;
