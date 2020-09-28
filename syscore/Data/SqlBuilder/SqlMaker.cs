@@ -17,8 +17,15 @@ namespace Sys.Data
         public SqlMaker(TableName tableName)
         {
             this.TableName = tableName;
-            this.Columns = new List<ColumnValuePair>();
             this.template = new SqlTemplate(TableName);
+        }
+
+        internal SqlMaker(ConnectionProvider provider, Sys.Data.Linq.ITableSchema schema)
+        {
+            this.TableName = new TableName(provider, schema.TableName);
+            this.template = new SqlTemplate(TableName);
+
+            this.PrimaryKeys = schema.PrimaryKeys;
         }
 
         /// <summary>
