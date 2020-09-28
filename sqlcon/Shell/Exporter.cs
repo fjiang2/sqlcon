@@ -89,7 +89,11 @@ namespace sqlcon
         private static DataTable FillTable(TableName tname)
         {
             var dt = new SqlCmd(tname.Provider, $"SELECT TOP 1 * FROM {tname.FormalName}").FillDataTable();
-            dt.TableName = tname.ShortName;
+            dt.TableName = tname.Name;
+            
+            if (tname.SchemaName != TableName.dbo)
+                dt.Prefix = tname.SchemaName;
+            
             var schema = new TableSchema(tname);
             dt.PrimaryKeys(schema.PrimaryKeys.Keys);
             foreach (IColumn column in schema.Columns)
@@ -533,16 +537,7 @@ namespace sqlcon
                 string mtd = cmd.GetValue("method");
 
                 gen.SetNamespace(ns);
-                string dbo = TableName.dbo;
-                string tname = dt.TableName;
-                string[] items = tname.Split('.');
-                if (items.Length >= 2)
-                {
-                    dbo = items[0];
-                    tname = items[1];
-                }
-                gen.SetClassName(tname);
-
+                gen.SetClassName(dt.TableName);
                 gen.SetMethod(mtd);
                 string file = gen.WriteFile(path);
                 cout.WriteLine("code generated on {0}", file);
