@@ -11,6 +11,7 @@ namespace Sys.Data
         public TableName TableName { get; }
         public List<ColumnValuePair> Columns { get; } = new List<ColumnValuePair>();
         public string[] PrimaryKeys { get; set; }
+        public string[] IdentityKeys { get; set; }
 
         private SqlTemplate template;
 
@@ -89,7 +90,11 @@ namespace Sys.Data
             }
             else
             {
-                Columns.Add(new ColumnValuePair(name, value));
+                bool identity = IdentityKeys != null && IdentityKeys.Contains(name);
+                var pair = new ColumnValuePair(name, value);
+                pair.Field.Identity = identity;
+
+                Columns.Add(pair);
             }
         }
 

@@ -10,11 +10,6 @@ namespace Sys.Data.Linq
 {
     public sealed class Table<TEntity>
     {
-        private const string EXTENSION = "Extension";
-        private const string TABLENAME = "TableName";
-        private const string KEYS = "Keys";
-        private const string IDENTITY = "Identity";
-
         private readonly Type type;
         private readonly Type extension;
         private readonly ITableSchema schema;
@@ -26,6 +21,8 @@ namespace Sys.Data.Linq
         
         internal Table(DataContext context)
         {
+            const string EXTENSION = "Extension";
+
             this.Context = context;
 
             this.type = typeof(TEntity);
@@ -33,10 +30,11 @@ namespace Sys.Data.Linq
 
             this.schema = extension.GetTableSchemaFromExtensionType();
             this.tableName = new TableName(context.ConnectionProvider, $"[{schema.SchemaName}].[{schema.TableName}]");
-            
+
             this.Generator = new SqlMaker(tableName)
             {
                 PrimaryKeys = schema.PrimaryKeys,
+                IdentityKeys = schema.IdentityKeys,
             };
 
             this.functionToDictionary = extension.GetMethod(nameof(ToDictionary), BindingFlags.Public | BindingFlags.Static);
