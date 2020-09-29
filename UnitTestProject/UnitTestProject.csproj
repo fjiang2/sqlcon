@@ -68,6 +68,7 @@
     <Compile Include="SqlLexerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitTestCodeBuilder.cs" />
+    <Compile Include="UnitTestDataContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gen-dbo-northwind.sqc" />

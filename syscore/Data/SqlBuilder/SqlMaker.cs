@@ -150,7 +150,7 @@ namespace Sys.Data
 
         public string Insert()
         {
-            var C = Columns.Where(c => !c.Value.IsNull);
+            var C = Columns.Where(c => !c.Field.Identity && !c.Value.IsNull);
             var L1 = string.Join(",", C.Select(c => c.ColumnFormalName));
             var L2 = string.Join(",", C.Select(c => c.Value.ToString()));
 
