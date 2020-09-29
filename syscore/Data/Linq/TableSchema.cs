@@ -14,7 +14,7 @@ namespace Sys.Data.Linq
 
         public override string ToString()
         {
-            return $"{TableName}, pk=({string.Join(",", PrimaryKeys)})";
+            return $"{SchemaName}.{TableName}, pk=({string.Join(",", PrimaryKeys)})";
         }
     }
 

@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Data;
-using System.Data.SqlClient;
 
 namespace Sys.Data.Linq
 {
     public class DataContext : IDisposable
     {
         internal ConnectionProvider ConnectionProvider { get; }
-        StringBuilder script = new StringBuilder();
+        public StringBuilder Script { get; } = new StringBuilder();
 
         public DataContext(string connectionString)
         {
@@ -37,20 +36,19 @@ namespace Sys.Data.Linq
             return cmd.FillDataTable();
         }
 
-        internal void AppendScript(string sql)
-        {
-            script.AppendLine(sql);
-        }
-
         public string GetScript()
         {
-            return script.ToString();
+            return Script.ToString();
         }
 
         public void SubmitChanges()
         {
-            var cmd = new SqlCmd(ConnectionProvider, script.ToString());
+            if (Script.Length == 0)
+                return;
+
+            var cmd = new SqlCmd(ConnectionProvider, Script.ToString());
             cmd.ExecuteNonQuery();
+            Script.Clear();
         }
 
         public override string ToString()

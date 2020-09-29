@@ -20,12 +20,9 @@ namespace Sys.Data
             this.template = new SqlTemplate(TableName);
         }
 
-        internal SqlMaker(ConnectionProvider provider, Sys.Data.Linq.ITableSchema schema)
+        public void Clear()
         {
-            this.TableName = new TableName(provider, $"{schema.SchemaName}.[{schema.TableName}]");
-            this.template = new SqlTemplate(TableName);
-
-            this.PrimaryKeys = schema.PrimaryKeys;
+            Columns.Clear();
         }
 
         /// <summary>
@@ -117,6 +114,19 @@ namespace Sys.Data
             else
                 return template.Select("*");
         }
+
+        public string SelectRows() => SelectRows("*");
+
+        public string SelectRows(IEnumerable<string> columns)
+        {
+            var L1 = string.Join(",", columns.Select(c => FormalName(c)));
+            if (L1 == string.Empty)
+                L1 = "*";
+
+            return SelectRows(L1);
+        }
+
+        private string SelectRows(string columns) => template.Select(columns);
 
         public string InsertOrUpdate()
         {

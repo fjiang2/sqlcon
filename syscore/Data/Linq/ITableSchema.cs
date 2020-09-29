@@ -2,9 +2,9 @@
 {
     interface ITableSchema
     {
-        string[] IdentityKeys { get; }
-        string[] PrimaryKeys { get; }
         string SchemaName { get; }
         string TableName { get; }
+        string[] PrimaryKeys { get; }
+        string[] IdentityKeys { get; }
     }
 }

@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 using Tie;
 
@@ -14,51 +15,33 @@ namespace Sys.Data.Linq
         private const string KEYS = "Keys";
         private const string IDENTITY = "Identity";
 
-        private Type type;
-        private Type extension;
-        private string entityName;
-        private Lazy<SqlMaker> lazyGen;
+        private readonly Type type;
+        private readonly Type extension;
+        private readonly ITableSchema schema;
+        private readonly MethodInfo functionToDictionary;
+        private readonly TableName tableName;
 
+        public SqlMaker Generator { get; }
         public DataContext Context { get; }
-        public string SchemaName { get; set; } = TableName.dbo;
-
+        
         internal Table(DataContext context)
         {
             this.Context = context;
 
             this.type = typeof(TEntity);
-            this.entityName = type.Name;
+            this.extension = HostType.GetType(type.FullName + EXTENSION);
 
-            string ext = type.FullName + EXTENSION;
-            this.extension = HostType.GetType(ext);
-
-            this.lazyGen = new Lazy<SqlMaker>(() => new SqlMaker(Context.ConnectionProvider, GetTableSchema()));
-        }
-
-
-        private ITableSchema GetTableSchema()
-        {
-            string tableName = GetField(TABLENAME, string.Empty);
-            string[] keys = GetField(KEYS, new string[] { });
-            string[] identity = GetField(IDENTITY, new string[] { });
-
-            return new TableSchema
+            this.schema = extension.GetTableSchemaFromExtensionType();
+            this.tableName = new TableName(context.ConnectionProvider, $"[{schema.SchemaName}].[{schema.TableName}]");
+            
+            this.Generator = new SqlMaker(tableName)
             {
-                SchemaName = SchemaName,
-                TableName = tableName,
-                PrimaryKeys = keys,
-                IdentityKeys = identity,
+                PrimaryKeys = schema.PrimaryKeys,
             };
+
+            this.functionToDictionary = extension.GetMethod(nameof(ToDictionary), BindingFlags.Public | BindingFlags.Static);
         }
 
-        private DataTable FillDataTable(string where)
-        {
-            string tname =  $"{SchemaName}.[{entityName}]";
-            if (where == null)
-                return Context.FillDataTable($"SELECT * FROM {tname}");
-            else
-                return Context.FillDataTable($"SELECT * FROM {tname} WHERE {where}");
-        }
 
         private object Invoke(string name, object[] parameters)
         {
@@ -69,51 +52,17 @@ namespace Sys.Data.Linq
             return null;
         }
 
-        private T GetField<T>(string name, T defaultValue = default(T))
-        {
-            var fieldInfo = extension.GetField(name, BindingFlags.Public | BindingFlags.Static);
-            if (fieldInfo != null)
-                return (T)fieldInfo.GetValue(null);
-            else
-                return defaultValue;
-        }
-
-        public List<TEntity> ToList(string where = null)
-        {
-            var dt = FillDataTable(where);
-            return ToList(dt);
-        }
-
-        public List<TEntity> ToList(DataTable dt)
-        {
-            object obj = Invoke($"To{entityName}Collection", new object[] { dt });
-            return (List<TEntity>)obj;
-        }
-
-        public IDictionary<string, object> ToDictionary(TEntity entity)
+        internal IDictionary<string, object> ToDictionary(TEntity entity)
         {
             object obj = Invoke(nameof(ToDictionary), new object[] { entity });
-            if (obj != null)
-                return (IDictionary<string, object>)obj;
-            return null;
+            return (IDictionary<string, object>)obj;
         }
 
-        public TEntity FromDictionary(IDictionary<string, object> dict)
+        internal TEntity FromDictionary(IDictionary<string, object> dict)
         {
             object obj = Invoke(nameof(FromDictionary), new object[] { dict });
             return (TEntity)obj;
         }
-
-
-        public void InsertOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.Insert, entity);
-        public void UpdateOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.Update, entity);
-        public void InsertOrUpdateOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.InsertOrUpdate, entity);
-        public void DeleteOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.Delete, entity);
-
-        public void InsertAllOnSubmit(IEnumerable<TEntity> entities) => OperateAllOnSubmit(RowOperation.Insert, entities);
-        public void UpdateAllOnSubmit(IEnumerable<TEntity> entities) => OperateAllOnSubmit(RowOperation.Update, entities);
-        public void InsertOrUpdateAllOnSubmit(IEnumerable<TEntity> entities) => OperateAllOnSubmit(RowOperation.InsertOrUpdate, entities);
-        public void DeleteOnAllSubmit(IEnumerable<TEntity> entities) => OperateAllOnSubmit(RowOperation.Delete, entities);
 
         private void OperateAllOnSubmit(RowOperation operation, IEnumerable<TEntity> entities)
         {
@@ -125,15 +74,17 @@ namespace Sys.Data.Linq
 
         private void OperateOnSubmit(RowOperation operation, TEntity entity)
         {
-            SqlMaker gen = lazyGen.Value;
+            SqlMaker gen = this.Generator;
 
-            var dict = ToDictionary(entity);
-
-            //if method ToDictionary is undefined
-            if (dict != null)
+            if (functionToDictionary != null)
+            {
+                var dict = (IDictionary<string, object>)functionToDictionary.Invoke(null, new object[] { entity });
                 gen.AddRange(dict);
+            }
             else
+            {
                 gen.AddRange(entity);
+            }
 
             string sql = null;
             switch (operation)
@@ -155,13 +106,179 @@ namespace Sys.Data.Linq
                     break;
             }
 
-            if (sql != null)
-                Context.AppendScript(sql);
+            if (sql == null)
+                return;
+
+            Context.Script.AppendLine(sql);
+            gen.Clear();
         }
+
+        /// <summary>
+        /// Read entities from SQL Server
+        /// </summary>
+        /// <param name="where">default returns all entities</param>
+        /// <returns></returns>
+        public List<TEntity> Select(string where = null)
+        {
+            string SQL;
+
+            if (where != null)
+            {
+                SQL = $"SELECT * FROM {tableName.FormalName} WHERE {where}";
+            }
+            else
+            {
+                SQL = $"SELECT * FROM {tableName.FormalName}";
+            }
+
+            var dt = Context.FillDataTable(SQL);
+            return ToList(dt);
+        }
+
+        /// <summary>
+        /// Read single entity from SQL Server
+        /// </summary>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public TEntity Select(TEntity where)
+        {
+            SqlMaker gen = this.Generator;
+            foreach (string key in schema.PrimaryKeys)
+            {
+                object obj = type.GetProperty(key)?.GetValue(where);
+                gen.Add(key, obj);
+            }
+
+            string SQL = gen.SelectRows();
+            gen.Clear();
+
+            var dt = Context.FillDataTable(SQL);
+            return ToList(dt).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Use any data from DataTable instance
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        public List<TEntity> ToList(DataTable dt)
+        {
+            object obj = Invoke($"To{type.Name}Collection", new object[] { dt });
+            return (List<TEntity>)obj;
+        }
+
+
+        /// <summary>
+        /// Update partial columns of entity, values of primary key requried
+        /// </summary>
+        /// <param name="entity">
+        /// example of partial entity
+        /// 1.object: new { Id=7, Name="XXXX"} 
+        /// 2.Dictionary: new Dictionary&lt;string, object&gt;{["Id"]=7, ["Name"]="XXXX"}</string>
+        /// </param>
+        /// <param name="throwException">check column existence</param>
+        public void UpdateOnSubmit(object entity, bool throwException = false)
+        {
+            if (entity == null)
+            {
+                if (throwException)
+                    throw new ArgumentNullException($"argument {nameof(entity)} cannot be null");
+                else
+                    return;
+            }
+
+            var gen = this.Generator;
+            List<string> names = type.GetProperties().Select(x => x.Name).ToList();
+
+            if (entity is IDictionary<string, object>)
+            {
+                foreach (var kvp in (IDictionary<string, object>)entity)
+                {
+                    if (names.IndexOf(kvp.Key) == -1)
+                    {
+                        if (throwException)
+                            throw new ArgumentException($"invalid column \"{kvp.Key}\" in Table {schema.TableName}");
+                        else
+                            continue;
+                    }
+
+                    gen.Add(kvp.Key, kvp.Value);
+                }
+            }
+            else
+            {
+                foreach (var propertyInfo in entity.GetType().GetProperties())
+                {
+                    if (names.IndexOf(propertyInfo.Name) == -1)
+                    {
+                        if (throwException)
+                            throw new ArgumentException($"invalid column \"{propertyInfo.Name}\" in Table {schema.TableName}");
+                        else
+                            continue;
+                    }
+
+                    object value = propertyInfo.GetValue(entity);
+                    gen.Add(propertyInfo.Name, value);
+                }
+            }
+
+            Context.Script.AppendLine(gen.Update());
+            gen.Clear();
+        }
+
+        /// <summary>
+        /// Insert entity on submit
+        /// </summary>
+        /// <param name="entity"></param>
+        public void InsertOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.Insert, entity);
+
+        /// <summary>
+        /// Update entity on submit
+        /// </summary>
+        /// <param name="entity"></param>
+        public void UpdateOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.Update, entity);
+
+        /// <summary>
+        /// Insert or update entity on submit
+        /// </summary>
+        /// <param name="entity"></param>
+        public void InsertOrUpdateOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.InsertOrUpdate, entity);
+
+        /// <summary>
+        /// Delete entity on submit
+        /// </summary>
+        /// <param name="entity"></param>
+        public void DeleteOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.Delete, entity);
+
+        /// <summary>
+        /// Insert entities on submit
+        /// </summary>
+        /// <param name="entities"></param>
+        public void InsertAllOnSubmit(IEnumerable<TEntity> entities) => OperateAllOnSubmit(RowOperation.Insert, entities);
+
+        /// <summary>
+        /// Update entities on submit
+        /// </summary>
+        /// <param name="entities"></param>
+        public void UpdateAllOnSubmit(IEnumerable<TEntity> entities) => OperateAllOnSubmit(RowOperation.Update, entities);
+
+        /// <summary>
+        /// Insert or update entities on submit
+        /// </summary>
+        /// <param name="entities"></param>
+        public void InsertOrUpdateAllOnSubmit(IEnumerable<TEntity> entities) => OperateAllOnSubmit(RowOperation.InsertOrUpdate, entities);
+
+        /// <summary>
+        /// Delete  entities on submit
+        /// </summary>
+        /// <param name="entities"></param>
+        public void DeleteOnAllSubmit(IEnumerable<TEntity> entities) => OperateAllOnSubmit(RowOperation.Delete, entities);
+
+
 
         public override string ToString()
         {
-            return entityName;
+            return tableName.FullName;
         }
     }
 }
