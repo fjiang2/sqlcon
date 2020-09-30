@@ -7,17 +7,10 @@ namespace Sys.Data.Linq
     {
         public static ITableSchema GetTableSchemaFromExtensionType(this Type extension)
         {
-            string schemaName = extension.GetStaticField("SchemaName", "dbo");
+            string schemaName = extension.GetStaticField("SchemaName", TableName.dbo);
             string tableName = extension.GetStaticField("TableName", string.Empty);
             string[] keys = extension.GetStaticField("Keys", new string[] { });
             string[] identity = extension.GetStaticField("Identity", new string[] { });
-
-            string[] items = tableName.Split('.');
-            if (items.Length >= 2)
-            {
-                schemaName = items[0];
-                tableName = items[1];
-            }
 
             return new TableSchema
             {
