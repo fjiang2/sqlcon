@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Linq.Expressions;
 
 using Tie;
 
@@ -18,7 +19,7 @@ namespace Sys.Data.Linq
 
         public SqlMaker Generator { get; }
         public DataContext Context { get; }
-        
+
         internal Table(DataContext context)
         {
             const string EXTENSION = "Extension";
@@ -109,6 +110,13 @@ namespace Sys.Data.Linq
 
             Context.Script.AppendLine(sql);
             gen.Clear();
+        }
+
+        public List<TEntity> Select(Expression<Func<TEntity, bool>> predicate)
+        {
+            var translator = new QueryTranslator();
+            string where = translator.Translate(predicate);
+            return Select(where);
         }
 
         /// <summary>

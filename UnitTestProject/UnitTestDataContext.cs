@@ -49,6 +49,19 @@ namespace UnitTestProject
         #endregion
 
         [TestMethod]
+        public void TestMethodSelectIQueryable()
+        {
+            using (var db = new DataContext(connectionString))
+            {
+                var table = db.GetTable<Products>();
+                var rows = table.Select(row => row.ProductID < 1000 && row.ProductName== "Grandma's Boysenberry Spread");
+
+                Debug.Assert(rows.First(row => row.ProductID == 6).ProductName == "Grandma's Boysenberry Spread");
+            }
+        }
+
+
+        [TestMethod]
         public void TestMethodSelect()
         {
             using (var db = new DataContext(connectionString))
