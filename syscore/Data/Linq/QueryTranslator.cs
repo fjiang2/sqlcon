@@ -183,9 +183,9 @@ namespace Sys.Data.Linq
             throw new NotSupportedException(string.Format("The member '{0}' is not supported", mbr.Member.Name));
         }
 
-        protected bool IsNullConstant(Expression expr)
+        protected bool IsNullConstant(Expression expression)
         {
-            return (expr.NodeType == ExpressionType.Constant && ((ConstantExpression)expr).Value == null);
+            return (expression.NodeType == ExpressionType.Constant && ((ConstantExpression)expression).Value == null);
         }
     }
 }

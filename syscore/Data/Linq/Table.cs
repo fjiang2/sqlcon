@@ -112,11 +112,11 @@ namespace Sys.Data.Linq
             gen.Clear();
         }
 
-        public List<TEntity> Select(Expression<Func<TEntity, bool>> predicate)
+        public List<TEntity> Select(Expression<Func<TEntity, bool>> where)
         {
             var translator = new QueryTranslator();
-            string where = translator.Translate(predicate);
-            return Select(where);
+            string _where = translator.Translate(where);
+            return Select(_where);
         }
 
         /// <summary>
@@ -141,26 +141,6 @@ namespace Sys.Data.Linq
             return ToList(dt);
         }
 
-        /// <summary>
-        /// Read single entity from SQL Server
-        /// </summary>
-        /// <param name="where"></param>
-        /// <returns></returns>
-        public TEntity Select(TEntity where)
-        {
-            SqlMaker gen = this.Generator;
-            foreach (string key in schema.PrimaryKeys)
-            {
-                object obj = type.GetProperty(key)?.GetValue(where);
-                gen.Add(key, obj);
-            }
-
-            string SQL = gen.SelectRows();
-            gen.Clear();
-
-            var dt = Context.FillDataTable(SQL);
-            return ToList(dt).FirstOrDefault();
-        }
 
         /// <summary>
         /// Use any data from DataTable instance
