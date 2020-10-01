@@ -26,7 +26,7 @@ namespace UnitTestProject
             else
             {
                 connectionString = "Server = (LocalDB)\\MSSQLLocalDB;initial catalog=Northwind;Integrated Security = true;";
-            }    
+            }
         }
 
         private TestContext testContextInstance;
@@ -61,8 +61,9 @@ namespace UnitTestProject
             using (var db = new DataContext(connectionString))
             {
                 int id = 1000;
+                string name = "Grandma's Boysenberry Spread";
                 var table = db.GetTable<Products>();
-                var rows = table.Select(row => row.ProductID < id && row.ProductName== "Grandma's Boysenberry Spread");
+                var rows = table.Select(row => row.ProductID < id && row.ProductName == name);
 
                 Debug.Assert(rows.First(row => row.ProductID == 6).ProductName == "Grandma's Boysenberry Spread");
             }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Linq.Expressions;
+using System.Reflection;
+using Tie;
 
 namespace Sys.Data.Linq
 {
@@ -142,31 +144,8 @@ namespace Sys.Data.Linq
             }
             else if (q == null)
             {
-                switch (Type.GetTypeCode(expr.Value.GetType()))
-                {
-                    case TypeCode.Boolean:
-                        builder.Append(((bool)expr.Value) ? 1 : 0);
-                        break;
-
-                    case TypeCode.String:
-                        builder.Append("'");
-                        builder.Append(expr.Value.ToString().Replace("'", "''"));
-                        builder.Append("'");
-                        break;
-
-                    case TypeCode.DateTime:
-                        builder.Append("'");
-                        builder.Append(expr.Value);
-                        builder.Append("'");
-                        break;
-
-                    case TypeCode.Object:
-                        throw new NotSupportedException(string.Format("The constant for '{0}' is not supported", expr.Value));
-
-                    default:
-                        builder.Append(expr.Value);
-                        break;
-                }
+                object obj = GetSqlConstant(expr.Value);
+                builder.Append(obj);
             }
 
             return expr;
@@ -174,18 +153,94 @@ namespace Sys.Data.Linq
 
         protected override Expression VisitMember(MemberExpression expr)
         {
-            if (expr.Expression != null && expr.Expression.NodeType == ExpressionType.Parameter)
+            if (expr.Expression != null)
             {
-                builder.Append(expr.Member.Name);
-                return expr;
+                switch (expr.Expression.NodeType)
+                {
+                    case ExpressionType.Parameter:
+                        builder.Append(expr.Member.Name);
+                        return expr;
+
+                    case ExpressionType.Constant:
+                        builder.Append(GetSqlConstant(GetValue(expr)));
+                        return expr;
+
+                    case ExpressionType.MemberAccess:
+                        builder.Append(GetSqlConstant(GetValue(expr)));
+                        return expr;
+                }
             }
 
             throw new NotSupportedException(string.Format("The member '{0}' is not supported", expr.Member.Name));
         }
 
-        protected bool IsNullConstant(Expression expression)
+        private static object GetSqlConstant(object value)
+        {
+            if (value == null)
+                return "NULL";
+
+            switch (Type.GetTypeCode(value.GetType()))
+            {
+                case TypeCode.Boolean:
+                    return ((bool)value) ? 1 : 0;
+
+                case TypeCode.String:
+                    return $"'{value.ToString().Replace("'", "''")}'";
+
+                case TypeCode.DateTime:
+                    return "'{value}'";
+
+                case TypeCode.Object:
+                    throw new NotSupportedException(string.Format("The constant for '{0}' is not supported", value));
+
+                default:
+                    return value;
+            }
+        }
+
+        protected static bool IsNullConstant(Expression expression)
         {
             return (expression.NodeType == ExpressionType.Constant && ((ConstantExpression)expression).Value == null);
         }
+
+
+        private static object GetValue(Expression expression)
+        {
+            object GetMemberValue(MemberInfo memberInfo, object container = null)
+            {
+                switch (memberInfo)
+                {
+                    case FieldInfo fieldInfo:
+                        return fieldInfo.GetValue(container);
+
+                    case PropertyInfo propertyInfo:
+                        return propertyInfo.GetValue(container);
+
+                    default: 
+                        return null;
+                }
+            }
+
+            switch (expression)
+            {
+                case ConstantExpression constantExpression:
+                    return constantExpression.Value;
+
+                case MemberExpression memberExpression when memberExpression.Expression is ConstantExpression constantExpression:
+                    return GetMemberValue(memberExpression.Member, constantExpression.Value);
+
+                case MemberExpression memberExpression when memberExpression.Expression is null: // static
+                    return GetMemberValue(memberExpression.Member);
+
+                case MethodCallExpression methodCallExpression:
+                    return Expression.Lambda(methodCallExpression).Compile().DynamicInvoke();
+
+                case null:
+                    return null;
+            }
+
+            throw new NotSupportedException();
+        }
+
     }
 }
