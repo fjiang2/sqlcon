@@ -30,17 +30,17 @@ namespace Sys.Data.Linq
             return expr;
         }
 
-        protected override Expression VisitMethodCall(MethodCallExpression mtd)
+        protected override Expression VisitMethodCall(MethodCallExpression expr)
         {
-            if (mtd.Method.DeclaringType == typeof(Queryable) && mtd.Method.Name == "Where")
+            if (expr.Method.DeclaringType == typeof(Queryable) && expr.Method.Name == "Where")
             {
-                this.Visit(mtd.Arguments[0]);
-                LambdaExpression lambda = (LambdaExpression)StripQuotes(mtd.Arguments[1]);
+                this.Visit(expr.Arguments[0]);
+                LambdaExpression lambda = (LambdaExpression)StripQuotes(expr.Arguments[1]);
                 this.Visit(lambda.Body);
-                return mtd;
+                return expr;
             }
 
-            throw new NotSupportedException(string.Format("The method '{0}' is not supported", mtd.Method.Name));
+            throw new NotSupportedException(string.Format("The method '{0}' is not supported", expr.Method.Name));
         }
 
         protected override Expression VisitUnary(UnaryExpression expr)
@@ -172,15 +172,15 @@ namespace Sys.Data.Linq
             return expr;
         }
 
-        protected override Expression VisitMember(MemberExpression mbr)
+        protected override Expression VisitMember(MemberExpression expr)
         {
-            if (mbr.Expression != null && mbr.Expression.NodeType == ExpressionType.Parameter)
+            if (expr.Expression != null && expr.Expression.NodeType == ExpressionType.Parameter)
             {
-                builder.Append(mbr.Member.Name);
-                return mbr;
+                builder.Append(expr.Member.Name);
+                return expr;
             }
 
-            throw new NotSupportedException(string.Format("The member '{0}' is not supported", mbr.Member.Name));
+            throw new NotSupportedException(string.Format("The member '{0}' is not supported", expr.Member.Name));
         }
 
         protected bool IsNullConstant(Expression expression)

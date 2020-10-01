@@ -19,7 +19,14 @@ namespace UnitTestProject
         string connectionString;
         public UnitTestDataContext()
         {
-            connectionString = "data source=localhost\\sqlexpress;initial catalog=Northwind;integrated security=SSPI;packet size=4096";
+            if (Environment.MachineName.StartsWith("XPS"))
+            {
+                connectionString = "data source=localhost\\sqlexpress;initial catalog=Northwind;integrated security=SSPI;packet size=4096";
+            }
+            else
+            {
+                connectionString = "Server = (LocalDB)\\MSSQLLocalDB;initial catalog=Northwind;Integrated Security = true;";
+            }    
         }
 
         private TestContext testContextInstance;
@@ -53,8 +60,9 @@ namespace UnitTestProject
         {
             using (var db = new DataContext(connectionString))
             {
+                int id = 1000;
                 var table = db.GetTable<Products>();
-                var rows = table.Select(row => row.ProductID < 1000 && row.ProductName== "Grandma's Boysenberry Spread");
+                var rows = table.Select(row => row.ProductID < id && row.ProductName== "Grandma's Boysenberry Spread");
 
                 Debug.Assert(rows.First(row => row.ProductID == 6).ProductName == "Grandma's Boysenberry Spread");
             }
