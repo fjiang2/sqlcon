@@ -255,10 +255,10 @@ namespace Sys.Data.Linq
         public void InsertOrUpdateAllOnSubmit(IEnumerable<TEntity> entities) => OperateAllOnSubmit(RowOperation.InsertOrUpdate, entities);
 
         /// <summary>
-        /// Delete  entities on submit
+        /// Delete entities on submit
         /// </summary>
         /// <param name="entities"></param>
-        public void DeleteOnAllSubmit(IEnumerable<TEntity> entities) => OperateAllOnSubmit(RowOperation.Delete, entities);
+        public void DeleteAllOnSubmit(IEnumerable<TEntity> entities) => OperateAllOnSubmit(RowOperation.Delete, entities);
 
 
 
