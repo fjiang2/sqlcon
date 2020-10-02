@@ -278,7 +278,7 @@ namespace sqlcon
 
             SqlMaker gen = new SqlMaker(tname)
             {
-                PrimaryKeys = new PrimaryKeys(dt.PrimaryKey.Select(x => x.ColumnName).ToArray())
+                PrimaryKeys = dt.PrimaryKey.Select(x => x.ColumnName).ToArray()
             };
 
             foreach (DataColumn column in dt.Columns)

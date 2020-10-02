@@ -52,9 +52,10 @@ namespace Sys.Data
             return false;
         }
 
+        public bool IsNull => value == null || value == DBNull.Value;
         public string ToString(string format)
         {
-            if (value == null || value == DBNull.Value)
+            if (IsNull)
                 return NULL;
 
             StringBuilder sb = new StringBuilder();
@@ -79,6 +80,12 @@ namespace Sys.Data
                 sb.Append(DELIMETER)
                   .AppendFormat("{0} {1}", time.ToString("d"), time.ToString("HH:mm:ss.fff"))
                   .Append(DELIMETER);
+            }
+            else if (Value is DateTimeOffset)
+            {
+                DateTimeOffset time = (DateTimeOffset)Value;
+                var d = DELIMETER + string.Format("{0} {1}", time.ToString("d"), time.ToString("HH:mm:ss.fff zzz"), time.Offset) + DELIMETER;
+                return d;
             }
             else if (value is char)
             {

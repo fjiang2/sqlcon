@@ -74,6 +74,16 @@ namespace sqlcon
         {
             Field field;
 
+            //schema name
+            if (!string.IsNullOrEmpty(dt.Prefix))
+            {
+                field = new Field(new TypeInfo { Type = typeof(string) }, "SchemaName", new Value(dt.Prefix))
+                {
+                    Modifier = Modifier.Public | Modifier.Const
+                };
+                clss.Add(field);
+            }
+
             //table name
             if (dt.TableName != null)
             {
