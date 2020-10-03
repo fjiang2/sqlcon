@@ -2,6 +2,7 @@
 using System.Text;
 using System.Data;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace Sys.Data.Linq
 {
@@ -50,7 +51,29 @@ namespace Sys.Data.Linq
             return Script.GetQuery();
         }
 
-        public void SelectOnSubmit<TEntity>(System.Linq.Expressions.Expression<Func<TEntity, bool>> where) where TEntity : class
+        public List<TOther> Select<TEntity, TOther>(TEntity entity)
+            where TEntity : class
+            where TOther : class
+        {
+            var table = GetTable<TEntity>();
+            return table.Select<TOther>(entity);
+        }
+
+        public void SelectOnSubmit<TEntity, TOther>(TEntity entity)
+           where TEntity : class
+           where TOther : class
+        {
+            var table = GetTable<TEntity>();
+            table.SelectOnSubmit<TOther>(entity);
+        }
+
+        public List<TEntity> Select<TEntity>(Expression<Func<TEntity, bool>> where) where TEntity : class
+        {
+            var table = GetTable<TEntity>();
+            return table.Select(where);
+        }
+
+        public void SelectOnSubmit<TEntity>(Expression<Func<TEntity, bool>> where) where TEntity : class
         {
             var table = GetTable<TEntity>();
             table.SelectOnSubmit(where);

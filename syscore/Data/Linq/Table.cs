@@ -9,10 +9,6 @@ using Tie;
 
 namespace Sys.Data.Linq
 {
-    public interface ITable
-    {
-
-    }
 
     public sealed partial class Table<TEntity> : ITable
     {

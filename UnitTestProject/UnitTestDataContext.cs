@@ -239,6 +239,10 @@ namespace UnitTestProject
                 var order_table = db.GetTable<Orders>();
                 var shippers = order_table.Select<Shippers>(order);
                 Debug.Assert(shippers.FirstOrDefault().Phone == "(503) 555-3199");
+
+                shippers = db.Select<Orders, Shippers>(order);
+                Debug.Assert(shippers.FirstOrDefault().Phone == "(503) 555-3199");
+
             }
         }
     }

@@ -10,11 +10,11 @@ namespace Sys.Data.Linq
     public sealed partial class Table<TEntity> : ITable
     {
 
-        public List<T> Select<T>(TEntity entity) where T : class
+        public List<TOther> Select<TOther>(TEntity entity) where TOther : class
         {
-            string where = AssociationWhere<T>(entity);
+            string where = AssociationWhere<TOther>(entity);
 
-            var table = Context.GetTable<T>();
+            var table = Context.GetTable<TOther>();
             return table.Select(where);
         }
 
@@ -26,11 +26,6 @@ namespace Sys.Data.Linq
             return Select(_where);
         }
 
-        /// <summary>
-        /// Read entities from SQL Server
-        /// </summary>
-        /// <param name="where">default returns all entities</param>
-        /// <returns></returns>
         public List<TEntity> Select(string where = null)
         {
             string SQL = SelectFromWhere(where);
@@ -47,11 +42,11 @@ namespace Sys.Data.Linq
         }
 
 
-        public void SelectOnSubmit<T>(TEntity entity) where T : class
+        public void SelectOnSubmit<TOther>(TEntity entity) where TOther : class
         {
-            string where = AssociationWhere<T>(entity);
+            string where = AssociationWhere<TOther>(entity);
 
-            var table = Context.GetTable<T>();
+            var table = Context.GetTable<TOther>();
             table.SelectOnSubmit(where);
         }
 
