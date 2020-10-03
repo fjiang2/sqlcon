@@ -9,6 +9,16 @@ namespace Sys.Data.Linq
 {
     public sealed partial class Table<TEntity> : ITable
     {
+
+        public List<T> Select<T>(TEntity entity) where T : class
+        {
+            string where = AssociationWhere<T>(entity);
+
+            var table = Context.GetTable<T>();
+            return table.Select(where);
+        }
+
+
         public List<TEntity> Select(Expression<Func<TEntity, bool>> where)
         {
             var translator = new QueryTranslator();
@@ -23,16 +33,7 @@ namespace Sys.Data.Linq
         /// <returns></returns>
         public List<TEntity> Select(string where = null)
         {
-            string SQL;
-
-            if (where != null)
-            {
-                SQL = $"SELECT * FROM {tableName.FormalName} WHERE {where}";
-            }
-            else
-            {
-                SQL = $"SELECT * FROM {tableName.FormalName}";
-            }
+            string SQL = SelectFromWhere(where);
 
             var dt = Context.FillDataTable(SQL);
             return ToList(dt);
@@ -48,18 +49,12 @@ namespace Sys.Data.Linq
 
         public void SelectOnSubmit<T>(TEntity entity) where T : class
         {
-            IAssociation assoc = schema.Associations?.FirstOrDefault(x => x.OtherType == typeof(T));
-            if (assoc == null)
-                return;
-
-            var dict = ToDictionary(entity);
-            object value = dict[assoc.ThisKey];
-            SqlValue svalue = new SqlValue(value);
+            string where = AssociationWhere<T>(entity);
 
             var table = Context.GetTable<T>();
-            string where = $"[{assoc.OtherKey}] = {svalue}";
             table.SelectOnSubmit(where);
         }
+
 
         public void SelectOnSubmit(Expression<Func<TEntity, bool>> where)
         {
@@ -69,6 +64,13 @@ namespace Sys.Data.Linq
         }
 
         public void SelectOnSubmit(string where = null)
+        {
+            string SQL = SelectFromWhere(where);
+            Context.Script.AppendQuery<TEntity>(SQL);
+        }
+
+
+        private string SelectFromWhere(string where)
         {
             string SQL;
 
@@ -81,9 +83,22 @@ namespace Sys.Data.Linq
                 SQL = $"SELECT * FROM {tableName.FormalName}";
             }
 
-            Context.Script.AppendQuery<TEntity>(SQL);
+            return SQL;
         }
 
-        
+        private string AssociationWhere<T>(TEntity entity)
+        {
+            IAssociation assoc = schema.Associations?.FirstOrDefault(x => x.OtherType == typeof(T));
+            if (assoc == null)
+                throw new InvalidConstraintException($"invalid assoication from {typeof(TEntity)} to {typeof(T)}");
+
+            var dict = ToDictionary(entity);
+            object value = dict[assoc.ThisKey];
+            SqlValue svalue = new SqlValue(value);
+
+            string where = $"[{assoc.OtherKey}] = {svalue}";
+            return where;
+        }
+
     }
 }

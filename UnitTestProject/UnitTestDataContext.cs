@@ -198,5 +198,48 @@ namespace UnitTestProject
 
             }
         }
+
+        [TestMethod]
+        public void TestMethodAssociation()
+        {
+            using (var db = new DataContext(connectionString))
+            {
+                var order_table = db.GetTable<Orders>();
+                var order = order_table.Select(row => row.OrderID == 10256).FirstOrDefault();
+                order_table.SelectOnSubmit<Customers>(order);
+
+                var reader = db.SumbitQueries();
+                var L2 = reader.ToList<Customers>();
+
+                Debug.Assert(L2.First().CompanyName == "Wellington Importadora");
+
+                var employee = order_table.Select<Employees>(order).FirstOrDefault();
+                Debug.Assert(employee.LastName == "Leverling");
+            }
+        }
+
+        [TestMethod]
+        public void TestMasterDetail()
+        {
+            using (var db = new DataContext(connectionString))
+            {
+                var customer_table = db.GetTable<Customers>();
+                var customer = customer_table.Select(row => row.CustomerID == "THECR").FirstOrDefault();
+                customer_table.SelectOnSubmit<Orders>(customer);
+
+                var reader = db.SumbitQueries();
+                var orders = reader.ToList<Orders>();
+                var order = orders.FirstOrDefault();
+
+                Debug.Assert(order.ShipName == "The Cracker Box");
+
+                var demographics = customer_table.Select<CustomerCustomerDemo>(customer).FirstOrDefault();
+                Debug.Assert(demographics == null);
+
+                var order_table = db.GetTable<Orders>();
+                var shippers = order_table.Select<Shippers>(order);
+                Debug.Assert(shippers.FirstOrDefault().Phone == "(503) 555-3199");
+            }
+        }
     }
 }
