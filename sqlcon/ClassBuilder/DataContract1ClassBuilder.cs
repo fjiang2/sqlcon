@@ -13,7 +13,7 @@ namespace sqlcon
     class DataContract1ClassBuilder : TheClassBuilder
     {
         private const string _ToDataTable = "ToDataTable";
-        
+
         private TableName tname;
         private DataTable dt;
         private IDictionary<DataColumn, TypeInfo> dict { get; }
@@ -51,7 +51,7 @@ namespace sqlcon
 
         private void Class_Extension()
         {
-            Class clss = new Class(ClassName + "Extension") { Modifier = Modifier.Public | Modifier.Static };
+            Class clss = new Class(ClassName + EXTENSION) { Modifier = Modifier.Public | Modifier.Static };
             builder.AddClass(clss);
 
             //Const Field
