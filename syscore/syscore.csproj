@@ -101,6 +101,7 @@
     <Compile Include="Data\Linq\RowOperation.cs" />
     <Compile Include="Data\Linq\QueryTranslator.cs" />
     <Compile Include="Data\Linq\SqlCode.cs" />
+    <Compile Include="Data\Linq\Table~1.cs" />
     <Compile Include="Data\Linq\Table.cs" />
     <Compile Include="Data\Linq\TableSchema.cs" />
     <Compile Include="Data\Linq\TableSchemaExtension.cs" />

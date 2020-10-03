@@ -129,9 +129,10 @@ namespace sqlcon
 
             if (tname != null)
             {
-                builder.AddUsing(typeof(IAssociation).Namespace);
+                //builder.AddUsing(typeof(IAssociation).Namespace);
                 field = CreateAssoication(tname);
-                clss.Add(field);
+                if (field != null)
+                    clss.Add(field);
             }
         }
 

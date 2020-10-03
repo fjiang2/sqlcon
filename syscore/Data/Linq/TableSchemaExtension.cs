@@ -7,10 +7,11 @@ namespace Sys.Data.Linq
     {
         public static ITableSchema GetTableSchemaFromExtensionType(this Type extension)
         {
-            string schemaName = extension.GetStaticField("SchemaName", TableName.dbo);
-            string tableName = extension.GetStaticField("TableName", string.Empty);
+            string schemaName = extension.GetStaticField(nameof(ITableSchema.SchemaName), TableName.dbo);
+            string tableName = extension.GetStaticField(nameof(ITableSchema.TableName), string.Empty);
             string[] keys = extension.GetStaticField("Keys", new string[] { });
             string[] identity = extension.GetStaticField("Identity", new string[] { });
+            IAssociation[] associations = extension.GetStaticField(nameof(ITableSchema.Associations), new IAssociation[] { });
 
             return new TableSchema
             {
@@ -18,6 +19,7 @@ namespace Sys.Data.Linq
                 TableName = tableName,
                 PrimaryKeys = keys,
                 IdentityKeys = identity,
+                Associations = associations,
             };
         }
 

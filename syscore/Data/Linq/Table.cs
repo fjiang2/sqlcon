@@ -14,7 +14,7 @@ namespace Sys.Data.Linq
 
     }
 
-    public sealed class Table<TEntity> : ITable
+    public sealed partial class Table<TEntity> : ITable
     {
         private readonly Type type;
         private readonly Type extension;
@@ -46,7 +46,6 @@ namespace Sys.Data.Linq
             this.functionToDictionary = extension.GetMethod(nameof(ToDictionary), BindingFlags.Public | BindingFlags.Static);
         }
 
-
         private object Invoke(string name, object[] parameters)
         {
             var methodInfo = extension.GetMethod(name, BindingFlags.Public | BindingFlags.Static);
@@ -56,10 +55,17 @@ namespace Sys.Data.Linq
             return null;
         }
 
+        private static T Invoke<T>(MethodInfo methodInfo, params object[] parameters)
+        {
+            if (methodInfo != null)
+                return (T)methodInfo.Invoke(null, parameters);
+
+            return default(T);
+        }
+
         internal IDictionary<string, object> ToDictionary(TEntity entity)
         {
-            object obj = Invoke(nameof(ToDictionary), new object[] { entity });
-            return (IDictionary<string, object>)obj;
+            return Invoke<IDictionary<string, object>>(functionToDictionary, entity);
         }
 
         internal TEntity FromDictionary(IDictionary<string, object> dict)
@@ -68,66 +74,6 @@ namespace Sys.Data.Linq
             return (TEntity)obj;
         }
 
-
-        public List<TEntity> Select(Expression<Func<TEntity, bool>> where)
-        {
-            var translator = new QueryTranslator();
-            string _where = translator.Translate(where);
-            return Select(_where);
-        }
-
-        /// <summary>
-        /// Read entities from SQL Server
-        /// </summary>
-        /// <param name="where">default returns all entities</param>
-        /// <returns></returns>
-        public List<TEntity> Select(string where = null)
-        {
-            string SQL;
-
-            if (where != null)
-            {
-                SQL = $"SELECT * FROM {tableName.FormalName} WHERE {where}";
-            }
-            else
-            {
-                SQL = $"SELECT * FROM {tableName.FormalName}";
-            }
-
-            var dt = Context.FillDataTable(SQL);
-            return ToList(dt);
-        }
-
-
-        public List<TEntity> ToList(DataTable dt)
-        {
-            object obj = Invoke($"To{type.Name}Collection", new object[] { dt });
-            return (List<TEntity>)obj;
-        }
-
-        
-        public void SelectOnSubmit(Expression<Func<TEntity, bool>> where)
-        {
-            var translator = new QueryTranslator();
-            string _where = translator.Translate(where);
-            SelectOnSubmit(_where);
-        }
-
-        public void SelectOnSubmit(string where = null)
-        {
-            string SQL;
-
-            if (where != null)
-            {
-                SQL = $"SELECT * FROM {tableName.FormalName} WHERE {where}";
-            }
-            else
-            {
-                SQL = $"SELECT * FROM {tableName.FormalName}";
-            }
-
-            Context.Script.AppendQuery<TEntity>(SQL);
-        }
 
         /// <summary>
         /// Update partial columns of entity, values of primary key requried
@@ -211,7 +157,7 @@ namespace Sys.Data.Linq
 
             if (functionToDictionary != null)
             {
-                var dict = (IDictionary<string, object>)functionToDictionary.Invoke(null, new object[] { entity });
+                var dict = ToDictionary(entity);
                 gen.AddRange(dict);
             }
             else
