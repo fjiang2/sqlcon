@@ -23,15 +23,14 @@ namespace Sys.Data.Linq
 
         internal Table(DataContext context)
         {
-            const string EXTENSION = "Extension";
 
             this.Context = context;
 
             this.type = typeof(TEntity);
-            this.extension = HostType.GetType(type.FullName + EXTENSION);
+            this.schema = type.GetTableSchema(out var ext);
+            this.extension = ext;
 
-            this.schema = extension.GetTableSchemaFromExtensionType();
-            this.tableName = new TableName(context.ConnectionProvider, $"[{schema.SchemaName}].[{schema.TableName}]");
+            this.tableName = new TableName(context.ConnectionProvider, schema.FormalTableName());
 
             this.Generator = new SqlMaker(tableName)
             {

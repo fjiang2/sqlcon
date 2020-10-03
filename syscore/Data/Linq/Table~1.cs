@@ -10,11 +10,11 @@ namespace Sys.Data.Linq
     public sealed partial class Table<TEntity> : ITable
     {
 
-        public List<TOther> Select<TOther>(TEntity entity) where TOther : class
+        public List<TResult> Expand<TResult>(TEntity entity) where TResult : class
         {
-            string where = AssociationWhere<TOther>(entity);
+            string where = AssociationWhere<TResult>(entity);
 
-            var table = Context.GetTable<TOther>();
+            var table = Context.GetTable<TResult>();
             return table.Select(where);
         }
 
@@ -35,18 +35,32 @@ namespace Sys.Data.Linq
         }
 
 
-        public List<TEntity> ToList(DataTable dt)
+        public Type[] ExpandAllOnSubmit(TEntity entity)
         {
-            object obj = Invoke($"To{type.Name}Collection", new object[] { dt });
-            return (List<TEntity>)obj;
+            List<Type> types = new List<Type>();
+            foreach (var assoc in schema.Associations)
+            {
+                var dict = ToDictionary(entity);
+                object value = dict[assoc.ThisKey];
+                SqlValue svalue = new SqlValue(value);
+                string where = $"[{assoc.OtherKey}] = {svalue}";
+
+                var schema = assoc.OtherType.GetTableSchema(out var _);
+                var formalName = schema.FormalTableName();
+                var SQL = $"SELECT * FROM {formalName} WHERE {where}";
+                Context.Script.AppendQuery(assoc.OtherType, SQL);
+
+                types.Add(assoc.OtherType);
+            }
+
+            return types.ToArray();
         }
 
-
-        public void SelectOnSubmit<TOther>(TEntity entity) where TOther : class
+        public void ExpandOnSubmit<TResult>(TEntity entity) where TResult : class
         {
-            string where = AssociationWhere<TOther>(entity);
+            string where = AssociationWhere<TResult>(entity);
 
-            var table = Context.GetTable<TOther>();
+            var table = Context.GetTable<TResult>();
             table.SelectOnSubmit(where);
         }
 
@@ -62,6 +76,13 @@ namespace Sys.Data.Linq
         {
             string SQL = SelectFromWhere(where);
             Context.Script.AppendQuery<TEntity>(SQL);
+        }
+
+
+        public List<TEntity> ToList(DataTable dt)
+        {
+            object obj = Invoke($"To{type.Name}Collection", new object[] { dt });
+            return (List<TEntity>)obj;
         }
 
 

@@ -20,9 +20,14 @@ namespace Sys.Data.Linq
 
         public void AppendLine<TEntity>(string clause)
         {
+            AppendLine(typeof(TEntity), clause);
+        }
+
+        public void AppendLine(Type table, string clause)
+        {
             clauses.Add(new SqlStatement
             {
-                Table = typeof(TEntity),
+                Table = table,
                 Statement = clause,
                 NonQuery = true,
             });
@@ -30,9 +35,14 @@ namespace Sys.Data.Linq
 
         public void AppendQuery<TEntity>(string clause)
         {
+            AppendQuery(typeof(TEntity), clause);
+        }
+
+        public void AppendQuery(Type table, string clause)
+        {
             clauses.Add(new SqlStatement
             {
-                Table = typeof(TEntity),
+                Table = table,
                 Statement = clause,
                 NonQuery = false,
             });

@@ -1,11 +1,20 @@
 ﻿using System;
 using System.Reflection;
+using Tie;
 
 namespace Sys.Data.Linq
 {
     static class TableSchemaExtension
     {
-        public static ITableSchema GetTableSchemaFromExtensionType(this Type extension)
+        private const string EXTENSION = "Extension";
+
+        public static ITableSchema GetTableSchema(this Type type, out Type extension)
+        {
+            extension = HostType.GetType(type.FullName + EXTENSION);
+            return extension.GetTableSchemaFromExtensionType();
+        }
+
+        private static ITableSchema GetTableSchemaFromExtensionType(this Type extension)
         {
             string schemaName = extension.GetStaticField(nameof(ITableSchema.SchemaName), TableName.dbo);
             string tableName = extension.GetStaticField(nameof(ITableSchema.TableName), string.Empty);
@@ -30,6 +39,11 @@ namespace Sys.Data.Linq
                 return (T)fieldInfo.GetValue(null);
             else
                 return defaultValue;
+        }
+
+        public static string FormalTableName(this ITableSchema schema)
+        {
+            return $"[{schema.SchemaName}].[{schema.TableName}]";
         }
     }
 }

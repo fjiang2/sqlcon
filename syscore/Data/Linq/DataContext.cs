@@ -30,7 +30,8 @@ namespace Sys.Data.Linq
             tables.Clear();
         }
 
-        public Table<TEntity> GetTable<TEntity>() where TEntity : class
+        public Table<TEntity> GetTable<TEntity>() 
+            where TEntity : class
         {
             Type key = typeof(TEntity);
             if (tables.ContainsKey(key))
@@ -51,29 +52,31 @@ namespace Sys.Data.Linq
             return Script.GetQuery();
         }
 
-        public List<TOther> Select<TEntity, TOther>(TEntity entity)
+        public List<TResult> Expand<TEntity, TResult>(TEntity entity)
             where TEntity : class
-            where TOther : class
+            where TResult : class
         {
             var table = GetTable<TEntity>();
-            return table.Select<TOther>(entity);
+            return table.Expand<TResult>(entity);
         }
 
-        public void SelectOnSubmit<TEntity, TOther>(TEntity entity)
+        public void ExpandOnSubmit<TEntity, TResult>(TEntity entity)
            where TEntity : class
-           where TOther : class
+           where TResult : class
         {
             var table = GetTable<TEntity>();
-            table.SelectOnSubmit<TOther>(entity);
+            table.ExpandOnSubmit<TResult>(entity);
         }
 
-        public List<TEntity> Select<TEntity>(Expression<Func<TEntity, bool>> where) where TEntity : class
+        public List<TEntity> Select<TEntity>(Expression<Func<TEntity, bool>> where) 
+            where TEntity : class
         {
             var table = GetTable<TEntity>();
             return table.Select(where);
         }
 
-        public void SelectOnSubmit<TEntity>(Expression<Func<TEntity, bool>> where) where TEntity : class
+        public void SelectOnSubmit<TEntity>(Expression<Func<TEntity, bool>> where) 
+            where TEntity : class
         {
             var table = GetTable<TEntity>();
             table.SelectOnSubmit(where);
