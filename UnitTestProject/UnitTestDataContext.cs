@@ -95,7 +95,7 @@ namespace UnitTestProject
                 };
 
                 table.InsertOnSubmit(product);
-                string SQL = db.GetScript();
+                string SQL = db.GetNonQueryScript();
                 Debug.Assert(SQL.StartsWith("INSERT INTO [Products]([ProductName],[SupplierID],[CategoryID],[UnitPrice],[UnitsInStock],[UnitsOnOrder],[ReorderLevel],[Discontinued]) VALUES('iPhone',0,0,0,0,0,0,0)"));
             }
         }
@@ -113,7 +113,7 @@ namespace UnitTestProject
                 };
 
                 table.UpdateOnSubmit(product);
-                string SQL = db.GetScript();
+                string SQL = db.GetNonQueryScript();
                 Debug.Assert(SQL.StartsWith("UPDATE [Products] SET [ProductName] = 'iPhone' WHERE [ProductID] = 100"));
             }
         }
@@ -131,7 +131,7 @@ namespace UnitTestProject
                 };
 
                 table.InsertOrUpdateOnSubmit(product);
-                string SQL = db.GetScript();
+                string SQL = db.GetNonQueryScript();
                 Debug.Assert(SQL.StartsWith("IF EXISTS(SELECT * FROM [Products] WHERE [ProductID] = 100) UPDATE [Products] SET [ProductName] = 'iPhone',[SupplierID] = 0,[CategoryID] = 0,[QuantityPerUnit] = NULL,[UnitPrice] = 0,[UnitsInStock] = 0,[UnitsOnOrder] = 0,[ReorderLevel] = 0,[Discontinued] = 0 WHERE [ProductID] = 100 ELSE INSERT INTO [Products]([ProductName],[SupplierID],[CategoryID],[UnitPrice],[UnitsInStock],[UnitsOnOrder],[ReorderLevel],[Discontinued]) VALUES('iPhone',0,0,0,0,0,0,0)"));
             }
         }
@@ -149,7 +149,7 @@ namespace UnitTestProject
                 };
 
                 table.DeleteOnSubmit(product);
-                string SQL = db.GetScript();
+                string SQL = db.GetNonQueryScript();
                 Debug.Assert(SQL.StartsWith("DELETE FROM [Products] WHERE [ProductID] = 100"));
             }
         }

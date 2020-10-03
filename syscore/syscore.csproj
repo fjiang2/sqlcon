@@ -94,9 +94,12 @@
     <Compile Include="Configuration\ConnectionString.cs" />
     <Compile Include="CodeBuilder\CodeStyle.cs" />
     <Compile Include="Data\Linq\DataContext.cs" />
+    <Compile Include="Data\Linq\Association.cs" />
     <Compile Include="Data\Linq\ITableSchema.cs" />
+    <Compile Include="Data\Linq\QueryResultReader.cs" />
     <Compile Include="Data\Linq\RowOperation.cs" />
     <Compile Include="Data\Linq\QueryTranslator.cs" />
+    <Compile Include="Data\Linq\SqlCode.cs" />
     <Compile Include="Data\Linq\Table.cs" />
     <Compile Include="Data\Linq\TableSchema.cs" />
     <Compile Include="Data\Linq\TableSchemaExtension.cs" />

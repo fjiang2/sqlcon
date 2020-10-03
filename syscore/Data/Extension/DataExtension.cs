@@ -150,9 +150,147 @@ namespace Sys.Data
         }
 
 
+        public static List<T> ToList<T>(this DataRow row, Func<int, object, T> func)
+        {
+            List<T> list = new List<T>();
+            int i = 0;
+            foreach (var obj in row.ItemArray)
+            {
+                list.Add(func(i, obj));
+                i++;
+            }
+
+            return list;
+        }
+
+        public static List<T> ToList<T>(this DataRow row, Func<object, T> func)
+        {
+            List<T> list = new List<T>();
+            foreach (var obj in row.ItemArray)
+            {
+                list.Add(func(obj));
+            }
+
+            return list;
+        }
+
+
+
+        public static List<T> ToList<T>(this DataTable dt, Func<int, DataRow, bool> where, Func<int, DataRow, T> select)
+        {
+            List<T> list = new List<T>();
+            int i = 0;
+            foreach (DataRow row in dt.Rows)
+            {
+                if (where(i, row))
+                    list.Add(select(i, row));
+                i++;
+            }
+
+            return list;
+        }
+
+        public static List<T> ToList<T>(this DataTable dt, Func<DataRow, bool> where, Func<DataRow, T> select)
+        {
+            return dt.ToList((_, row) => where(row), (_, row) => select(row));
+        }
+
+        public static List<T> ToList<T>(this DataTable dt, Func<int, DataRow, T> select)
+        {
+            return dt.ToList((rowId, row) => true, (rowId, row) => select(rowId, row));
+        }
+
+        public static List<T> ToList<T>(this DataTable dt, Func<DataRow, T> select)
+        {
+            return dt.ToList((rowId, row) => true, (rowId, row) => select(row));
+        }
+
+        public static IEnumerable<DataLine> Where(this DataTable dt, Func<DataLine, bool> where)
+        {
+            return dt.ToLines().Where(where);
+        }
+
+        public static IEnumerable<DataLine> ToLines(this DataTable dt)
+        {
+            int i = 0;
+            foreach (DataRow row in dt.Rows)
+            {
+                yield return new DataLine { Line = i, Row = row };
+                i++;
+            }
+        }
+
+        public static void Insert(this DataTable dt, Action<DataRow> insert)
+        {
+            DataRow row = dt.NewRow();
+            insert(row);
+            dt.Rows.Add(row);
+
+            dt.AcceptChanges();
+        }
+
+        public static int Update(this DataTable dt, Action<DataRow> update)
+        {
+            return Update(dt, (_, row) => true, (_, row) => update(row));
+        }
+
+        public static int Update(this DataTable dt, Func<DataRow, bool> where, Action<DataRow> update)
+        {
+            return Update(dt, (_, row) => where(row), (_, row) => update(row));
+        }
+
+        public static int Update(this DataTable dt, Action<int, DataRow> update)
+        {
+            return Update(dt, (_, row) => true, update);
+        }
+
+        public static int Update(this DataTable dt, Func<int, DataRow, bool> where, Action<int, DataRow> update)
+        {
+            int count = 0;
+            int i = 0;
+            foreach (DataRow row in dt.Rows)
+            {
+                if (where(i, row))
+                {
+                    update(i, row);
+                    count++;
+                }
+                i++;
+            }
+
+            return count;
+        }
+
+        public static int Delete(this DataTable dt, Func<DataRow, bool> where)
+        {
+            return Delete(dt, (_, row) => where(row));
+        }
+
+        public static int Delete(this DataTable dt, Func<int, DataRow, bool> where)
+        {
+            int count = 0;
+            int i = 0;
+            foreach (DataRow row in dt.Rows)
+            {
+                if (where(i, row))
+                {
+                    row.Delete();
+                    count++;
+                }
+                i++;
+            }
+
+            dt.AcceptChanges();
+            return count;
+        }
 
 
     }
 
+    public class DataLine
+    {
+        public int Line { get; set; }
+        public DataRow Row { get; set; }
+    }
 
 }

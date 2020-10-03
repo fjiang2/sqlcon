@@ -9,10 +9,11 @@ namespace Sys.Data
 {
     public static class DataTableExtension
     {
-        public static DataColumn[] dentityKeys(this DataTable dt, IdentityKeys keys)
+        public static DataColumn[] IdentityKeys(this DataTable dt, IdentityKeys keys)
         {
             return GetDataColumns(dt, keys.ColumnNames);
         }
+
         public static DataColumn[] ForeignKeys(this DataTable dt, IForeignKeys keys)
         {
             return GetDataColumns(dt, keys.Keys.Select(x => x.FK_Column));
