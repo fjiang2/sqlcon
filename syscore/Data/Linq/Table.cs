@@ -3,9 +3,6 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Linq.Expressions;
-
-using Tie;
 
 namespace Sys.Data.Linq
 {
@@ -133,12 +130,12 @@ namespace Sys.Data.Linq
         public void InsertOrUpdateOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.InsertOrUpdate, entity);
         public void DeleteOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.Delete, entity);
 
-        public void InsertAllOnSubmit(IEnumerable<TEntity> entities) => OperateAllOnSubmit(RowOperation.Insert, entities);
-        public void UpdateAllOnSubmit(IEnumerable<TEntity> entities) => OperateAllOnSubmit(RowOperation.Update, entities);
-        public void InsertOrUpdateAllOnSubmit(IEnumerable<TEntity> entities) => OperateAllOnSubmit(RowOperation.InsertOrUpdate, entities);
-        public void DeleteAllOnSubmit(IEnumerable<TEntity> entities) => OperateAllOnSubmit(RowOperation.Delete, entities);
+        public void InsertOnSubmit(IEnumerable<TEntity> entities) => OperateOnSubmitRange(RowOperation.Insert, entities);
+        public void UpdateOnSubmit(IEnumerable<TEntity> entities) => OperateOnSubmitRange(RowOperation.Update, entities);
+        public void InsertOrUpdateOnSubmit(IEnumerable<TEntity> entities) => OperateOnSubmitRange(RowOperation.InsertOrUpdate, entities);
+        public void DeleteOnSubmit(IEnumerable<TEntity> entities) => OperateOnSubmitRange(RowOperation.Delete, entities);
 
-        private void OperateAllOnSubmit(RowOperation operation, IEnumerable<TEntity> entities)
+        private void OperateOnSubmitRange(RowOperation operation, IEnumerable<TEntity> entities)
         {
             foreach (var entity in entities)
             {

@@ -302,7 +302,7 @@ namespace UnitTestProject
             {
                 var customer_table = db.GetTable<Customers>();
                 var customer = customer_table.Select(row => row.CustomerID == "THECR").FirstOrDefault();
-                Type[] types = customer_table.ExpandAllOnSubmit(customer);
+                Type[] types = customer_table.ExpandOnSubmit(customer);
 
                 var reader = db.SumbitQueries();
                 var orders = reader.Read<Orders>();
@@ -322,7 +322,7 @@ namespace UnitTestProject
             {
                 var customer_table = db.GetTable<Customers>();
                 var customers = customer_table.Select(row => row.CustomerID == "THECR" || row.CustomerID == "SUPRD");
-                Type[] types = db.ExpandAllOnSubmit(customers);
+                Type[] types = db.ExpandOnSubmit(customers);
 
                 var reader = db.SumbitQueries();
                 var orders = reader.Read<Orders>();
@@ -344,11 +344,11 @@ namespace UnitTestProject
                 var order_table = db.GetTable<Orders>();
                 var orders = order_table.Select(row => row.OrderID == 10254 || row.OrderID == 10260);
 
-                Type[] types = db.ExpandAllOnSubmit(orders);
+                Type[] types = db.ExpandOnSubmit(orders);
                 var reader = db.SumbitQueries();
                 var order_details = reader.Read<Order_Details>();
 
-                types = db.ExpandAllOnSubmit(order_details);
+                types = db.ExpandOnSubmit(order_details);
                 reader = db.SumbitQueries();
                 var products = reader.Read<Products>();
 
@@ -365,10 +365,10 @@ namespace UnitTestProject
             {
                 var orders = db.Select<Orders>(row => row.OrderID == 10254 || row.OrderID == 10260);
 
-                var reader = db.ExpandAll(orders);
+                var reader = db.Expand(orders);
                 var order_details = reader.Read<Order_Details>();
 
-                reader = db.ExpandAll(order_details);
+                reader = db.Expand(order_details);
                 var products = reader.Read<Products>();
 
                 var product = products.First(row => row.ProductName == "Tarte au sucre");
@@ -384,8 +384,8 @@ namespace UnitTestProject
             {
                 var orders = db.Select<Orders>(row => row.OrderID == 10254 || row.OrderID == 10260);
 
-                var order_details = db.ExpandAll<Orders, Order_Details>(orders);
-                var products = db.ExpandAll<Order_Details, Products>(order_details);
+                var order_details = db.Expand<Orders, Order_Details>(orders);
+                var products = db.Expand<Order_Details, Products>(order_details);
 
                 var product = products.First(row => row.ProductName == "Tarte au sucre");
                 Debug.Assert(product.UnitsInStock == 17);

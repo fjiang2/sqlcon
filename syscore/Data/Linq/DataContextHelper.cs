@@ -18,25 +18,25 @@ namespace Sys.Data.Linq
             return table.Expand<TResult>(entity);
         }
 
-        public IEnumerable<TResult> ExpandAll<TEntity, TResult>(IEnumerable<TEntity> entities)
+        public IEnumerable<TResult> Expand<TEntity, TResult>(IEnumerable<TEntity> entities)
          where TEntity : class
          where TResult : class
         {
             var table = GetTable<TEntity>();
-            return table.ExpandAll<TResult>(entities);
+            return table.Expand<TResult>(entities);
         }
 
-        public QueryResultReader ExpandAll<TEntity>(TEntity entity)
+        public QueryResultReader Expand<TEntity>(TEntity entity)
          where TEntity : class
         {
-            ExpandAllOnSubmit(entity);
+            ExpandOnSubmit(entity);
             return SumbitQueries();
         }
 
-        public QueryResultReader ExpandAll<TEntity>(IEnumerable<TEntity> entities)
+        public QueryResultReader Expand<TEntity>(IEnumerable<TEntity> entities)
          where TEntity : class
         {
-            ExpandAllOnSubmit(entities);
+            ExpandOnSubmit(entities);
             return SumbitQueries();
         }
 
@@ -48,18 +48,18 @@ namespace Sys.Data.Linq
             table.ExpandOnSubmit<TResult>(entity);
         }
 
-        public Type[] ExpandAllOnSubmit<TEntity>(TEntity entity)
+        public Type[] ExpandOnSubmit<TEntity>(TEntity entity)
          where TEntity : class
         {
             var table = GetTable<TEntity>();
-            return table.ExpandAllOnSubmit(entity);
+            return table.ExpandOnSubmit(entity);
         }
 
-        public Type[] ExpandAllOnSubmit<TEntity>(IEnumerable<TEntity> entities)
+        public Type[] ExpandOnSubmit<TEntity>(IEnumerable<TEntity> entities)
          where TEntity : class
         {
             var table = GetTable<TEntity>();
-            return table.ExpandAllOnSubmit(entities);
+            return table.ExpandOnSubmit(entities);
         }
 
         public IEnumerable<TEntity> Select<TEntity>(Expression<Func<TEntity, bool>> where)

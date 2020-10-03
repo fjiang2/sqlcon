@@ -3,13 +3,18 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Linq.Expressions;
 
 namespace Sys.Data.Linq
 {
     public sealed partial class Table<TEntity> : ITable
     {
 
+        /// <summary>
+        /// Expand single assoication immediately
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         public IEnumerable<TResult> Expand<TResult>(TEntity entity) where TResult : class
         {
             string where = AssociationWhere<TResult>(entity);
@@ -18,7 +23,13 @@ namespace Sys.Data.Linq
             return table.Select(where);
         }
 
-        public IEnumerable<TResult> ExpandAll<TResult>(IEnumerable<TEntity> entities) where TResult : class
+        /// <summary>
+        /// Expand single assoication immediately
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="entities"></param>
+        /// <returns></returns>
+        public IEnumerable<TResult> Expand<TResult>(IEnumerable<TEntity> entities) where TResult : class
         {
             string where = AssociationWhere<TResult>(entities);
 
@@ -27,6 +38,11 @@ namespace Sys.Data.Linq
         }
 
 
+        /// <summary>
+        /// Expand single association
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="entity"></param>
         public void ExpandOnSubmit<TResult>(TEntity entity) where TResult : class
         {
             string where = AssociationWhere<TResult>(entity);
@@ -35,7 +51,26 @@ namespace Sys.Data.Linq
             table.SelectOnSubmit(where);
         }
 
-        public Type[] ExpandAllOnSubmit(TEntity entity)
+        /// <summary>
+        /// Expand single association
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="entities"></param>
+        public void ExpandOnSubmit<TResult>(IEnumerable<TEntity> entities) where TResult : class
+        {
+            string where = AssociationWhere<TResult>(entities);
+
+            var table = Context.GetTable<TResult>();
+            table.SelectOnSubmit(where);
+        }
+
+
+        /// <summary>
+        /// Expand all associations
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public Type[] ExpandOnSubmit(TEntity entity)
         {
             List<Type> types = new List<Type>();
             var dict = ToDictionary(entity);
@@ -58,7 +93,12 @@ namespace Sys.Data.Linq
             return types.ToArray();
         }
 
-        public Type[] ExpandAllOnSubmit(IEnumerable<TEntity> entities)
+        /// <summary>
+        /// Expand all associations
+        /// </summary>
+        /// <param name="entities"></param>
+        /// <returns></returns>
+        public Type[] ExpandOnSubmit(IEnumerable<TEntity> entities)
         {
             List<Type> types = new List<Type>();
 
