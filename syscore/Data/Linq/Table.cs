@@ -9,7 +9,12 @@ using Tie;
 
 namespace Sys.Data.Linq
 {
-    public sealed class Table<TEntity>
+    public interface ITable
+    {
+
+    }
+
+    public sealed class Table<TEntity> : ITable
     {
         private readonly Type type;
         private readonly Type extension;

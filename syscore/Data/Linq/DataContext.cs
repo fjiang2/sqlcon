@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Data;
+using System.Collections.Generic;
 
 namespace Sys.Data.Linq
 {
@@ -9,6 +10,8 @@ namespace Sys.Data.Linq
     {
         internal ConnectionProvider ConnectionProvider { get; }
         internal SqlCode Script { get; } = new SqlCode();
+
+        private Dictionary<Type, ITable> tables = new Dictionary<Type, ITable>();
 
         public DataContext(string connectionString)
         {
@@ -22,12 +25,19 @@ namespace Sys.Data.Linq
 
         public void Dispose()
         {
-
+            Script.Clear();
+            tables.Clear();
         }
 
         public Table<TEntity> GetTable<TEntity>() where TEntity : class
         {
-            return new Table<TEntity>(this);
+            Type key = typeof(TEntity);
+            if (tables.ContainsKey(key))
+                return (Table<TEntity>)tables[key];
+
+            var obj = new Table<TEntity>(this);
+            tables.Add(key, obj);
+            return obj;
         }
 
         public string GetNonQueryScript()
@@ -38,6 +48,12 @@ namespace Sys.Data.Linq
         public string GetQueryScript()
         {
             return Script.GetQuery();
+        }
+
+        public void SelectOnSubmit<TEntity>(System.Linq.Expressions.Expression<Func<TEntity, bool>> where) where TEntity : class
+        {
+            var table = GetTable<TEntity>();
+            table.SelectOnSubmit(where);
         }
 
         internal DataTable FillDataTable(string query)
