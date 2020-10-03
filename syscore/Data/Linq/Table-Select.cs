@@ -35,7 +35,7 @@ namespace Sys.Data.Linq
         public void SelectOnSubmit(string where = null)
         {
             string SQL = SelectFromWhere(where);
-            Context.Script.AppendQuery<TEntity>(SQL);
+            Context.CodeBlock.AppendQuery<TEntity>(SQL);
         }
 
 
@@ -52,11 +52,11 @@ namespace Sys.Data.Linq
 
             if (where != null)
             {
-                SQL = $"SELECT * FROM {tableName.FormalName} WHERE {where}";
+                SQL = $"SELECT * FROM {formalName} WHERE {where}";
             }
             else
             {
-                SQL = $"SELECT * FROM {tableName.FormalName}";
+                SQL = $"SELECT * FROM {formalName}";
             }
 
             return SQL;

@@ -13,7 +13,7 @@ namespace Sys.Data.Linq
         private readonly Type extension;
         private readonly ITableSchema schema;
         private readonly MethodInfo functionToDictionary;
-        private readonly TableName tableName;
+        private readonly string formalName;
 
         public SqlMaker Generator { get; }
         public DataContext Context { get; }
@@ -27,9 +27,9 @@ namespace Sys.Data.Linq
             this.schema = type.GetTableSchema(out var ext);
             this.extension = ext;
 
-            this.tableName = new TableName(context.ConnectionProvider, schema.FormalTableName());
+            this.formalName = schema.FormalTableName();
 
-            this.Generator = new SqlMaker(tableName)
+            this.Generator = new SqlMaker(schema.FormalTableName())
             {
                 PrimaryKeys = schema.PrimaryKeys,
                 IdentityKeys = schema.IdentityKeys,
@@ -121,7 +121,7 @@ namespace Sys.Data.Linq
                 }
             }
 
-            Context.Script.AppendLine<TEntity>(gen.Update());
+            Context.CodeBlock.AppendLine<TEntity>(gen.Update());
             gen.Clear();
         }
 
@@ -180,13 +180,13 @@ namespace Sys.Data.Linq
             if (sql == null)
                 return;
 
-            Context.Script.AppendLine<TEntity>(sql);
+            Context.CodeBlock.AppendLine<TEntity>(sql);
             gen.Clear();
         }
 
         public override string ToString()
         {
-            return tableName.FullName;
+            return formalName;
         }
     }
 }

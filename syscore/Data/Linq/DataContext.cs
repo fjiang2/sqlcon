@@ -8,28 +8,39 @@ namespace Sys.Data.Linq
 
     public partial class DataContext : IDisposable
     {
-        internal ConnectionProvider ConnectionProvider { get; }
-        internal SqlCode Script { get; } = new SqlCode();
+        private readonly Dictionary<Type, ITable> tables = new Dictionary<Type, ITable>();
+        private readonly Func<string, IDbCmd> sqlCommand;
 
-        private Dictionary<Type, ITable> tables = new Dictionary<Type, ITable>();
+        internal SqlCodeBlock CodeBlock { get; } = new SqlCodeBlock();
+
+        public string Description { get; set; }
 
         public DataContext(string connectionString)
         {
-            this.ConnectionProvider = ConnectionProvider.CreateProvider("ServerName", connectionString);
+            var connectionProvider = ConnectionProvider.CreateProvider("ServerName", connectionString);
+            this.sqlCommand = query => new SqlCmd(connectionProvider, query);
+            this.Description = connectionString;
         }
 
         public DataContext(ConnectionProvider provider)
         {
-            this.ConnectionProvider = provider;
+            this.sqlCommand = query => new SqlCmd(provider, query);
+            this.Description = provider.ConnectionString;
+        }
+
+        public DataContext(Func<string, IDbCmd> cmd)
+        {
+            this.sqlCommand = cmd;
+            this.Description = "Sql command handler";
         }
 
         public void Dispose()
         {
-            Script.Clear();
+            CodeBlock.Clear();
             tables.Clear();
         }
 
-        public Table<TEntity> GetTable<TEntity>() 
+        public Table<TEntity> GetTable<TEntity>()
             where TEntity : class
         {
             Type key = typeof(TEntity);
@@ -43,55 +54,62 @@ namespace Sys.Data.Linq
 
         public string GetNonQueryScript()
         {
-            return Script.GetNonQuery();
+            return CodeBlock.GetNonQuery();
         }
 
         public string GetQueryScript()
         {
-            return Script.GetQuery();
+            return CodeBlock.GetQuery();
         }
 
-     
+
 
         internal DataTable FillDataTable(string query)
         {
-            var cmd = new SqlCmd(ConnectionProvider, query);
-            return cmd.FillDataTable();
+            DataSet ds = FillDataSet(query);
+            if (ds == null)
+                return null;
+
+            if (ds.Tables.Count >= 1)
+                return ds.Tables[0];
+
+            return null;
         }
 
         private DataSet FillDataSet(string query)
         {
-            var cmd = new SqlCmd(ConnectionProvider, query);
-            return cmd.FillDataSet();
+            var cmd = sqlCommand(query);
+            var ds = new DataSet();
+            return cmd.FillDataSet(ds);
         }
 
         public QueryResultReader SumbitQueries()
         {
-            if (Script.Length == 0)
+            if (CodeBlock.Length == 0)
                 return null;
 
-            string query = Script.GetQuery();
-            Type[] types = Script.GetQueryTypes();
+            string query = CodeBlock.GetQuery();
+            Type[] types = CodeBlock.GetQueryTypes();
             var ds = FillDataSet(query);
-            Script.Clear();
+            CodeBlock.Clear();
 
             return new QueryResultReader(this, types, ds);
         }
 
         public void SubmitChanges()
         {
-            if (Script.Length == 0)
+            if (CodeBlock.Length == 0)
                 return;
 
-            var cmd = new SqlCmd(ConnectionProvider, Script.GetNonQuery());
+            var cmd = sqlCommand(CodeBlock.GetNonQuery());
             cmd.ExecuteNonQuery();
-            Script.Clear();
+            CodeBlock.Clear();
         }
 
 
         public override string ToString()
         {
-            return ConnectionProvider.ConnectionString;
+            return Description;
         }
 
     }

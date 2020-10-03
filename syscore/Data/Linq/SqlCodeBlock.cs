@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Sys.Data.Linq
 {
-    class SqlCode
+    class SqlCodeBlock
     {
         class SqlStatement
         {

@@ -85,7 +85,7 @@ namespace Sys.Data.Linq
                 string where = $"[{a.OtherKey}] = {svalue}";
 
                 var SQL = $"SELECT * FROM {formalName} WHERE {where}";
-                Context.Script.AppendQuery(a.OtherType, SQL);
+                Context.CodeBlock.AppendQuery(a.OtherType, SQL);
 
                 types.Add(a.OtherType);
             }
@@ -119,7 +119,7 @@ namespace Sys.Data.Linq
                 string x = string.Join(",", L);
                 string where = $"[{a.OtherKey}] IN ({x})";
                 var SQL = $"SELECT * FROM {formalName} WHERE {where}";
-                Context.Script.AppendQuery(a.OtherType, SQL);
+                Context.CodeBlock.AppendQuery(a.OtherType, SQL);
                 types.Add(a.OtherType);
             }
 

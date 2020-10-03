@@ -8,17 +8,15 @@ namespace Sys.Data
 {
     public class SqlMaker
     {
-        public TableName TableName { get; }
         public List<ColumnValuePair> Columns { get; } = new List<ColumnValuePair>();
         public string[] PrimaryKeys { get; set; }
         public string[] IdentityKeys { get; set; }
 
         private SqlTemplate template;
 
-        public SqlMaker(TableName tableName)
+        public SqlMaker(string formalName)
         {
-            this.TableName = tableName;
-            this.template = new SqlTemplate(TableName);
+            this.template = new SqlTemplate(formalName);
         }
 
         public void Clear()
