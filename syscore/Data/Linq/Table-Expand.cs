@@ -18,6 +18,14 @@ namespace Sys.Data.Linq
             return table.Select(where);
         }
 
+        public IEnumerable<TResult> ExpandAll<TResult>(IEnumerable<TEntity> entities) where TResult : class
+        {
+            string where = AssociationWhere<TResult>(entities);
+
+            var table = Context.GetTable<TResult>();
+            return table.Select(where);
+        }
+
 
         public void ExpandOnSubmit<TResult>(TEntity entity) where TResult : class
         {
@@ -78,18 +86,35 @@ namespace Sys.Data.Linq
             return types.ToArray();
         }
 
-        private string AssociationWhere<T>(TEntity entity)
+        private string AssociationWhere<TResult>(TEntity entity)
         {
-            IAssociation assoc = schema.Associations?.FirstOrDefault(x => x.OtherType == typeof(T));
+            IAssociation assoc = schema.Associations?.FirstOrDefault(x => x.OtherType == typeof(TResult));
             if (assoc == null)
-                throw new InvalidConstraintException($"invalid assoication from {typeof(TEntity)} to {typeof(T)}");
+                throw new InvalidConstraintException($"invalid assoication from {typeof(TEntity)} to {typeof(TResult)}");
 
             var dict = ToDictionary(entity);
             object value = dict[assoc.ThisKey];
             SqlValue svalue = new SqlValue(value);
 
-            string where = $"[{assoc.OtherKey}] = {svalue}";
-            return where;
+            return $"[{assoc.OtherKey}] = {svalue}";
+        }
+
+        private string AssociationWhere<TResult>(IEnumerable<TEntity> entities)
+        {
+            IAssociation assoc = schema.Associations?.FirstOrDefault(x => x.OtherType == typeof(TResult));
+            if (assoc == null)
+                throw new InvalidConstraintException($"invalid assoication from {typeof(TEntity)} to {typeof(TResult)}");
+            List<string> L = new List<string>();
+            foreach (var entity in entities)
+            {
+                var dict = ToDictionary(entity);
+                object value = dict[assoc.ThisKey];
+                SqlValue svalue = new SqlValue(value);
+                L.Add(svalue.ToString());
+            }
+
+            string X = string.Join(",", L);
+            return $"[{assoc.OtherKey}] IN ({X})";
         }
 
     }

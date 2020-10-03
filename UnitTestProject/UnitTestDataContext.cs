@@ -169,8 +169,8 @@ namespace UnitTestProject
                 Debug.Assert(SQL == "SELECT * FROM [Products] WHERE (ProductID = 6)\r\nSELECT * FROM [Customers] WHERE (CustomerID = 'MAISD')");
 
                 var reader = db.SumbitQueries();
-                var L1 = reader.ToList<Products>();
-                var L2 = reader.ToList<Customers>();
+                var L1 = reader.Read<Products>();
+                var L2 = reader.Read<Customers>();
 
                 Debug.Assert(L1.First().QuantityPerUnit == "12 - 8 oz jars");
                 Debug.Assert(L2.First().PostalCode == "B-1180");
@@ -190,8 +190,8 @@ namespace UnitTestProject
                 Debug.Assert(SQL == "SELECT * FROM [Products] WHERE (ProductID = 6)\r\nSELECT * FROM [Customers] WHERE (CustomerID = 'MAISD')");
 
                 var reader = db.SumbitQueries();
-                var L1 = reader.ToList<Products>();
-                var L2 = reader.ToList<Customers>();
+                var L1 = reader.Read<Products>();
+                var L2 = reader.Read<Customers>();
 
                 Debug.Assert(L1.First().QuantityPerUnit == "12 - 8 oz jars");
                 Debug.Assert(L2.First().PostalCode == "B-1180");
@@ -209,7 +209,7 @@ namespace UnitTestProject
                 order_table.ExpandOnSubmit<Customers>(order);
 
                 var reader = db.SumbitQueries();
-                var L2 = reader.ToList<Customers>();
+                var L2 = reader.Read<Customers>();
 
                 Debug.Assert(L2.First().CompanyName == "Wellington Importadora");
 
@@ -228,7 +228,7 @@ namespace UnitTestProject
                 customer_table.ExpandOnSubmit<Orders>(customer);
 
                 var reader = db.SumbitQueries();
-                var orders = reader.ToList<Orders>();
+                var orders = reader.Read<Orders>();
                 var order = orders.FirstOrDefault();
 
                 Debug.Assert(order.ShipName == "The Cracker Box");
@@ -278,20 +278,20 @@ namespace UnitTestProject
 
                 var reader = db.SumbitQueries();
 
-                var orders = reader.ToList<Orders>();
+                var orders = reader.Read<Orders>();
                 var order = orders.FirstOrDefault();
                 Debug.Assert(order.ShipName == "The Cracker Box");
 
-                var demographics = reader.ToList<CustomerCustomerDemo>();
+                var demographics = reader.Read<CustomerCustomerDemo>();
                 var demo = demographics.FirstOrDefault();
                 Debug.Assert(demo == null);
 
                 db.ExpandOnSubmit<Orders, Shippers>(order);
                 reader = db.SumbitQueries();
-                var shippers = reader.ToList<Shippers>();
+                var shippers = reader.Read<Shippers>();
                 Debug.Assert(shippers.FirstOrDefault().Phone == "(503) 555-3199");
 
-                var L2 = reader.ToList<Customers>();
+                var L2 = reader.Read<Customers>();
             }
         }
 
@@ -305,18 +305,18 @@ namespace UnitTestProject
                 Type[] types = customer_table.ExpandAllOnSubmit(customer);
 
                 var reader = db.SumbitQueries();
-                var orders = reader.ToList<Orders>();
+                var orders = reader.Read<Orders>();
                 var order = orders.FirstOrDefault();
                 Debug.Assert(order.ShipName == "The Cracker Box");
 
-                var demographics = reader.ToList<CustomerCustomerDemo>();
+                var demographics = reader.Read<CustomerCustomerDemo>();
                 var demo = demographics.FirstOrDefault();
                 Debug.Assert(demo == null);
             }
         }
 
         [TestMethod]
-        public void TestEntitiesExpandAll()
+        public void TestExpandAllCustomers()
         {
             using (var db = new DataContext(connectionString))
             {
@@ -325,14 +325,83 @@ namespace UnitTestProject
                 Type[] types = db.ExpandAllOnSubmit(customers);
 
                 var reader = db.SumbitQueries();
-                var orders = reader.ToList<Orders>();
+                var orders = reader.Read<Orders>();
                 var order = orders.FirstOrDefault(row => row.CustomerID == "THECR");
                 Debug.Assert(order.ShipName == "The Cracker Box");
 
-                var demographics = reader.ToList<CustomerCustomerDemo>();
+                var demographics = reader.Read<CustomerCustomerDemo>();
                 var demo = demographics.FirstOrDefault();
                 Debug.Assert(demo == null);
             }
         }
+
+
+        [TestMethod]
+        public void TestExpandAllOnSubmitOrders()
+        {
+            using (var db = new DataContext(connectionString))
+            {
+                var order_table = db.GetTable<Orders>();
+                var orders = order_table.Select(row => row.OrderID == 10254 || row.OrderID == 10260);
+
+                Type[] types = db.ExpandAllOnSubmit(orders);
+                var reader = db.SumbitQueries();
+                var order_details = reader.Read<Order_Details>();
+
+                types = db.ExpandAllOnSubmit(order_details);
+                reader = db.SumbitQueries();
+                var products = reader.Read<Products>();
+
+                var product = products.First(row => row.ProductName == "Tarte au sucre");
+                Debug.Assert(product.UnitsInStock == 17);
+
+            }
+        }
+
+        [TestMethod]
+        public void TestExpandAllOrders()
+        {
+            using (var db = new DataContext(connectionString))
+            {
+                var orders = db.Select<Orders>(row => row.OrderID == 10254 || row.OrderID == 10260);
+
+                var reader = db.ExpandAll(orders);
+                var order_details = reader.Read<Order_Details>();
+
+                reader = db.ExpandAll(order_details);
+                var products = reader.Read<Products>();
+
+                var product = products.First(row => row.ProductName == "Tarte au sucre");
+                Debug.Assert(product.UnitsInStock == 17);
+
+            }
+        }
+
+        [TestMethod]
+        public void TestExpandAllOrders2()
+        {
+            using (var db = new DataContext(connectionString))
+            {
+                var orders = db.Select<Orders>(row => row.OrderID == 10254 || row.OrderID == 10260);
+
+                var order_details = db.ExpandAll<Orders, Order_Details>(orders);
+                var products = db.ExpandAll<Order_Details, Products>(order_details);
+
+                var product = products.First(row => row.ProductName == "Tarte au sucre");
+                Debug.Assert(product.UnitsInStock == 17);
+
+
+
+
+                var order = db.Select<Orders>(row => row.OrderID == 10260).First();
+
+                var order_detail = db.Expand<Orders, Order_Details>(order).First();
+                products = db.Expand<Order_Details, Products>(order_detail);
+
+                product = products.First(row => row.ProductName == "Jack's New England Clam Chowder");
+                Debug.Assert(product.UnitsInStock == 85);
+            }
+        }
+
     }
 }

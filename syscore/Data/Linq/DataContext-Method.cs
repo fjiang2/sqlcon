@@ -18,6 +18,28 @@ namespace Sys.Data.Linq
             return table.Expand<TResult>(entity);
         }
 
+        public IEnumerable<TResult> ExpandAll<TEntity, TResult>(IEnumerable<TEntity> entities)
+         where TEntity : class
+         where TResult : class
+        {
+            var table = GetTable<TEntity>();
+            return table.ExpandAll<TResult>(entities);
+        }
+
+        public QueryResultReader ExpandAll<TEntity>(TEntity entity)
+         where TEntity : class
+        {
+            ExpandAllOnSubmit(entity);
+            return SumbitQueries();
+        }
+
+        public QueryResultReader ExpandAll<TEntity>(IEnumerable<TEntity> entities)
+         where TEntity : class
+        {
+            ExpandAllOnSubmit(entities);
+            return SumbitQueries();
+        }
+
         public void ExpandOnSubmit<TEntity, TResult>(TEntity entity)
            where TEntity : class
            where TResult : class

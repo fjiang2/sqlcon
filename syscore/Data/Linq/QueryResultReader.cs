@@ -17,7 +17,7 @@ namespace Sys.Data.Linq
             this.ds = ds;
         }
 
-        public List<TEntity> ToList<TEntity>() where TEntity : class
+        public IEnumerable<TEntity> Read<TEntity>() where TEntity : class
         {
             for (int i = 0; i < types.Length; i++)
             {
