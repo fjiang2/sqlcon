@@ -5,13 +5,15 @@ using System.Linq;
 
 namespace Sys.Data.Linq
 {
-    public class SqlCode
+    class SqlCode
     {
         class SqlStatement
         {
             public Type Table { get; set; }
-            public bool NonQuery { get; set; }
             public string Statement { get; set; }
+            public bool NonQuery { get; set; }
+
+            public override string ToString() => Statement;
         }
 
         List<SqlStatement> clauses = new List<SqlStatement>();
@@ -21,8 +23,8 @@ namespace Sys.Data.Linq
             clauses.Add(new SqlStatement
             {
                 Table = typeof(TEntity),
+                Statement = clause,
                 NonQuery = true,
-                Statement = clause
             });
         }
 
@@ -31,8 +33,8 @@ namespace Sys.Data.Linq
             clauses.Add(new SqlStatement
             {
                 Table = typeof(TEntity),
+                Statement = clause,
                 NonQuery = false,
-                Statement = clause
             });
         }
 

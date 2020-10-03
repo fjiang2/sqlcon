@@ -52,7 +52,7 @@ namespace Sys.Data.Linq
             return cmd.FillDataSet();
         }
 
-        public QueryResultReader SumbitQuery()
+        public QueryResultReader SumbitQueries()
         {
             if (Script.Length == 0)
                 return null;
