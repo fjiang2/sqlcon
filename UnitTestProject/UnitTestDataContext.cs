@@ -251,11 +251,11 @@ namespace UnitTestProject
                 var customers = db.Select<Customers>(row => row.CustomerID == "THECR");
                 var customer = customers.FirstOrDefault();
 
-                List<Orders> orders = db.Expand<Customers, Orders>(customer);
+                var orders = db.Expand<Customers, Orders>(customer);
                 var order = orders.FirstOrDefault();
                 Debug.Assert(order.ShipName == "The Cracker Box");
 
-                List<CustomerCustomerDemo> demographics = db.Expand<Customers, CustomerCustomerDemo>(customer);
+                var demographics = db.Expand<Customers, CustomerCustomerDemo>(customer);
                 var demo = demographics.FirstOrDefault();
                 Debug.Assert(demo == null);
 
@@ -296,7 +296,7 @@ namespace UnitTestProject
         }
 
         [TestMethod]
-        public void TestExpandAll()
+        public void TestEntityExpandAll()
         {
             using (var db = new DataContext(connectionString))
             {
@@ -307,6 +307,26 @@ namespace UnitTestProject
                 var reader = db.SumbitQueries();
                 var orders = reader.ToList<Orders>();
                 var order = orders.FirstOrDefault();
+                Debug.Assert(order.ShipName == "The Cracker Box");
+
+                var demographics = reader.ToList<CustomerCustomerDemo>();
+                var demo = demographics.FirstOrDefault();
+                Debug.Assert(demo == null);
+            }
+        }
+
+        [TestMethod]
+        public void TestEntitiesExpandAll()
+        {
+            using (var db = new DataContext(connectionString))
+            {
+                var customer_table = db.GetTable<Customers>();
+                var customers = customer_table.Select(row => row.CustomerID == "THECR" || row.CustomerID == "SUPRD");
+                Type[] types = db.ExpandAllOnSubmit(customers);
+
+                var reader = db.SumbitQueries();
+                var orders = reader.ToList<Orders>();
+                var order = orders.FirstOrDefault(row => row.CustomerID == "THECR");
                 Debug.Assert(order.ShipName == "The Cracker Box");
 
                 var demographics = reader.ToList<CustomerCustomerDemo>();

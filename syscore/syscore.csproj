@@ -95,6 +95,7 @@
     <Compile Include="CodeBuilder\CodeStyle.cs" />
     <Compile Include="Data\Linq\DataContext.cs" />
     <Compile Include="Data\Linq\Association.cs" />
+    <Compile Include="Data\Linq\DataContext-Method.cs" />
     <Compile Include="Data\Linq\IAssociation.cs" />
     <Compile Include="Data\Linq\ITable.cs" />
     <Compile Include="Data\Linq\ITableSchema.cs" />
@@ -102,7 +103,8 @@
     <Compile Include="Data\Linq\RowOperation.cs" />
     <Compile Include="Data\Linq\QueryTranslator.cs" />
     <Compile Include="Data\Linq\SqlCode.cs" />
-    <Compile Include="Data\Linq\Table~1.cs" />
+    <Compile Include="Data\Linq\Table-Expand.cs" />
+    <Compile Include="Data\Linq\Table-Select.cs" />
     <Compile Include="Data\Linq\Table.cs" />
     <Compile Include="Data\Linq\TableSchema.cs" />
     <Compile Include="Data\Linq\TableSchemaExtension.cs" />

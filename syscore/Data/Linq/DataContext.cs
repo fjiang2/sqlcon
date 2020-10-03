@@ -2,12 +2,11 @@
 using System.Text;
 using System.Data;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 
 namespace Sys.Data.Linq
 {
 
-    public class DataContext : IDisposable
+    public partial class DataContext : IDisposable
     {
         internal ConnectionProvider ConnectionProvider { get; }
         internal SqlCode Script { get; } = new SqlCode();
@@ -52,35 +51,7 @@ namespace Sys.Data.Linq
             return Script.GetQuery();
         }
 
-        public List<TResult> Expand<TEntity, TResult>(TEntity entity)
-            where TEntity : class
-            where TResult : class
-        {
-            var table = GetTable<TEntity>();
-            return table.Expand<TResult>(entity);
-        }
-
-        public void ExpandOnSubmit<TEntity, TResult>(TEntity entity)
-           where TEntity : class
-           where TResult : class
-        {
-            var table = GetTable<TEntity>();
-            table.ExpandOnSubmit<TResult>(entity);
-        }
-
-        public List<TEntity> Select<TEntity>(Expression<Func<TEntity, bool>> where) 
-            where TEntity : class
-        {
-            var table = GetTable<TEntity>();
-            return table.Select(where);
-        }
-
-        public void SelectOnSubmit<TEntity>(Expression<Func<TEntity, bool>> where) 
-            where TEntity : class
-        {
-            var table = GetTable<TEntity>();
-            table.SelectOnSubmit(where);
-        }
+     
 
         internal DataTable FillDataTable(string query)
         {
@@ -122,5 +93,6 @@ namespace Sys.Data.Linq
         {
             return ConnectionProvider.ConnectionString;
         }
+
     }
 }
