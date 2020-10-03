@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Sys.Data;
+using Sys.Data.Linq;
 
 namespace UnitTestProject.Northwind
 {
@@ -17,6 +18,22 @@ namespace UnitTestProject.Northwind
 	{
 		public const string TableName = "Territories";
 		public static readonly string[] Keys = new string[] { _TERRITORYID };
+		
+		public static readonly IAssociation[] Associations = new IAssociation[]
+		{
+			new Association<EmployeeTerritories>
+			{
+				ThisKey = _TERRITORYID,
+				OtherKey = EmployeeTerritoriesExtension._TERRITORYID
+			},
+			new Association<Region>
+			{
+				Name = "FK_Territories_Region",
+				ThisKey = _REGIONID,
+				OtherKey = RegionExtension._REGIONID,
+				IsForeignKey = true
+			}
+		};
 		
 		public static List<Territories> ToTerritoriesCollection(this DataTable dt)
 		{
