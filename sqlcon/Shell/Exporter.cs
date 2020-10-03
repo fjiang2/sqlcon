@@ -90,10 +90,10 @@ namespace sqlcon
         {
             var dt = new SqlCmd(tname.Provider, $"SELECT TOP 1 * FROM {tname.FormalName}").FillDataTable();
             dt.TableName = tname.Name;
-            
+
             if (tname.SchemaName != TableName.dbo)
                 dt.Prefix = tname.SchemaName;
-            
+
             var schema = new TableSchema(tname);
             dt.PrimaryKeys(schema.PrimaryKeys.Keys);
             foreach (IColumn column in schema.Columns)
@@ -447,11 +447,17 @@ namespace sqlcon
             }
         }
 
+        class TableNameData
+        {
+            public TableName Name { get; set; }
+            public DataTable Data { get; set; }
+        }
+
         public void ExportDataContract(int version)
         {
             bool last = cmd.Has("last");
 
-            List<DataTable> list = new List<DataTable>();
+            List<TableNameData> list = new List<TableNameData>();
 
             if (last)
             {
@@ -467,7 +473,7 @@ namespace sqlcon
                     int i = 0;
                     foreach (DataTable dt in ds.Tables)
                     {
-                        list.Add(dt);
+                        list.Add(new TableNameData { Data = dt });
                         if (i < items.Length)
                             dt.TableName = items[i];
 
@@ -478,7 +484,7 @@ namespace sqlcon
             else if (tname != null)
             {
                 var dt = FillTable(tname);
-                list.Add(dt);
+                list.Add(new TableNameData { Name = tname, Data = dt });
             }
             else if (dname != null)
             {
@@ -486,7 +492,7 @@ namespace sqlcon
                 foreach (var tn in tnames)
                 {
                     var dt = FillTable(tn);
-                    list.Add(dt);
+                    list.Add(new TableNameData { Name = tn, Data = dt });
                 }
             }
             else
@@ -495,15 +501,16 @@ namespace sqlcon
                 return;
             }
 
-            foreach (DataTable dt in list)
+            foreach (TableNameData dt in list)
             {
                 ExportDataContractClass(version, dt);
             }
         }
 
 
-        private void ExportDataContractClass(int version, DataTable dt)
+        private void ExportDataContractClass(int version, TableNameData tnd)
         {
+            DataTable dt = tnd.Data;
             bool allowDbNull = cmd.Has("NULL");
             string[] keys = cmd.Columns;
 
@@ -524,11 +531,11 @@ namespace sqlcon
 
             TheClassBuilder gen = null;
             if (version == 0)
-                gen = new DataContractClassBuilder(cmd, dt, allowDbNull);
+                gen = new DataContractClassBuilder(cmd, tnd.Name, dt, allowDbNull);
             else if (version == 1)
-                gen = new DataContract1ClassBuilder(cmd, dt, allowDbNull);
+                gen = new DataContract1ClassBuilder(cmd, tnd.Name, dt, allowDbNull);
             else
-                gen = new DataContract2ClassBuilder(cmd, dt, allowDbNull);
+                gen = new DataContract2ClassBuilder(cmd, tnd.Name, dt, allowDbNull);
 
             if (gen != null)
             {

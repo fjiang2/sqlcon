@@ -13,13 +13,15 @@ namespace sqlcon
 
     class DataContract2ClassBuilder : TheClassBuilder
     {
+        private TableName tname;
         private DataTable dt;
 
         private IDictionary<DataColumn, TypeInfo> dict { get; }
 
-        public DataContract2ClassBuilder(ApplicationCommand cmd, DataTable dt, bool allowDbNull)
+        public DataContract2ClassBuilder(ApplicationCommand cmd, TableName tname, DataTable dt, bool allowDbNull)
             : base(cmd)
         {
+            this.tname = tname;
             this.dt = dt;
             this.dict = CreateMapOfTypeInfo(dt, allowDbNull);
 
@@ -267,7 +269,7 @@ namespace sqlcon
             sent.AppendFormat("return string.Format({0});", sb);
             clss.AppendLine();
 
-            CreateTableSchemaFields(dt, clss);
+            CreateTableSchemaFields(tname, dt, clss);
             clss.AppendLine();
         }
 

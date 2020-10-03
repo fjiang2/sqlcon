@@ -177,5 +177,26 @@ namespace UnitTestProject
 
             }
         }
+
+        [TestMethod]
+        public void TestMethodSelectOnSubmitChanges()
+        {
+            using (var db = new DataContext(connectionString))
+            {
+                db.SelectOnSubmit<Products>(row => row.ProductID == 6);
+                db.SelectOnSubmit<Customers>(row => row.CustomerID == "MAISD");
+
+                string SQL = db.GetQueryScript();
+                Debug.Assert(SQL == "SELECT * FROM [Products] WHERE (ProductID = 6)\r\nSELECT * FROM [Customers] WHERE (CustomerID = 'MAISD')");
+
+                var reader = db.SumbitQueries();
+                var L1 = reader.ToList<Products>();
+                var L2 = reader.ToList<Customers>();
+
+                Debug.Assert(L1.First().QuantityPerUnit == "12 - 8 oz jars");
+                Debug.Assert(L2.First().PostalCode == "B-1180");
+
+            }
+        }
     }
 }

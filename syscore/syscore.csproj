@@ -95,6 +95,7 @@
     <Compile Include="CodeBuilder\CodeStyle.cs" />
     <Compile Include="Data\Linq\DataContext.cs" />
     <Compile Include="Data\Linq\Association.cs" />
+    <Compile Include="Data\Linq\IAssociation.cs" />
     <Compile Include="Data\Linq\ITableSchema.cs" />
     <Compile Include="Data\Linq\QueryResultReader.cs" />
     <Compile Include="Data\Linq\RowOperation.cs" />
