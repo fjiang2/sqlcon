@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Sys.Data;
+using Sys.Data.Linq;
 
 namespace UnitTestProject.Northwind
 {
@@ -33,6 +34,27 @@ namespace UnitTestProject.Northwind
 		public const string TableName = "Employees";
 		public static readonly string[] Keys = new string[] { _EMPLOYEEID };
 		public static readonly string[] Identity = new string[] { _EMPLOYEEID };
+		
+		public static readonly IAssociation[] Associations = new IAssociation[]
+		{
+			new Association<EmployeeTerritories>
+			{
+				ThisKey = _EMPLOYEEID,
+				OtherKey = EmployeeTerritoriesExtension._EMPLOYEEID
+			},
+			new Association<Orders>
+			{
+				ThisKey = _EMPLOYEEID,
+				OtherKey = OrdersExtension._EMPLOYEEID
+			},
+			new Association<Employees>
+			{
+				Name = "FK_Employees_Employees",
+				ThisKey = _REPORTSTO,
+				OtherKey = EmployeesExtension._EMPLOYEEID,
+				IsForeignKey = true
+			}
+		};
 		
 		public static List<Employees> ToEmployeesCollection(this DataTable dt)
 		{

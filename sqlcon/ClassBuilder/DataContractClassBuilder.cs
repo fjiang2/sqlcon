@@ -14,13 +14,15 @@ namespace sqlcon
 
     class DataContractClassBuilder : TheClassBuilder
     {
+        private TableName tname;
         private DataTable dt;
 
         private IDictionary<DataColumn, TypeInfo> dict { get; }
 
-        public DataContractClassBuilder(ApplicationCommand cmd, DataTable dt, bool allowDbNull)
+        public DataContractClassBuilder(ApplicationCommand cmd, TableName tname, DataTable dt, bool allowDbNull)
             : base(cmd)
         {
+            this.tname = tname;
             this.dt = dt;
             this.dict = DataContract2ClassBuilder.CreateMapOfTypeInfo(dt, allowDbNull);
 

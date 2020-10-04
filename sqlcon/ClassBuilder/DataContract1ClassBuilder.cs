@@ -13,12 +13,15 @@ namespace sqlcon
     class DataContract1ClassBuilder : TheClassBuilder
     {
         private const string _ToDataTable = "ToDataTable";
+
+        private TableName tname;
         private DataTable dt;
         private IDictionary<DataColumn, TypeInfo> dict { get; }
 
-        public DataContract1ClassBuilder(ApplicationCommand cmd, DataTable dt, bool allowDbNull)
+        public DataContract1ClassBuilder(ApplicationCommand cmd, TableName tname, DataTable dt, bool allowDbNull)
             : base(cmd)
         {
+            this.tname = tname;
             this.dt = dt;
             this.dict = DataContract2ClassBuilder.CreateMapOfTypeInfo(dt, allowDbNull);
 
@@ -48,11 +51,11 @@ namespace sqlcon
 
         private void Class_Extension()
         {
-            Class clss = new Class(ClassName + "Extension") { Modifier = Modifier.Public | Modifier.Static };
+            Class clss = new Class(ClassName + EXTENSION) { Modifier = Modifier.Public | Modifier.Static };
             builder.AddClass(clss);
 
             //Const Field
-            CreateTableSchemaFields(dt, clss);
+            CreateTableSchemaFields(tname, dt, clss);
             if (ContainsMethod("NewObject"))
             {
                 Method_ToCollection(clss);

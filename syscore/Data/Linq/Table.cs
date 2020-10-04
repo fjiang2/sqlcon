@@ -3,36 +3,33 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Linq.Expressions;
-
-using Tie;
 
 namespace Sys.Data.Linq
 {
-    public sealed class Table<TEntity>
+
+    public sealed partial class Table<TEntity> : ITable
     {
         private readonly Type type;
         private readonly Type extension;
         private readonly ITableSchema schema;
         private readonly MethodInfo functionToDictionary;
-        private readonly TableName tableName;
+        private readonly string formalName;
 
         public SqlMaker Generator { get; }
         public DataContext Context { get; }
 
         internal Table(DataContext context)
         {
-            const string EXTENSION = "Extension";
 
             this.Context = context;
 
             this.type = typeof(TEntity);
-            this.extension = HostType.GetType(type.FullName + EXTENSION);
+            this.schema = type.GetTableSchema(out var ext);
+            this.extension = ext;
 
-            this.schema = extension.GetTableSchemaFromExtensionType();
-            this.tableName = new TableName(context.ConnectionProvider, $"[{schema.SchemaName}].[{schema.TableName}]");
+            this.formalName = schema.FormalTableName();
 
-            this.Generator = new SqlMaker(tableName)
+            this.Generator = new SqlMaker(schema.FormalTableName())
             {
                 PrimaryKeys = schema.PrimaryKeys,
                 IdentityKeys = schema.IdentityKeys,
@@ -40,7 +37,6 @@ namespace Sys.Data.Linq
 
             this.functionToDictionary = extension.GetMethod(nameof(ToDictionary), BindingFlags.Public | BindingFlags.Static);
         }
-
 
         private object Invoke(string name, object[] parameters)
         {
@@ -51,106 +47,23 @@ namespace Sys.Data.Linq
             return null;
         }
 
+        private static T Invoke<T>(MethodInfo methodInfo, params object[] parameters)
+        {
+            if (methodInfo != null)
+                return (T)methodInfo.Invoke(null, parameters);
+
+            return default(T);
+        }
+
         internal IDictionary<string, object> ToDictionary(TEntity entity)
         {
-            object obj = Invoke(nameof(ToDictionary), new object[] { entity });
-            return (IDictionary<string, object>)obj;
+            return Invoke<IDictionary<string, object>>(functionToDictionary, entity);
         }
 
         internal TEntity FromDictionary(IDictionary<string, object> dict)
         {
             object obj = Invoke(nameof(FromDictionary), new object[] { dict });
             return (TEntity)obj;
-        }
-
-        private void OperateAllOnSubmit(RowOperation operation, IEnumerable<TEntity> entities)
-        {
-            foreach (var entity in entities)
-            {
-                OperateOnSubmit(operation, entity);
-            }
-        }
-
-        private void OperateOnSubmit(RowOperation operation, TEntity entity)
-        {
-            SqlMaker gen = this.Generator;
-
-            if (functionToDictionary != null)
-            {
-                var dict = (IDictionary<string, object>)functionToDictionary.Invoke(null, new object[] { entity });
-                gen.AddRange(dict);
-            }
-            else
-            {
-                gen.AddRange(entity);
-            }
-
-            string sql = null;
-            switch (operation)
-            {
-                case RowOperation.Insert:
-                    sql = gen.Insert();
-                    break;
-
-                case RowOperation.Update:
-                    sql = gen.Update();
-                    break;
-
-                case RowOperation.InsertOrUpdate:
-                    sql = gen.InsertOrUpdate();
-                    break;
-
-                case RowOperation.Delete:
-                    sql = gen.Delete();
-                    break;
-            }
-
-            if (sql == null)
-                return;
-
-            Context.Script.AppendLine(sql);
-            gen.Clear();
-        }
-
-        public List<TEntity> Select(Expression<Func<TEntity, bool>> where)
-        {
-            var translator = new QueryTranslator();
-            string _where = translator.Translate(where);
-            return Select(_where);
-        }
-
-        /// <summary>
-        /// Read entities from SQL Server
-        /// </summary>
-        /// <param name="where">default returns all entities</param>
-        /// <returns></returns>
-        public List<TEntity> Select(string where = null)
-        {
-            string SQL;
-
-            if (where != null)
-            {
-                SQL = $"SELECT * FROM {tableName.FormalName} WHERE {where}";
-            }
-            else
-            {
-                SQL = $"SELECT * FROM {tableName.FormalName}";
-            }
-
-            var dt = Context.FillDataTable(SQL);
-            return ToList(dt);
-        }
-
-
-        /// <summary>
-        /// Use any data from DataTable instance
-        /// </summary>
-        /// <param name="dt"></param>
-        /// <returns></returns>
-        public List<TEntity> ToList(DataTable dt)
-        {
-            object obj = Invoke($"To{type.Name}Collection", new object[] { dt });
-            return (List<TEntity>)obj;
         }
 
 
@@ -208,63 +121,72 @@ namespace Sys.Data.Linq
                 }
             }
 
-            Context.Script.AppendLine(gen.Update());
+            Context.CodeBlock.AppendLine<TEntity>(gen.Update());
             gen.Clear();
         }
 
-        /// <summary>
-        /// Insert entity on submit
-        /// </summary>
-        /// <param name="entity"></param>
         public void InsertOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.Insert, entity);
-
-        /// <summary>
-        /// Update entity on submit
-        /// </summary>
-        /// <param name="entity"></param>
         public void UpdateOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.Update, entity);
-
-        /// <summary>
-        /// Insert or update entity on submit
-        /// </summary>
-        /// <param name="entity"></param>
         public void InsertOrUpdateOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.InsertOrUpdate, entity);
-
-        /// <summary>
-        /// Delete entity on submit
-        /// </summary>
-        /// <param name="entity"></param>
         public void DeleteOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.Delete, entity);
 
-        /// <summary>
-        /// Insert entities on submit
-        /// </summary>
-        /// <param name="entities"></param>
-        public void InsertAllOnSubmit(IEnumerable<TEntity> entities) => OperateAllOnSubmit(RowOperation.Insert, entities);
+        public void InsertOnSubmit(IEnumerable<TEntity> entities) => OperateOnSubmitRange(RowOperation.Insert, entities);
+        public void UpdateOnSubmit(IEnumerable<TEntity> entities) => OperateOnSubmitRange(RowOperation.Update, entities);
+        public void InsertOrUpdateOnSubmit(IEnumerable<TEntity> entities) => OperateOnSubmitRange(RowOperation.InsertOrUpdate, entities);
+        public void DeleteOnSubmit(IEnumerable<TEntity> entities) => OperateOnSubmitRange(RowOperation.Delete, entities);
 
-        /// <summary>
-        /// Update entities on submit
-        /// </summary>
-        /// <param name="entities"></param>
-        public void UpdateAllOnSubmit(IEnumerable<TEntity> entities) => OperateAllOnSubmit(RowOperation.Update, entities);
+        private void OperateOnSubmitRange(RowOperation operation, IEnumerable<TEntity> entities)
+        {
+            foreach (var entity in entities)
+            {
+                OperateOnSubmit(operation, entity);
+            }
+        }
 
-        /// <summary>
-        /// Insert or update entities on submit
-        /// </summary>
-        /// <param name="entities"></param>
-        public void InsertOrUpdateAllOnSubmit(IEnumerable<TEntity> entities) => OperateAllOnSubmit(RowOperation.InsertOrUpdate, entities);
+        private void OperateOnSubmit(RowOperation operation, TEntity entity)
+        {
+            SqlMaker gen = this.Generator;
 
-        /// <summary>
-        /// Delete entities on submit
-        /// </summary>
-        /// <param name="entities"></param>
-        public void DeleteAllOnSubmit(IEnumerable<TEntity> entities) => OperateAllOnSubmit(RowOperation.Delete, entities);
+            if (functionToDictionary != null)
+            {
+                var dict = ToDictionary(entity);
+                gen.AddRange(dict);
+            }
+            else
+            {
+                gen.AddRange(entity);
+            }
 
+            string sql = null;
+            switch (operation)
+            {
+                case RowOperation.Insert:
+                    sql = gen.Insert();
+                    break;
 
+                case RowOperation.Update:
+                    sql = gen.Update();
+                    break;
+
+                case RowOperation.InsertOrUpdate:
+                    sql = gen.InsertOrUpdate();
+                    break;
+
+                case RowOperation.Delete:
+                    sql = gen.Delete();
+                    break;
+            }
+
+            if (sql == null)
+                return;
+
+            Context.CodeBlock.AppendLine<TEntity>(sql);
+            gen.Clear();
+        }
 
         public override string ToString()
         {
-            return tableName.FullName;
+            return formalName;
         }
     }
 }

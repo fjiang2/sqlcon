@@ -1,59 +1,116 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Data;
+using System.Collections.Generic;
 
 namespace Sys.Data.Linq
 {
-    public class DataContext : IDisposable
+
+    public partial class DataContext : IDisposable
     {
-        internal ConnectionProvider ConnectionProvider { get; }
-        public StringBuilder Script { get; } = new StringBuilder();
+        private readonly Dictionary<Type, ITable> tables = new Dictionary<Type, ITable>();
+        private readonly Func<string, IDbCmd> sqlCommand;
+
+        internal SqlCodeBlock CodeBlock { get; } = new SqlCodeBlock();
+
+        public string Description { get; set; }
 
         public DataContext(string connectionString)
         {
-            this.ConnectionProvider = ConnectionProvider.CreateProvider("ServerName", connectionString);
+            var connectionProvider = ConnectionProvider.CreateProvider("ServerName", connectionString);
+            this.sqlCommand = query => new SqlCmd(connectionProvider, query);
+            this.Description = connectionString;
         }
 
         public DataContext(ConnectionProvider provider)
         {
-            this.ConnectionProvider = provider;
+            this.sqlCommand = query => new SqlCmd(provider, query);
+            this.Description = provider.ConnectionString;
+        }
+
+        public DataContext(Func<string, IDbCmd> cmd)
+        {
+            this.sqlCommand = cmd;
+            this.Description = "Sql command handler";
         }
 
         public void Dispose()
         {
-
+            CodeBlock.Clear();
+            tables.Clear();
         }
 
-        public Table<TEntity> GetTable<TEntity>() where TEntity : class
+        public Table<TEntity> GetTable<TEntity>()
+            where TEntity : class
         {
-            return new Table<TEntity>(this);
+            Type key = typeof(TEntity);
+            if (tables.ContainsKey(key))
+                return (Table<TEntity>)tables[key];
+
+            var obj = new Table<TEntity>(this);
+            tables.Add(key, obj);
+            return obj;
         }
 
-        internal DataTable FillDataTable(string sql)
+        public string GetNonQueryScript()
         {
-            var cmd = new SqlCmd(ConnectionProvider, sql);
-            return cmd.FillDataTable();
+            return CodeBlock.GetNonQuery();
         }
 
-        public string GetScript()
+        public string GetQueryScript()
         {
-            return Script.ToString();
+            return CodeBlock.GetQuery();
+        }
+
+
+
+        internal DataTable FillDataTable(string query)
+        {
+            DataSet ds = FillDataSet(query);
+            if (ds == null)
+                return null;
+
+            if (ds.Tables.Count >= 1)
+                return ds.Tables[0];
+
+            return null;
+        }
+
+        private DataSet FillDataSet(string query)
+        {
+            var cmd = sqlCommand(query);
+            var ds = new DataSet();
+            return cmd.FillDataSet(ds);
+        }
+
+        public QueryResultReader SumbitQueries()
+        {
+            if (CodeBlock.Length == 0)
+                return null;
+
+            string query = CodeBlock.GetQuery();
+            Type[] types = CodeBlock.GetQueryTypes();
+            var ds = FillDataSet(query);
+            CodeBlock.Clear();
+
+            return new QueryResultReader(this, types, ds);
         }
 
         public void SubmitChanges()
         {
-            if (Script.Length == 0)
+            if (CodeBlock.Length == 0)
                 return;
 
-            var cmd = new SqlCmd(ConnectionProvider, Script.ToString());
+            var cmd = sqlCommand(CodeBlock.GetNonQuery());
             cmd.ExecuteNonQuery();
-            Script.Clear();
+            CodeBlock.Clear();
         }
+
 
         public override string ToString()
         {
-            return ConnectionProvider.ConnectionString;
+            return Description;
         }
+
     }
 }

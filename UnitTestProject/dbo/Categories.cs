@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Sys.Data;
+using Sys.Data.Linq;
 
 namespace UnitTestProject.Northwind
 {
@@ -19,6 +20,15 @@ namespace UnitTestProject.Northwind
 		public const string TableName = "Categories";
 		public static readonly string[] Keys = new string[] { _CATEGORYID };
 		public static readonly string[] Identity = new string[] { _CATEGORYID };
+		
+		public static readonly IAssociation[] Associations = new IAssociation[]
+		{
+			new Association<Products>
+			{
+				ThisKey = _CATEGORYID,
+				OtherKey = ProductsExtension._CATEGORYID
+			}
+		};
 		
 		public static List<Categories> ToCategoriesCollection(this DataTable dt)
 		{

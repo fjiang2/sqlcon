@@ -4,13 +4,18 @@ using System.Linq;
 using System.Data;
 using System.IO;
 using Sys;
+using Sys.Data;
 using Sys.CodeBuilder;
 using Sys.Data.Manager;
+using Sys.Data.Linq;
+using System.Data.Common;
 
 namespace sqlcon
 {
     abstract class TheClassBuilder : ClassMaker
     {
+        protected string EXTENSION = "Extension";
+
         protected CSharpBuilder builder;
 
         public TheClassBuilder(ApplicationCommand cmd)
@@ -68,9 +73,10 @@ namespace sqlcon
             PrintOutput(builder, ClassName);
         }
 
-        public static string COLUMN(DataColumn column) => $"_{column.ColumnName.ToUpper()}";
+        public static string COLUMN(DataColumn column) => COLUMN(column.ColumnName);
+        public static string COLUMN(string columnName) => $"_{columnName.ToUpper()}";
 
-        public static void CreateTableSchemaFields(DataTable dt, Class clss)
+        public void CreateTableSchemaFields(TableName tname, DataTable dt, Class clss)
         {
             Field field;
 
@@ -121,6 +127,65 @@ namespace sqlcon
                 clss.Add(field);
             }
 
+            if (tname != null)
+            {
+                //builder.AddUsing(typeof(IAssociation).Namespace);
+                field = CreateAssoication(tname);
+                if (field != null)
+                    clss.Add(field);
+            }
+        }
+
+        private Field CreateAssoication(TableName tname)
+        {
+
+            Value ToColumn(string table, string column)
+            {
+                table = ident.Identifier(table);
+                column = COLUMN(column);
+                column = $"{table}{EXTENSION}.{column}";
+                return new Value(new CodeString(column));
+            }
+
+            Value ToColumn2(string column)
+            {
+                column = COLUMN(column);
+                return new Value(new CodeString(column));
+            }
+
+            var schema = new TableSchema(tname);
+            var pkeys = schema.ByForeignKeys.Keys.OrderBy(k => k.FK_Table);
+
+            List<Value> L = new List<Value>();
+            foreach (IForeignKey pkey in pkeys)
+            {
+                TypeInfo type = new TypeInfo { UserType = $"Association<{ident.Identifier(pkey.FK_Table)}>" };
+                var V = Value.NewPropertyObject(type);
+                V.AddProperty(nameof(IAssociation.ThisKey), ToColumn2(pkey.PK_Column));
+                V.AddProperty(nameof(IAssociation.OtherKey), ToColumn(pkey.FK_Table, pkey.FK_Column));
+                L.Add(V);
+            }
+
+            var fkeys = schema.ForeignKeys.Keys.OrderBy(k => k.FK_Table);
+            foreach (IForeignKey fkey in fkeys)
+            {
+                TypeInfo type = new TypeInfo { UserType = $"Association<{ident.Identifier(fkey.PK_Table)}>" };
+                var V = Value.NewPropertyObject(type);
+                V.AddProperty(nameof(IAssociation.Name), new Value(fkey.Constraint_Name));
+                V.AddProperty(nameof(IAssociation.ThisKey), ToColumn2(fkey.FK_Column));
+                V.AddProperty(nameof(IAssociation.OtherKey), ToColumn(fkey.PK_Table, fkey.PK_Column));
+                V.AddProperty(nameof(IAssociation.IsForeignKey), new Value(true));
+                L.Add(V);
+            }
+
+            TypeInfo typeinfo = new TypeInfo { UserType = $"{nameof(IAssociation)}[]" };
+
+            Field field = new Field(typeinfo, "Associations", new Value(L.ToArray()) { Type = typeinfo })
+            {
+                Modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
+            };
+
+            return field;
         }
 
 
