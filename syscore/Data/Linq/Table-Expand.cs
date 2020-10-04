@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Sys.Data.Linq
 {
-    public sealed partial class Table<TEntity> : ITable
+    public sealed partial class Table<TEntity>
     {
 
         /// <summary>

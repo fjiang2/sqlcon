@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 
 namespace Sys.Data.Linq
 {
-    public sealed partial class Table<TEntity> : ITable
+    public sealed partial class Table<TEntity>
     {
 
         public IEnumerable<TEntity> Select(Expression<Func<TEntity, bool>> where)
