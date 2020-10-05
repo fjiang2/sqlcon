@@ -422,8 +422,8 @@ namespace UnitTestProject
 
             var order = Query.Select<Orders>(row => row.OrderID == 10260).First();
 
-            var order_detail = order.Expand<Orders, Order_Details>().First();
-            products = order_detail.Expand<Order_Details, Products>();
+            var order_detail = order.AsEnumerable().Expand<Orders, Order_Details>().First();
+            products = order_detail.AsEnumerable().Expand<Order_Details, Products>();
 
             product = products.First(row => row.ProductName == "Jack's New England Clam Chowder");
             Debug.Assert(product.UnitsInStock == 85);
@@ -440,11 +440,11 @@ namespace UnitTestProject
 
             demographics.InsertOrUpdate();
 
-            Enumerable.Repeat(new CustomerCustomerDemo
+            new CustomerCustomerDemo
             {
                 CustomerID = "ALFKI",
                 CustomerTypeID = "IT",
-            }, 1).InsertOrUpdate();
+            }.AsEnumerable().InsertOrUpdate();
 
             var desc = Query.Select<CustomerDemographics>(row => row.CustomerTypeID == "IT").First().CustomerDesc;
             Debug.Assert(desc == "Computer Science");

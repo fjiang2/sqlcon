@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace Sys.Data.Linq
 {
@@ -57,31 +58,6 @@ namespace Sys.Data.Linq
             }
         }
 
-        //public static int Insert<TEntity>(this TEntity entity) where TEntity : class
-        //{
-        //    return Submit<TEntity>(table => table.InsertOnSubmit(entity));
-        //}
-
-        //public static int Update<TEntity>(this TEntity entity) where TEntity : class
-        //{
-        //    return Submit<TEntity>(table => table.UpdateOnSubmit(entity));
-        //}
-
-        //public static int PatialUpdate<TEntity>(this TEntity entity, bool throwException = false) where TEntity : class
-        //{
-        //    return Submit<TEntity>(table => table.PartialUpdateOnSubmit(entity, throwException));
-        //}
-
-        //public static int InsertOrUpdate<TEntity>(this TEntity entity) where TEntity : class
-        //{
-        //    return Submit<TEntity>(table => table.InsertOrUpdateOnSubmit(entity));
-        //}
-
-        //public static int Delete<TEntity>(this TEntity entity) where TEntity : class
-        //{
-        //    return Submit<TEntity>(table => table.DeleteOnSubmit(entity));
-        //}
-
         public static int Insert<TEntity>(this IEnumerable<TEntity> entities) where TEntity : class
         {
             return Submit<TEntity>(table => table.InsertOnSubmit(entities));
@@ -94,11 +70,7 @@ namespace Sys.Data.Linq
 
         public static int PatialUpdate<TEntity>(this IEnumerable<object> entities, bool throwException = false) where TEntity : class
         {
-            return Submit<TEntity>(table =>
-            {
-                foreach (object entity in entities)
-                    table.PartialUpdateOnSubmit(entity, throwException);
-            });
+            return Submit<TEntity>(table => table.PartialUpdateOnSubmit(entities, throwException));
         }
 
         public static int InsertOrUpdate<TEntity>(this IEnumerable<TEntity> entities) where TEntity : class
@@ -121,14 +93,10 @@ namespace Sys.Data.Linq
             }
         }
 
-        public static IEnumerable<TResult> Expand<TEntity, TResult>(this TEntity entity)
-        where TEntity : class
-        where TResult : class
+        public static IEnumerable<T> AsEnumerable<T>(this T item)
         {
-            using (var db = new DataContext(SqlCommand))
-            {
-                return db.Expand<TEntity, TResult>(entity);
-            }
+            return new T[] { item };
         }
+
     }
 }
