@@ -2,11 +2,12 @@
 using System.Text;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using Sys.Data.Linq;
-using UnitTestProject.Northwind;
 using System.Diagnostics;
 using System.Linq;
+
+using UnitTestProject.Northwind;
+using Sys.Data.Linq;
+using Sys.Data;
 
 namespace UnitTestProject
 {
@@ -27,6 +28,8 @@ namespace UnitTestProject
             {
                 connectionString = "Server = (LocalDB)\\MSSQLLocalDB;initial catalog=Northwind;Integrated Security = true;";
             }
+
+            ConnectionProviderManager.RegisterDefaultProvider(connectionString);
         }
 
         private TestContext testContextInstance;
@@ -401,7 +404,55 @@ namespace UnitTestProject
                 product = products.First(row => row.ProductName == "Jack's New England Clam Chowder");
                 Debug.Assert(product.UnitsInStock == 85);
             }
+
+        }
+
+
+        [TestMethod]
+        public void TestQueryExtension()
+        {
+            var orders = Query.Select<Orders>(row => row.OrderID == 10254 || row.OrderID == 10260);
+
+            var order_details = orders.Expand<Orders, Order_Details>();
+            var products = order_details.Expand<Order_Details, Products>();
+
+            var product = products.First(row => row.ProductName == "Tarte au sucre");
+            Debug.Assert(product.UnitsInStock == 17);
+
+
+            var order = Query.Select<Orders>(row => row.OrderID == 10260).First();
+
+            var order_detail = order.Expand<Orders, Order_Details>().First();
+            products = order_detail.Expand<Order_Details, Products>();
+
+            product = products.First(row => row.ProductName == "Jack's New England Clam Chowder");
+            Debug.Assert(product.UnitsInStock == 85);
+        }
+
+        [TestMethod]
+        public void TestQueryOperations()
+        {
+            var demographics = new CustomerDemographics
+            {
+                CustomerTypeID = "IT",
+                CustomerDesc = "Computer Science",
+            };
+            demographics.InsertOrUpdate();
+
+            var relation = new CustomerCustomerDemo
+            {
+                CustomerID = "ALFKI",
+                CustomerTypeID = "IT",
+            };
+            relation.InsertOrUpdate();
+
+            var desc = Query.Select<CustomerDemographics>(row => row.CustomerTypeID == "IT").First().CustomerDesc;
+            Debug.Assert(desc == "Computer Science");
+
+            var customer = Query.Select<CustomerCustomerDemo>(row => row.CustomerTypeID == "IT").First();
+            Debug.Assert(customer.CustomerID == "ALFKI");
         }
 
     }
 }
+

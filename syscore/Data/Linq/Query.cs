@@ -20,7 +20,7 @@ namespace Sys.Data.Linq
             }
         }
 
-        public static IEnumerable<TEntity> Select<TEntity>(Expression<Func<TEntity, bool>> where) where TEntity : class
+        public static IEnumerable<TEntity> Select<TEntity>(this Expression<Func<TEntity, bool>> where) where TEntity : class
         {
             using (var db = new DataContext(SqlCommand))
             {
@@ -57,6 +57,31 @@ namespace Sys.Data.Linq
             }
         }
 
+        public static int Insert<TEntity>(this TEntity entity) where TEntity : class
+        {
+            return Submit<TEntity>(table => table.InsertOnSubmit(entity));
+        }
+
+        public static int Update<TEntity>(this TEntity entity) where TEntity : class
+        {
+            return Submit<TEntity>(table => table.UpdateOnSubmit(entity));
+        }
+
+        public static int PatialUpdate<TEntity>(this TEntity entity, bool throwException = false) where TEntity : class
+        {
+            return Submit<TEntity>(table => table.PartialUpdateOnSubmit(entity, throwException));
+        }
+
+        public static int InsertOrUpdate<TEntity>(this TEntity entity) where TEntity : class
+        {
+            return Submit<TEntity>(table => table.InsertOrUpdateOnSubmit(entity));
+        }
+
+        public static int Delete<TEntity>(this TEntity entity) where TEntity : class
+        {
+            return Submit<TEntity>(table => table.DeleteOnSubmit(entity));
+        }
+
         public static int Insert<TEntity>(this IEnumerable<TEntity> entities) where TEntity : class
         {
             return Submit<TEntity>(table => table.InsertOnSubmit(entities));
@@ -84,6 +109,26 @@ namespace Sys.Data.Linq
         public static int Delete<TEntity>(this IEnumerable<TEntity> entities) where TEntity : class
         {
             return Submit<TEntity>(table => table.DeleteOnSubmit(entities));
+        }
+
+        public static IEnumerable<TResult> Expand<TEntity, TResult>(this IEnumerable<TEntity> entities)
+         where TEntity : class
+         where TResult : class
+        {
+            using (var db = new DataContext(SqlCommand))
+            {
+                return db.Expand<TEntity, TResult>(entities);
+            }
+        }
+
+        public static IEnumerable<TResult> Expand<TEntity, TResult>(this TEntity entity)
+        where TEntity : class
+        where TResult : class
+        {
+            using (var db = new DataContext(SqlCommand))
+            {
+                return db.Expand<TEntity, TResult>(entity);
+            }
         }
     }
 }
