@@ -4,5 +4,7 @@ let output = SRC + "\\UnitTestProject";
 let ns = "UnitTestProject.Northwind";
 
 cd ..\Northwind
-export * /ns:{ns}.dbo /dc1 /out:{output}\dbo /method:GetField /using:Sys.Data;Sys.Data.Linq
+
 export * /ns:{ns}.l2s /l2s /out:{output}\l2s /method:GetField /using:Sys.Data;Sys.Data.Linq
+
+export * /ns:{ns}.dbo /dc1 /out:{output}\dbo /method:GetField /using:Sys.Data;Sys.Data.Linq
