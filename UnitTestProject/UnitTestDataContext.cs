@@ -112,7 +112,7 @@ namespace UnitTestProject
                     ProductName = "iPhone"
                 };
 
-                table.UpdateOnSubmit(product);
+                table.PartialUpdateOnSubmit(product);
                 string SQL = db.GetNonQueryScript();
                 Debug.Assert(SQL.StartsWith("UPDATE [Products] SET [ProductName] = 'iPhone' WHERE [ProductID] = 100"));
             }

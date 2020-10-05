@@ -15,6 +15,11 @@ namespace Sys.Data.Linq
 
         public string Description { get; set; }
 
+        public DataContext()
+        {
+            this.sqlCommand = query => new SqlCmd(query);
+            this.Description = "Default SQL command handler";
+        }
         public DataContext(string connectionString)
         {
             var connectionProvider = ConnectionProvider.CreateProvider("ServerName", connectionString);
@@ -31,7 +36,7 @@ namespace Sys.Data.Linq
         public DataContext(Func<string, IDbCmd> cmd)
         {
             this.sqlCommand = cmd;
-            this.Description = "Sql command handler";
+            this.Description = "SQL command handler";
         }
 
         public void Dispose()
@@ -96,14 +101,15 @@ namespace Sys.Data.Linq
             return new QueryResultReader(this, types, ds);
         }
 
-        public void SubmitChanges()
+        public int SubmitChanges()
         {
             if (CodeBlock.Length == 0)
-                return;
+                return -1;
 
             var cmd = sqlCommand(CodeBlock.GetNonQuery());
-            cmd.ExecuteNonQuery();
+            int count = cmd.ExecuteNonQuery();
             CodeBlock.Clear();
+            return count;
         }
 
 
