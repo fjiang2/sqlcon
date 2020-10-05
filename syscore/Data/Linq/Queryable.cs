@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 
 namespace Sys.Data.Linq
 {
@@ -16,6 +17,51 @@ namespace Sys.Data.Linq
             {
                 var table = db.GetTable<TEntity>();
                 return table.Select(where);
+            }
+        }
+
+        public static IEnumerable<TEntity> Select<TEntity>(Expression<Func<TEntity, bool>> where) where TEntity : class
+        {
+            using (var db = new DataContext(SqlCommand))
+            {
+                var table = db.GetTable<TEntity>();
+                return table.Select(where);
+            }
+        }
+
+
+        public static QueryResultReader Query<TEntity1, TEntity2>(Expression<Func<TEntity1, bool>> where1, Expression<Func<TEntity2, bool>> where2)
+            where TEntity1 : class
+            where TEntity2 : class
+        {
+            using (var db = new DataContext(SqlCommand))
+            {
+                var t1 = db.GetTable<TEntity1>();
+                t1.SelectOnSubmit(where1);
+
+                var t2 = db.GetTable<TEntity2>();
+                t2.SelectOnSubmit(where2);
+
+                return db.SumbitQueries();
+            }
+        }
+        public static QueryResultReader Query<TEntity1, TEntity2, TEntity3>(Expression<Func<TEntity1, bool>> where1, Expression<Func<TEntity2, bool>> where2, Expression<Func<TEntity3, bool>> where3)
+            where TEntity1 : class
+            where TEntity2 : class
+            where TEntity3 : class
+        {
+            using (var db = new DataContext(SqlCommand))
+            {
+                var t1 = db.GetTable<TEntity1>();
+                t1.SelectOnSubmit(where1);
+
+                var t2 = db.GetTable<TEntity2>();
+                t2.SelectOnSubmit(where2);
+
+                var t3 = db.GetTable<TEntity3>();
+                t3.SelectOnSubmit(where3);
+
+                return db.SumbitQueries();
             }
         }
 
