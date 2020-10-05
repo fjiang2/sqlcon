@@ -12,7 +12,7 @@ namespace Sys.Data.Linq
         public string ThisKey { get; set; }
         public string OtherKey { get; set; }
         public bool IsForeignKey { get; set; }
-
+        public bool OneToMany { get; set; }
         public Type OtherType => typeof(TEntity);
     }
 }
