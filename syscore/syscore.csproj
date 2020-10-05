@@ -99,6 +99,7 @@
     <Compile Include="Data\Linq\IAssociation.cs" />
     <Compile Include="Data\Linq\ITable.cs" />
     <Compile Include="Data\Linq\ITableSchema.cs" />
+    <Compile Include="Data\Linq\Queryable.cs" />
     <Compile Include="Data\Linq\QueryResultReader.cs" />
     <Compile Include="Data\Linq\RowOperation.cs" />
     <Compile Include="Data\Linq\QueryTranslator.cs" />

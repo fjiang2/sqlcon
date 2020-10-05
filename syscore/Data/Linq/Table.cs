@@ -76,7 +76,7 @@ namespace Sys.Data.Linq
         /// 2.Dictionary: new Dictionary&lt;string, object&gt;{["Id"]=7, ["Name"]="XXXX"}</string>
         /// </param>
         /// <param name="throwException">check column existence</param>
-        public void UpdateOnSubmit(object entity, bool throwException = false)
+        public void PartialUpdateOnSubmit(object entity, bool throwException = false)
         {
             if (entity == null)
             {
