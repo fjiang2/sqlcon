@@ -34,7 +34,8 @@ namespace UnitTestProject.Northwind.dbo
 			new Association<Products>
 			{
 				ThisKey = _SUPPLIERID,
-				OtherKey = ProductsExtension._SUPPLIERID
+				OtherKey = ProductsExtension._SUPPLIERID,
+				OneToMany = true
 			}
 		};
 		

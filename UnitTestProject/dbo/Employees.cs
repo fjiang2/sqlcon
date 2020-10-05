@@ -40,12 +40,14 @@ namespace UnitTestProject.Northwind.dbo
 			new Association<EmployeeTerritories>
 			{
 				ThisKey = _EMPLOYEEID,
-				OtherKey = EmployeeTerritoriesExtension._EMPLOYEEID
+				OtherKey = EmployeeTerritoriesExtension._EMPLOYEEID,
+				OneToMany = true
 			},
 			new Association<Orders>
 			{
 				ThisKey = _EMPLOYEEID,
-				OtherKey = OrdersExtension._EMPLOYEEID
+				OtherKey = OrdersExtension._EMPLOYEEID,
+				OneToMany = true
 			},
 			new Association<Employees>
 			{

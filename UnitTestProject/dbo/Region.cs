@@ -23,7 +23,8 @@ namespace UnitTestProject.Northwind.dbo
 			new Association<Territories>
 			{
 				ThisKey = _REGIONID,
-				OtherKey = TerritoriesExtension._REGIONID
+				OtherKey = TerritoriesExtension._REGIONID,
+				OneToMany = true
 			}
 		};
 		

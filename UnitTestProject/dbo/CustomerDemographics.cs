@@ -23,7 +23,8 @@ namespace UnitTestProject.Northwind.dbo
 			new Association<CustomerCustomerDemo>
 			{
 				ThisKey = _CUSTOMERTYPEID,
-				OtherKey = CustomerCustomerDemoExtension._CUSTOMERTYPEID
+				OtherKey = CustomerCustomerDemoExtension._CUSTOMERTYPEID,
+				OneToMany = true
 			}
 		};
 		

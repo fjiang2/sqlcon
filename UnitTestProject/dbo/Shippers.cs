@@ -25,7 +25,8 @@ namespace UnitTestProject.Northwind.dbo
 			new Association<Orders>
 			{
 				ThisKey = _SHIPPERID,
-				OtherKey = OrdersExtension._SHIPVIA
+				OtherKey = OrdersExtension._SHIPVIA,
+				OneToMany = true
 			}
 		};
 		

@@ -26,7 +26,8 @@ namespace UnitTestProject.Northwind.dbo
 			new Association<Products>
 			{
 				ThisKey = _CATEGORYID,
-				OtherKey = ProductsExtension._CATEGORYID
+				OtherKey = ProductsExtension._CATEGORYID,
+				OneToMany = true
 			}
 		};
 		

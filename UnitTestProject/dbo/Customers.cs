@@ -32,12 +32,14 @@ namespace UnitTestProject.Northwind.dbo
 			new Association<CustomerCustomerDemo>
 			{
 				ThisKey = _CUSTOMERID,
-				OtherKey = CustomerCustomerDemoExtension._CUSTOMERID
+				OtherKey = CustomerCustomerDemoExtension._CUSTOMERID,
+				OneToMany = true
 			},
 			new Association<Orders>
 			{
 				ThisKey = _CUSTOMERID,
-				OtherKey = OrdersExtension._CUSTOMERID
+				OtherKey = OrdersExtension._CUSTOMERID,
+				OneToMany = true
 			}
 		};
 		

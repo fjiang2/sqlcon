@@ -32,7 +32,8 @@ namespace UnitTestProject.Northwind.dbo
 			new Association<Order_Details>
 			{
 				ThisKey = _PRODUCTID,
-				OtherKey = Order_DetailsExtension._PRODUCTID
+				OtherKey = Order_DetailsExtension._PRODUCTID,
+				OneToMany = true
 			},
 			new Association<Suppliers>
 			{
