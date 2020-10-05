@@ -82,10 +82,9 @@ namespace Sys.Data.Linq
 
                 object value = dict[a.ThisKey];
                 string where = Compare(a.OtherKey, value);
-
                 var SQL = $"SELECT * FROM {formalName} WHERE {where}";
-                Context.CodeBlock.AppendQuery(a.OtherType, SQL);
 
+                Context.CodeBlock.AppendQuery(a.OtherType, SQL);
                 types.Add(a.OtherType);
             }
 
@@ -106,15 +105,7 @@ namespace Sys.Data.Linq
                 var schema = a.OtherType.GetTableSchema(out var _);
                 var formalName = schema.FormalTableName();
 
-                List<object> L = new List<object>();
-                foreach (var entity in entities)
-                {
-                    var dict = ToDictionary(entity);
-                    object value = dict[a.ThisKey];
-                    L.Add(value);
-                }
-                
-                string where = Compare(a.OtherKey, L);
+                string where = Compare(a.OtherKey, entities.Select(entity => ToDictionary(entity)[a.ThisKey]));
                 var SQL = $"SELECT * FROM {formalName} WHERE {where}";
 
                 Context.CodeBlock.AppendQuery(a.OtherType, SQL);
@@ -141,15 +132,7 @@ namespace Sys.Data.Linq
             if (a == null)
                 throw new InvalidConstraintException($"invalid assoication from {typeof(TEntity)} to {typeof(TSubEntity)}");
 
-            List<object> L = new List<object>();
-            foreach (var entity in entities)
-            {
-                var dict = ToDictionary(entity);
-                object value = dict[a.ThisKey];
-                L.Add(value);
-            }
-
-            return Compare(a.OtherKey, L);
+            return Compare(a.OtherKey, entities.Select(entity => ToDictionary(entity)[a.ThisKey]));
         }
 
         private static string Compare(string column, object value)
