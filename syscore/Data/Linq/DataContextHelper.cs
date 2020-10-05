@@ -10,20 +10,20 @@ namespace Sys.Data.Linq
     partial class DataContext
     {
 
-        public IEnumerable<TResult> Expand<TEntity, TResult>(TEntity entity)
+        public IEnumerable<TSubEntity> Expand<TEntity, TSubEntity>(TEntity entity)
          where TEntity : class
-         where TResult : class
+         where TSubEntity : class
         {
             var table = GetTable<TEntity>();
-            return table.Expand<TResult>(entity);
+            return table.Expand<TSubEntity>(entity);
         }
 
-        public IEnumerable<TResult> Expand<TEntity, TResult>(IEnumerable<TEntity> entities)
+        public IEnumerable<TSubEntity> Expand<TEntity, TSubEntity>(IEnumerable<TEntity> entities)
          where TEntity : class
-         where TResult : class
+         where TSubEntity : class
         {
             var table = GetTable<TEntity>();
-            return table.Expand<TResult>(entities);
+            return table.Expand<TSubEntity>(entities);
         }
 
         public QueryResultReader Expand<TEntity>(TEntity entity)
@@ -40,12 +40,12 @@ namespace Sys.Data.Linq
             return SumbitQueries();
         }
 
-        public void ExpandOnSubmit<TEntity, TResult>(TEntity entity)
+        public void ExpandOnSubmit<TEntity, TSubEntity>(TEntity entity)
            where TEntity : class
-           where TResult : class
+           where TSubEntity : class
         {
             var table = GetTable<TEntity>();
-            table.ExpandOnSubmit<TResult>(entity);
+            table.ExpandOnSubmit<TSubEntity>(entity);
         }
 
         public Type[] ExpandOnSubmit<TEntity>(TEntity entity)

@@ -83,13 +83,13 @@ namespace Sys.Data.Linq
             return Submit<TEntity>(table => table.DeleteOnSubmit(entities));
         }
 
-        public static IEnumerable<TResult> Expand<TEntity, TResult>(this IEnumerable<TEntity> entities)
+        public static IEnumerable<TSubEntity> Expand<TEntity, TSubEntity>(this IEnumerable<TEntity> entities)
          where TEntity : class
-         where TResult : class
+         where TSubEntity : class
         {
             using (var db = new DataContext(SqlCommand))
             {
-                return db.Expand<TEntity, TResult>(entities);
+                return db.Expand<TEntity, TSubEntity>(entities);
             }
         }
 
