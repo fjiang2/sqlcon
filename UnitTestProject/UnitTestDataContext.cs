@@ -432,19 +432,19 @@ namespace UnitTestProject
         [TestMethod]
         public void TestQueryOperations()
         {
-            var demographics = new CustomerDemographics
+            var demographics = new CustomerDemographics[]
             {
-                CustomerTypeID = "IT",
-                CustomerDesc = "Computer Science",
+                new CustomerDemographics { CustomerTypeID = "IT",  CustomerDesc = "Computer Science" },
+                new CustomerDemographics { CustomerTypeID = "EE",  CustomerDesc = "Electrical Engineering" },
             };
+
             demographics.InsertOrUpdate();
 
-            var relation = new CustomerCustomerDemo
+            Enumerable.Repeat(new CustomerCustomerDemo
             {
                 CustomerID = "ALFKI",
                 CustomerTypeID = "IT",
-            };
-            relation.InsertOrUpdate();
+            }, 1).InsertOrUpdate();
 
             var desc = Query.Select<CustomerDemographics>(row => row.CustomerTypeID == "IT").First().CustomerDesc;
             Debug.Assert(desc == "Computer Science");

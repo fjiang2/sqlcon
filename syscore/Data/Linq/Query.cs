@@ -57,30 +57,30 @@ namespace Sys.Data.Linq
             }
         }
 
-        public static int Insert<TEntity>(this TEntity entity) where TEntity : class
-        {
-            return Submit<TEntity>(table => table.InsertOnSubmit(entity));
-        }
+        //public static int Insert<TEntity>(this TEntity entity) where TEntity : class
+        //{
+        //    return Submit<TEntity>(table => table.InsertOnSubmit(entity));
+        //}
 
-        public static int Update<TEntity>(this TEntity entity) where TEntity : class
-        {
-            return Submit<TEntity>(table => table.UpdateOnSubmit(entity));
-        }
+        //public static int Update<TEntity>(this TEntity entity) where TEntity : class
+        //{
+        //    return Submit<TEntity>(table => table.UpdateOnSubmit(entity));
+        //}
 
-        public static int PatialUpdate<TEntity>(this TEntity entity, bool throwException = false) where TEntity : class
-        {
-            return Submit<TEntity>(table => table.PartialUpdateOnSubmit(entity, throwException));
-        }
+        //public static int PatialUpdate<TEntity>(this TEntity entity, bool throwException = false) where TEntity : class
+        //{
+        //    return Submit<TEntity>(table => table.PartialUpdateOnSubmit(entity, throwException));
+        //}
 
-        public static int InsertOrUpdate<TEntity>(this TEntity entity) where TEntity : class
-        {
-            return Submit<TEntity>(table => table.InsertOrUpdateOnSubmit(entity));
-        }
+        //public static int InsertOrUpdate<TEntity>(this TEntity entity) where TEntity : class
+        //{
+        //    return Submit<TEntity>(table => table.InsertOrUpdateOnSubmit(entity));
+        //}
 
-        public static int Delete<TEntity>(this TEntity entity) where TEntity : class
-        {
-            return Submit<TEntity>(table => table.DeleteOnSubmit(entity));
-        }
+        //public static int Delete<TEntity>(this TEntity entity) where TEntity : class
+        //{
+        //    return Submit<TEntity>(table => table.DeleteOnSubmit(entity));
+        //}
 
         public static int Insert<TEntity>(this IEnumerable<TEntity> entities) where TEntity : class
         {
