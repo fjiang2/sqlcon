@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 
 namespace Sys.Data.Linq
 {
-    public static class Queryable
+    public static class Query
     {
         public static Func<string, IDbCmd> SqlCommand { get; set; } = query => new SqlCmd(query);
 
@@ -29,38 +29,11 @@ namespace Sys.Data.Linq
             }
         }
 
-
-        public static QueryResultReader Query<TEntity1, TEntity2>(Expression<Func<TEntity1, bool>> where1, Expression<Func<TEntity2, bool>> where2)
-            where TEntity1 : class
-            where TEntity2 : class
+        public static QueryResultReader Select(this Action<DataContext> action)
         {
             using (var db = new DataContext(SqlCommand))
             {
-                var t1 = db.GetTable<TEntity1>();
-                t1.SelectOnSubmit(where1);
-
-                var t2 = db.GetTable<TEntity2>();
-                t2.SelectOnSubmit(where2);
-
-                return db.SumbitQueries();
-            }
-        }
-        public static QueryResultReader Query<TEntity1, TEntity2, TEntity3>(Expression<Func<TEntity1, bool>> where1, Expression<Func<TEntity2, bool>> where2, Expression<Func<TEntity3, bool>> where3)
-            where TEntity1 : class
-            where TEntity2 : class
-            where TEntity3 : class
-        {
-            using (var db = new DataContext(SqlCommand))
-            {
-                var t1 = db.GetTable<TEntity1>();
-                t1.SelectOnSubmit(where1);
-
-                var t2 = db.GetTable<TEntity2>();
-                t2.SelectOnSubmit(where2);
-
-                var t3 = db.GetTable<TEntity3>();
-                t3.SelectOnSubmit(where3);
-
+                action(db);
                 return db.SumbitQueries();
             }
         }
