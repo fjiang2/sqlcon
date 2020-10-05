@@ -26,9 +26,9 @@ namespace Sys.CodeBuilder
     {
         private Dictionary<string, int> names = new Dictionary<string, int>();
 
-        public UniqueNameMaker()
+        public UniqueNameMaker(string className)
         {
-
+            names.Add(className, 0);
         }
 
         /// <summary>

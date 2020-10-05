@@ -64,7 +64,7 @@ namespace UnitTestProject.Northwind.l2s
 		private EntitySet<EmployeeTerritory> _EmployeeTerritories;
 		private EntitySet<Order> _Orders;
 		
-		private EntityRef<Employee> _Employee;
+		private EntityRef<Employee> _Employee1;
 		
 		public Employee()
 		{
@@ -98,16 +98,16 @@ namespace UnitTestProject.Northwind.l2s
 			}
 		}
 		
-		[Association(Name = "Employee_Employee", Storage = "_Employee", ThisKey = "ReportsTo", OtherKey = "EmployeeID", IsForeignKey = true)]
+		[Association(Name = "Employee_Employee", Storage = "_Employee1", ThisKey = "ReportsTo", OtherKey = "EmployeeID", IsForeignKey = true)]
 		public Employee Employee1
 		{
 			get
 			{
-				return this._Employee.Entity;
+				return this._Employee1.Entity;
 			}
 			set
 			{
-				this._Employee.Entity = value;
+				this._Employee1.Entity = value;
 			}
 		}
 	}
