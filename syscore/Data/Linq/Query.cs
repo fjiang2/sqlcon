@@ -98,5 +98,10 @@ namespace Sys.Data.Linq
             return new T[] { item };
         }
 
+        public static IEnumerable<T> Enumerable<T>(params T[] items)
+        {
+            return items;
+        }
+
     }
 }

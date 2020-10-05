@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
 using System.Linq;
 
-using UnitTestProject.Northwind;
+using UnitTestProject.Northwind.dbo;
 using Sys.Data.Linq;
 using Sys.Data;
 
