@@ -108,6 +108,7 @@
     <Compile Include="ClassBuilder\ConfigScript.cs" />
     <Compile Include="ClassBuilder\DataContractClassBuilder.cs" />
     <Compile Include="ClassBuilder\Json2CSharp.cs" />
+    <Compile Include="ClassBuilder\Plural.cs" />
     <Compile Include="ClassBuilder\TieClassBuilder.cs" />
     <Compile Include="Configuration\ApplicationConfiguration.cs" />
     <Compile Include="Configuration\Config.cs" />

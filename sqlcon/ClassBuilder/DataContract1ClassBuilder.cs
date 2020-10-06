@@ -53,8 +53,8 @@ namespace sqlcon
         private void Class_Assoication()
         {
             Class clss = new Class(ClassName + ASSOCIATION) { Modifier = Modifier.Public };
+            base.CreateAssoicationClass(tname, clss);
             builder.AddClass(clss);
-
         }
 
         private void Class_Extension()

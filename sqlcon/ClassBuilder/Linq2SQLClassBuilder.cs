@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Globalization;
 using System.IO;
 using System.Data;
 using Sys;
@@ -10,9 +9,6 @@ using Sys.CodeBuilder;
 using Sys.Data;
 using Sys.Data.Manager;
 
-#if WINDOWS
-using System.Data.Entity.Design.PluralizationServices;
-#endif
 
 namespace sqlcon
 {
@@ -37,16 +33,6 @@ namespace sqlcon
         
         private Dictionary<DataColumn, TypeInfo> dict = new Dictionary<DataColumn, TypeInfo>();
 
-#if WINDOWS
-        private static PluralizationService Pluralization
-          => PluralizationService.CreateService(CultureInfo.GetCultureInfo("en-us"));
-
-        private static string Pluralize(string name) => Pluralization.Pluralize(name);
-        private static string Singularize(string name) => Pluralization.Singularize(name);
-#else
-        private static string Pluralize(string name) => name;
-        private static string Singularize(string name) => name;
-#endif
 
         protected override void CreateClass()
         {
@@ -157,7 +143,7 @@ namespace sqlcon
             if (_keys.Length == 1 && _keys.Contains(key.FK_Column))
             {
                 // 1:1 mapping
-                pname = clss.MakeUniqueName(Singularize(fk_cname));
+                pname = clss.MakeUniqueName(Plural.Singularize(fk_cname));
                 ty = new TypeInfo { UserType = $"EntityRef<{fk_cname}>" };
                 field = new Field(ty, $"_{pname}") { Modifier = Modifier.Private };
 
@@ -179,7 +165,7 @@ namespace sqlcon
             else
             {
                 //1:n mapping
-                pname = clss.MakeUniqueName(Pluralize(fk_cname));
+                pname = clss.MakeUniqueName(Plural.Pluralize(fk_cname));
                 constructor.Statement.AppendLine($"this._{pname} = new EntitySet<{fk_cname}>();");
 
                 ty = new TypeInfo { UserType = $"EntitySet<{fk_cname}>" };
