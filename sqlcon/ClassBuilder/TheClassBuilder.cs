@@ -15,6 +15,7 @@ namespace sqlcon
     abstract class TheClassBuilder : ClassMaker
     {
         protected string EXTENSION = "Extension";
+        protected string ASSOCIATION = "Association";
 
         protected CSharpBuilder builder;
 
@@ -153,7 +154,7 @@ namespace sqlcon
                 return new Value(new CodeString(column));
             }
 
-            var schema = new TableSchema(tname);
+            var schema = TableSchemaCache.GetSchema(tname);
             var pkeys = schema.ByForeignKeys.Keys.OrderBy(k => k.FK_Table);
 
             List<Value> L = new List<Value>();

@@ -19,14 +19,12 @@ namespace sqlcon
     class Linq2SQLClassBuilder : TheClassBuilder
     {
         private TableName tname;
-        private Dictionary<TableName, TableSchema> schemas;
 
-        public Linq2SQLClassBuilder(ApplicationCommand cmd, TableName tname, Dictionary<TableName, TableSchema> schemas)
+        public Linq2SQLClassBuilder(ApplicationCommand cmd, TableName tname)
             : base(cmd)
         {
             this.tname = tname;
             this.SetClassName(tname.ToClassName(rule: null));
-            this.schemas = schemas;
 
             builder.AddUsing("System");
             //builder.AddUsing("System.Collections.Generic");
@@ -36,14 +34,7 @@ namespace sqlcon
         }
 
 
-        private TableSchema GetSchema(TableName tname)
-        {
-            if (!schemas.ContainsKey(tname))
-                schemas.Add(tname, new TableSchema(tname));
-
-            return schemas[tname];
-        }
-
+        
         private Dictionary<DataColumn, TypeInfo> dict = new Dictionary<DataColumn, TypeInfo>();
 
 #if WINDOWS
@@ -69,7 +60,7 @@ namespace sqlcon
             builder.AddClass(clss);
 
             CodeStyle camel = cmd.GetEnum<CodeStyle>("code-style", CodeStyle.Original);
-            TableSchema schema = GetSchema(tname);
+            TableSchema schema = TableSchemaCache.GetSchema(tname);
 
             Property prop;
             foreach (IColumn column in schema.Columns)
@@ -160,7 +151,7 @@ namespace sqlcon
             TypeInfo ty;
             Field field;
 
-            var fk_schema = GetSchema(fk_tname);
+            var fk_schema = TableSchemaCache.GetSchema(fk_tname);
             var _keys = fk_schema.PrimaryKeys.Keys;
 
             if (_keys.Length == 1 && _keys.Contains(key.FK_Column))

@@ -35,6 +35,7 @@ namespace sqlcon
         protected override void CreateClass()
         {
             Class_TableSchema();
+            Class_Assoication();
             Class_Extension();
         }
 
@@ -47,6 +48,13 @@ namespace sqlcon
             {
                 clss.Add(new Property(dict[column], PropertyName(column)) { Modifier = Modifier.Public });
             }
+        }
+
+        private void Class_Assoication()
+        {
+            Class clss = new Class(ClassName + ASSOCIATION) { Modifier = Modifier.Public };
+            builder.AddClass(clss);
+
         }
 
         private void Class_Extension()

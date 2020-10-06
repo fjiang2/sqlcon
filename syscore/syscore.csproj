@@ -109,6 +109,7 @@
     <Compile Include="Data\Linq\Table.cs" />
     <Compile Include="Data\Linq\TableSchema.cs" />
     <Compile Include="Data\Linq\TableSchemaExtension.cs" />
+    <Compile Include="Data\Metadata\TableSchemaCache.cs" />
     <Compile Include="Data\Persistence\Level0\IDbCmd.cs" />
     <Compile Include="Data\Persistence\Level0\StringBuffer.cs" />
     <Compile Include="Data\Persistence\Level0\SqlExecutionEventArgs.cs" />

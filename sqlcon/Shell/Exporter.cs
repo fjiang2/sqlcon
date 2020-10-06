@@ -549,6 +549,8 @@ namespace sqlcon
                 string file = gen.WriteFile(path);
                 cout.WriteLine("code generated on {0}", file);
             }
+
+            TableSchemaCache.Clear();
         }
 
         public void ExportEntityClass()
@@ -620,11 +622,10 @@ namespace sqlcon
         {
             string path = cmd.OutputPath(ConfigKey._GENERATOR_L2S_PATH, $"{Configuration.MyDocuments}\\dc");
             string ns = cmd.GetValue("ns", ConfigKey._GENERATOR_L2S_NS, "Sys.DataModel.L2s");
-            Dictionary<TableName, TableSchema> schemas = new Dictionary<TableName, TableSchema>();
 
             if (tname != null)
             {
-                var builder = new Linq2SQLClassBuilder(cmd, tname, schemas)
+                var builder = new Linq2SQLClassBuilder(cmd, tname)
                 {
                 };
                 builder.SetNamespace(ns);
@@ -638,7 +639,7 @@ namespace sqlcon
                 TableName[] tnames = getTableNames(cmd);
                 foreach (var tname in tnames)
                 {
-                    var builder = new Linq2SQLClassBuilder(cmd, tname, schemas)
+                    var builder = new Linq2SQLClassBuilder(cmd, tname)
                     {
                     };
                     builder.SetNamespace(ns);
@@ -646,13 +647,13 @@ namespace sqlcon
                     string file = builder.WriteFile(path);
                     cout.WriteLine("code generated on {0}", file);
                 }
-
-                return;
             }
             else
             {
                 cerr.WriteLine("warning: table or database is not seleted");
             }
+
+            TableSchemaCache.Clear();
         }
 
         private DataSet LastOrCurrentDataSet()
