@@ -163,6 +163,8 @@ namespace sqlcon
                 var V = Value.NewPropertyObject(type);
                 V.AddProperty(nameof(IAssociation.ThisKey), ToColumn2(pkey.PK_Column));
                 V.AddProperty(nameof(IAssociation.OtherKey), ToColumn(pkey.FK_Table, pkey.FK_Column));
+                if(IsOneToMany(tname, pkey))
+                    V.AddProperty(nameof(IAssociation.OneToMany), new Value(true));
                 L.Add(V);
             }
 
@@ -186,6 +188,25 @@ namespace sqlcon
             };
 
             return field;
+        }
+
+        private bool IsOneToMany(TableName tname, IForeignKey key)
+        {
+            TableName fk_tname = new TableName(tname.DatabaseName, key.FK_Schema, key.FK_Table);
+            var fk_schema = new TableSchema(fk_tname);
+            var _keys = fk_schema.PrimaryKeys.Keys;
+
+            if (_keys.Length == 1 && _keys.Contains(key.FK_Column))
+            {
+                // 1:1 mapping
+                return false;
+            }
+            else
+            {
+                //1:n mapping
+                return true;
+            }
+
         }
 
 

@@ -5,7 +5,7 @@ using System.Linq;
 using Sys.Data;
 using Sys.Data.Linq;
 
-namespace UnitTestProject.Northwind
+namespace UnitTestProject.Northwind.dbo
 {
 	public partial class EmployeeTerritories
 	{

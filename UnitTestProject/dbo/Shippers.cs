@@ -5,7 +5,7 @@ using System.Linq;
 using Sys.Data;
 using Sys.Data.Linq;
 
-namespace UnitTestProject.Northwind
+namespace UnitTestProject.Northwind.dbo
 {
 	public partial class Shippers
 	{
@@ -25,7 +25,8 @@ namespace UnitTestProject.Northwind
 			new Association<Orders>
 			{
 				ThisKey = _SHIPPERID,
-				OtherKey = OrdersExtension._SHIPVIA
+				OtherKey = OrdersExtension._SHIPVIA,
+				OneToMany = true
 			}
 		};
 		

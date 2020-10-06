@@ -5,7 +5,7 @@ using System.Linq;
 using Sys.Data;
 using Sys.Data.Linq;
 
-namespace UnitTestProject.Northwind
+namespace UnitTestProject.Northwind.dbo
 {
 	public partial class Categories
 	{
@@ -26,7 +26,8 @@ namespace UnitTestProject.Northwind
 			new Association<Products>
 			{
 				ThisKey = _CATEGORYID,
-				OtherKey = ProductsExtension._CATEGORYID
+				OtherKey = ProductsExtension._CATEGORYID,
+				OneToMany = true
 			}
 		};
 		

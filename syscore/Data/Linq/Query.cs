@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace Sys.Data.Linq
 {
@@ -20,7 +21,7 @@ namespace Sys.Data.Linq
             }
         }
 
-        public static IEnumerable<TEntity> Select<TEntity>(Expression<Func<TEntity, bool>> where) where TEntity : class
+        public static IEnumerable<TEntity> Select<TEntity>(this Expression<Func<TEntity, bool>> where) where TEntity : class
         {
             using (var db = new DataContext(SqlCommand))
             {
@@ -69,11 +70,7 @@ namespace Sys.Data.Linq
 
         public static int PatialUpdate<TEntity>(this IEnumerable<object> entities, bool throwException = false) where TEntity : class
         {
-            return Submit<TEntity>(table =>
-            {
-                foreach (object entity in entities)
-                    table.PartialUpdateOnSubmit(entity, throwException);
-            });
+            return Submit<TEntity>(table => table.PartialUpdateOnSubmit(entities, throwException));
         }
 
         public static int InsertOrUpdate<TEntity>(this IEnumerable<TEntity> entities) where TEntity : class
@@ -85,5 +82,26 @@ namespace Sys.Data.Linq
         {
             return Submit<TEntity>(table => table.DeleteOnSubmit(entities));
         }
+
+        public static IEnumerable<TSubEntity> Expand<TEntity, TSubEntity>(this IEnumerable<TEntity> entities)
+         where TEntity : class
+         where TSubEntity : class
+        {
+            using (var db = new DataContext(SqlCommand))
+            {
+                return db.Expand<TEntity, TSubEntity>(entities);
+            }
+        }
+
+        public static IEnumerable<T> AsEnumerable<T>(this T item)
+        {
+            return new T[] { item };
+        }
+
+        public static IEnumerable<T> Enumerable<T>(params T[] items)
+        {
+            return items;
+        }
+
     }
 }

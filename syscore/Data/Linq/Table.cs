@@ -67,6 +67,73 @@ namespace Sys.Data.Linq
         }
 
 
+
+        public void InsertOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.Insert, entity);
+        public void UpdateOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.Update, entity);
+        public void InsertOrUpdateOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.InsertOrUpdate, entity);
+        public void DeleteOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.Delete, entity);
+
+        public void InsertOnSubmit(IEnumerable<TEntity> entities) => OperateOnSubmitRange(RowOperation.Insert, entities);
+        public void UpdateOnSubmit(IEnumerable<TEntity> entities) => OperateOnSubmitRange(RowOperation.Update, entities);
+        public void InsertOrUpdateOnSubmit(IEnumerable<TEntity> entities) => OperateOnSubmitRange(RowOperation.InsertOrUpdate, entities);
+        public void DeleteOnSubmit(IEnumerable<TEntity> entities) => OperateOnSubmitRange(RowOperation.Delete, entities);
+        public void PartialUpdateOnSubmit(IEnumerable<object> entities, bool throwException = false)
+        {
+            foreach (var entity in entities)
+            {
+                PartialUpdateOnSubmit(entity, throwException);
+            }
+        }
+
+        private void OperateOnSubmitRange(RowOperation operation, IEnumerable<TEntity> entities)
+        {
+            foreach (var entity in entities)
+            {
+                OperateOnSubmit(operation, entity);
+            }
+        }
+
+        private void OperateOnSubmit(RowOperation operation, TEntity entity)
+        {
+            SqlMaker gen = this.Generator;
+
+            if (functionToDictionary != null)
+            {
+                var dict = ToDictionary(entity);
+                gen.AddRange(dict);
+            }
+            else
+            {
+                gen.AddRange(entity);
+            }
+
+            string sql = null;
+            switch (operation)
+            {
+                case RowOperation.Insert:
+                    sql = gen.Insert();
+                    break;
+
+                case RowOperation.Update:
+                    sql = gen.Update();
+                    break;
+
+                case RowOperation.InsertOrUpdate:
+                    sql = gen.InsertOrUpdate();
+                    break;
+
+                case RowOperation.Delete:
+                    sql = gen.Delete();
+                    break;
+            }
+
+            if (sql == null)
+                return;
+
+            Context.CodeBlock.AppendLine<TEntity>(sql);
+            gen.Clear();
+        }
+
         /// <summary>
         /// Update partial columns of entity, values of primary key requried
         /// </summary>
@@ -125,64 +192,6 @@ namespace Sys.Data.Linq
             gen.Clear();
         }
 
-        public void InsertOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.Insert, entity);
-        public void UpdateOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.Update, entity);
-        public void InsertOrUpdateOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.InsertOrUpdate, entity);
-        public void DeleteOnSubmit(TEntity entity) => OperateOnSubmit(RowOperation.Delete, entity);
-
-        public void InsertOnSubmit(IEnumerable<TEntity> entities) => OperateOnSubmitRange(RowOperation.Insert, entities);
-        public void UpdateOnSubmit(IEnumerable<TEntity> entities) => OperateOnSubmitRange(RowOperation.Update, entities);
-        public void InsertOrUpdateOnSubmit(IEnumerable<TEntity> entities) => OperateOnSubmitRange(RowOperation.InsertOrUpdate, entities);
-        public void DeleteOnSubmit(IEnumerable<TEntity> entities) => OperateOnSubmitRange(RowOperation.Delete, entities);
-
-        private void OperateOnSubmitRange(RowOperation operation, IEnumerable<TEntity> entities)
-        {
-            foreach (var entity in entities)
-            {
-                OperateOnSubmit(operation, entity);
-            }
-        }
-
-        private void OperateOnSubmit(RowOperation operation, TEntity entity)
-        {
-            SqlMaker gen = this.Generator;
-
-            if (functionToDictionary != null)
-            {
-                var dict = ToDictionary(entity);
-                gen.AddRange(dict);
-            }
-            else
-            {
-                gen.AddRange(entity);
-            }
-
-            string sql = null;
-            switch (operation)
-            {
-                case RowOperation.Insert:
-                    sql = gen.Insert();
-                    break;
-
-                case RowOperation.Update:
-                    sql = gen.Update();
-                    break;
-
-                case RowOperation.InsertOrUpdate:
-                    sql = gen.InsertOrUpdate();
-                    break;
-
-                case RowOperation.Delete:
-                    sql = gen.Delete();
-                    break;
-            }
-
-            if (sql == null)
-                return;
-
-            Context.CodeBlock.AppendLine<TEntity>(sql);
-            gen.Clear();
-        }
 
         public override string ToString()
         {

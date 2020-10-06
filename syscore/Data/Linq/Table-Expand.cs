@@ -12,28 +12,28 @@ namespace Sys.Data.Linq
         /// <summary>
         /// Expand single assoication immediately
         /// </summary>
-        /// <typeparam name="TResult"></typeparam>
+        /// <typeparam name="TSubEntity"></typeparam>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public IEnumerable<TResult> Expand<TResult>(TEntity entity) where TResult : class
+        public IEnumerable<TSubEntity> Expand<TSubEntity>(TEntity entity) where TSubEntity : class
         {
-            string where = AssociationWhere<TResult>(entity);
+            string where = AssociationWhere<TSubEntity>(entity);
 
-            var table = Context.GetTable<TResult>();
+            var table = Context.GetTable<TSubEntity>();
             return table.Select(where);
         }
 
         /// <summary>
         /// Expand single assoication immediately
         /// </summary>
-        /// <typeparam name="TResult"></typeparam>
+        /// <typeparam name="TSubEntity"></typeparam>
         /// <param name="entities"></param>
         /// <returns></returns>
-        public IEnumerable<TResult> Expand<TResult>(IEnumerable<TEntity> entities) where TResult : class
+        public IEnumerable<TSubEntity> Expand<TSubEntity>(IEnumerable<TEntity> entities) where TSubEntity : class
         {
-            string where = AssociationWhere<TResult>(entities);
+            string where = AssociationWhere<TSubEntity>(entities);
 
-            var table = Context.GetTable<TResult>();
+            var table = Context.GetTable<TSubEntity>();
             return table.Select(where);
         }
 
@@ -41,26 +41,26 @@ namespace Sys.Data.Linq
         /// <summary>
         /// Expand single association
         /// </summary>
-        /// <typeparam name="TResult"></typeparam>
+        /// <typeparam name="TSubEntity"></typeparam>
         /// <param name="entity"></param>
-        public void ExpandOnSubmit<TResult>(TEntity entity) where TResult : class
+        public void ExpandOnSubmit<TSubEntity>(TEntity entity) where TSubEntity : class
         {
-            string where = AssociationWhere<TResult>(entity);
+            string where = AssociationWhere<TSubEntity>(entity);
 
-            var table = Context.GetTable<TResult>();
+            var table = Context.GetTable<TSubEntity>();
             table.SelectOnSubmit(where);
         }
 
         /// <summary>
         /// Expand single association
         /// </summary>
-        /// <typeparam name="TResult"></typeparam>
+        /// <typeparam name="TSubEntity"></typeparam>
         /// <param name="entities"></param>
-        public void ExpandOnSubmit<TResult>(IEnumerable<TEntity> entities) where TResult : class
+        public void ExpandOnSubmit<TSubEntity>(IEnumerable<TEntity> entities) where TSubEntity : class
         {
-            string where = AssociationWhere<TResult>(entities);
+            string where = AssociationWhere<TSubEntity>(entities);
 
-            var table = Context.GetTable<TResult>();
+            var table = Context.GetTable<TSubEntity>();
             table.SelectOnSubmit(where);
         }
 
@@ -81,12 +81,10 @@ namespace Sys.Data.Linq
                 var formalName = schema.FormalTableName();
 
                 object value = dict[a.ThisKey];
-                SqlValue svalue = new SqlValue(value);
-                string where = $"[{a.OtherKey}] = {svalue}";
-
+                string where = Compare(a.OtherKey, value);
                 var SQL = $"SELECT * FROM {formalName} WHERE {where}";
-                Context.CodeBlock.AppendQuery(a.OtherType, SQL);
 
+                Context.CodeBlock.AppendQuery(a.OtherType, SQL);
                 types.Add(a.OtherType);
             }
 
@@ -107,18 +105,9 @@ namespace Sys.Data.Linq
                 var schema = a.OtherType.GetTableSchema(out var _);
                 var formalName = schema.FormalTableName();
 
-                List<string> L = new List<string>();
-                foreach (var entity in entities)
-                {
-                    var dict = ToDictionary(entity);
-                    object value = dict[a.ThisKey];
-                    SqlValue svalue = new SqlValue(value);
-                    L.Add(svalue.ToString());
-                }
-
-                string x = string.Join(",", L);
-                string where = $"[{a.OtherKey}] IN ({x})";
+                string where = Compare(a.OtherKey, entities.Select(entity => ToDictionary(entity)[a.ThisKey]));
                 var SQL = $"SELECT * FROM {formalName} WHERE {where}";
+
                 Context.CodeBlock.AppendQuery(a.OtherType, SQL);
                 types.Add(a.OtherType);
             }
@@ -126,36 +115,50 @@ namespace Sys.Data.Linq
             return types.ToArray();
         }
 
-        private string AssociationWhere<TResult>(TEntity entity)
+        private string AssociationWhere<TSubEntity>(TEntity entity)
         {
-            IAssociation assoc = schema.Associations?.FirstOrDefault(x => x.OtherType == typeof(TResult));
-            if (assoc == null)
-                throw new InvalidConstraintException($"invalid assoication from {typeof(TEntity)} to {typeof(TResult)}");
+            IAssociation a = schema.Associations?.FirstOrDefault(x => x.OtherType == typeof(TSubEntity));
+            if (a == null)
+                throw new InvalidConstraintException($"invalid assoication from {typeof(TEntity)} to {typeof(TSubEntity)}");
 
             var dict = ToDictionary(entity);
-            object value = dict[assoc.ThisKey];
-            SqlValue svalue = new SqlValue(value);
-
-            return $"[{assoc.OtherKey}] = {svalue}";
+            object value = dict[a.ThisKey];
+            return Compare(a.OtherKey, value);
         }
 
-        private string AssociationWhere<TResult>(IEnumerable<TEntity> entities)
+        private string AssociationWhere<TSubEntity>(IEnumerable<TEntity> entities)
         {
-            IAssociation assoc = schema.Associations?.FirstOrDefault(x => x.OtherType == typeof(TResult));
-            if (assoc == null)
-                throw new InvalidConstraintException($"invalid assoication from {typeof(TEntity)} to {typeof(TResult)}");
-            List<string> L = new List<string>();
-            foreach (var entity in entities)
+            IAssociation a = schema.Associations?.FirstOrDefault(x => x.OtherType == typeof(TSubEntity));
+            if (a == null)
+                throw new InvalidConstraintException($"invalid assoication from {typeof(TEntity)} to {typeof(TSubEntity)}");
+
+            return Compare(a.OtherKey, entities.Select(entity => ToDictionary(entity)[a.ThisKey]));
+        }
+
+        private static string Compare(string column, object value)
+        {
+            if (value == null)
             {
-                var dict = ToDictionary(entity);
-                object value = dict[assoc.ThisKey];
+                return $"[{column}] IS NULL";
+            }
+            else
+            {
+                SqlValue svalue = new SqlValue(value);
+                return $"[{column}] = {svalue}";
+            }
+        }
+
+        private static string Compare(string column, IEnumerable<object> values)
+        {
+            List<string> L = new List<string>();
+            foreach (var value in values)
+            {
                 SqlValue svalue = new SqlValue(value);
                 L.Add(svalue.ToString());
             }
 
             string X = string.Join(",", L);
-            return $"[{assoc.OtherKey}] IN ({X})";
+            return $"[{column}] IN ({X})";
         }
-
     }
 }

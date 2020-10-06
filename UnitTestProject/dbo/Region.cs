@@ -5,7 +5,7 @@ using System.Linq;
 using Sys.Data;
 using Sys.Data.Linq;
 
-namespace UnitTestProject.Northwind
+namespace UnitTestProject.Northwind.dbo
 {
 	public partial class Region
 	{
@@ -23,7 +23,8 @@ namespace UnitTestProject.Northwind
 			new Association<Territories>
 			{
 				ThisKey = _REGIONID,
-				OtherKey = TerritoriesExtension._REGIONID
+				OtherKey = TerritoriesExtension._REGIONID,
+				OneToMany = true
 			}
 		};
 		

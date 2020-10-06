@@ -9,5 +9,6 @@ namespace Sys.Data.Linq
         string ThisKey { get; set; }
         string OtherKey { get; set; }
         bool IsForeignKey { get; set; }
+        bool OneToMany { get; set; }
     }
 }
