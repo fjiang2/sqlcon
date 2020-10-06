@@ -53,6 +53,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="dbo\ProductsAssociationExtension.cs" />
     <Compile Include="dbo\Categories.cs" />
     <Compile Include="dbo\CustomerCustomerDemo.cs" />
     <Compile Include="dbo\CustomerDemographics.cs" />
