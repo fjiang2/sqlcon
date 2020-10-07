@@ -15,15 +15,20 @@ namespace UnitTestProject.Northwind.dbo
 		public byte[] Picture { get; set; }
 	}
 	
+	public class CategoriesAssociation
+	{
+		public EntitySet<Products> Product { get; set; }
+	}
+	
 	public static class CategoriesExtension
 	{
 		public const string TableName = "Categories";
 		public static readonly string[] Keys = new string[] { _CATEGORYID };
 		public static readonly string[] Identity = new string[] { _CATEGORYID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<Products>
+			new Constraint<Products>
 			{
 				ThisKey = _CATEGORYID,
 				OtherKey = ProductsExtension._CATEGORYID,

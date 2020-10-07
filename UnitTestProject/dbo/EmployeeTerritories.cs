@@ -13,21 +13,27 @@ namespace UnitTestProject.Northwind.dbo
 		public string TerritoryID { get; set; }
 	}
 	
+	public class EmployeeTerritoriesAssociation
+	{
+		public EntityRef<Employees> Employee { get; set; }
+		public EntityRef<Territories> Territory { get; set; }
+	}
+	
 	public static class EmployeeTerritoriesExtension
 	{
 		public const string TableName = "EmployeeTerritories";
 		public static readonly string[] Keys = new string[] { _EMPLOYEEID, _TERRITORYID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<Employees>
+			new Constraint<Employees>
 			{
 				Name = "FK_EmployeeTerritories_Employees",
 				ThisKey = _EMPLOYEEID,
 				OtherKey = EmployeesExtension._EMPLOYEEID,
 				IsForeignKey = true
 			},
-			new Association<Territories>
+			new Constraint<Territories>
 			{
 				Name = "FK_EmployeeTerritories_Territories",
 				ThisKey = _TERRITORYID,

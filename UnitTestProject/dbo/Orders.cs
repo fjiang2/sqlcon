@@ -25,35 +25,43 @@ namespace UnitTestProject.Northwind.dbo
 		public string ShipCountry { get; set; }
 	}
 	
+	public class OrdersAssociation
+	{
+		public EntitySet<Order_Details> Order_Details { get; set; }
+		public EntityRef<Customers> Customer { get; set; }
+		public EntityRef<Employees> Employee { get; set; }
+		public EntityRef<Shippers> Shipper { get; set; }
+	}
+	
 	public static class OrdersExtension
 	{
 		public const string TableName = "Orders";
 		public static readonly string[] Keys = new string[] { _ORDERID };
 		public static readonly string[] Identity = new string[] { _ORDERID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<Order_Details>
+			new Constraint<Order_Details>
 			{
 				ThisKey = _ORDERID,
 				OtherKey = Order_DetailsExtension._ORDERID,
 				OneToMany = true
 			},
-			new Association<Customers>
+			new Constraint<Customers>
 			{
 				Name = "FK_Orders_Customers",
 				ThisKey = _CUSTOMERID,
 				OtherKey = CustomersExtension._CUSTOMERID,
 				IsForeignKey = true
 			},
-			new Association<Employees>
+			new Constraint<Employees>
 			{
 				Name = "FK_Orders_Employees",
 				ThisKey = _EMPLOYEEID,
 				OtherKey = EmployeesExtension._EMPLOYEEID,
 				IsForeignKey = true
 			},
-			new Association<Shippers>
+			new Constraint<Shippers>
 			{
 				Name = "FK_Orders_Shippers",
 				ThisKey = _SHIPVIA,

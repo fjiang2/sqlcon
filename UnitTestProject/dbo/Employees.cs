@@ -29,27 +29,34 @@ namespace UnitTestProject.Northwind.dbo
 		public string PhotoPath { get; set; }
 	}
 	
+	public class EmployeesAssociation
+	{
+		public EntitySet<EmployeeTerritories> EmployeeTerritory { get; set; }
+		public EntitySet<Orders> Order { get; set; }
+		public EntityRef<Employees> Employee { get; set; }
+	}
+	
 	public static class EmployeesExtension
 	{
 		public const string TableName = "Employees";
 		public static readonly string[] Keys = new string[] { _EMPLOYEEID };
 		public static readonly string[] Identity = new string[] { _EMPLOYEEID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<EmployeeTerritories>
+			new Constraint<EmployeeTerritories>
 			{
 				ThisKey = _EMPLOYEEID,
 				OtherKey = EmployeeTerritoriesExtension._EMPLOYEEID,
 				OneToMany = true
 			},
-			new Association<Orders>
+			new Constraint<Orders>
 			{
 				ThisKey = _EMPLOYEEID,
 				OtherKey = OrdersExtension._EMPLOYEEID,
 				OneToMany = true
 			},
-			new Association<Employees>
+			new Constraint<Employees>
 			{
 				Name = "FK_Employees_Employees",
 				ThisKey = _REPORTSTO,

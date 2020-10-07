@@ -8,20 +8,20 @@ using Sys.Data.Linq;
 
 namespace UnitTestProject.Northwind.dbo
 {
-    public class ProductsAssociation
-    {
-        public EntitySet<Order_Details> Order_Details { get; set; }
-        public EntityRef<Suppliers> Supplier { get; set; }
-        public EntityRef<Categories> Category { get; set; }
+    //public class ProductsAssociation
+    //{
+    //    public EntitySet<Order_Details> Order_Details { get; set; }
+    //    public EntityRef<Suppliers> Supplier { get; set; }
+    //    public EntityRef<Categories> Category { get; set; }
 
-    }
+    //}
 
-    public class EmployeesAssociation
-    {
-        public EntitySet<EmployeeTerritories> EmployeeTerritory { get; set; }
-        public EntitySet<Orders> Order { get; set; }
-        public EntityRef<Employees> Employee { get; set; }
-    }
+    //public class EmployeesAssociation
+    //{
+    //    public EntitySet<EmployeeTerritories> EmployeeTerritory { get; set; }
+    //    public EntitySet<Orders> Order { get; set; }
+    //    public EntityRef<Employees> Employee { get; set; }
+    //}
 
 
     public static class ProductsAssociationExtension

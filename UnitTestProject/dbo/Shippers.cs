@@ -14,15 +14,20 @@ namespace UnitTestProject.Northwind.dbo
 		public string Phone { get; set; }
 	}
 	
+	public class ShippersAssociation
+	{
+		public EntitySet<Orders> Order { get; set; }
+	}
+	
 	public static class ShippersExtension
 	{
 		public const string TableName = "Shippers";
 		public static readonly string[] Keys = new string[] { _SHIPPERID };
 		public static readonly string[] Identity = new string[] { _SHIPPERID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<Orders>
+			new Constraint<Orders>
 			{
 				ThisKey = _SHIPPERID,
 				OtherKey = OrdersExtension._SHIPVIA,

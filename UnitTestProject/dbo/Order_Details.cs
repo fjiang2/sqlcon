@@ -16,21 +16,27 @@ namespace UnitTestProject.Northwind.dbo
 		public float Discount { get; set; }
 	}
 	
+	public class Order_DetailsAssociation
+	{
+		public EntityRef<Orders> Order { get; set; }
+		public EntityRef<Products> Product { get; set; }
+	}
+	
 	public static class Order_DetailsExtension
 	{
 		public const string TableName = "Order Details";
 		public static readonly string[] Keys = new string[] { _ORDERID, _PRODUCTID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<Orders>
+			new Constraint<Orders>
 			{
 				Name = "FK_Order_Details_Orders",
 				ThisKey = _ORDERID,
 				OtherKey = OrdersExtension._ORDERID,
 				IsForeignKey = true
 			},
-			new Association<Products>
+			new Constraint<Products>
 			{
 				Name = "FK_Order_Details_Products",
 				ThisKey = _PRODUCTID,

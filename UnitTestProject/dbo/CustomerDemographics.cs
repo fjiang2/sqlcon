@@ -13,14 +13,19 @@ namespace UnitTestProject.Northwind.dbo
 		public string CustomerDesc { get; set; }
 	}
 	
+	public class CustomerDemographicsAssociation
+	{
+		public EntitySet<CustomerCustomerDemo> CustomerCustomerDemo { get; set; }
+	}
+	
 	public static class CustomerDemographicsExtension
 	{
 		public const string TableName = "CustomerDemographics";
 		public static readonly string[] Keys = new string[] { _CUSTOMERTYPEID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<CustomerCustomerDemo>
+			new Constraint<CustomerCustomerDemo>
 			{
 				ThisKey = _CUSTOMERTYPEID,
 				OtherKey = CustomerCustomerDemoExtension._CUSTOMERTYPEID,

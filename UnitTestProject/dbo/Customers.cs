@@ -22,20 +22,26 @@ namespace UnitTestProject.Northwind.dbo
 		public string Fax { get; set; }
 	}
 	
+	public class CustomersAssociation
+	{
+		public EntitySet<CustomerCustomerDemo> CustomerCustomerDemo { get; set; }
+		public EntitySet<Orders> Order { get; set; }
+	}
+	
 	public static class CustomersExtension
 	{
 		public const string TableName = "Customers";
 		public static readonly string[] Keys = new string[] { _CUSTOMERID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<CustomerCustomerDemo>
+			new Constraint<CustomerCustomerDemo>
 			{
 				ThisKey = _CUSTOMERID,
 				OtherKey = CustomerCustomerDemoExtension._CUSTOMERID,
 				OneToMany = true
 			},
-			new Association<Orders>
+			new Constraint<Orders>
 			{
 				ThisKey = _CUSTOMERID,
 				OtherKey = OrdersExtension._CUSTOMERID,

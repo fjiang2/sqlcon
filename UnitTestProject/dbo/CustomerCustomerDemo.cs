@@ -13,21 +13,27 @@ namespace UnitTestProject.Northwind.dbo
 		public string CustomerTypeID { get; set; }
 	}
 	
+	public class CustomerCustomerDemoAssociation
+	{
+		public EntityRef<Customers> Customer { get; set; }
+		public EntityRef<CustomerDemographics> CustomerDemographic { get; set; }
+	}
+	
 	public static class CustomerCustomerDemoExtension
 	{
 		public const string TableName = "CustomerCustomerDemo";
 		public static readonly string[] Keys = new string[] { _CUSTOMERID, _CUSTOMERTYPEID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<Customers>
+			new Constraint<Customers>
 			{
 				Name = "FK_CustomerCustomerDemo_Customers",
 				ThisKey = _CUSTOMERID,
 				OtherKey = CustomersExtension._CUSTOMERID,
 				IsForeignKey = true
 			},
-			new Association<CustomerDemographics>
+			new Constraint<CustomerDemographics>
 			{
 				Name = "FK_CustomerCustomerDemo",
 				ThisKey = _CUSTOMERTYPEID,

@@ -21,28 +21,35 @@ namespace UnitTestProject.Northwind.dbo
 		public bool Discontinued { get; set; }
 	}
 	
+	public class ProductsAssociation
+	{
+		public EntitySet<Order_Details> Order_Details { get; set; }
+		public EntityRef<Suppliers> Supplier { get; set; }
+		public EntityRef<Categories> Category { get; set; }
+	}
+	
 	public static class ProductsExtension
 	{
 		public const string TableName = "Products";
 		public static readonly string[] Keys = new string[] { _PRODUCTID };
 		public static readonly string[] Identity = new string[] { _PRODUCTID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<Order_Details>
+			new Constraint<Order_Details>
 			{
 				ThisKey = _PRODUCTID,
 				OtherKey = Order_DetailsExtension._PRODUCTID,
 				OneToMany = true
 			},
-			new Association<Suppliers>
+			new Constraint<Suppliers>
 			{
 				Name = "FK_Products_Suppliers",
 				ThisKey = _SUPPLIERID,
 				OtherKey = SuppliersExtension._SUPPLIERID,
 				IsForeignKey = true
 			},
-			new Association<Categories>
+			new Constraint<Categories>
 			{
 				Name = "FK_Products_Categories",
 				ThisKey = _CATEGORYID,

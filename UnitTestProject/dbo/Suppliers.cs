@@ -23,15 +23,20 @@ namespace UnitTestProject.Northwind.dbo
 		public string HomePage { get; set; }
 	}
 	
+	public class SuppliersAssociation
+	{
+		public EntitySet<Products> Product { get; set; }
+	}
+	
 	public static class SuppliersExtension
 	{
 		public const string TableName = "Suppliers";
 		public static readonly string[] Keys = new string[] { _SUPPLIERID };
 		public static readonly string[] Identity = new string[] { _SUPPLIERID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<Products>
+			new Constraint<Products>
 			{
 				ThisKey = _SUPPLIERID,
 				OtherKey = ProductsExtension._SUPPLIERID,

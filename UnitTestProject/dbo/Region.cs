@@ -13,14 +13,19 @@ namespace UnitTestProject.Northwind.dbo
 		public string RegionDescription { get; set; }
 	}
 	
+	public class RegionAssociation
+	{
+		public EntitySet<Territories> Territory { get; set; }
+	}
+	
 	public static class RegionExtension
 	{
 		public const string TableName = "Region";
 		public static readonly string[] Keys = new string[] { _REGIONID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<Territories>
+			new Constraint<Territories>
 			{
 				ThisKey = _REGIONID,
 				OtherKey = TerritoriesExtension._REGIONID,
