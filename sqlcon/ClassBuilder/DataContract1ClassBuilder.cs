@@ -37,12 +37,9 @@ namespace sqlcon
             Class_TableSchema();
             Class clss3 = Class_Extension(out int index1, out int index2);
 
-            if (HasAssociation)
-            {
-                Class clss2 = Class_Assoication(clss3, index1, index2);
-                if (clss2.Count > 0)
-                    builder.AddClass(clss2);
-            }
+            Class clss2 = Class_Assoication(clss3, index1, index2);
+            if (clss2.Index > 0)
+                builder.AddClass(clss2);
 
             builder.AddClass(clss3);
         }
@@ -62,12 +59,23 @@ namespace sqlcon
         {
             Class clss = new Class(ClassName + ASSOCIATION) { Modifier = Modifier.Public };
 
-            var field = CreateConstraintField(tname);
-            if (field != null)
-                clss3.Insert(index1, field);
+            bool hasFK = cmd.HasForeignKey;
+            bool hasAssoc = cmd.Has("assoc");
+            if (hasAssoc)
+                hasFK = true;
 
-            var properties = base.CreateAssoicationClass(tname, clss);
-            Method_Association(clss3, index2, properties);
+            if (hasFK)
+            {
+                var field = CreateConstraintField(tname);
+                if (field != null)
+                    clss3.Insert(index1, field);
+            }
+
+            if (hasAssoc)
+            {
+                var properties = base.CreateAssoicationClass(tname, clss);
+                Method_Association(clss3, index2, properties);
+            }
 
             return clss;
         }

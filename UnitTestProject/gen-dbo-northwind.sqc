@@ -6,7 +6,7 @@ let ns = "UnitTestProject.Northwind";
 cd ..\Northwind
 
 
-export * /ns:{ns}.dbo /dc1 /out:{output}\dbo /method:GetField /using:Sys.Data;Sys.Data.Linq /association
+export * /ns:{ns}.dbo /dc1 /out:{output}\dbo /method:GetField /using:Sys.Data;Sys.Data.Linq /assoc
 
 
 export * /ns:{ns}.l2s /l2s /out:{output}\l2s /method:GetField /using:Sys.Data;Sys.Data.Linq

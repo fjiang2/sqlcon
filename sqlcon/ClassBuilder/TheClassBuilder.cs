@@ -18,13 +18,12 @@ namespace sqlcon
         protected string ASSOCIATION = "Association";
 
         protected CSharpBuilder builder;
-        protected bool HasAssociation { get; set; }
 
         public TheClassBuilder(ApplicationCommand cmd)
             : base(cmd)
         {
             builder = new CSharpBuilder();
-            HasAssociation = cmd.Has("association");
+      
         }
 
         public void AddOptionalUsing()
