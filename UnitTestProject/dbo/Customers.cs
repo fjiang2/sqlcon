@@ -24,8 +24,8 @@ namespace UnitTestProject.Northwind.dbo
 	
 	public class CustomersAssociation
 	{
-		public EntitySet<CustomerCustomerDemo> CustomerCustomerDemo { get; set; }
-		public EntitySet<Orders> Order { get; set; }
+		public EntitySet<CustomerCustomerDemo> CustomerCustomerDemoes { get; set; }
+		public EntitySet<Orders> Orders { get; set; }
 	}
 	
 	public static class CustomersExtension
@@ -233,5 +233,32 @@ namespace UnitTestProject.Northwind.dbo
 		public const string _COUNTRY = "Country";
 		public const string _PHONE = "Phone";
 		public const string _FAX = "Fax";
+		
+		public static CustomersAssociation GetAssociation(this Customers entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<CustomersAssociation> GetAssociation(this IEnumerable<Customers> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<CustomersAssociation>();
+			
+			var _CustomerCustomerDemoes = reader.Read<CustomerCustomerDemo>();
+			var _Orders = reader.Read<Orders>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new CustomersAssociation
+				{
+					CustomerCustomerDemoes = new EntitySet<CustomerCustomerDemo>(_CustomerCustomerDemoes.Where(row => row.CustomerID == entity.CustomerID)),
+					Orders = new EntitySet<Orders>(_Orders.Where(row => row.CustomerID == entity.CustomerID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
+		}
 	}
 }

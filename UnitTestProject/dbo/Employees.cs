@@ -31,8 +31,8 @@ namespace UnitTestProject.Northwind.dbo
 	
 	public class EmployeesAssociation
 	{
-		public EntitySet<EmployeeTerritories> EmployeeTerritory { get; set; }
-		public EntitySet<Orders> Order { get; set; }
+		public EntitySet<EmployeeTerritories> EmployeeTerritories { get; set; }
+		public EntitySet<Orders> Orders { get; set; }
 		public EntityRef<Employees> Employee { get; set; }
 	}
 	
@@ -319,5 +319,34 @@ namespace UnitTestProject.Northwind.dbo
 		public const string _NOTES = "Notes";
 		public const string _REPORTSTO = "ReportsTo";
 		public const string _PHOTOPATH = "PhotoPath";
+		
+		public static EmployeesAssociation GetAssociation(this Employees entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<EmployeesAssociation> GetAssociation(this IEnumerable<Employees> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<EmployeesAssociation>();
+			
+			var _EmployeeTerritories = reader.Read<EmployeeTerritories>();
+			var _Orders = reader.Read<Orders>();
+			var _Employee = reader.Read<Employees>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new EmployeesAssociation
+				{
+					EmployeeTerritories = new EntitySet<EmployeeTerritories>(_EmployeeTerritories.Where(row => row.EmployeeID == entity.EmployeeID)),
+					Orders = new EntitySet<Orders>(_Orders.Where(row => row.EmployeeID == entity.EmployeeID)),
+					Employee = new EntityRef<Employees>(_Employee.FirstOrDefault(row => row.EmployeeID == entity.ReportsTo)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
+		}
 	}
 }

@@ -17,7 +17,7 @@ namespace UnitTestProject.Northwind.dbo
 	
 	public class CategoriesAssociation
 	{
-		public EntitySet<Products> Product { get; set; }
+		public EntitySet<Products> Products { get; set; }
 	}
 	
 	public static class CategoriesExtension
@@ -150,5 +150,30 @@ namespace UnitTestProject.Northwind.dbo
 		public const string _CATEGORYNAME = "CategoryName";
 		public const string _DESCRIPTION = "Description";
 		public const string _PICTURE = "Picture";
+		
+		public static CategoriesAssociation GetAssociation(this Categories entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<CategoriesAssociation> GetAssociation(this IEnumerable<Categories> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<CategoriesAssociation>();
+			
+			var _Products = reader.Read<Products>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new CategoriesAssociation
+				{
+					Products = new EntitySet<Products>(_Products.Where(row => row.CategoryID == entity.CategoryID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
+		}
 	}
 }

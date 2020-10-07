@@ -136,5 +136,32 @@ namespace UnitTestProject.Northwind.dbo
 		
 		public const string _EMPLOYEEID = "EmployeeID";
 		public const string _TERRITORYID = "TerritoryID";
+		
+		public static EmployeeTerritoriesAssociation GetAssociation(this EmployeeTerritories entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<EmployeeTerritoriesAssociation> GetAssociation(this IEnumerable<EmployeeTerritories> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<EmployeeTerritoriesAssociation>();
+			
+			var _Employee = reader.Read<Employees>();
+			var _Territory = reader.Read<Territories>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new EmployeeTerritoriesAssociation
+				{
+					Employee = new EntityRef<Employees>(_Employee.FirstOrDefault(row => row.EmployeeID == entity.EmployeeID)),
+					Territory = new EntityRef<Territories>(_Territory.FirstOrDefault(row => row.TerritoryID == entity.TerritoryID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
+		}
 	}
 }

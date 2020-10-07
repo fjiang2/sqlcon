@@ -15,7 +15,7 @@ namespace UnitTestProject.Northwind.dbo
 	
 	public class CustomerDemographicsAssociation
 	{
-		public EntitySet<CustomerCustomerDemo> CustomerCustomerDemo { get; set; }
+		public EntitySet<CustomerCustomerDemo> CustomerCustomerDemoes { get; set; }
 	}
 	
 	public static class CustomerDemographicsExtension
@@ -127,5 +127,30 @@ namespace UnitTestProject.Northwind.dbo
 		
 		public const string _CUSTOMERTYPEID = "CustomerTypeID";
 		public const string _CUSTOMERDESC = "CustomerDesc";
+		
+		public static CustomerDemographicsAssociation GetAssociation(this CustomerDemographics entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<CustomerDemographicsAssociation> GetAssociation(this IEnumerable<CustomerDemographics> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<CustomerDemographicsAssociation>();
+			
+			var _CustomerCustomerDemoes = reader.Read<CustomerCustomerDemo>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new CustomerDemographicsAssociation
+				{
+					CustomerCustomerDemoes = new EntitySet<CustomerCustomerDemo>(_CustomerCustomerDemoes.Where(row => row.CustomerTypeID == entity.CustomerTypeID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
+		}
 	}
 }

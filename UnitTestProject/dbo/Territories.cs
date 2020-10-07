@@ -16,7 +16,7 @@ namespace UnitTestProject.Northwind.dbo
 	
 	public class TerritoriesAssociation
 	{
-		public EntitySet<EmployeeTerritories> EmployeeTerritory { get; set; }
+		public EntitySet<EmployeeTerritories> EmployeeTerritories { get; set; }
 		public EntityRef<Region> Region { get; set; }
 	}
 	
@@ -146,5 +146,32 @@ namespace UnitTestProject.Northwind.dbo
 		public const string _TERRITORYID = "TerritoryID";
 		public const string _TERRITORYDESCRIPTION = "TerritoryDescription";
 		public const string _REGIONID = "RegionID";
+		
+		public static TerritoriesAssociation GetAssociation(this Territories entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<TerritoriesAssociation> GetAssociation(this IEnumerable<Territories> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<TerritoriesAssociation>();
+			
+			var _EmployeeTerritories = reader.Read<EmployeeTerritories>();
+			var _Region = reader.Read<Region>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new TerritoriesAssociation
+				{
+					EmployeeTerritories = new EntitySet<EmployeeTerritories>(_EmployeeTerritories.Where(row => row.TerritoryID == entity.TerritoryID)),
+					Region = new EntityRef<Region>(_Region.FirstOrDefault(row => row.RegionID == entity.RegionID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
+		}
 	}
 }

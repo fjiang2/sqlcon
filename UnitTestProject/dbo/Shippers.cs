@@ -16,7 +16,7 @@ namespace UnitTestProject.Northwind.dbo
 	
 	public class ShippersAssociation
 	{
-		public EntitySet<Orders> Order { get; set; }
+		public EntitySet<Orders> Orders { get; set; }
 	}
 	
 	public static class ShippersExtension
@@ -139,5 +139,30 @@ namespace UnitTestProject.Northwind.dbo
 		public const string _SHIPPERID = "ShipperID";
 		public const string _COMPANYNAME = "CompanyName";
 		public const string _PHONE = "Phone";
+		
+		public static ShippersAssociation GetAssociation(this Shippers entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<ShippersAssociation> GetAssociation(this IEnumerable<Shippers> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<ShippersAssociation>();
+			
+			var _Orders = reader.Read<Orders>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new ShippersAssociation
+				{
+					Orders = new EntitySet<Orders>(_Orders.Where(row => row.ShipVia == entity.ShipperID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
+		}
 	}
 }

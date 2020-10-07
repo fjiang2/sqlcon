@@ -62,18 +62,9 @@ namespace sqlcon
         private Class Class_Assoication(Class clss3)
         {
             Class clss = new Class(ClassName + ASSOCIATION) { Modifier = Modifier.Public };
+            
             var properties = base.CreateAssoicationClass(tname, clss);
-
-            if (tname != null && HasAssociation)
-            {
-                //builder.AddUsing(typeof(IAssociation).Namespace);
-                var field = CreateConstraintField(tname);
-                if (field != null)
-                {
-                    clss3.Add(field);
-                    Method_Association(clss3, properties);
-                }
-            }
+            Method_Association(clss3, properties);
 
             return clss;
         }
@@ -85,7 +76,12 @@ namespace sqlcon
 
             //Const Field
             CreateTableSchemaFields(tname, dt, clss);
-
+            if (HasAssociation)
+            {
+                var _field = CreateConstraintField(tname);
+                if (_field != null)
+                    clss.Add(_field);
+            }
 
             if (ContainsMethod("NewObject"))
             {
@@ -374,6 +370,7 @@ namespace sqlcon
             {
                 sent.AppendLine($"var _{property.PropertyName} = reader.Read<{property.PropertyType}>();");
             }
+            sent.AppendLine();
 
             sent.AppendLine("foreach (var entity in entities)");
             sent.Begin();
@@ -392,6 +389,7 @@ namespace sqlcon
             sent.AppendLine("associations.Add(association);");
             sent.End();
 
+            sent.AppendLine();
             sent.AppendLine($"return associations;");
             return method;
         }

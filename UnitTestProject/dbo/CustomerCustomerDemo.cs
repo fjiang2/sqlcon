@@ -136,5 +136,32 @@ namespace UnitTestProject.Northwind.dbo
 		
 		public const string _CUSTOMERID = "CustomerID";
 		public const string _CUSTOMERTYPEID = "CustomerTypeID";
+		
+		public static CustomerCustomerDemoAssociation GetAssociation(this CustomerCustomerDemo entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<CustomerCustomerDemoAssociation> GetAssociation(this IEnumerable<CustomerCustomerDemo> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<CustomerCustomerDemoAssociation>();
+			
+			var _Customer = reader.Read<Customers>();
+			var _CustomerDemographic = reader.Read<CustomerDemographics>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new CustomerCustomerDemoAssociation
+				{
+					Customer = new EntityRef<Customers>(_Customer.FirstOrDefault(row => row.CustomerID == entity.CustomerID)),
+					CustomerDemographic = new EntityRef<CustomerDemographics>(_CustomerDemographic.FirstOrDefault(row => row.CustomerTypeID == entity.CustomerTypeID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
+		}
 	}
 }

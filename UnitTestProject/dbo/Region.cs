@@ -15,7 +15,7 @@ namespace UnitTestProject.Northwind.dbo
 	
 	public class RegionAssociation
 	{
-		public EntitySet<Territories> Territory { get; set; }
+		public EntitySet<Territories> Territories { get; set; }
 	}
 	
 	public static class RegionExtension
@@ -127,5 +127,30 @@ namespace UnitTestProject.Northwind.dbo
 		
 		public const string _REGIONID = "RegionID";
 		public const string _REGIONDESCRIPTION = "RegionDescription";
+		
+		public static RegionAssociation GetAssociation(this Region entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<RegionAssociation> GetAssociation(this IEnumerable<Region> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<RegionAssociation>();
+			
+			var _Territories = reader.Read<Territories>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new RegionAssociation
+				{
+					Territories = new EntitySet<Territories>(_Territories.Where(row => row.RegionID == entity.RegionID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
+		}
 	}
 }

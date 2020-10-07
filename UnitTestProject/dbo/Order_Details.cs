@@ -169,5 +169,32 @@ namespace UnitTestProject.Northwind.dbo
 		public const string _UNITPRICE = "UnitPrice";
 		public const string _QUANTITY = "Quantity";
 		public const string _DISCOUNT = "Discount";
+		
+		public static Order_DetailsAssociation GetAssociation(this Order_Details entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<Order_DetailsAssociation> GetAssociation(this IEnumerable<Order_Details> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<Order_DetailsAssociation>();
+			
+			var _Order = reader.Read<Orders>();
+			var _Product = reader.Read<Products>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new Order_DetailsAssociation
+				{
+					Order = new EntityRef<Orders>(_Order.FirstOrDefault(row => row.OrderID == entity.OrderID)),
+					Product = new EntityRef<Products>(_Product.FirstOrDefault(row => row.ProductID == entity.ProductID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
+		}
 	}
 }

@@ -25,7 +25,7 @@ namespace UnitTestProject.Northwind.dbo
 	
 	public class SuppliersAssociation
 	{
-		public EntitySet<Products> Product { get; set; }
+		public EntitySet<Products> Products { get; set; }
 	}
 	
 	public static class SuppliersExtension
@@ -238,5 +238,30 @@ namespace UnitTestProject.Northwind.dbo
 		public const string _PHONE = "Phone";
 		public const string _FAX = "Fax";
 		public const string _HOMEPAGE = "HomePage";
+		
+		public static SuppliersAssociation GetAssociation(this Suppliers entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<SuppliersAssociation> GetAssociation(this IEnumerable<Suppliers> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<SuppliersAssociation>();
+			
+			var _Products = reader.Read<Products>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new SuppliersAssociation
+				{
+					Products = new EntitySet<Products>(_Products.Where(row => row.SupplierID == entity.SupplierID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
+		}
 	}
 }
