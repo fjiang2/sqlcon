@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 
 namespace Sys.Data.Linq
 {
@@ -90,6 +89,15 @@ namespace Sys.Data.Linq
             using (var db = new DataContext(SqlCommand))
             {
                 return db.Expand<TEntity, TSubEntity>(entities);
+            }
+        }
+
+        public static QueryResultReader Expand<TEntity>(this IEnumerable<TEntity> entities)
+         where TEntity : class
+        {
+            using (var db = new DataContext(SqlCommand))
+            {
+                return db.Expand(entities);
             }
         }
 
