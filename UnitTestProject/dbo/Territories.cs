@@ -14,20 +14,26 @@ namespace UnitTestProject.Northwind.dbo
 		public int RegionID { get; set; }
 	}
 	
+	public class TerritoriesAssociation
+	{
+		public EntitySet<EmployeeTerritories> EmployeeTerritories { get; set; }
+		public EntityRef<Region> Region { get; set; }
+	}
+	
 	public static class TerritoriesExtension
 	{
 		public const string TableName = "Territories";
 		public static readonly string[] Keys = new string[] { _TERRITORYID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<EmployeeTerritories>
+			new Constraint<EmployeeTerritories>
 			{
 				ThisKey = _TERRITORYID,
 				OtherKey = EmployeeTerritoriesExtension._TERRITORYID,
 				OneToMany = true
 			},
-			new Association<Region>
+			new Constraint<Region>
 			{
 				Name = "FK_Territories_Region",
 				ThisKey = _REGIONID,
@@ -127,6 +133,33 @@ namespace UnitTestProject.Northwind.dbo
 			to.TerritoryID = from.TerritoryID;
 			to.TerritoryDescription = from.TerritoryDescription;
 			to.RegionID = from.RegionID;
+		}
+		
+		public static TerritoriesAssociation GetAssociation(this Territories entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<TerritoriesAssociation> GetAssociation(this IEnumerable<Territories> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<TerritoriesAssociation>();
+			
+			var _EmployeeTerritories = reader.Read<EmployeeTerritories>();
+			var _Region = reader.Read<Region>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new TerritoriesAssociation
+				{
+					EmployeeTerritories = new EntitySet<EmployeeTerritories>(_EmployeeTerritories.Where(row => row.TerritoryID == entity.TerritoryID)),
+					Region = new EntityRef<Region>(_Region.FirstOrDefault(row => row.RegionID == entity.RegionID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
 		}
 		
 		public static string ToSimpleString(this Territories obj)

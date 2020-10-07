@@ -16,21 +16,27 @@ namespace UnitTestProject.Northwind.dbo
 		public float Discount { get; set; }
 	}
 	
+	public class Order_DetailsAssociation
+	{
+		public EntityRef<Orders> Order { get; set; }
+		public EntityRef<Products> Product { get; set; }
+	}
+	
 	public static class Order_DetailsExtension
 	{
 		public const string TableName = "Order Details";
 		public static readonly string[] Keys = new string[] { _ORDERID, _PRODUCTID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<Orders>
+			new Constraint<Orders>
 			{
 				Name = "FK_Order_Details_Orders",
 				ThisKey = _ORDERID,
 				OtherKey = OrdersExtension._ORDERID,
 				IsForeignKey = true
 			},
-			new Association<Products>
+			new Constraint<Products>
 			{
 				Name = "FK_Order_Details_Products",
 				ThisKey = _PRODUCTID,
@@ -146,6 +152,33 @@ namespace UnitTestProject.Northwind.dbo
 			to.UnitPrice = from.UnitPrice;
 			to.Quantity = from.Quantity;
 			to.Discount = from.Discount;
+		}
+		
+		public static Order_DetailsAssociation GetAssociation(this Order_Details entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<Order_DetailsAssociation> GetAssociation(this IEnumerable<Order_Details> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<Order_DetailsAssociation>();
+			
+			var _Order = reader.Read<Orders>();
+			var _Product = reader.Read<Products>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new Order_DetailsAssociation
+				{
+					Order = new EntityRef<Orders>(_Order.FirstOrDefault(row => row.OrderID == entity.OrderID)),
+					Product = new EntityRef<Products>(_Product.FirstOrDefault(row => row.ProductID == entity.ProductID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
 		}
 		
 		public static string ToSimpleString(this Order_Details obj)

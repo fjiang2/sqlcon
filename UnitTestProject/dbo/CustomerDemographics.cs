@@ -13,14 +13,19 @@ namespace UnitTestProject.Northwind.dbo
 		public string CustomerDesc { get; set; }
 	}
 	
+	public class CustomerDemographicsAssociation
+	{
+		public EntitySet<CustomerCustomerDemo> CustomerCustomerDemoes { get; set; }
+	}
+	
 	public static class CustomerDemographicsExtension
 	{
 		public const string TableName = "CustomerDemographics";
 		public static readonly string[] Keys = new string[] { _CUSTOMERTYPEID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<CustomerCustomerDemo>
+			new Constraint<CustomerCustomerDemo>
 			{
 				ThisKey = _CUSTOMERTYPEID,
 				OtherKey = CustomerCustomerDemoExtension._CUSTOMERTYPEID,
@@ -111,6 +116,31 @@ namespace UnitTestProject.Northwind.dbo
 		{
 			to.CustomerTypeID = from.CustomerTypeID;
 			to.CustomerDesc = from.CustomerDesc;
+		}
+		
+		public static CustomerDemographicsAssociation GetAssociation(this CustomerDemographics entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<CustomerDemographicsAssociation> GetAssociation(this IEnumerable<CustomerDemographics> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<CustomerDemographicsAssociation>();
+			
+			var _CustomerCustomerDemoes = reader.Read<CustomerCustomerDemo>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new CustomerDemographicsAssociation
+				{
+					CustomerCustomerDemoes = new EntitySet<CustomerCustomerDemo>(_CustomerCustomerDemoes.Where(row => row.CustomerTypeID == entity.CustomerTypeID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
 		}
 		
 		public static string ToSimpleString(this CustomerDemographics obj)

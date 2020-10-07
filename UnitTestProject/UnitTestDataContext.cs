@@ -453,6 +453,19 @@ namespace UnitTestProject
             Debug.Assert(customer.CustomerID == "ALFKI");
         }
 
+        [TestMethod]
+        public void TestAssoicationClass()
+        {
+            var product = Query.Select<Products>(row => row.ProductID == 14).FirstOrDefault();
+            var A = product.GetAssociation();
+            var D = A.Order_Details;
+
+            Debug.Assert(D.Count == 22);
+            Debug.Assert(((Categories)A.Category).CategoryName == "Produce");
+            Debug.Assert(((Suppliers)A.Supplier).CompanyName == "Mayumi's");
+        }
+
+
     }
 }
 

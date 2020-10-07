@@ -29,27 +29,34 @@ namespace UnitTestProject.Northwind.dbo
 		public string PhotoPath { get; set; }
 	}
 	
+	public class EmployeesAssociation
+	{
+		public EntitySet<EmployeeTerritories> EmployeeTerritories { get; set; }
+		public EntitySet<Orders> Orders { get; set; }
+		public EntityRef<Employees> Employee { get; set; }
+	}
+	
 	public static class EmployeesExtension
 	{
 		public const string TableName = "Employees";
 		public static readonly string[] Keys = new string[] { _EMPLOYEEID };
 		public static readonly string[] Identity = new string[] { _EMPLOYEEID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<EmployeeTerritories>
+			new Constraint<EmployeeTerritories>
 			{
 				ThisKey = _EMPLOYEEID,
 				OtherKey = EmployeeTerritoriesExtension._EMPLOYEEID,
 				OneToMany = true
 			},
-			new Association<Orders>
+			new Constraint<Orders>
 			{
 				ThisKey = _EMPLOYEEID,
 				OtherKey = OrdersExtension._EMPLOYEEID,
 				OneToMany = true
 			},
-			new Association<Employees>
+			new Constraint<Employees>
 			{
 				Name = "FK_Employees_Employees",
 				ThisKey = _REPORTSTO,
@@ -269,6 +276,35 @@ namespace UnitTestProject.Northwind.dbo
 			to.Notes = from.Notes;
 			to.ReportsTo = from.ReportsTo;
 			to.PhotoPath = from.PhotoPath;
+		}
+		
+		public static EmployeesAssociation GetAssociation(this Employees entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<EmployeesAssociation> GetAssociation(this IEnumerable<Employees> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<EmployeesAssociation>();
+			
+			var _EmployeeTerritories = reader.Read<EmployeeTerritories>();
+			var _Orders = reader.Read<Orders>();
+			var _Employee = reader.Read<Employees>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new EmployeesAssociation
+				{
+					EmployeeTerritories = new EntitySet<EmployeeTerritories>(_EmployeeTerritories.Where(row => row.EmployeeID == entity.EmployeeID)),
+					Orders = new EntitySet<Orders>(_Orders.Where(row => row.EmployeeID == entity.EmployeeID)),
+					Employee = new EntityRef<Employees>(_Employee.FirstOrDefault(row => row.EmployeeID == entity.ReportsTo)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
 		}
 		
 		public static string ToSimpleString(this Employees obj)

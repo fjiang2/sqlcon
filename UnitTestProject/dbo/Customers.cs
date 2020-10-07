@@ -22,20 +22,26 @@ namespace UnitTestProject.Northwind.dbo
 		public string Fax { get; set; }
 	}
 	
+	public class CustomersAssociation
+	{
+		public EntitySet<CustomerCustomerDemo> CustomerCustomerDemoes { get; set; }
+		public EntitySet<Orders> Orders { get; set; }
+	}
+	
 	public static class CustomersExtension
 	{
 		public const string TableName = "Customers";
 		public static readonly string[] Keys = new string[] { _CUSTOMERID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<CustomerCustomerDemo>
+			new Constraint<CustomerCustomerDemo>
 			{
 				ThisKey = _CUSTOMERID,
 				OtherKey = CustomerCustomerDemoExtension._CUSTOMERID,
 				OneToMany = true
 			},
-			new Association<Orders>
+			new Constraint<Orders>
 			{
 				ThisKey = _CUSTOMERID,
 				OtherKey = OrdersExtension._CUSTOMERID,
@@ -198,6 +204,33 @@ namespace UnitTestProject.Northwind.dbo
 			to.Country = from.Country;
 			to.Phone = from.Phone;
 			to.Fax = from.Fax;
+		}
+		
+		public static CustomersAssociation GetAssociation(this Customers entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<CustomersAssociation> GetAssociation(this IEnumerable<Customers> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<CustomersAssociation>();
+			
+			var _CustomerCustomerDemoes = reader.Read<CustomerCustomerDemo>();
+			var _Orders = reader.Read<Orders>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new CustomersAssociation
+				{
+					CustomerCustomerDemoes = new EntitySet<CustomerCustomerDemo>(_CustomerCustomerDemoes.Where(row => row.CustomerID == entity.CustomerID)),
+					Orders = new EntitySet<Orders>(_Orders.Where(row => row.CustomerID == entity.CustomerID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
 		}
 		
 		public static string ToSimpleString(this Customers obj)

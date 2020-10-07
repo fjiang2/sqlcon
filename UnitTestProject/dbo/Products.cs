@@ -21,28 +21,35 @@ namespace UnitTestProject.Northwind.dbo
 		public bool Discontinued { get; set; }
 	}
 	
+	public class ProductsAssociation
+	{
+		public EntitySet<Order_Details> Order_Details { get; set; }
+		public EntityRef<Suppliers> Supplier { get; set; }
+		public EntityRef<Categories> Category { get; set; }
+	}
+	
 	public static class ProductsExtension
 	{
 		public const string TableName = "Products";
 		public static readonly string[] Keys = new string[] { _PRODUCTID };
 		public static readonly string[] Identity = new string[] { _PRODUCTID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<Order_Details>
+			new Constraint<Order_Details>
 			{
 				ThisKey = _PRODUCTID,
 				OtherKey = Order_DetailsExtension._PRODUCTID,
 				OneToMany = true
 			},
-			new Association<Suppliers>
+			new Constraint<Suppliers>
 			{
 				Name = "FK_Products_Suppliers",
 				ThisKey = _SUPPLIERID,
 				OtherKey = SuppliersExtension._SUPPLIERID,
 				IsForeignKey = true
 			},
-			new Association<Categories>
+			new Constraint<Categories>
 			{
 				Name = "FK_Products_Categories",
 				ThisKey = _CATEGORYID,
@@ -198,6 +205,35 @@ namespace UnitTestProject.Northwind.dbo
 			to.UnitsOnOrder = from.UnitsOnOrder;
 			to.ReorderLevel = from.ReorderLevel;
 			to.Discontinued = from.Discontinued;
+		}
+		
+		public static ProductsAssociation GetAssociation(this Products entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<ProductsAssociation> GetAssociation(this IEnumerable<Products> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<ProductsAssociation>();
+			
+			var _Order_Details = reader.Read<Order_Details>();
+			var _Supplier = reader.Read<Suppliers>();
+			var _Category = reader.Read<Categories>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new ProductsAssociation
+				{
+					Order_Details = new EntitySet<Order_Details>(_Order_Details.Where(row => row.ProductID == entity.ProductID)),
+					Supplier = new EntityRef<Suppliers>(_Supplier.FirstOrDefault(row => row.SupplierID == entity.SupplierID)),
+					Category = new EntityRef<Categories>(_Category.FirstOrDefault(row => row.CategoryID == entity.CategoryID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
 		}
 		
 		public static string ToSimpleString(this Products obj)

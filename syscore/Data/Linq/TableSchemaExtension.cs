@@ -20,7 +20,7 @@ namespace Sys.Data.Linq
             string tableName = extension.GetStaticField(nameof(ITableSchema.TableName), string.Empty);
             string[] keys = extension.GetStaticField("Keys", new string[] { });
             string[] identity = extension.GetStaticField("Identity", new string[] { });
-            IAssociation[] associations = extension.GetStaticField(nameof(ITableSchema.Associations), new IAssociation[] { });
+            IConstraint[] associations = extension.GetStaticField(nameof(ITableSchema.Constraints), new IConstraint[] { });
 
             return new TableSchema
             {
@@ -28,7 +28,7 @@ namespace Sys.Data.Linq
                 TableName = tableName,
                 PrimaryKeys = keys,
                 IdentityKeys = identity,
-                Associations = associations,
+                Constraints = associations,
             };
         }
 

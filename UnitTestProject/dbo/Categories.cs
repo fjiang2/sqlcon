@@ -15,15 +15,20 @@ namespace UnitTestProject.Northwind.dbo
 		public byte[] Picture { get; set; }
 	}
 	
+	public class CategoriesAssociation
+	{
+		public EntitySet<Products> Products { get; set; }
+	}
+	
 	public static class CategoriesExtension
 	{
 		public const string TableName = "Categories";
 		public static readonly string[] Keys = new string[] { _CATEGORYID };
 		public static readonly string[] Identity = new string[] { _CATEGORYID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<Products>
+			new Constraint<Products>
 			{
 				ThisKey = _CATEGORYID,
 				OtherKey = ProductsExtension._CATEGORYID,
@@ -130,6 +135,31 @@ namespace UnitTestProject.Northwind.dbo
 			to.CategoryName = from.CategoryName;
 			to.Description = from.Description;
 			to.Picture = from.Picture;
+		}
+		
+		public static CategoriesAssociation GetAssociation(this Categories entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<CategoriesAssociation> GetAssociation(this IEnumerable<Categories> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<CategoriesAssociation>();
+			
+			var _Products = reader.Read<Products>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new CategoriesAssociation
+				{
+					Products = new EntitySet<Products>(_Products.Where(row => row.CategoryID == entity.CategoryID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
 		}
 		
 		public static string ToSimpleString(this Categories obj)

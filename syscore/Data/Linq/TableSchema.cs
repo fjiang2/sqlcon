@@ -11,7 +11,7 @@ namespace Sys.Data.Linq
         public string TableName { get; set; }
         public string[] PrimaryKeys { get; set; }
         public string[] IdentityKeys { get; set; }
-        public IAssociation[] Associations { get; set; }
+        public IConstraint[] Constraints { get; set; }
 
         public override string ToString()
         {

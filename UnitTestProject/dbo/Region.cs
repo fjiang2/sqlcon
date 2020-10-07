@@ -13,14 +13,19 @@ namespace UnitTestProject.Northwind.dbo
 		public string RegionDescription { get; set; }
 	}
 	
+	public class RegionAssociation
+	{
+		public EntitySet<Territories> Territories { get; set; }
+	}
+	
 	public static class RegionExtension
 	{
 		public const string TableName = "Region";
 		public static readonly string[] Keys = new string[] { _REGIONID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<Territories>
+			new Constraint<Territories>
 			{
 				ThisKey = _REGIONID,
 				OtherKey = TerritoriesExtension._REGIONID,
@@ -111,6 +116,31 @@ namespace UnitTestProject.Northwind.dbo
 		{
 			to.RegionID = from.RegionID;
 			to.RegionDescription = from.RegionDescription;
+		}
+		
+		public static RegionAssociation GetAssociation(this Region entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<RegionAssociation> GetAssociation(this IEnumerable<Region> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<RegionAssociation>();
+			
+			var _Territories = reader.Read<Territories>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new RegionAssociation
+				{
+					Territories = new EntitySet<Territories>(_Territories.Where(row => row.RegionID == entity.RegionID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
 		}
 		
 		public static string ToSimpleString(this Region obj)

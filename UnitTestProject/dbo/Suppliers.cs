@@ -23,15 +23,20 @@ namespace UnitTestProject.Northwind.dbo
 		public string HomePage { get; set; }
 	}
 	
+	public class SuppliersAssociation
+	{
+		public EntitySet<Products> Products { get; set; }
+	}
+	
 	public static class SuppliersExtension
 	{
 		public const string TableName = "Suppliers";
 		public static readonly string[] Keys = new string[] { _SUPPLIERID };
 		public static readonly string[] Identity = new string[] { _SUPPLIERID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<Products>
+			new Constraint<Products>
 			{
 				ThisKey = _SUPPLIERID,
 				OtherKey = ProductsExtension._SUPPLIERID,
@@ -202,6 +207,31 @@ namespace UnitTestProject.Northwind.dbo
 			to.Phone = from.Phone;
 			to.Fax = from.Fax;
 			to.HomePage = from.HomePage;
+		}
+		
+		public static SuppliersAssociation GetAssociation(this Suppliers entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<SuppliersAssociation> GetAssociation(this IEnumerable<Suppliers> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<SuppliersAssociation>();
+			
+			var _Products = reader.Read<Products>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new SuppliersAssociation
+				{
+					Products = new EntitySet<Products>(_Products.Where(row => row.SupplierID == entity.SupplierID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
 		}
 		
 		public static string ToSimpleString(this Suppliers obj)

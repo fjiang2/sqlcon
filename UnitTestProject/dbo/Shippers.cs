@@ -14,15 +14,20 @@ namespace UnitTestProject.Northwind.dbo
 		public string Phone { get; set; }
 	}
 	
+	public class ShippersAssociation
+	{
+		public EntitySet<Orders> Orders { get; set; }
+	}
+	
 	public static class ShippersExtension
 	{
 		public const string TableName = "Shippers";
 		public static readonly string[] Keys = new string[] { _SHIPPERID };
 		public static readonly string[] Identity = new string[] { _SHIPPERID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<Orders>
+			new Constraint<Orders>
 			{
 				ThisKey = _SHIPPERID,
 				OtherKey = OrdersExtension._SHIPVIA,
@@ -121,6 +126,31 @@ namespace UnitTestProject.Northwind.dbo
 			to.ShipperID = from.ShipperID;
 			to.CompanyName = from.CompanyName;
 			to.Phone = from.Phone;
+		}
+		
+		public static ShippersAssociation GetAssociation(this Shippers entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<ShippersAssociation> GetAssociation(this IEnumerable<Shippers> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<ShippersAssociation>();
+			
+			var _Orders = reader.Read<Orders>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new ShippersAssociation
+				{
+					Orders = new EntitySet<Orders>(_Orders.Where(row => row.ShipVia == entity.ShipperID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
 		}
 		
 		public static string ToSimpleString(this Shippers obj)

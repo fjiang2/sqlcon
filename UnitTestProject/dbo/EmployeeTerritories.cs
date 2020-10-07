@@ -13,21 +13,27 @@ namespace UnitTestProject.Northwind.dbo
 		public string TerritoryID { get; set; }
 	}
 	
+	public class EmployeeTerritoriesAssociation
+	{
+		public EntityRef<Employees> Employee { get; set; }
+		public EntityRef<Territories> Territory { get; set; }
+	}
+	
 	public static class EmployeeTerritoriesExtension
 	{
 		public const string TableName = "EmployeeTerritories";
 		public static readonly string[] Keys = new string[] { _EMPLOYEEID, _TERRITORYID };
 		
-		public static readonly IAssociation[] Associations = new IAssociation[]
+		public static readonly IConstraint[] Constraints = new IConstraint[]
 		{
-			new Association<Employees>
+			new Constraint<Employees>
 			{
 				Name = "FK_EmployeeTerritories_Employees",
 				ThisKey = _EMPLOYEEID,
 				OtherKey = EmployeesExtension._EMPLOYEEID,
 				IsForeignKey = true
 			},
-			new Association<Territories>
+			new Constraint<Territories>
 			{
 				Name = "FK_EmployeeTerritories_Territories",
 				ThisKey = _TERRITORYID,
@@ -119,6 +125,33 @@ namespace UnitTestProject.Northwind.dbo
 		{
 			to.EmployeeID = from.EmployeeID;
 			to.TerritoryID = from.TerritoryID;
+		}
+		
+		public static EmployeeTerritoriesAssociation GetAssociation(this EmployeeTerritories entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<EmployeeTerritoriesAssociation> GetAssociation(this IEnumerable<EmployeeTerritories> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<EmployeeTerritoriesAssociation>();
+			
+			var _Employee = reader.Read<Employees>();
+			var _Territory = reader.Read<Territories>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new EmployeeTerritoriesAssociation
+				{
+					Employee = new EntityRef<Employees>(_Employee.FirstOrDefault(row => row.EmployeeID == entity.EmployeeID)),
+					Territory = new EntityRef<Territories>(_Territory.FirstOrDefault(row => row.TerritoryID == entity.TerritoryID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
 		}
 		
 		public static string ToSimpleString(this EmployeeTerritories obj)
