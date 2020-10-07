@@ -51,9 +51,18 @@ namespace Sys.CodeBuilder
             list.Clear();
         }
 
+        public int Index => list.Count;
+
         public Class Add(Buildable code)
         {
             this.list.Add(code);
+            code.Parent = this;
+            return this;
+        }
+
+        public Class Insert(int index, Buildable code)
+        {
+            this.list.Insert(index, code);
             code.Parent = this;
             return this;
         }

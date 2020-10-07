@@ -128,18 +128,6 @@ namespace UnitTestProject.Northwind.dbo
 			to.Phone = from.Phone;
 		}
 		
-		public static string ToSimpleString(this Shippers obj)
-		{
-			return string.Format("{{ShipperID:{0}, CompanyName:{1}, Phone:{2}}}", 
-			obj.ShipperID, 
-			obj.CompanyName, 
-			obj.Phone);
-		}
-		
-		public const string _SHIPPERID = "ShipperID";
-		public const string _COMPANYNAME = "CompanyName";
-		public const string _PHONE = "Phone";
-		
 		public static ShippersAssociation GetAssociation(this Shippers entity)
 		{
 			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
@@ -164,5 +152,17 @@ namespace UnitTestProject.Northwind.dbo
 			
 			return associations;
 		}
+		
+		public static string ToSimpleString(this Shippers obj)
+		{
+			return string.Format("{{ShipperID:{0}, CompanyName:{1}, Phone:{2}}}", 
+			obj.ShipperID, 
+			obj.CompanyName, 
+			obj.Phone);
+		}
+		
+		public const string _SHIPPERID = "ShipperID";
+		public const string _COMPANYNAME = "CompanyName";
+		public const string _PHONE = "Phone";
 	}
 }

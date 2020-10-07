@@ -251,6 +251,37 @@ namespace UnitTestProject.Northwind.dbo
 			to.ShipCountry = from.ShipCountry;
 		}
 		
+		public static OrdersAssociation GetAssociation(this Orders entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<OrdersAssociation> GetAssociation(this IEnumerable<Orders> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<OrdersAssociation>();
+			
+			var _Order_Details = reader.Read<Order_Details>();
+			var _Customer = reader.Read<Customers>();
+			var _Employee = reader.Read<Employees>();
+			var _Shipper = reader.Read<Shippers>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new OrdersAssociation
+				{
+					Order_Details = new EntitySet<Order_Details>(_Order_Details.Where(row => row.OrderID == entity.OrderID)),
+					Customer = new EntityRef<Customers>(_Customer.FirstOrDefault(row => row.CustomerID == entity.CustomerID)),
+					Employee = new EntityRef<Employees>(_Employee.FirstOrDefault(row => row.EmployeeID == entity.EmployeeID)),
+					Shipper = new EntityRef<Shippers>(_Shipper.FirstOrDefault(row => row.ShipperID == entity.ShipVia)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
+		}
+		
 		public static string ToSimpleString(this Orders obj)
 		{
 			return string.Format("{{OrderID:{0}, CustomerID:{1}, EmployeeID:{2}, OrderDate:{3}, RequiredDate:{4}, ShippedDate:{5}, ShipVia:{6}, Freight:{7}, ShipName:{8}, ShipAddress:{9}, ShipCity:{10}, ShipRegion:{11}, ShipPostalCode:{12}, ShipCountry:{13}}}", 
@@ -284,36 +315,5 @@ namespace UnitTestProject.Northwind.dbo
 		public const string _SHIPREGION = "ShipRegion";
 		public const string _SHIPPOSTALCODE = "ShipPostalCode";
 		public const string _SHIPCOUNTRY = "ShipCountry";
-		
-		public static OrdersAssociation GetAssociation(this Orders entity)
-		{
-			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
-		}
-		
-		public static IEnumerable<OrdersAssociation> GetAssociation(this IEnumerable<Orders> entities)
-		{
-			var reader = entities.Expand();
-			
-			var associations = new List<OrdersAssociation>();
-			
-			var _Order_Details = reader.Read<Order_Details>();
-			var _Customer = reader.Read<Customers>();
-			var _Employee = reader.Read<Employees>();
-			var _Shipper = reader.Read<Shippers>();
-			
-			foreach (var entity in entities)
-			{
-				var association = new OrdersAssociation
-				{
-					Order_Details = new EntitySet<Order_Details>(_Order_Details.Where(row => row.OrderID == entity.OrderID)),
-					Customer = new EntityRef<Customers>(_Customer.FirstOrDefault(row => row.CustomerID == entity.CustomerID)),
-					Employee = new EntityRef<Employees>(_Employee.FirstOrDefault(row => row.EmployeeID == entity.EmployeeID)),
-					Shipper = new EntityRef<Shippers>(_Shipper.FirstOrDefault(row => row.ShipperID == entity.ShipVia)),
-				};
-				associations.Add(association);
-			}
-			
-			return associations;
-		}
 	}
 }

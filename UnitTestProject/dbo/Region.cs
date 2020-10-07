@@ -118,16 +118,6 @@ namespace UnitTestProject.Northwind.dbo
 			to.RegionDescription = from.RegionDescription;
 		}
 		
-		public static string ToSimpleString(this Region obj)
-		{
-			return string.Format("{{RegionID:{0}, RegionDescription:{1}}}", 
-			obj.RegionID, 
-			obj.RegionDescription);
-		}
-		
-		public const string _REGIONID = "RegionID";
-		public const string _REGIONDESCRIPTION = "RegionDescription";
-		
 		public static RegionAssociation GetAssociation(this Region entity)
 		{
 			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
@@ -152,5 +142,15 @@ namespace UnitTestProject.Northwind.dbo
 			
 			return associations;
 		}
+		
+		public static string ToSimpleString(this Region obj)
+		{
+			return string.Format("{{RegionID:{0}, RegionDescription:{1}}}", 
+			obj.RegionID, 
+			obj.RegionDescription);
+		}
+		
+		public const string _REGIONID = "RegionID";
+		public const string _REGIONDESCRIPTION = "RegionDescription";
 	}
 }

@@ -135,18 +135,6 @@ namespace UnitTestProject.Northwind.dbo
 			to.RegionID = from.RegionID;
 		}
 		
-		public static string ToSimpleString(this Territories obj)
-		{
-			return string.Format("{{TerritoryID:{0}, TerritoryDescription:{1}, RegionID:{2}}}", 
-			obj.TerritoryID, 
-			obj.TerritoryDescription, 
-			obj.RegionID);
-		}
-		
-		public const string _TERRITORYID = "TerritoryID";
-		public const string _TERRITORYDESCRIPTION = "TerritoryDescription";
-		public const string _REGIONID = "RegionID";
-		
 		public static TerritoriesAssociation GetAssociation(this Territories entity)
 		{
 			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
@@ -173,5 +161,17 @@ namespace UnitTestProject.Northwind.dbo
 			
 			return associations;
 		}
+		
+		public static string ToSimpleString(this Territories obj)
+		{
+			return string.Format("{{TerritoryID:{0}, TerritoryDescription:{1}, RegionID:{2}}}", 
+			obj.TerritoryID, 
+			obj.TerritoryDescription, 
+			obj.RegionID);
+		}
+		
+		public const string _TERRITORYID = "TerritoryID";
+		public const string _TERRITORYDESCRIPTION = "TerritoryDescription";
+		public const string _REGIONID = "RegionID";
 	}
 }

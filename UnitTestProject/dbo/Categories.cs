@@ -137,20 +137,6 @@ namespace UnitTestProject.Northwind.dbo
 			to.Picture = from.Picture;
 		}
 		
-		public static string ToSimpleString(this Categories obj)
-		{
-			return string.Format("{{CategoryID:{0}, CategoryName:{1}, Description:{2}, Picture:{3}}}", 
-			obj.CategoryID, 
-			obj.CategoryName, 
-			obj.Description, 
-			obj.Picture);
-		}
-		
-		public const string _CATEGORYID = "CategoryID";
-		public const string _CATEGORYNAME = "CategoryName";
-		public const string _DESCRIPTION = "Description";
-		public const string _PICTURE = "Picture";
-		
 		public static CategoriesAssociation GetAssociation(this Categories entity)
 		{
 			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
@@ -175,5 +161,19 @@ namespace UnitTestProject.Northwind.dbo
 			
 			return associations;
 		}
+		
+		public static string ToSimpleString(this Categories obj)
+		{
+			return string.Format("{{CategoryID:{0}, CategoryName:{1}, Description:{2}, Picture:{3}}}", 
+			obj.CategoryID, 
+			obj.CategoryName, 
+			obj.Description, 
+			obj.Picture);
+		}
+		
+		public const string _CATEGORYID = "CategoryID";
+		public const string _CATEGORYNAME = "CategoryName";
+		public const string _DESCRIPTION = "Description";
+		public const string _PICTURE = "Picture";
 	}
 }

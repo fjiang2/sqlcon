@@ -206,6 +206,33 @@ namespace UnitTestProject.Northwind.dbo
 			to.Fax = from.Fax;
 		}
 		
+		public static CustomersAssociation GetAssociation(this Customers entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<CustomersAssociation> GetAssociation(this IEnumerable<Customers> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<CustomersAssociation>();
+			
+			var _CustomerCustomerDemoes = reader.Read<CustomerCustomerDemo>();
+			var _Orders = reader.Read<Orders>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new CustomersAssociation
+				{
+					CustomerCustomerDemoes = new EntitySet<CustomerCustomerDemo>(_CustomerCustomerDemoes.Where(row => row.CustomerID == entity.CustomerID)),
+					Orders = new EntitySet<Orders>(_Orders.Where(row => row.CustomerID == entity.CustomerID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
+		}
+		
 		public static string ToSimpleString(this Customers obj)
 		{
 			return string.Format("{{CustomerID:{0}, CompanyName:{1}, ContactName:{2}, ContactTitle:{3}, Address:{4}, City:{5}, Region:{6}, PostalCode:{7}, Country:{8}, Phone:{9}, Fax:{10}}}", 
@@ -233,32 +260,5 @@ namespace UnitTestProject.Northwind.dbo
 		public const string _COUNTRY = "Country";
 		public const string _PHONE = "Phone";
 		public const string _FAX = "Fax";
-		
-		public static CustomersAssociation GetAssociation(this Customers entity)
-		{
-			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
-		}
-		
-		public static IEnumerable<CustomersAssociation> GetAssociation(this IEnumerable<Customers> entities)
-		{
-			var reader = entities.Expand();
-			
-			var associations = new List<CustomersAssociation>();
-			
-			var _CustomerCustomerDemoes = reader.Read<CustomerCustomerDemo>();
-			var _Orders = reader.Read<Orders>();
-			
-			foreach (var entity in entities)
-			{
-				var association = new CustomersAssociation
-				{
-					CustomerCustomerDemoes = new EntitySet<CustomerCustomerDemo>(_CustomerCustomerDemoes.Where(row => row.CustomerID == entity.CustomerID)),
-					Orders = new EntitySet<Orders>(_Orders.Where(row => row.CustomerID == entity.CustomerID)),
-				};
-				associations.Add(association);
-			}
-			
-			return associations;
-		}
 	}
 }

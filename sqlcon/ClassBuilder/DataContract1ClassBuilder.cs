@@ -35,12 +35,11 @@ namespace sqlcon
         protected override void CreateClass()
         {
             Class_TableSchema();
-
-            Class clss3 = Class_Extension();
+            Class clss3 = Class_Extension(out int index1, out int index2);
 
             if (HasAssociation)
             {
-                Class clss2 = Class_Assoication(clss3);
+                Class clss2 = Class_Assoication(clss3, index1, index2);
                 if (clss2.Count > 0)
                     builder.AddClass(clss2);
             }
@@ -59,29 +58,27 @@ namespace sqlcon
             }
         }
 
-        private Class Class_Assoication(Class clss3)
+        private Class Class_Assoication(Class clss3, int index1, int index2)
         {
             Class clss = new Class(ClassName + ASSOCIATION) { Modifier = Modifier.Public };
-            
+
+            var field = CreateConstraintField(tname);
+            if (field != null)
+                clss3.Insert(index1, field);
+
             var properties = base.CreateAssoicationClass(tname, clss);
-            Method_Association(clss3, properties);
+            Method_Association(clss3, index2, properties);
 
             return clss;
         }
 
-        private Class Class_Extension()
+        private Class Class_Extension(out int index1, out int index2)
         {
             Class clss = new Class(ClassName + EXTENSION) { Modifier = Modifier.Public | Modifier.Static };
 
-
             //Const Field
             CreateTableSchemaFields(tname, dt, clss);
-            if (HasAssociation)
-            {
-                var _field = CreateConstraintField(tname);
-                if (_field != null)
-                    clss.Add(_field);
-            }
+            index1 = clss.Index;
 
             if (ContainsMethod("NewObject"))
             {
@@ -115,7 +112,7 @@ namespace sqlcon
                 option |= UtilsStaticMethod.ToSimpleString;
 
             clss.AddUtilsMethod(ClassName, dict.Keys.Select(column => new PropertyInfo { PropertyName = PropertyName(column) }), option);
-
+            index2 = clss.Index;
             clss.AppendLine();
 
             Field field;
@@ -336,7 +333,7 @@ namespace sqlcon
             sent.End(";");
         }
 
-        private Method Method_Association(Class clss, List<AssociationPropertyInfo> properties)
+        private Method Method_Association(Class clss, int index, List<AssociationPropertyInfo> properties)
         {
             string associationClassName = $"{ClassName}Association";
             Method method = new Method("GetAssociation")
@@ -348,7 +345,7 @@ namespace sqlcon
             };
             Statement sent = method.Statement;
             sent.RETURN("entity.AsEnumerable().GetAssociation().FirstOrDefault()");
-            clss.Add(method);
+            clss.Insert(index++, method);
 
 
             method = new Method("GetAssociation")
@@ -358,7 +355,7 @@ namespace sqlcon
                 Params = new Parameters().Add($"IEnumerable<{ClassName}>", "entities"),
                 IsExtensionMethod = true
             };
-            clss.Add(method);
+            clss.Insert(index++, method);
 
             sent = method.Statement;
             sent.AppendLine("var reader = entities.Expand();");

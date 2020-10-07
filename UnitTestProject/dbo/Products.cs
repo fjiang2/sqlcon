@@ -207,32 +207,6 @@ namespace UnitTestProject.Northwind.dbo
 			to.Discontinued = from.Discontinued;
 		}
 		
-		public static string ToSimpleString(this Products obj)
-		{
-			return string.Format("{{ProductID:{0}, ProductName:{1}, SupplierID:{2}, CategoryID:{3}, QuantityPerUnit:{4}, UnitPrice:{5}, UnitsInStock:{6}, UnitsOnOrder:{7}, ReorderLevel:{8}, Discontinued:{9}}}", 
-			obj.ProductID, 
-			obj.ProductName, 
-			obj.SupplierID, 
-			obj.CategoryID, 
-			obj.QuantityPerUnit, 
-			obj.UnitPrice, 
-			obj.UnitsInStock, 
-			obj.UnitsOnOrder, 
-			obj.ReorderLevel, 
-			obj.Discontinued);
-		}
-		
-		public const string _PRODUCTID = "ProductID";
-		public const string _PRODUCTNAME = "ProductName";
-		public const string _SUPPLIERID = "SupplierID";
-		public const string _CATEGORYID = "CategoryID";
-		public const string _QUANTITYPERUNIT = "QuantityPerUnit";
-		public const string _UNITPRICE = "UnitPrice";
-		public const string _UNITSINSTOCK = "UnitsInStock";
-		public const string _UNITSONORDER = "UnitsOnOrder";
-		public const string _REORDERLEVEL = "ReorderLevel";
-		public const string _DISCONTINUED = "Discontinued";
-		
 		public static ProductsAssociation GetAssociation(this Products entity)
 		{
 			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
@@ -261,5 +235,31 @@ namespace UnitTestProject.Northwind.dbo
 			
 			return associations;
 		}
+		
+		public static string ToSimpleString(this Products obj)
+		{
+			return string.Format("{{ProductID:{0}, ProductName:{1}, SupplierID:{2}, CategoryID:{3}, QuantityPerUnit:{4}, UnitPrice:{5}, UnitsInStock:{6}, UnitsOnOrder:{7}, ReorderLevel:{8}, Discontinued:{9}}}", 
+			obj.ProductID, 
+			obj.ProductName, 
+			obj.SupplierID, 
+			obj.CategoryID, 
+			obj.QuantityPerUnit, 
+			obj.UnitPrice, 
+			obj.UnitsInStock, 
+			obj.UnitsOnOrder, 
+			obj.ReorderLevel, 
+			obj.Discontinued);
+		}
+		
+		public const string _PRODUCTID = "ProductID";
+		public const string _PRODUCTNAME = "ProductName";
+		public const string _SUPPLIERID = "SupplierID";
+		public const string _CATEGORYID = "CategoryID";
+		public const string _QUANTITYPERUNIT = "QuantityPerUnit";
+		public const string _UNITPRICE = "UnitPrice";
+		public const string _UNITSINSTOCK = "UnitsInStock";
+		public const string _UNITSONORDER = "UnitsOnOrder";
+		public const string _REORDERLEVEL = "ReorderLevel";
+		public const string _DISCONTINUED = "Discontinued";
 	}
 }

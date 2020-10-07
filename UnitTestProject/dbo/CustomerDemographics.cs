@@ -118,16 +118,6 @@ namespace UnitTestProject.Northwind.dbo
 			to.CustomerDesc = from.CustomerDesc;
 		}
 		
-		public static string ToSimpleString(this CustomerDemographics obj)
-		{
-			return string.Format("{{CustomerTypeID:{0}, CustomerDesc:{1}}}", 
-			obj.CustomerTypeID, 
-			obj.CustomerDesc);
-		}
-		
-		public const string _CUSTOMERTYPEID = "CustomerTypeID";
-		public const string _CUSTOMERDESC = "CustomerDesc";
-		
 		public static CustomerDemographicsAssociation GetAssociation(this CustomerDemographics entity)
 		{
 			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
@@ -152,5 +142,15 @@ namespace UnitTestProject.Northwind.dbo
 			
 			return associations;
 		}
+		
+		public static string ToSimpleString(this CustomerDemographics obj)
+		{
+			return string.Format("{{CustomerTypeID:{0}, CustomerDesc:{1}}}", 
+			obj.CustomerTypeID, 
+			obj.CustomerDesc);
+		}
+		
+		public const string _CUSTOMERTYPEID = "CustomerTypeID";
+		public const string _CUSTOMERDESC = "CustomerDesc";
 	}
 }

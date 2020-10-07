@@ -154,22 +154,6 @@ namespace UnitTestProject.Northwind.dbo
 			to.Discount = from.Discount;
 		}
 		
-		public static string ToSimpleString(this Order_Details obj)
-		{
-			return string.Format("{{OrderID:{0}, ProductID:{1}, UnitPrice:{2}, Quantity:{3}, Discount:{4}}}", 
-			obj.OrderID, 
-			obj.ProductID, 
-			obj.UnitPrice, 
-			obj.Quantity, 
-			obj.Discount);
-		}
-		
-		public const string _ORDERID = "OrderID";
-		public const string _PRODUCTID = "ProductID";
-		public const string _UNITPRICE = "UnitPrice";
-		public const string _QUANTITY = "Quantity";
-		public const string _DISCOUNT = "Discount";
-		
 		public static Order_DetailsAssociation GetAssociation(this Order_Details entity)
 		{
 			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
@@ -196,5 +180,21 @@ namespace UnitTestProject.Northwind.dbo
 			
 			return associations;
 		}
+		
+		public static string ToSimpleString(this Order_Details obj)
+		{
+			return string.Format("{{OrderID:{0}, ProductID:{1}, UnitPrice:{2}, Quantity:{3}, Discount:{4}}}", 
+			obj.OrderID, 
+			obj.ProductID, 
+			obj.UnitPrice, 
+			obj.Quantity, 
+			obj.Discount);
+		}
+		
+		public const string _ORDERID = "OrderID";
+		public const string _PRODUCTID = "ProductID";
+		public const string _UNITPRICE = "UnitPrice";
+		public const string _QUANTITY = "Quantity";
+		public const string _DISCOUNT = "Discount";
 	}
 }

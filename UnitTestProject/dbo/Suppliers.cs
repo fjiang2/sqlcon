@@ -209,6 +209,31 @@ namespace UnitTestProject.Northwind.dbo
 			to.HomePage = from.HomePage;
 		}
 		
+		public static SuppliersAssociation GetAssociation(this Suppliers entity)
+		{
+			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
+		}
+		
+		public static IEnumerable<SuppliersAssociation> GetAssociation(this IEnumerable<Suppliers> entities)
+		{
+			var reader = entities.Expand();
+			
+			var associations = new List<SuppliersAssociation>();
+			
+			var _Products = reader.Read<Products>();
+			
+			foreach (var entity in entities)
+			{
+				var association = new SuppliersAssociation
+				{
+					Products = new EntitySet<Products>(_Products.Where(row => row.SupplierID == entity.SupplierID)),
+				};
+				associations.Add(association);
+			}
+			
+			return associations;
+		}
+		
 		public static string ToSimpleString(this Suppliers obj)
 		{
 			return string.Format("{{SupplierID:{0}, CompanyName:{1}, ContactName:{2}, ContactTitle:{3}, Address:{4}, City:{5}, Region:{6}, PostalCode:{7}, Country:{8}, Phone:{9}, Fax:{10}, HomePage:{11}}}", 
@@ -238,30 +263,5 @@ namespace UnitTestProject.Northwind.dbo
 		public const string _PHONE = "Phone";
 		public const string _FAX = "Fax";
 		public const string _HOMEPAGE = "HomePage";
-		
-		public static SuppliersAssociation GetAssociation(this Suppliers entity)
-		{
-			return entity.AsEnumerable().GetAssociation().FirstOrDefault();
-		}
-		
-		public static IEnumerable<SuppliersAssociation> GetAssociation(this IEnumerable<Suppliers> entities)
-		{
-			var reader = entities.Expand();
-			
-			var associations = new List<SuppliersAssociation>();
-			
-			var _Products = reader.Read<Products>();
-			
-			foreach (var entity in entities)
-			{
-				var association = new SuppliersAssociation
-				{
-					Products = new EntitySet<Products>(_Products.Where(row => row.SupplierID == entity.SupplierID)),
-				};
-				associations.Add(association);
-			}
-			
-			return associations;
-		}
 	}
 }
