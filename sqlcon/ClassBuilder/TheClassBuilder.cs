@@ -18,11 +18,13 @@ namespace sqlcon
         protected string ASSOCIATION = "Association";
 
         protected CSharpBuilder builder;
+        protected bool HasAssociation { get; set; }
 
         public TheClassBuilder(ApplicationCommand cmd)
             : base(cmd)
         {
             builder = new CSharpBuilder();
+            HasAssociation = cmd.Has("association");
         }
 
         public void AddOptionalUsing()
@@ -128,16 +130,10 @@ namespace sqlcon
                 clss.Add(field);
             }
 
-            if (tname != null)
-            {
-                //builder.AddUsing(typeof(IAssociation).Namespace);
-                field = CreateAssoicationField(tname);
-                if (field != null)
-                    clss.Add(field);
-            }
+
         }
 
-        private Field CreateAssoicationField(TableName tname)
+        protected Field CreateConstraintField(TableName tname)
         {
             const string CONSTRAINT = nameof(Constraint);
             Value ToColumn(string table, string column)
@@ -194,8 +190,19 @@ namespace sqlcon
         }
 
 
-        protected void CreateAssoicationClass(TableName tname, Class clss)
+        protected class AssociationPropertyInfo
         {
+            public string PropertyType { get; set; }
+            public string PropertyName { get; set; }
+            public bool OneToMany { get; set; }
+
+            public string PK_Column { get; set; }
+            public string FK_Column { get; set; }
+        }
+
+        protected List<AssociationPropertyInfo> CreateAssoicationClass(TableName tname, Class clss)
+        {
+            List<AssociationPropertyInfo> properties = new List<AssociationPropertyInfo>();
 
             var schema = TableSchemaCache.GetSchema(tname);
             var pkeys = schema.ByForeignKeys.Keys.OrderBy(k => k.FK_Table);
@@ -203,10 +210,11 @@ namespace sqlcon
             foreach (IForeignKey pkey in pkeys)
             {
                 string entity = ident.Identifier(pkey.FK_Table);
-                
+
                 TypeInfo type;
                 string propertyName;
-                if (IsOneToMany(tname, pkey))
+                bool one2many = IsOneToMany(tname, pkey);
+                if (one2many)
                 {
                     type = new TypeInfo { UserType = $"EntitySet<{entity}>" };
                     propertyName = Plural.Pluralize(entity);
@@ -217,8 +225,16 @@ namespace sqlcon
                     propertyName = Plural.Singularize(entity);
                 }
 
-                var property = new Property(type, Plural.Singularize(entity));
+                var property = new Property(type, propertyName);
                 clss.Add(property);
+                properties.Add(new AssociationPropertyInfo
+                {
+                    PropertyType = entity,
+                    PropertyName = propertyName,
+                    OneToMany = one2many,
+                    PK_Column = pkey.PK_Column,
+                    FK_Column = pkey.FK_Column,
+                });
             }
 
             var fkeys = schema.ForeignKeys.Keys.OrderBy(k => k.FK_Table);
@@ -226,9 +242,21 @@ namespace sqlcon
             {
                 string entity = ident.Identifier(fkey.PK_Table);
                 TypeInfo type = new TypeInfo { UserType = $"EntityRef<{entity}>" };
-                var property = new Property(type, Plural.Singularize(entity));
+                string propertyName = Plural.Singularize(entity);
+                var property = new Property(type, propertyName);
                 clss.Add(property);
+
+                properties.Add(new AssociationPropertyInfo
+                {
+                    PropertyType = entity,
+                    PropertyName = propertyName,
+                    OneToMany = false,
+                    PK_Column = fkey.FK_Column,
+                    FK_Column = fkey.PK_Column,
+                });
             }
+
+            return properties;
         }
 
         private bool IsOneToMany(TableName tname, IForeignKey key)
