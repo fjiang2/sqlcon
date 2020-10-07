@@ -6,6 +6,6 @@
         string TableName { get; }
         string[] PrimaryKeys { get; }
         string[] IdentityKeys { get; }
-        IAssociation[] Associations { get; }
+        IConstraint[] Constraints { get; }
     }
 }

@@ -139,7 +139,7 @@ namespace sqlcon
 
         private Field CreateAssoicationField(TableName tname)
         {
-
+            const string CONSTRAINT = nameof(Constraint);
             Value ToColumn(string table, string column)
             {
                 table = ident.Identifier(table);
@@ -161,12 +161,12 @@ namespace sqlcon
             foreach (IForeignKey pkey in pkeys)
             {
                 string entity = ident.Identifier(pkey.FK_Table);
-                TypeInfo type = new TypeInfo { UserType = $"Association<{entity}>" };
+                TypeInfo type = new TypeInfo { UserType = $"{CONSTRAINT}<{entity}>" };
                 var V = Value.NewPropertyObject(type);
-                V.AddProperty(nameof(IAssociation.ThisKey), ToColumn2(pkey.PK_Column));
-                V.AddProperty(nameof(IAssociation.OtherKey), ToColumn(pkey.FK_Table, pkey.FK_Column));
+                V.AddProperty(nameof(IConstraint.ThisKey), ToColumn2(pkey.PK_Column));
+                V.AddProperty(nameof(IConstraint.OtherKey), ToColumn(pkey.FK_Table, pkey.FK_Column));
                 if (IsOneToMany(tname, pkey))
-                    V.AddProperty(nameof(IAssociation.OneToMany), new Value(true));
+                    V.AddProperty(nameof(IConstraint.OneToMany), new Value(true));
                 L.Add(V);
             }
 
@@ -174,18 +174,18 @@ namespace sqlcon
             foreach (IForeignKey fkey in fkeys)
             {
                 string entity = ident.Identifier(fkey.PK_Table);
-                TypeInfo type = new TypeInfo { UserType = $"Association<{entity}>" };
+                TypeInfo type = new TypeInfo { UserType = $"{CONSTRAINT}<{entity}>" };
                 var V = Value.NewPropertyObject(type);
-                V.AddProperty(nameof(IAssociation.Name), new Value(fkey.Constraint_Name));
-                V.AddProperty(nameof(IAssociation.ThisKey), ToColumn2(fkey.FK_Column));
-                V.AddProperty(nameof(IAssociation.OtherKey), ToColumn(fkey.PK_Table, fkey.PK_Column));
-                V.AddProperty(nameof(IAssociation.IsForeignKey), new Value(true));
+                V.AddProperty(nameof(IConstraint.Name), new Value(fkey.Constraint_Name));
+                V.AddProperty(nameof(IConstraint.ThisKey), ToColumn2(fkey.FK_Column));
+                V.AddProperty(nameof(IConstraint.OtherKey), ToColumn(fkey.PK_Table, fkey.PK_Column));
+                V.AddProperty(nameof(IConstraint.IsForeignKey), new Value(true));
                 L.Add(V);
             }
 
-            TypeInfo typeinfo = new TypeInfo { UserType = $"{nameof(IAssociation)}[]" };
+            TypeInfo typeinfo = new TypeInfo { UserType = $"{nameof(IConstraint)}[]" };
 
-            Field field = new Field(typeinfo, "Associations", new Value(L.ToArray()) { Type = typeinfo })
+            Field field = new Field(typeinfo, $"{CONSTRAINT}s", new Value(L.ToArray()) { Type = typeinfo })
             {
                 Modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
             };

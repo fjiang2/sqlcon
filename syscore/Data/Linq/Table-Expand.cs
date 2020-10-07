@@ -75,7 +75,7 @@ namespace Sys.Data.Linq
             List<Type> types = new List<Type>();
             var dict = ToDictionary(entity);
 
-            foreach (var a in schema.Associations)
+            foreach (var a in schema.Constraints)
             {
                 var schema = a.OtherType.GetTableSchema(out var _);
                 var formalName = schema.FormalTableName();
@@ -100,7 +100,7 @@ namespace Sys.Data.Linq
         {
             List<Type> types = new List<Type>();
 
-            foreach (var a in schema.Associations)
+            foreach (var a in schema.Constraints)
             {
                 var schema = a.OtherType.GetTableSchema(out var _);
                 var formalName = schema.FormalTableName();
@@ -117,7 +117,7 @@ namespace Sys.Data.Linq
 
         private string AssociationWhere<TSubEntity>(TEntity entity)
         {
-            IAssociation a = schema.Associations?.FirstOrDefault(x => x.OtherType == typeof(TSubEntity));
+            IConstraint a = schema.Constraints?.FirstOrDefault(x => x.OtherType == typeof(TSubEntity));
             if (a == null)
                 throw new InvalidConstraintException($"invalid assoication from {typeof(TEntity)} to {typeof(TSubEntity)}");
 
@@ -128,7 +128,7 @@ namespace Sys.Data.Linq
 
         private string AssociationWhere<TSubEntity>(IEnumerable<TEntity> entities)
         {
-            IAssociation a = schema.Associations?.FirstOrDefault(x => x.OtherType == typeof(TSubEntity));
+            IConstraint a = schema.Constraints?.FirstOrDefault(x => x.OtherType == typeof(TSubEntity));
             if (a == null)
                 throw new InvalidConstraintException($"invalid assoication from {typeof(TEntity)} to {typeof(TSubEntity)}");
 

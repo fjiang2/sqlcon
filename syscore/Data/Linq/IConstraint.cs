@@ -2,7 +2,7 @@
 
 namespace Sys.Data.Linq
 {
-    public interface IAssociation
+    public interface IConstraint
     {
         Type OtherType { get; }
         string Name { get; set; }

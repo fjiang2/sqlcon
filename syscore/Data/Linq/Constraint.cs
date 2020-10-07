@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Sys.Data.Linq
 {
-    public class Association<TEntity> : IAssociation
+    public class Constraint<TEntity> : IConstraint
     {
         public string Name { get; set; }
         public string ThisKey { get; set; }
