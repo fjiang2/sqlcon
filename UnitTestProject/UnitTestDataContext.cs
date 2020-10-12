@@ -470,16 +470,17 @@ namespace UnitTestProject
         {
             using (var db = new DataContext(connectionString))
             {
-                db.RowChanged += (sender, evt) =>
+                db.RowChanged += (sender, args) =>
                  {
-                     Debug.Assert(evt.Value.TableName == "[CustomerDemographics]");
-                     Debug.Assert(evt.Value.Operation == RowOperation.InsertOrUpdate);
+                     var evt = args.Events.First();
+                     Debug.Assert(evt.TableName == "[CustomerDemographics]");
+                     Debug.Assert(evt.Operation == RowOperation.InsertOrUpdate);
                  };
 
                 var table = db.GetTable<CustomerDemographics>();
                 table.InsertOrUpdateOnSubmit(new CustomerDemographics { CustomerTypeID = "IT", CustomerDesc = "Computer Science" });
 
-
+                db.SubmitChanges();
             }
         }
 

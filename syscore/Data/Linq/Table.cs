@@ -134,7 +134,7 @@ namespace Sys.Data.Linq
             
             var evt = gen.ToRowEvent();
             evt.Operation = operation;
-            Context.OnRowChanged(evt);
+            Context.RowEvents.Add(evt);
 
             gen.Clear();
         }
