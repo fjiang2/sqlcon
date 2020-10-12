@@ -127,6 +127,7 @@
     <Compile Include="FlowControl.cs" />
     <Compile Include="Data\DataExtension.cs" />
     <Compile Include="Output\OutputDataTable.cs" />
+    <Compile Include="Path\CommandPath.cs" />
     <Compile Include="Path\CommandState.cs" />
     <Compile Include="Shell\Loader.cs" />
     <Compile Include="Shell\ShellHelp.cs" />

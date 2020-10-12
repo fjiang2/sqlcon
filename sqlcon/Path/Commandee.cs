@@ -657,18 +657,28 @@ namespace sqlcon
             {
                 cout.WriteLine("rename column name, table name, modify column");
                 cout.WriteLine();
-                cout.WriteLine("ren [database] newdatasbase   : rename database or current database to newdatabase");
-                cout.WriteLine("ren [table] newtable          : rename table or current table to newtable");
-                cout.WriteLine("ren column newcolumn          : rename column on current table to newcolumn");
+                cout.WriteLine("ren [database] new-database        : rename database or current database to newdatabase");
+                cout.WriteLine("ren [table] new-table              : rename table current table to newtable");
+                cout.WriteLine("ren [table.]column table.newcolumn : rename column on current table to newcolumn");
                 cout.WriteLine();
                 return;
             }
 
-            if (cmd.arg1 == null)
+            if (!Navigate(cmd.Path1))
+                return;
+
+            string newName = cmd.arg1 ?? cmd.arg2;
+            if (pt.Item is TableName && newName != null)
             {
-                cerr.WriteLine("invalid argument");
+                TableName tname = (TableName)pt.Item;
+                string line = $"EXEC sp_rename '{tname}', '{newName}'";
+                cout.WriteLine(line);
+                //cout.WriteLine($"completely to rename table name from {tname} to {newName}");
                 return;
             }
+
+            cerr.WriteLine("invalid argument");
+            return;
         }
 
         public void attrib(ApplicationCommand cmd)
@@ -2204,3 +2214,4 @@ sp_rename '{1}', '{2}', 'COLUMN'";
         }
     }
 }
+
