@@ -15,6 +15,8 @@ namespace Sys.Data.Linq
 
         public string Description { get; set; }
 
+        public event EventHandler<EventArgs<RowEvent>> RowChanged;
+
         public DataContext()
         {
             this.sqlCommand = query => new SqlCmd(query);
@@ -43,6 +45,11 @@ namespace Sys.Data.Linq
         {
             CodeBlock.Clear();
             tables.Clear();
+        }
+
+        internal void OnRowChanged(RowEvent evt)
+        {
+            RowChanged?.Invoke(this, new EventArgs<RowEvent>(evt));
         }
 
         public Table<TEntity> GetTable<TEntity>()

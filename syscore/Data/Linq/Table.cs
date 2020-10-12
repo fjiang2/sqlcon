@@ -131,6 +131,11 @@ namespace Sys.Data.Linq
                 return;
 
             Context.CodeBlock.AppendLine<TEntity>(sql);
+            
+            var evt = gen.ToRowEvent();
+            evt.Operation = operation;
+            Context.OnRowChanged(evt);
+
             gen.Clear();
         }
 

@@ -103,6 +103,7 @@
     <Compile Include="Data\Linq\ITableSchema.cs" />
     <Compile Include="Data\Linq\Query.cs" />
     <Compile Include="Data\Linq\QueryResultReader.cs" />
+    <Compile Include="Data\Linq\RowEvent.cs" />
     <Compile Include="Data\Linq\RowOperation.cs" />
     <Compile Include="Data\Linq\QueryTranslator.cs" />
     <Compile Include="Data\Linq\SqlCodeBlock.cs" />
