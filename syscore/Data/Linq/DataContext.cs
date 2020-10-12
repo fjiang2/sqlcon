@@ -17,6 +17,7 @@ namespace Sys.Data.Linq
 
         public string Description { get; set; }
 
+        public event EventHandler<RowEventArgs> RowChanging;
         public event EventHandler<RowEventArgs> RowChanged;
 
         public DataContext()
@@ -50,7 +51,12 @@ namespace Sys.Data.Linq
             tables.Clear();
         }
 
-        internal void OnRowChanged(IEnumerable<RowEvent> evt)
+        protected void OnRowChanging(IEnumerable<RowEvent> evt)
+        {
+            RowChanging?.Invoke(this, new RowEventArgs(evt));
+        }
+
+        protected void OnRowChanged(IEnumerable<RowEvent> evt)
         {
             RowChanged?.Invoke(this, new RowEventArgs(evt));
         }
@@ -115,7 +121,9 @@ namespace Sys.Data.Linq
         {
             if (CodeBlock.Length == 0)
                 return -1;
-
+            
+            OnRowChanging(RowEvents);
+            
             var cmd = sqlCommand(CodeBlock.GetNonQuery());
             int count = cmd.ExecuteNonQuery();
             CodeBlock.Clear();
