@@ -465,6 +465,24 @@ namespace UnitTestProject
             Debug.Assert(((Suppliers)A.Supplier).CompanyName == "Mayumi's");
         }
 
+        [TestMethod]
+        public void TestRowChangedEvent()
+        {
+            using (var db = new DataContext(connectionString))
+            {
+                db.RowChanged += (sender, args) =>
+                 {
+                     var evt = args.Events.First();
+                     Debug.Assert(evt.TypeName == "CustomerDemographics");
+                     Debug.Assert(evt.Operation == RowOperation.InsertOrUpdate);
+                 };
+
+                var table = db.GetTable<CustomerDemographics>();
+                table.InsertOrUpdateOnSubmit(new CustomerDemographics { CustomerTypeID = "IT", CustomerDesc = "Computer Science" });
+
+                db.SubmitChanges();
+            }
+        }
 
     }
 }

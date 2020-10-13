@@ -2,6 +2,7 @@
 using System.Text;
 using System.Data;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Sys.Data.Linq
 {
@@ -12,14 +13,19 @@ namespace Sys.Data.Linq
         private readonly Func<string, IDbCmd> sqlCommand;
 
         internal SqlCodeBlock CodeBlock { get; } = new SqlCodeBlock();
+        internal List<RowEvent> RowEvents { get; } = new List<RowEvent>();
 
         public string Description { get; set; }
+
+        public event EventHandler<RowEventArgs> RowChanging;
+        public event EventHandler<RowEventArgs> RowChanged;
 
         public DataContext()
         {
             this.sqlCommand = query => new SqlCmd(query);
             this.Description = "Default SQL command handler";
         }
+
         public DataContext(string connectionString)
         {
             var connectionProvider = ConnectionProvider.CreateProvider("ServerName", connectionString);
@@ -43,6 +49,16 @@ namespace Sys.Data.Linq
         {
             CodeBlock.Clear();
             tables.Clear();
+        }
+
+        protected void OnRowChanging(IEnumerable<RowEvent> evt)
+        {
+            RowChanging?.Invoke(this, new RowEventArgs(evt));
+        }
+
+        protected void OnRowChanged(IEnumerable<RowEvent> evt)
+        {
+            RowChanged?.Invoke(this, new RowEventArgs(evt));
         }
 
         public Table<TEntity> GetTable<TEntity>()
@@ -105,10 +121,16 @@ namespace Sys.Data.Linq
         {
             if (CodeBlock.Length == 0)
                 return -1;
-
+            
+            OnRowChanging(RowEvents);
+            
             var cmd = sqlCommand(CodeBlock.GetNonQuery());
             int count = cmd.ExecuteNonQuery();
             CodeBlock.Clear();
+
+            OnRowChanged(RowEvents);
+            RowEvents.Clear();
+
             return count;
         }
 

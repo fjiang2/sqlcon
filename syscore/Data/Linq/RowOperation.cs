@@ -1,9 +1,10 @@
 ﻿namespace Sys.Data.Linq
 {
-    enum RowOperation
+    public enum RowOperation
     {
         Insert,
         Update,
+        PartialUpdate,
         InsertOrUpdate,
         Delete,
     }

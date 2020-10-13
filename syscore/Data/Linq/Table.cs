@@ -131,6 +131,15 @@ namespace Sys.Data.Linq
                 return;
 
             Context.CodeBlock.AppendLine<TEntity>(sql);
+
+            var evt = new RowEvent
+            {
+                TypeName = typeof(TEntity).Name,
+                Operation = operation,
+                Row = gen.ToDictionary(),
+            };
+
+            Context.RowEvents.Add(evt);
             gen.Clear();
         }
 
@@ -189,6 +198,16 @@ namespace Sys.Data.Linq
             }
 
             Context.CodeBlock.AppendLine<TEntity>(gen.Update());
+
+            var evt = new RowEvent
+            {
+                TypeName = typeof(TEntity).Name,
+                Operation = RowOperation.PartialUpdate,
+                Row = gen.ToDictionary(),
+            };
+
+            Context.RowEvents.Add(evt);
+
             gen.Clear();
         }
 

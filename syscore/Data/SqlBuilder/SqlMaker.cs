@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data;
 using System.Threading.Tasks;
+using Sys.Data.Linq;
 
 namespace Sys.Data
 {
     public class SqlMaker
     {
-        public List<ColumnValuePair> Columns { get; } = new List<ColumnValuePair>();
+        private List<ColumnValuePair> Columns { get; } = new List<ColumnValuePair>();
+
+        public string TableName { get; }
         public string[] PrimaryKeys { get; set; }
         public string[] IdentityKeys { get; set; }
 
@@ -16,6 +19,7 @@ namespace Sys.Data
 
         public SqlMaker(string formalName)
         {
+            this.TableName = formalName;
             this.template = new SqlTemplate(formalName);
         }
 
