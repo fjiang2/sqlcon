@@ -473,7 +473,7 @@ namespace UnitTestProject
                 db.RowChanged += (sender, args) =>
                  {
                      var evt = args.Events.First();
-                     Debug.Assert(evt.TableName == "[CustomerDemographics]");
+                     Debug.Assert(evt.TypeName == "CustomerDemographics");
                      Debug.Assert(evt.Operation == RowOperation.InsertOrUpdate);
                  };
 

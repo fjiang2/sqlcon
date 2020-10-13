@@ -191,15 +191,7 @@ namespace Sys.Data
             return $"[{name}]";
         }
 
-        public RowEvent ToRowEvent()
-        {
-            return new RowEvent
-            {
-                TableName = this.TableName,
-                PrimaryKeys = this.PrimaryKeys,
-                Columns = Columns.ToDictionary(x => x.ColumnName, x => x.Value.Value)
-            };
-        }
+        internal IDictionary<string, object> Row => Columns.ToDictionary(x => x.ColumnName, x => x.Value.Value);
 
         public class ColumnValuePair
         {

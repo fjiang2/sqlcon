@@ -8,12 +8,10 @@ namespace Sys.Data.Linq
 {
     public class RowEvent
     {
-        public string TableName { get; set; }
+        public string TypeName { get; set; }
 
-        public string[] PrimaryKeys { get; set; }
-        
         public RowOperation Operation { get; set; }
 
-        public IDictionary<string, object> Columns { get; set; }
+        public IDictionary<string, object> Row { get; set; }
     }
 }

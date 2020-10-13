@@ -4,6 +4,7 @@
     {
         Insert,
         Update,
+        PartialUpdate,
         InsertOrUpdate,
         Delete,
     }
