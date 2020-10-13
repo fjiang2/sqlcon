@@ -13,5 +13,10 @@ namespace Sys.Data.Linq
         public RowOperation Operation { get; set; }
 
         public IDictionary<string, object> Row { get; set; }
+
+        public override string ToString()
+        {
+            return $"{TypeName} {Operation} : Count={Row.Count}";
+        }
     }
 }

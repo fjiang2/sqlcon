@@ -191,8 +191,6 @@ namespace Sys.Data
             return $"[{name}]";
         }
 
-        internal IDictionary<string, object> Row => Columns.ToDictionary(x => x.ColumnName, x => x.Value.Value);
-
         public class ColumnValuePair
         {
             public DataField Field { get; }

@@ -136,7 +136,7 @@ namespace Sys.Data.Linq
             {
                 TypeName = typeof(TEntity).Name,
                 Operation = operation,
-                Row = gen.Row,
+                Row = gen.ToDictionary(),
             };
 
             Context.RowEvents.Add(evt);
@@ -203,7 +203,7 @@ namespace Sys.Data.Linq
             {
                 TypeName = typeof(TEntity).Name,
                 Operation = RowOperation.PartialUpdate,
-                Row = gen.Row,
+                Row = gen.ToDictionary(),
             };
 
             Context.RowEvents.Add(evt);
