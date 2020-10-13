@@ -23,7 +23,7 @@ namespace sqlcon
             : base(cmd)
         {
             builder = new CSharpBuilder();
-      
+
         }
 
         public void AddOptionalUsing()
@@ -76,7 +76,14 @@ namespace sqlcon
         }
 
         public static string COLUMN(DataColumn column) => COLUMN(column.ColumnName);
-        public static string COLUMN(string columnName) => $"_{columnName.ToUpper()}";
+        public static string COLUMN(string columnName)
+        {
+            string name = ident.Identifier(columnName).ToUpper();
+            if (name.StartsWith("_"))
+                return name;
+            else
+                return "_" + name;
+        }
 
         public void CreateTableSchemaFields(TableName tname, DataTable dt, Class clss)
         {
