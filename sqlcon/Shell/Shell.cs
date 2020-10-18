@@ -118,7 +118,7 @@ namespace sqlcon
                 }
             }
 
-            if (line != "" && line != ";")
+            if (!string.IsNullOrWhiteSpace(line) && line != ";")
                 multipleLineBuilder.AppendLine(line);
 
             if (line.EndsWith(";"))
