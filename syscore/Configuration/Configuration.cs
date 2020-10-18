@@ -10,7 +10,7 @@ using Tie;
 
 namespace Sys
 {
-    public partial class Configuration  
+    public partial class Configuration
     {
         private const string _FUNC_CONFIG = "config";
         private const string _FUNC_CFG = "cfg";
@@ -127,17 +127,39 @@ namespace Sys
         public T GetValue<T>(string variable, T defaultValue = default(T))
         {
             VAL val = DS.GetValue(variable);
-            if (val.Defined)
+
+            Type type = typeof(T);
+
+            if (typeof(T) == typeof(VAL))
+                return (T)(object)val;
+            else if (val.Undefined || val.IsNull)
             {
-                if (typeof(T) == typeof(VAL))
-                    return (T)(object)val;
-                else if (val.HostValue is T)
-                    return (T)val.HostValue;
-                else if (typeof(T).IsEnum && val.HostValue is int)
-                    return (T)val.HostValue;
+                return default(T);
+            }
+            else if (typeof(T) == typeof(Guid) && val.Value is string)
+            {
+                string s = (string)val.Value;
+                if (Guid.TryParse(s, out Guid uid))
+                {
+                    return (T)(object)uid;
+                }
+            }
+            else if (val.HostValue is T)
+                return (T)val.HostValue;
+            else if (typeof(T).IsEnum && val.HostValue is int)
+                return (T)val.HostValue;
+
+            try
+            {
+                object obj = Valizer.Devalize(val, type);
+                return (T)obj;
+            }
+            catch (Exception ex)
+            {
+                clog.WriteLine($"cannot cast key={variable} value {val} to type {typeof(T).FullName}: {ex.Message}");
             }
 
-            return defaultValue;
+            return default(T);
         }
 
         public virtual bool Initialize(string usercfg)
