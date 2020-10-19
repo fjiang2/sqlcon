@@ -1683,7 +1683,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     if (cmd.IsSchema)
                         stdio.OpenEditor("sqlcon.cfg");
                     else
-                        stdio.OpenEditor(ConfigurationEnvironment.CFG.Personal);
+                        stdio.OpenEditor(ConfigurationEnvironment.Path.Personal);
                     break;
 
                 case "release":

@@ -1,6 +1,6 @@
 ﻿namespace Sys
 {
-    public class ConfigFiles
+    public class ConfigurationPath
     {
         /// <summary>
         /// System settings

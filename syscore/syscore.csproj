@@ -89,7 +89,7 @@
     <Compile Include="CodeBuilder\UniqueNameMaker.cs" />
     <Compile Include="CodeBuilder\UtilsMethod.cs" />
     <Compile Include="CodeBuilder\Value.cs" />
-    <Compile Include="Configuration\ConfigFiles.cs" />
+    <Compile Include="Configuration\ConfigurationPath.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationEnvironment.cs" />
     <Compile Include="Configuration\ConnectionString.cs" />

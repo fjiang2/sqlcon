@@ -189,15 +189,9 @@ namespace Sys
             }
         }
 
-        public virtual bool Initialize(ConfigFiles cfg)
+        public virtual bool Initialize(ConfigurationPath cfg)
         {
             string syscfg = cfg.System;
-            if (!Path.IsPathRooted(syscfg))
-            {
-                string theDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                syscfg = Path.Combine(theDirectory, cfg.System);
-            }
-
             if (!File.Exists(syscfg))
             {
                 cerr.WriteLine($"configuration file {syscfg} not found");

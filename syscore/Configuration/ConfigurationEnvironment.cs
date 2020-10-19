@@ -19,11 +19,19 @@ namespace Sys
         public static string ProductName { get; private set; } = GetAttribute<AssemblyProductAttribute>().Product;
         public static string MyDocuments => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + ProductName;
 
-        public static ConfigFiles CFG { get; } = new ConfigFiles
+        public static ConfigurationPath Path { get; } 
+
+        static ConfigurationEnvironment()
         {
-            System = $"{ProductName}.cfg",
-            Personal = USER_CFG,
-        };
+            string theDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            string syscfg = System.IO.Path.Combine(theDirectory, $"{ProductName}.cfg");
+
+            Path = new ConfigurationPath
+            {
+                System = syscfg,
+                Personal = USER_CFG,
+            };
+        }
 
         public static Configuration Load(string productName = null)
         {
@@ -33,7 +41,6 @@ namespace Sys
             var cfgs = PrepareConfiguration(false);
 
             var Configuration = new Configuration();
-            Configuration.SetValue("MyDocuments", MyDocuments);
 
             try
             {
@@ -55,24 +62,24 @@ namespace Sys
             return attributes[0];
         }
 
-        public static ConfigFiles PrepareConfiguration(bool overwrite)
+        public static ConfigurationPath PrepareConfiguration(bool overwrite)
         {
             string usercfgFile = PrepareUserConfiguration(false);
 
-            CFG.Personal = usercfgFile;
-            return CFG;
+            Path.Personal = usercfgFile;
+            return Path;
         }
 
         private static string PrepareUserConfiguration(bool overwrite)
         {
             string cfgFile = USER_CFG;
             var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            folder = Path.Combine(folder, CompanyName, ProductName);
+            folder = System.IO.Path.Combine(folder, CompanyName, ProductName);
             if (!Directory.Exists(folder))
                 Directory.CreateDirectory(folder);
 
             bool exists = File.Exists(cfgFile);
-            string file = Path.Combine(folder, cfgFile);
+            string file = System.IO.Path.Combine(folder, cfgFile);
             try
             {
                 if (!File.Exists(file))
