@@ -127,39 +127,65 @@ namespace Sys
         public T GetValue<T>(string variable, T defaultValue = default(T))
         {
             VAL val = DS.GetValue(variable);
+            if (TryGetValue<T>(variable, val, out T result))
+                return result;
+            else
+                return defaultValue;
+        }
+
+        public bool TryGetValue<T>(string variable, out T result)
+        {
+            VAL val = DS.GetValue(variable);
+            return TryGetValue<T>(variable, val, out result);
+        }
+
+        public bool TryGetValue<T>(string variable, VAL val, out T result)
+        {
 
             Type type = typeof(T);
 
             if (typeof(T) == typeof(VAL))
-                return (T)(object)val;
+            {
+                result = (T)(object)val;
+                return true;
+            }
             else if (val.Undefined || val.IsNull)
             {
-                return default(T);
+                result = default(T);
+                return false;
             }
             else if (typeof(T) == typeof(Guid) && val.Value is string)
             {
                 string s = (string)val.Value;
                 if (Guid.TryParse(s, out Guid uid))
                 {
-                    return (T)(object)uid;
+                    result = (T)(object)uid;
+                    return true;
                 }
             }
             else if (val.HostValue is T)
-                return (T)val.HostValue;
+            {
+                result = (T)val.HostValue;
+                return true;
+            }
             else if (typeof(T).IsEnum && val.HostValue is int)
-                return (T)val.HostValue;
+            {
+                result = (T)val.HostValue;
+                return true;
+            }
 
             try
             {
                 object obj = Valizer.Devalize(val, type);
-                return (T)obj;
+                result = (T)obj;
+                return true;
             }
             catch (Exception ex)
             {
                 clog.WriteLine($"cannot cast key={variable} value {val} to type {typeof(T).FullName}: {ex.Message}");
+                result = default(T);
+                return true;
             }
-
-            return default(T);
         }
 
         public virtual bool Initialize(string usercfg)

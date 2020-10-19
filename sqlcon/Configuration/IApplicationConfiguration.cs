@@ -13,6 +13,7 @@ namespace sqlcon
         int MaxRows { get; }
         VAL GetValue(VAR variable);
         T GetValue<T>(string variable, T defaultValue = default);
+        bool TryGetValue<T>(string variable, out T result);
         IConnectionConfiguration Connection { get; }
     }
 }
