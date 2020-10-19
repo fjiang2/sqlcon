@@ -19,37 +19,29 @@ namespace Sys
         public static string ProductName { get; private set; } = GetAttribute<AssemblyProductAttribute>().Product;
         public static string MyDocuments => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + ProductName;
 
-        public static ConfigurationPath Path { get; } 
-
-        static ConfigurationEnvironment()
+        public static ConfigurationPath Path { get; } = new ConfigurationPath
         {
-            string theDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            string syscfg = System.IO.Path.Combine(theDirectory, $"{ProductName}.cfg");
-
-            Path = new ConfigurationPath
-            {
-                System = syscfg,
-                Personal = USER_CFG,
-            };
-        }
+            System = $"{ProductName}.cfg",
+            Personal = USER_CFG,
+        };
 
         public static Configuration Load(string productName = null)
         {
             if (productName != null)
                 ProductName = productName;
 
-            var cfgs = PrepareConfiguration(false);
+            var cfg = PrepareConfiguration(false);
 
             var Configuration = new Configuration();
 
             try
             {
-                if (!Configuration.Initialize(cfgs))
+                if (!Configuration.Initialize(cfg))
                     return null;
             }
             catch (Exception ex)
             {
-                cout.WriteLine("error on configuration file {0}, {1}:", cfgs.Personal, ex.Message);
+                cout.WriteLine("error on configuration file {0}, {1}:", cfg.Personal, ex.Message);
                 return null;
             }
 
@@ -66,6 +58,7 @@ namespace Sys
         {
             string usercfgFile = PrepareUserConfiguration(false);
 
+            Path.System = $"{ProductName}.cfg";
             Path.Personal = usercfgFile;
             return Path;
         }
