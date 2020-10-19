@@ -26,11 +26,9 @@ namespace Sys
             Script.FunctionChain.Add(functions);
             HostType.Register(typeof(DateTime), true);
             HostType.Register(typeof(Environment), true);
-            DS.AddObject("MyDocuments", MyDocuments);
         }
 
-        public static string MyDocuments => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + ProductName;
-
+        
         private static VAL functions(string func, VAL parameters, Memory DS)
         {
             const string _FUNC_LOCAL_IP = "localip";
@@ -55,9 +53,6 @@ namespace Sys
                 case "include":
                     include(parameters, DS);
                     return new VAL();
-
-                case "mydoc":
-                    return new VAL(MyDocuments);
 
                 case _FUNC_LOCAL_IP:
                     if (parameters.Size > 1)
@@ -124,6 +119,11 @@ namespace Sys
             return DS[variable];
         }
 
+        public void SetValue(string variable, object value)
+        {
+            DS.AddObject(variable, value);
+        }
+
         public T GetValue<T>(string variable, T defaultValue = default(T))
         {
             VAL val = DS.GetValue(variable);
@@ -188,12 +188,14 @@ namespace Sys
             }
         }
 
-        public virtual bool Initialize(string usercfg)
+        public virtual bool Initialize(ConfigFiles cfg)
         {
-            string _FILE_SYSTEM_CONFIG = $"{ProductName}.cfg";
-
-            string theDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            string sysCfgFile = Path.Combine(theDirectory, _FILE_SYSTEM_CONFIG);
+            string sysCfgFile = cfg.Product;
+            if (!Path.IsPathRooted(sysCfgFile))
+            {
+                string theDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                sysCfgFile = Path.Combine(theDirectory, cfg.Product);
+            }
 
             if (!File.Exists(sysCfgFile))
             {
@@ -205,10 +207,10 @@ namespace Sys
                 return false;
 
             //user.cfg is optional
-            if (!string.IsNullOrEmpty(usercfg) && File.Exists(usercfg))
+            if (!string.IsNullOrEmpty(cfg.User) && File.Exists(cfg.User))
             {
-                this.UserConfigFile = usercfg;
-                TryReadCfg(usercfg);
+                this.UserConfigFile = cfg.User;
+                TryReadCfg(cfg.User);
             }
 
             CopyVariableContext(stdio.FILE_LOG);

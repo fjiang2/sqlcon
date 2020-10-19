@@ -10,7 +10,7 @@ namespace sqlcon
         public const string __EDITOR = "notepad.exe";
 
         //directory
-        public readonly static string __DIRECTORY = $"{Configuration.MyDocuments}";
+        public readonly static string __DIRECTORY = $"{ConfigurationFile.MyDocuments}";
 
         //output
         public readonly static string __OUTPUT = null;
@@ -19,7 +19,7 @@ namespace sqlcon
         public readonly static string __LOG = null;
 
         //xmldb
-        public readonly static string __XMLDB = $"{Configuration.MyDocuments}\\db";
+        public readonly static string __XMLDB = $"{ConfigurationFile.MyDocuments}\\db";
 
         //options.Comparison.IgnoreCase
         public const bool __OPTIONS_COMPARISON_IGNORECASE = true;
@@ -67,7 +67,7 @@ namespace sqlcon
         public const string __GUI_SQL_RESULT_MESSAGE_BACKGROUND = "Black";
 
         //generator.dpo.path
-        public readonly static string __GENERATOR_DPO_PATH = $"{Configuration.MyDocuments}\\DataModel\\Dpo";
+        public readonly static string __GENERATOR_DPO_PATH = $"{ConfigurationFile.MyDocuments}\\DataModel\\Dpo";
 
         //generator.dpo.ns
         public const string __GENERATOR_DPO_NS = "Sys.DataModel.Dpo";
@@ -91,28 +91,28 @@ namespace sqlcon
         public const bool __GENERATOR_DPO_ISPACK = true;
 
         //generator.dc.path
-        public readonly static string __GENERATOR_DC_PATH = $"{Configuration.MyDocuments}\\DataModel\\DataContracts";
+        public readonly static string __GENERATOR_DC_PATH = $"{ConfigurationFile.MyDocuments}\\DataModel\\DataContracts";
 
         //generator.dc.ns
         public const string __GENERATOR_DC_NS = "Sys.DataModel.DataContracts";
 
         //generator.l2s.path
-        public readonly static string __GENERATOR_L2S_PATH = $"{Configuration.MyDocuments}\\DataModel\\L2s";
+        public readonly static string __GENERATOR_L2S_PATH = $"{ConfigurationFile.MyDocuments}\\DataModel\\L2s";
 
         //generator.l2s.ns
         public const string __GENERATOR_L2S_NS = "Sys.DataModel.L2s";
 
         //generator.de.path
-        public readonly static string __GENERATOR_DE_PATH = $"{Configuration.MyDocuments}\\DataModel\\DataEnum";
+        public readonly static string __GENERATOR_DE_PATH = $"{ConfigurationFile.MyDocuments}\\DataModel\\DataEnum";
 
         //generator.de.ns
         public const string __GENERATOR_DE_NS = "Sys.DataModel.DataEnum";
 
         //generator.ds.path
-        public readonly static string __GENERATOR_DS_PATH = $"{Configuration.MyDocuments}\\ds";
+        public readonly static string __GENERATOR_DS_PATH = $"{ConfigurationFile.MyDocuments}\\ds";
 
         //generator.csv.path
-        public readonly static string __GENERATOR_CSV_PATH = $"{Configuration.MyDocuments}\\csv";
+        public readonly static string __GENERATOR_CSV_PATH = $"{ConfigurationFile.MyDocuments}\\csv";
 
         //limit.top
         public const int __LIMIT_TOP = 1000;

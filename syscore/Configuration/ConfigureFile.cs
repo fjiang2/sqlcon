@@ -9,31 +9,35 @@ using Sys.Stdio;
 
 namespace Sys
 {
-    public partial class Configuration
+
+    public static class ConfigurationFile
     {
         private const string USER_CFG_TEMPLATE = "user.ini";
 
         public const string USER_CFG = "user.cfg";
 
-        public readonly static string Company = GetAttribute<AssemblyConfigurationAttribute>().Configuration;
+        public static string Company { get; set; } = GetAttribute<AssemblyConfigurationAttribute>().Configuration;
         public static string ProductName { get; private set; } = GetAttribute<AssemblyProductAttribute>().Product;
+        public static string MyDocuments => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + ProductName;
 
         public static Configuration Load(string productName = null)
         {
             if (productName != null)
                 ProductName = productName;
 
-            string usercfgFile = PrepareUserConfiguration(false);
+            var cfgs = PrepareConfiguration(false);
 
             var Configuration = new Configuration();
+            Configuration.SetValue("MyDocuments", MyDocuments);
+
             try
             {
-                if (!Configuration.Initialize(usercfgFile))
+                if (!Configuration.Initialize(cfgs))
                     return null;
             }
             catch (Exception ex)
             {
-                cout.WriteLine("error on configuration file {0}, {1}:", usercfgFile, ex.Message);
+                cout.WriteLine("error on configuration file {0}, {1}:", cfgs.User, ex.Message);
                 return null;
             }
 
@@ -46,7 +50,22 @@ namespace Sys
             return attributes[0];
         }
 
-        public static string PrepareUserConfiguration(bool overwrite)
+        public static ConfigFiles PrepareConfiguration(bool overwrite)
+        {
+            string productCfgFile = $"{ProductName}.cfg";
+
+            string usercfgFile = PrepareUserConfiguration(false);
+
+            var cfg = new ConfigFiles
+            {
+                Product = productCfgFile,
+                User = usercfgFile
+            };
+
+            return cfg;
+        }
+
+        private static string PrepareUserConfiguration(bool overwrite)
         {
             string cfgFile = USER_CFG;
             var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);

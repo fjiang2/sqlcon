@@ -28,7 +28,7 @@ namespace sqlcon
             WorkingDirectory = new WorkingDirectory();
         }
 
-        public override bool Initialize(string cfgFile)
+        public override bool Initialize(ConfigFiles cfgFile)
         {
             const string _FILE_OUTPUT = "output";
             const string _XML_DB_FOLDER = "xmldb";
