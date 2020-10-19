@@ -91,7 +91,7 @@
     <Compile Include="CodeBuilder\Value.cs" />
     <Compile Include="Configuration\ConfigFiles.cs" />
     <Compile Include="Configuration\Configuration.cs" />
-    <Compile Include="Configuration\ConfigureFile.cs" />
+    <Compile Include="Configuration\ConfigurationEnvironment.cs" />
     <Compile Include="Configuration\ConnectionString.cs" />
     <Compile Include="CodeBuilder\CodeStyle.cs" />
     <Compile Include="Data\Linq\DataContext.cs" />

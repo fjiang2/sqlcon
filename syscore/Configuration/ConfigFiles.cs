@@ -2,7 +2,14 @@
 {
     public class ConfigFiles
     {
-        public string Product { get; set; }
-        public string User { get; set; }
+        /// <summary>
+        /// System settings
+        /// </summary>
+        public string System { get; set; }
+
+        /// <summary>
+        /// user personal settings
+        /// </summary>
+        public string Personal { get; set; }
     }
 }

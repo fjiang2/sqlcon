@@ -98,7 +98,7 @@ namespace sqlcon
             cout.WriteLine("     [file] sqlcon command batch file name (.sqc)");
             cout.WriteLine();
             cout.WriteLine("/h,/?      : this help");
-            cout.WriteLine($"/cfg       : congfiguration file default file:{ConfigurationFile.USER_CFG}]");
+            cout.WriteLine($"/cfg       : congfiguration file default file: \"{ConfigurationEnvironment.CFG.Personal}\"");
             cout.WriteLine("/i         : input sql script file name");
             cout.WriteLine("/o         : result of sql script");
             cout.WriteLine("examples:");

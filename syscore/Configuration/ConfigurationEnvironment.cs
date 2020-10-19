@@ -10,15 +10,20 @@ using Sys.Stdio;
 namespace Sys
 {
 
-    public static class ConfigurationFile
+    public static class ConfigurationEnvironment
     {
         private const string USER_CFG_TEMPLATE = "user.ini";
+        private const string USER_CFG = "user.cfg";
 
-        public const string USER_CFG = "user.cfg";
-
-        public static string Company { get; set; } = GetAttribute<AssemblyConfigurationAttribute>().Configuration;
+        public static string CompanyName { get; set; } = GetAttribute<AssemblyConfigurationAttribute>().Configuration;
         public static string ProductName { get; private set; } = GetAttribute<AssemblyProductAttribute>().Product;
         public static string MyDocuments => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + ProductName;
+
+        public static ConfigFiles CFG { get; } = new ConfigFiles
+        {
+            System = $"{ProductName}.cfg",
+            Personal = USER_CFG,
+        };
 
         public static Configuration Load(string productName = null)
         {
@@ -37,7 +42,7 @@ namespace Sys
             }
             catch (Exception ex)
             {
-                cout.WriteLine("error on configuration file {0}, {1}:", cfgs.User, ex.Message);
+                cout.WriteLine("error on configuration file {0}, {1}:", cfgs.Personal, ex.Message);
                 return null;
             }
 
@@ -52,24 +57,17 @@ namespace Sys
 
         public static ConfigFiles PrepareConfiguration(bool overwrite)
         {
-            string productCfgFile = $"{ProductName}.cfg";
-
             string usercfgFile = PrepareUserConfiguration(false);
 
-            var cfg = new ConfigFiles
-            {
-                Product = productCfgFile,
-                User = usercfgFile
-            };
-
-            return cfg;
+            CFG.Personal = usercfgFile;
+            return CFG;
         }
 
         private static string PrepareUserConfiguration(bool overwrite)
         {
             string cfgFile = USER_CFG;
             var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            folder = Path.Combine(folder, Company, ProductName);
+            folder = Path.Combine(folder, CompanyName, ProductName);
             if (!Directory.Exists(folder))
                 Directory.CreateDirectory(folder);
 

@@ -19,8 +19,6 @@ namespace Sys
 
         protected Memory DS = new Memory();
 
-        public string UserConfigFile { get; private set; } = "user.cfg";
-
         public Configuration()
         {
             Script.FunctionChain.Add(functions);
@@ -28,7 +26,7 @@ namespace Sys
             HostType.Register(typeof(Environment), true);
         }
 
-        
+
         private static VAL functions(string func, VAL parameters, Memory DS)
         {
             const string _FUNC_LOCAL_IP = "localip";
@@ -53,6 +51,9 @@ namespace Sys
                 case "include":
                     include(parameters, DS);
                     return new VAL();
+
+                case "mydoc":
+                    return new VAL(ConfigurationEnvironment.MyDocuments);
 
                 case _FUNC_LOCAL_IP:
                     if (parameters.Size > 1)
@@ -190,27 +191,26 @@ namespace Sys
 
         public virtual bool Initialize(ConfigFiles cfg)
         {
-            string sysCfgFile = cfg.Product;
-            if (!Path.IsPathRooted(sysCfgFile))
+            string syscfg = cfg.System;
+            if (!Path.IsPathRooted(syscfg))
             {
                 string theDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                sysCfgFile = Path.Combine(theDirectory, cfg.Product);
+                syscfg = Path.Combine(theDirectory, cfg.System);
             }
 
-            if (!File.Exists(sysCfgFile))
+            if (!File.Exists(syscfg))
             {
-                cerr.WriteLine($"configuration file {sysCfgFile} not found");
+                cerr.WriteLine($"configuration file {syscfg} not found");
                 return false;
             }
 
-            if (!TryReadCfg(sysCfgFile))
+            if (!TryReadCfg(syscfg))
                 return false;
 
             //user.cfg is optional
-            if (!string.IsNullOrEmpty(cfg.User) && File.Exists(cfg.User))
+            if (!string.IsNullOrEmpty(cfg.Personal) && File.Exists(cfg.Personal))
             {
-                this.UserConfigFile = cfg.User;
-                TryReadCfg(cfg.User);
+                TryReadCfg(cfg.Personal);
             }
 
             CopyVariableContext(stdio.FILE_LOG);
