@@ -333,7 +333,7 @@ namespace sqlcon
             DpoOption option = new DpoOption
             {
                 NameSpace = cfg.GetValue<string>(ConfigKey._GENERATOR_DPO_NS, "Sys.DataModel.Dpo"),
-                OutputPath = cmd.OutputPath(ConfigKey._GENERATOR_DPO_PATH, $"{Configuration.MyDocuments}\\DataModel\\Dpo"),
+                OutputPath = cmd.OutputPath(ConfigKey._GENERATOR_DPO_PATH, $"{ConfigurationEnvironment.MyDocuments}\\DataModel\\Dpo"),
                 Level = cfg.GetValue<Level>(ConfigKey._GENERATOR_DPO_LEVEL, Level.Application),
                 HasProvider = cfg.GetValue<bool>(ConfigKey._GENERATOR_DPO_HASPROVIDER, false),
                 HasTableAttribute = cfg.GetValue<bool>(ConfigKey._GENERATOR_DPO_HASTABLEATTR, true),
@@ -390,7 +390,7 @@ namespace sqlcon
 
         public void ExportCsvFile()
         {
-            string path = this.cmd.OutputPath(ConfigKey._GENERATOR_CSV_PATH, $"{Configuration.MyDocuments}\\csv");
+            string path = this.cmd.OutputPath(ConfigKey._GENERATOR_CSV_PATH, $"{ConfigurationEnvironment.MyDocuments}\\csv");
 
             string file;
             string fullName(TableName tname) => $"{path}\\{sname.Path}\\{dname.Name}\\{tname.ShortName}.csv";
@@ -539,7 +539,7 @@ namespace sqlcon
 
             if (gen != null)
             {
-                string path = cmd.OutputPath(ConfigKey._GENERATOR_DC_PATH, $"{Configuration.MyDocuments}\\dc");
+                string path = cmd.OutputPath(ConfigKey._GENERATOR_DC_PATH, $"{ConfigurationEnvironment.MyDocuments}\\dc");
                 string ns = cmd.GetValue("ns", ConfigKey._GENERATOR_DC_NS, "Sys.DataModel.DataContract");
                 string mtd = cmd.GetValue("method");
 
@@ -561,7 +561,7 @@ namespace sqlcon
                 return;
             }
 
-            string path = cmd.OutputPath(ConfigKey._GENERATOR_DC_PATH, $"{Configuration.MyDocuments}\\dc");
+            string path = cmd.OutputPath(ConfigKey._GENERATOR_DC_PATH, $"{ConfigurationEnvironment.MyDocuments}\\dc");
             string ns = cmd.GetValue("ns", ConfigKey._GENERATOR_DC_NS, "Sys.DataModel.DataContracts");
 
             if (tname != null)
@@ -620,7 +620,7 @@ namespace sqlcon
 
         public void ExportLinq2SQLClass()
         {
-            string path = cmd.OutputPath(ConfigKey._GENERATOR_L2S_PATH, $"{Configuration.MyDocuments}\\dc");
+            string path = cmd.OutputPath(ConfigKey._GENERATOR_L2S_PATH, $"{ConfigurationEnvironment.MyDocuments}\\dc");
             string ns = cmd.GetValue("ns", ConfigKey._GENERATOR_L2S_NS, "Sys.DataModel.L2s");
 
             if (tname != null)
@@ -773,7 +773,7 @@ namespace sqlcon
                 return;
             }
 
-            string path = cmd.OutputPath(ConfigKey._GENERATOR_DS_PATH, $"{Configuration.MyDocuments}\\ds");
+            string path = cmd.OutputPath(ConfigKey._GENERATOR_DS_PATH, $"{ConfigurationEnvironment.MyDocuments}\\ds");
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 

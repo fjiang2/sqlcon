@@ -1683,7 +1683,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     if (cmd.IsSchema)
                         stdio.OpenEditor("sqlcon.cfg");
                     else
-                        stdio.OpenEditor(cfg.UserConfigFile);
+                        stdio.OpenEditor(ConfigurationEnvironment.Path.Personal);
                     break;
 
                 case "release":
@@ -1696,19 +1696,19 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     break;
 
                 case "dpo":
-                    path = cfg.GetValue<string>(ConfigKey._GENERATOR_DPO_PATH, $"{Configuration.MyDocuments}\\DataModel\\Dpo");
+                    path = cfg.GetValue<string>(ConfigKey._GENERATOR_DPO_PATH, $"{ConfigurationEnvironment.MyDocuments}\\DataModel\\Dpo");
                     OpenDirectory(path, "dpo class");
                     break;
 
                 case "dc":
                 case "dc1":
                 case "dc2":
-                    path = cfg.GetValue<string>(ConfigKey._GENERATOR_DC_PATH, $"{Configuration.MyDocuments}\\DataModel\\DataContracts");
+                    path = cfg.GetValue<string>(ConfigKey._GENERATOR_DC_PATH, $"{ConfigurationEnvironment.MyDocuments}\\DataModel\\DataContracts");
                     OpenDirectory(path, "data contract class");
                     break;
 
                 case "l2s":
-                    path = cfg.GetValue<string>(ConfigKey._GENERATOR_L2S_PATH, $"{Configuration.MyDocuments}\\DataModel\\L2s");
+                    path = cfg.GetValue<string>(ConfigKey._GENERATOR_L2S_PATH, $"{ConfigurationEnvironment.MyDocuments}\\DataModel\\L2s");
                     OpenDirectory(path, "data Linq to SQL class");
                     break;
 

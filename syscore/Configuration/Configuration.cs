@@ -19,17 +19,13 @@ namespace Sys
 
         protected Memory DS = new Memory();
 
-        public string UserConfigFile { get; private set; } = "user.cfg";
-
         public Configuration()
         {
             Script.FunctionChain.Add(functions);
             HostType.Register(typeof(DateTime), true);
             HostType.Register(typeof(Environment), true);
-            DS.AddObject("MyDocuments", MyDocuments);
         }
 
-        public static string MyDocuments => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + ProductName;
 
         private static VAL functions(string func, VAL parameters, Memory DS)
         {
@@ -57,7 +53,7 @@ namespace Sys
                     return new VAL();
 
                 case "mydoc":
-                    return new VAL(MyDocuments);
+                    return new VAL(ConfigurationEnvironment.MyDocuments);
 
                 case _FUNC_LOCAL_IP:
                     if (parameters.Size > 1)
@@ -124,6 +120,11 @@ namespace Sys
             return DS[variable];
         }
 
+        public void SetValue(string variable, object value)
+        {
+            DS.AddObject(variable, value);
+        }
+
         public T GetValue<T>(string variable, T defaultValue = default(T))
         {
             VAL val = DS.GetValue(variable);
@@ -188,27 +189,28 @@ namespace Sys
             }
         }
 
-        public virtual bool Initialize(string usercfg)
+        public virtual bool Initialize(ConfigurationPath cfg)
         {
-            string _FILE_SYSTEM_CONFIG = $"{ProductName}.cfg";
-
-            string theDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            string sysCfgFile = Path.Combine(theDirectory, _FILE_SYSTEM_CONFIG);
-
-            if (!File.Exists(sysCfgFile))
+            string syscfg = cfg.System;
+            if (!Path.IsPathRooted(syscfg))
             {
-                cerr.WriteLine($"configuration file {sysCfgFile} not found");
+                string theDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                syscfg = Path.Combine(theDirectory, cfg.System);
+            }
+
+            if (!File.Exists(syscfg))
+            {
+                cerr.WriteLine($"configuration file {syscfg} not found");
                 return false;
             }
 
-            if (!TryReadCfg(sysCfgFile))
+            if (!TryReadCfg(syscfg))
                 return false;
 
             //user.cfg is optional
-            if (!string.IsNullOrEmpty(usercfg) && File.Exists(usercfg))
+            if (!string.IsNullOrEmpty(cfg.Personal) && File.Exists(cfg.Personal))
             {
-                this.UserConfigFile = usercfg;
-                TryReadCfg(usercfg);
+                TryReadCfg(cfg.Personal);
             }
 
             CopyVariableContext(stdio.FILE_LOG);

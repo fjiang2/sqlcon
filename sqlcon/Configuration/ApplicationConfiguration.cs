@@ -28,7 +28,7 @@ namespace sqlcon
             WorkingDirectory = new WorkingDirectory();
         }
 
-        public override bool Initialize(string cfgFile)
+        public override bool Initialize(ConfigurationPath cfg)
         {
             const string _FILE_OUTPUT = "output";
             const string _XML_DB_FOLDER = "xmldb";
@@ -37,7 +37,7 @@ namespace sqlcon
             const string _EXPORT_MAX_COUNT = "export_max_count";
             const string _WORKING_DIRECTORY = "working.directory.commands";
 
-            base.Initialize(cfgFile);
+            base.Initialize(cfg);
 
             this.OutputFile = GetValue<string>(_FILE_OUTPUT, "script.sql");
             this.XmlDbDirectory = GetValue<string>(_XML_DB_FOLDER, "db");
