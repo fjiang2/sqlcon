@@ -30,11 +30,13 @@ namespace Sys.CodeBuilder
         public TypeInfo[] Inherits { get; set; }
         public bool Sorted { get; set; } = false;
 
+        private UniqueNameMaker uniqueNameMaker;
+
         public Class(string className)
             : this(className, new TypeInfo[] { })
         {
             //class name can be same as property/field name
-            _names.Add(className, 0);
+            this.uniqueNameMaker = new UniqueNameMaker(className);
         }
 
         public Class(string className, params TypeInfo[] inherits)
@@ -49,9 +51,18 @@ namespace Sys.CodeBuilder
             list.Clear();
         }
 
+        public int Index => list.Count;
+
         public Class Add(Buildable code)
         {
             this.list.Add(code);
+            code.Parent = this;
+            return this;
+        }
+
+        public Class Insert(int index, Buildable code)
+        {
+            this.list.Insert(index, code);
             code.Parent = this;
             return this;
         }
@@ -303,9 +314,7 @@ namespace Sys.CodeBuilder
         }
 
 
-        private Dictionary<string, int> _names = new Dictionary<string, int>();
 
-        UniqueNameMaker uniqueNameMaker = new UniqueNameMaker();
         /// <summary>
         /// make unique name in the class
         /// </summary>

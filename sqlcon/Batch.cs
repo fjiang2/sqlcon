@@ -21,10 +21,35 @@ namespace sqlcon
         public Batch(IApplicationConfiguration cfg, string path)
         {
             this.cfg = cfg;
-            this.path = cfg.WorkingDirectory.GetFullPath(path, EXT);
-            this.IsBatch = EXT == Path.GetExtension(this.path); ;
+            this.path = GetFullPath(path);
+            this.IsBatch = EXT == Path.GetExtension(this.path);
         }
 
+        private string GetFullPath(string path)
+        {
+            string fullPath = cfg.WorkingDirectory.GetFullPath(path, EXT);
+            if (File.Exists(fullPath))
+            {
+                return fullPath;
+            }
+
+            if (string.IsNullOrEmpty(cfg.Path))
+            {
+                return string.Empty;
+            }
+
+            foreach (string _path in cfg.Path.Split(';'))
+            {
+                WorkingDirectory working = new WorkingDirectory(_path);
+                fullPath = working.GetFullPath(path, EXT);
+                if (File.Exists(fullPath))
+                {
+                    return fullPath;
+                }
+            }
+
+            return string.Empty;
+        }
 
 
         public bool Call(Shell shell, string[] args)

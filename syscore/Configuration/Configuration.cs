@@ -10,7 +10,7 @@ using Tie;
 
 namespace Sys
 {
-    public partial class Configuration  
+    public partial class Configuration
     {
         private const string _FUNC_CONFIG = "config";
         private const string _FUNC_CFG = "cfg";
@@ -19,17 +19,13 @@ namespace Sys
 
         protected Memory DS = new Memory();
 
-        public string UserConfigFile { get; private set; } = "user.cfg";
-
         public Configuration()
         {
             Script.FunctionChain.Add(functions);
             HostType.Register(typeof(DateTime), true);
             HostType.Register(typeof(Environment), true);
-            DS.AddObject("MyDocuments", MyDocuments);
         }
 
-        public static string MyDocuments => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + ProductName;
 
         private static VAL functions(string func, VAL parameters, Memory DS)
         {
@@ -57,7 +53,7 @@ namespace Sys
                     return new VAL();
 
                 case "mydoc":
-                    return new VAL(MyDocuments);
+                    return new VAL(ConfigurationEnvironment.MyDocuments);
 
                 case _FUNC_LOCAL_IP:
                     if (parameters.Size > 1)
@@ -124,43 +120,97 @@ namespace Sys
             return DS[variable];
         }
 
+        public void SetValue(string variable, object value)
+        {
+            DS.AddObject(variable, value);
+        }
+
         public T GetValue<T>(string variable, T defaultValue = default(T))
         {
             VAL val = DS.GetValue(variable);
-            if (val.Defined)
-            {
-                if (typeof(T) == typeof(VAL))
-                    return (T)(object)val;
-                else if (val.HostValue is T)
-                    return (T)val.HostValue;
-                else if (typeof(T).IsEnum && val.HostValue is int)
-                    return (T)val.HostValue;
-            }
-
-            return defaultValue;
+            if (TryGetValue<T>(variable, val, out T result))
+                return result;
+            else
+                return defaultValue;
         }
 
-        public virtual bool Initialize(string usercfg)
+        public bool TryGetValue<T>(string variable, out T result)
         {
-            string _FILE_SYSTEM_CONFIG = $"{ProductName}.cfg";
+            VAL val = DS.GetValue(variable);
+            return TryGetValue<T>(variable, val, out result);
+        }
 
-            string theDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            string sysCfgFile = Path.Combine(theDirectory, _FILE_SYSTEM_CONFIG);
+        public bool TryGetValue<T>(string variable, VAL val, out T result)
+        {
 
-            if (!File.Exists(sysCfgFile))
+            Type type = typeof(T);
+
+            if (typeof(T) == typeof(VAL))
             {
-                cerr.WriteLine($"configuration file {sysCfgFile} not found");
+                result = (T)(object)val;
+                return true;
+            }
+            else if (val.Undefined || val.IsNull)
+            {
+                result = default(T);
+                return false;
+            }
+            else if (typeof(T) == typeof(Guid) && val.Value is string)
+            {
+                string s = (string)val.Value;
+                if (Guid.TryParse(s, out Guid uid))
+                {
+                    result = (T)(object)uid;
+                    return true;
+                }
+            }
+            else if (val.HostValue is T)
+            {
+                result = (T)val.HostValue;
+                return true;
+            }
+            else if (typeof(T).IsEnum && val.HostValue is int)
+            {
+                result = (T)val.HostValue;
+                return true;
+            }
+
+            try
+            {
+                object obj = Valizer.Devalize(val, type);
+                result = (T)obj;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                clog.WriteLine($"cannot cast key={variable} value {val} to type {typeof(T).FullName}: {ex.Message}");
+                result = default(T);
+                return true;
+            }
+        }
+
+        public virtual bool Initialize(ConfigurationPath cfg)
+        {
+            string syscfg = cfg.System;
+            if (!Path.IsPathRooted(syscfg))
+            {
+                string theDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                syscfg = Path.Combine(theDirectory, cfg.System);
+            }
+
+            if (!File.Exists(syscfg))
+            {
+                cerr.WriteLine($"configuration file {syscfg} not found");
                 return false;
             }
 
-            if (!TryReadCfg(sysCfgFile))
+            if (!TryReadCfg(syscfg))
                 return false;
 
             //user.cfg is optional
-            if (!string.IsNullOrEmpty(usercfg) && File.Exists(usercfg))
+            if (!string.IsNullOrEmpty(cfg.Personal) && File.Exists(cfg.Personal))
             {
-                this.UserConfigFile = usercfg;
-                TryReadCfg(usercfg);
+                TryReadCfg(cfg.Personal);
             }
 
             CopyVariableContext(stdio.FILE_LOG);

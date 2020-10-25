@@ -26,7 +26,7 @@ using DataProviderHandle = System.Int32;
 
 namespace Sys.Data
 {
-    public abstract class DbCmd
+    public abstract class DbCmd : IDbCmd
     {
         protected string script;
         protected DbProvider dbProvider;

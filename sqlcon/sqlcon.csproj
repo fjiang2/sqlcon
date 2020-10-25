@@ -108,6 +108,7 @@
     <Compile Include="ClassBuilder\ConfigScript.cs" />
     <Compile Include="ClassBuilder\DataContractClassBuilder.cs" />
     <Compile Include="ClassBuilder\Json2CSharp.cs" />
+    <Compile Include="ClassBuilder\Plural.cs" />
     <Compile Include="ClassBuilder\TieClassBuilder.cs" />
     <Compile Include="Configuration\ApplicationConfiguration.cs" />
     <Compile Include="Configuration\Config.cs" />
@@ -126,6 +127,7 @@
     <Compile Include="FlowControl.cs" />
     <Compile Include="Data\DataExtension.cs" />
     <Compile Include="Output\OutputDataTable.cs" />
+    <Compile Include="Path\CommandPath.cs" />
     <Compile Include="Path\CommandState.cs" />
     <Compile Include="Shell\Loader.cs" />
     <Compile Include="Shell\ShellHelp.cs" />

@@ -9,7 +9,6 @@ namespace Sys.Stdio
 {
     public static class Context
     {
-        public const string MAXROWS = "maxrows";
         public const string DATAREADER = "DataReader";
         public const string SHELL = "$SHELL";
 
@@ -19,7 +18,6 @@ namespace Sys.Stdio
         {
             Script.FunctionChain.Add(functions);
 
-            DS.Add(MAXROWS, new VAL(100));
             DS.Add(DATAREADER, new VAL(false));
         }
 
@@ -43,7 +41,16 @@ namespace Sys.Stdio
                 return defaultValue;
         }
 
-      
+        public static void SetValue(VAR variable, object value)
+        {
+            DS.AddObject(variable, value);
+        }
+
+        public static void SetHostValue(VAR variable, object value)
+        {
+            DS.AddHostObject(variable, value);
+        }
+
         public static VAL binding
         {
             get

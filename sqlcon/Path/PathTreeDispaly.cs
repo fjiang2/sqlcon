@@ -268,6 +268,9 @@ namespace sqlcon
             TableSchema schema = new TableSchema(tname);
             cout.WriteLine("TABLE: {0}", tname.Path);
 
+            bool hasJson = cmd.Has("json");
+            VAL lines = new VAL();
+
             int i = 0;
             int count = 0;
             int h = 0;
@@ -283,18 +286,35 @@ namespace sqlcon
                     if ((column as ColumnSchema).IsForeignKey) L.Add("fk");
                     string keys = string.Join(",", L);
 
-                    cout.WriteLine("{0,5} {1,26} {2,-16} {3,10} {4,10}",
-                       sub(++i),
-                       string.Format("[{0}]", column.ColumnName),
-                       column.GetSQLType(),
-                       keys,
-                       column.Nullable ? "null" : "not null");
+                    if (!hasJson)
+                    {
+                        cout.WriteLine("{0,5} {1,26} {2,-16} {3,10} {4,10}",
+                           sub(++i),
+                           string.Format("[{0}]", column.ColumnName),
+                           column.GetSQLType(),
+                           keys,
+                           column.Nullable ? "null" : "not null");
+                    }
+                    else
+                    {
+                        VAL line = new VAL();
+                        if (keys != "")
+                            line.AddMember("Key", keys);
+                        line.AddMember("Column", column.ColumnName);
+                        line.AddMember("Type", column.GetSQLType());
+                        if (column.Nullable)
+                            line.AddMember("Null", column.Nullable);
+                        lines.Add(line);
+                    }
 
                     h = PagePause(cmd, ++h);
                 }
             }
 
-            cout.WriteLine("\t{0} Column(s)", count);
+            if (!hasJson)
+                cout.WriteLine("\t{0} Column(s)", count);
+            else
+                cout.WriteLine(lines.ToJson());
         }
 
         private static bool _DisplayLocatorNodes(TreeNode<IDataPath> pt, ApplicationCommand cmd)

@@ -16,6 +16,11 @@ namespace sqlcon
         {
         }
 
+        public WorkingDirectory(string currentDirectory)
+        {
+            this.CurrentDirectory = currentDirectory;
+        }
+
         public void SetCurrentDirectory(string currentDirectory)
         {
             this.CurrentDirectory = Path.GetFullPath(currentDirectory);
@@ -95,13 +100,40 @@ namespace sqlcon
                 var files = Directory.GetFiles(path).OrderBy(x => x);
                 foreach (string file in files)
                 {
-                    var fileInfo = new FileInfo(file);
-                    cout.WriteLine($"{fileInfo.LastWriteTime,24}{fileInfo.Length,20} {fileInfo.Name,-30}");
+                    display(file);
                 }
+            }
+            else if (File.Exists(path))
+            {
+                display(path);
             }
             else
             {
-                cerr.WriteLine("directory not exists");
+                string directory = Path.GetDirectoryName(path);
+                string pattern = Path.GetFileName(path);
+                if (!Directory.Exists(directory))
+                {
+                    cerr.WriteLine("directory doesn't exist");
+                    return;
+                }
+
+                string[] files = Directory.GetFiles(directory, pattern);
+                if (files.Length == 0)
+                {
+                    cout.WriteLine("no file found");
+                    return;
+                }
+
+                foreach (string file in files.OrderBy(x => x))
+                {
+                    display(file);
+                }
+            }
+
+            void display(string file)
+            {
+                var fileInfo = new FileInfo(file);
+                cout.WriteLine($"{fileInfo.LastWriteTime,24}{fileInfo.Length,20} {fileInfo.Name,-30}");
             }
         }
     }
