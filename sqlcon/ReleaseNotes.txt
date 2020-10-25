@@ -1,8 +1,12 @@
 ﻿sqlcon release notes
 
+10/24/2020 v2.3.0.0
+	Improvements/Enhancements:
+	1. Implemented Sys.Data.Linq API which is similar to System.Data.Linq. See the tese cases on the unit test
+
 9/25/2020 v2.2.14.0
 	Improvements/Enhancements:
-	1. new command "path" It is similar with Windows environment variable "PATH"
+	1. New command "path" It is similar with Windows environment variable "PATH"
 	   path c:\bin;c:\program files\sqlcon
 	   path {path};d:\bin
 	2. command "run" supports searching paths 
@@ -30,13 +34,13 @@
 	2. Generate JSON array without table-name wrapped when option /exclude-name is used.
 
 	Bug Fixes:
-	1. cannot redirect console into stream when 3rd party software accesses sqlcon.exe
-	2. cannot generate CRUD SQL clauses when database provider is XML file.
+	1. Cannot redirect console into stream when 3rd party software accesses sqlcon.exe
+	2. Cannot generate CRUD SQL clauses when database provider is XML file.
 
 
 4/4/2020 v2.2.9.0
 	Bug Fixes:
-	1. cannot export data contract class correctly when column contains invalid letters
+	1. Cannot export data contract class correctly when column contains invalid letters
 
 3/15/2020 v2.2.8.0
 	Improvements/Enhancements:
@@ -44,17 +48,17 @@
 
 1/21/2019 v2.2.7.0
 	Improvements/Enhancements:
-	1. compare number of table rows.
+	1. Compare number of table rows.
 	Examples:
 	  compare ~\product /count
 	
 	Bug Fixes:
-	1. cannot bulk copy if table schema is not dbo
+	1. Cannot bulk copy if table schema is not dbo
 
 11/1/2019 v2.2.6.0
 	Improvements/Enhancements:
-	1. add command to export constant class 
-	2. for example:
+	1. Add command to export constant class 
+	2. For example:
 	   export /c# /type:const /field:col1,col2 /value:col3,col4
 
 9/12/2019 v2.2.5.0
@@ -66,7 +70,7 @@
 
 8/24/2019 v2.2.4.0
 	Improvements/Enhancements:
-	1. add command option /include:xxx and /exclude:xxx. option value could be wildcard table name list
+	1. Add command option /include:xxx and /exclude:xxx. option value could be wildcard table name list
 	2. SQL editor:
 	     Supports multiple script files and windows
 	     Search bar to serach table names
@@ -76,8 +80,8 @@
 
 8/21/2019 v2.2.3.0
 	Improvements/Enhancements:
-	1. support append to existing file on output. The command option is "/append"
-	2. for example:
+	1. Support append to existing file on output. The command option is "/append"
+	2. For example:
 	   export /INSERT /out:test.sql /append dbo.Products 
 
 7/10/2019 v2.2.2.0
@@ -87,7 +91,7 @@
 
 7/8/2019 v2.2.1.0
 	Improvements/Enhancements:
-	1. export data contract class from last DataSet requires option /last
+	1. Export data contract class from last DataSet requires option /last
 	Example:
 	   let output = @"C:\src\Solution1\Project1";
        let ns = "Solution1.Project1";
@@ -100,21 +104,21 @@
 
 5/23/2019 v2.1.1.0
 	Bug Fixes:
-	1. create incorrect IF EXISTS DROP TABLE script if table schema is not "dbo"
-	2. treat path string as absolute path if path string starts with ".\" or "..\"
+	1. Create incorrect IF EXISTS DROP TABLE script if table schema is not "dbo"
+	2. Treat path string as absolute path if path string starts with ".\" or "..\"
 
 4/18/2019 v2.1.0.0
 	New Features:
-	1. add new statement ":label", "goto label", "if condition goto label" to sqlcon script(.sqc)
-	2. create enum class with attribute [Description("any words")] from SQL table 
+	1. Add new statement ":label", "goto label", "if condition goto label" to sqlcon script(.sqc)
+	2. Create enum class with attribute [Description("any words")] from SQL table 
 
 1/20/2019 v2.0.0.0
 	New Features:
-	1. open an Xml file of .net DataSet as database file. The connection string provider is "file/dataset/xml"
-	2. open an Xml file of a list of .net DataSet as database server file. The connection string provider is "file/datalake/xml"
-	3. open a Json file as database file. The connection string provider is "file/dataset/json"
-	4. open a Json file as database server file. The connection string provider is "file/datalake/json"
-	5. open data contract C# source code file as database file. The connection string provider is "file/c#"
+	1. Open an Xml file of .net DataSet as database file. The connection string provider is "file/dataset/xml"
+	2. Open an Xml file of a list of .net DataSet as database server file. The connection string provider is "file/datalake/xml"
+	3. Open a Json file as database file. The connection string provider is "file/dataset/json"
+	4. Open a Json file as database server file. The connection string provider is "file/datalake/json"
+	5. Open data contract C# source code file as database file. The connection string provider is "file/c#"
 
 1/10/2019 v1.9.8.0
 	Improvements/Enhancements:
@@ -122,29 +126,29 @@
 
 1/5/2019 v1.9.7.0
 	Bug Fixes:
-	1. cannot generate flat style C# class for configuration array.
+	1. Cannot generate flat style C# class for configuration array.
 
 12/21/2018 v1.9.6.0
 	Improvements/Enhancements:
-	1. support property lambda getter and setter on the C# class builder
-	2. can generate ToDictionary/FromDictionary methods on the Entity class builder
+	1. Support property lambda getter and setter on the C# class builder
+	2. Can generate ToDictionary/FromDictionary methods on the Entity class builder
 
 12/7/2018 v1.9.5.0
 	Improvements/Enhancements:
-	1. in the command export tablename /delete, set foreign key = NULL when foreign key column is nullable.
+	1. In the command export tablename /delete, set foreign key = NULL when foreign key column is nullable.
 
 12/3/2018 v1.9.4.0
 	Improvements/Enhancements:
-	1. export entity class for the methods of Copy/Clone/Compare/Equals
+	1. Export entity class for the methods of Copy/Clone/Compare/Equals
 	2. Compare columne name with ignoring case
 
 11/16/2018 v1.9.3.0
 	Improvements/Enhancements:
-	1. export DROP TABLE Script, command "export tableName /drop [/if]"
+	1. Export DROP TABLE Script, command "export tableName /drop [/if]"
 
 10/3/2018 v1.9.2.2
 	Bug Fixes:
-	1. compare data on identity column or computed column
+	1. Compare data on identity column or computed column
 
 6/6/2018 v1.9.2.1
 	Bug Fixes:
@@ -156,11 +160,11 @@
 
 2/6/2018 v1.9.1.0
 	Bug Fixes:
-	1. display wrong grid when console window resized
+	1. Display wrong grid when console window resized
 
 2/2/2018 v1.9.0.0
 	Improvements/Enhancements:
-	1. export /c# support user defined data type
+	1. command export /c# support user defined data type
 
 2/1/2018 v1.8.10.0
 	Improvements/Enhancements:
@@ -168,19 +172,19 @@
 
 1/31/2018 v1.8.9.0
 	Improvements/Enhancements:
-	1. add command "check" to check key-value pair syntax, e.g. check  dbo.config /syntax /key:Key /value:Value
+	1. Add command "check" to check key-value pair syntax, e.g. check  dbo.config /syntax /key:Key /value:Value
 
 12/07/2017 v1.8.8.0
 	Improvements/Enhancements:
-	1. redesign class stdio class. use cin,cout,cerr and clog instead.
-	2. add deployment and installation classes
+	1. Redesign class stdio class. use cin,cout,cerr and clog instead.
+	2. Add deployment and installation classes
 
 10/23/2017 v1.8.6.0
 	Improvements/Enhancements:
-	1. display error message when connection string is not supported
-	2. upgrade command "md" which supports alias name of filter/locator
+	1. Display error message when connection string is not supported
+	2. Upgrade command "md" which supports alias name of filter/locator
 	Bugs Fixes:
-	1. crash on command "rd" to delete locators.
+	1. Crash on command "rd" to delete locators.
 
 09/26/2017 v1.8.5.0
 	Improvements/Enhancements:
@@ -189,35 +193,35 @@
 
 09/21/2017 v1.8.4.0
 	Improvements/Enhancements:
-	1. configuration excluded table is replaced by included table names for data comparison and data export. 
-	2. create multiple C# classes from DataSet.xml
+	1. Configuration excluded table is replaced by included table names for data comparison and data export. 
+	2. Create multiple C# classes from DataSet.xml
 	3. export data contract class for read only purpose
 	4. export SCUD SQL script to indicating directory
 	5. import .csv file to current table
 
 09/20/2017 v1.8.3.0
 	Improvements/Enhancements:
-	1. support {expression} on the command line. e.g. "export /conf /out:{path}" where "path" is variable  
+	1. Support {expression} on the command line. e.g. "export /conf /out:{path}" where "path" is variable  
 
 09/19/2017 v1.8.2.0
 	Improvements/Enhancements:
-	1. create config classes for key=value pairs. command>export /conf /type:const /key:col1 /default:col2
+	1. Create config classes for key=value pairs. command>export /conf /type:const /key:col1 /default:col2
 
 09/11/2017 v1.8.1.0
 	Improvements/Enhancements:
-	1. disable query function on the user.cfg, use command batch file instead.
+	1. Disable query function on the user.cfg, use command batch file instead.
 	2. run batch file by arguments %1, %2, ....
 
 09/11/2017 v1.8.0.0
 	Improvements/Enhancements:
 	1. sqlcon support command batch file (.sqc).
-	2. support command echo [on|off]
+	2. Support command echo [on|off]
 
 09/06/2017 v1.7.13.0
 	Improvements/Enhancements:
 	1. command export /c# uses current table name as class name 
-	2. remove /c# option on the command> type, use export /c# instead.
-	3. add new command> last to display last query result.
+	2. Remove /c# option on the command> type, use export /c# instead.
+	3. Add new command> last to display last query result.
 	Bugs Fixes:
 	1. command export /c# doesn't export UniqueIdentifier type column correctly.
 
@@ -225,8 +229,8 @@
 	Improvements/Enhancements:
 	1. command dir can match table name without dbo schema, for example, command>dir cust* can match dbo.cust* 
 	Bugs Fixes:
-	1. code builder doesn't generate attributes
-	2. output of sqlcon cannot redirect when table displays.
+	1. Code builder doesn't generate attributes
+	2. Output of sqlcon cannot redirect when table displays.
 
 05/19/2016 v1.7.11.0
 	New Features:
@@ -234,7 +238,7 @@
 
 04/27/2017 v1.7.10.0
 	Bugs Fixes:
-	1. cannot create 2+ foreign keys constraints pointing to the same primary key table 
+	1. Cannot create 2+ foreign keys constraints pointing to the same primary key table 
 
 01/25/2017 v1.7.9.0
 	New Features:
@@ -242,13 +246,13 @@
 
 01/24/2017 v1.7.8.0
 	Improvements/Enhancements:
-	1. improve command xcopy performance
+	1. Improve command xcopy performance
 
 11/30/2016 v1.7.7.0
 	New Features:
 	1. command>export /c# /ns:xxx /class:name /out:path generate C# class and data from last table result
 	Bugs Fixes:
-	1. cannot lauch editor application if defined editor application doesn't exist. use notepad.exe instead
+	1. Cannot lauch editor application if defined editor application doesn't exist. use notepad.exe instead
 
 10/20/2016 v1.7.6.0
 	New Features:
@@ -258,11 +262,11 @@
 9/20/2016 v1.7.5.0
 	New Features:
 	1. command>edit to launch query edit window, to edit, execute sql script
-	2. configuration file can be loaded from clouds
+	2. Configuration file can be loaded from clouds
 
 9/12/2016 v1.7.4.0
 	New Features:
-	1. color schema of GUI table editor is configurable on sqlcon.cfg
+	1. Color schema of GUI table editor is configurable on sqlcon.cfg
 
 8/24/2016 v1.7.3.0
 	New Features:
@@ -278,20 +282,20 @@
 
 7/11/2016 v1.7.1.1
 	Bugs Fixes:
-	1. user configuration file %LOCALAPPDATA/datconn/sqlcon/user.cfg is overwritten by system default user.cfg 
+	1. User configuration file %LOCALAPPDATA/datconn/sqlcon/user.cfg is overwritten by system default user.cfg 
 
 7/6/2016 v1.7.1.0
 	New Features:
-	1. support Microsoft SQL Server Express LocalDB
+	1. Support Microsoft SQL Server Express LocalDB
 
 7/5/2016 v1.7.0.0
 	New Features:
-	1. support Microsoft SQL Azure connection string
+	1. Support Microsoft SQL Azure connection string
 
 6/15/2016 v1.6.0.0
 	Bugs Fixes:
-	1. crashes when no database server defined on the user.cfg
-	2. crashes when command>type /edit<CR> read-only tables
+	1. Crashes when no database server defined on the user.cfg
+	2. Crashes when command>type /edit<CR> read-only tables
 	Improvements/Enhancements:
 	1. command>type /c# /class:name<CR> outputs named C# data array
 
@@ -301,8 +305,8 @@
 
 4/27/2016 v1.5.0.0
 	New Features:
-	1. add GUI tabe editor, command "type /edit" to open editor
-	2. add GUI tabe viewer, command "open viewer" to view last data table
+	1. Add GUI tabe editor, command "type /edit" to open editor
+	2. Add GUI tabe viewer, command "open viewer" to view last data table
 
 2/29/2016 v1.4.0.0
 	New Features:
@@ -318,8 +322,8 @@
 
 1/25/2016 v1.3.2.0
 	New Features:
-	1. generate C# data contract class from System.Data.DataTable.
-	2. generate method to convert DataTable into IEnumerable<T>
+	1. Generate C# data contract class from System.Data.DataTable.
+	2. Generate method to convert DataTable into IEnumerable<T>
 	3. e.g. generate Northwind.Region: export /dc /class:Region
 
 	public partial class Region
@@ -347,7 +351,7 @@
 
 1/13/2016 v1.3.1.11
 	Bugs Fixes:
-	1. stored proc sp_databases returns 0 rows in some SQL server.
+	1. Stored proc sp_databases returns 0 rows in some SQL server.
 
 	New Features:
 	1. command <open release> to open release notes. 
