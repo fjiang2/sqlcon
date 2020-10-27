@@ -887,6 +887,9 @@ namespace sqlcon
             cout.WriteLine("      [/code-column:col1=usertype1;col2=usertyp2] define user type for columns");
             cout.WriteLine("      [/field:col1,col2] const filed name");
             cout.WriteLine("      [/value:col1,col2] const filed value");
+            cout.WriteLine("      [/dataclass] data-class name, default is DbReadOnly");
+            cout.WriteLine("      [/dataonly] create data only");
+            cout.WriteLine("      [/classonly] create class only");
             cout.WriteLine("   /conf    : generate Config C# class");
             cout.WriteLine("      [/type:k|d|f|p|F|P] C# class type, default is kdP");
             cout.WriteLine("          k : generate class of const key");

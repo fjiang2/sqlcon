@@ -132,7 +132,7 @@ namespace sqlcon
             {
                 Namespace = NamespaceName
             };
-            
+
             builder.AddUsingRange(base.Usings);
 
             string cname = ClassName;
@@ -162,7 +162,9 @@ namespace sqlcon
             {
                 Modifier = Modifier.Public | Modifier.Partial
             };
-            builder.AddClass(clss);
+
+            if (!cmd.Has("classonly"))
+                builder.AddClass(clss);
 
 
             string[] columns = dt.Columns.Cast<DataColumn>().Select(col => col.ColumnName).ToArray();
