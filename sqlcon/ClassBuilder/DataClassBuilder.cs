@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -449,11 +450,12 @@ namespace sqlcon
 
             foreach (var kvp in dict)
             {
-                string fieldName = kvp.Key;
+                string fieldName = Sys.ident.Identifier(kvp.Key);
 
                 Field field = new Field(new TypeInfo(type), fieldName, new Value(kvp.Value))
                 {
-                    Modifier = Modifier.Public | Modifier.Const
+                    Modifier = Modifier.Public | Modifier.Const,
+                    Comment = new Comment(kvp.Key),
                 };
 
                 clss.Add(field);
