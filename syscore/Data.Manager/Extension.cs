@@ -70,6 +70,8 @@ namespace Sys.Data.Manager
 
         private static string Singularize(string word)
         {
+            if (word.EndsWith("ss"))
+                return word;
             if (word.EndsWith("ees"))
                 word = word.Substring(0, word.Length - 1);
             else if (word.EndsWith("ies"))
@@ -79,7 +81,7 @@ namespace Sys.Data.Manager
                 char ch1 = word[word.Length - 3];
                 char ch2 = word[word.Length - 4];
 
-                if (!IsVowel(ch1) && IsVowel(ch2))
+                if (!IsVowel(ch1))
                     word = word.Substring(0, word.Length - 1);
                 else
                     word = word.Substring(0, word.Length - 2);
