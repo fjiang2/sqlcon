@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -132,7 +133,7 @@ namespace sqlcon
             {
                 Namespace = NamespaceName
             };
-            
+
             builder.AddUsingRange(base.Usings);
 
             string cname = ClassName;
@@ -162,7 +163,9 @@ namespace sqlcon
             {
                 Modifier = Modifier.Public | Modifier.Partial
             };
-            builder.AddClass(clss);
+
+            if (!cmd.Has("classonly"))
+                builder.AddClass(clss);
 
 
             string[] columns = dt.Columns.Cast<DataColumn>().Select(col => col.ColumnName).ToArray();
@@ -447,11 +450,12 @@ namespace sqlcon
 
             foreach (var kvp in dict)
             {
-                string fieldName = kvp.Key;
+                string fieldName = Sys.ident.Identifier(kvp.Key);
 
                 Field field = new Field(new TypeInfo(type), fieldName, new Value(kvp.Value))
                 {
-                    Modifier = Modifier.Public | Modifier.Const
+                    Modifier = Modifier.Public | Modifier.Const,
+                    Comment = new Comment(kvp.Key),
                 };
 
                 clss.Add(field);
