@@ -56,7 +56,7 @@ namespace Sys
                     return new VAL(ConfigurationEnvironment.MyDocuments);
 
                 case _FUNC_LOCAL_IP:
-                    if (parameters.Size > 1)
+                    if (parameters.Size > 2)
                     {
                         cerr.WriteLine($"function {_FUNC_LOCAL_IP} requires 0, 1 or 2 parameters");
                         return new VAL();
