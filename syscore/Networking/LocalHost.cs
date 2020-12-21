@@ -45,10 +45,13 @@ namespace Sys.Networking
         public static IPAddress GetIPAddress(int nic)
         {
             IPAddress[] L = GetIPAddressList(IgnorevEthernet);
-            if (L.Length == 0)
+            int len = L.Length;
+            if (len == 0)
             {
                 return IPAddress.Loopback;
             }
+
+            nic = ((nic % len) + len) % len;
 
             if (nic >= 0 && nic < L.Length)
                 return L[nic];

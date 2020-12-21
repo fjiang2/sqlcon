@@ -75,11 +75,11 @@ namespace Sys
                     }
 
                     int index = 0;
-                    if (parameters.Size == 1)
+                    if (parameters.Size >= 1)
                         index = (int)parameters[0];
 
                     int port = 0;
-                    if (parameters.Size == 2)
+                    if (parameters.Size >= 2)
                         port = (int)parameters[1];
 
                     string address = LocalHost.GetLocalIP(index);
