@@ -62,13 +62,13 @@ namespace Sys
                         return new VAL();
                     }
 
-                    if (parameters.Size == 1 && parameters[0].VALTYPE != VALTYPE.intcon)
+                    if (parameters.Size >= 1 && parameters[0].VALTYPE != VALTYPE.intcon)
                     {
                         cerr.WriteLine($"function {_FUNC_LOCAL_IP}(nic) requires integer parameter");
                         return new VAL();
                     }
 
-                    if (parameters.Size == 2 && parameters[1].VALTYPE != VALTYPE.intcon)
+                    if (parameters.Size >= 2 && parameters[1].VALTYPE != VALTYPE.intcon)
                     {
                         cerr.WriteLine($"function {_FUNC_LOCAL_IP}(nic, port) requires integer parameter");
                         return new VAL();
