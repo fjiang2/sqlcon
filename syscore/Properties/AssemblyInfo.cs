@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("datconn")]
 [assembly: AssemblyCompany("Datum Connect")]
 [assembly: AssemblyProduct("System Core")]
-[assembly: AssemblyCopyright("Copyright ©  DATCONN 2012-2020")]
+[assembly: AssemblyCopyright("Copyright ©  DATCONN 2012-2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
