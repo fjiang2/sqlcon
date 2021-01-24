@@ -1,9 +1,33 @@
-# sqlcon
+# **sqlcon**
+
 console application which connects multiple sql servers in tree structures
 
 See more information, click http://www.datconn.com/products/sqlcon.html
 
-# Overview
+## Overview
+
+### Mount database server an list databases
+
+```javascript
+\> mount localdb=localhost\sqlexpress /u:sa /p:password
+\localdb> dir
+ [1]                  Northwind <DB>         29 Tables/Views
+ [2]         AdventureWorks2019 <DB>        132 Tables/Views
+        2 Database(s)
+\localdb>
+```
+
+### Change database directory
+
+```javascript
+\localdb>
+\localdb> cd Northwind
+\localdb\Northwind> cd ..\AdventureWorks2019
+\localdb\AdventureWorks2019> cd \localdb\Northwind
+\localdb\Northwind> 
+```
+
+### List Tables and Views
 
 ```javascript
 \localdb\Northwind> dir
@@ -40,8 +64,47 @@ See more information, click http://www.datconn.com/products/sqlcon.html
         16 View(s)
 ```
 
-```csharp
+### Display Table Schema
+
+```javascript
 \localdb\Northwind> cd products
+\localdb\Northwind\dbo.Products> dir /def
+TABLE: dbo.Products
+  [1]                [ProductID] int                   ++,pk   not null
+  [2]              [ProductName] nvarchar(40)                  not null
+  [3]               [SupplierID] int                      fk       null
+  [4]               [CategoryID] int                      fk       null
+  [5]          [QuantityPerUnit] nvarchar(20)                      null
+  [6]                [UnitPrice] money                             null
+  [7]             [UnitsInStock] smallint                          null
+  [8]             [UnitsOnOrder] smallint                          null
+  [9]             [ReorderLevel] smallint                          null
+ [10]             [Discontinued] bit                           not null
+        10 Column(s)
+
+\localdb\Northwind\dbo.Products> dir ..\Orders /def
+TABLE: dbo.Orders
+  [1]                  [OrderID] int                   ++,pk   not null
+  [2]               [CustomerID] nchar(5)                 fk       null
+  [3]               [EmployeeID] int                      fk       null
+  [4]                [OrderDate] datetime                          null
+  [5]             [RequiredDate] datetime                          null
+  [6]              [ShippedDate] datetime                          null
+  [7]                  [ShipVia] int                      fk       null
+  [8]                  [Freight] money                             null
+  [9]                 [ShipName] nvarchar(40)                      null
+ [10]              [ShipAddress] nvarchar(60)                      null
+ [11]                 [ShipCity] nvarchar(15)                      null
+ [12]               [ShipRegion] nvarchar(15)                      null
+ [13]           [ShipPostalCode] nvarchar(10)                      null
+ [14]              [ShipCountry] nvarchar(15)                      null
+        14 Column(s)
+
+```
+
+### Type Table Rows
+
+```csharp
 
 \localdb\Northwind\dbo.Products> type /top:10
 +-----------+---------------------------------+------------+------------+---------------------+-----------+------------
@@ -60,4 +123,10 @@ See more information, click http://www.datconn.com/products/sqlcon.html
 +-----------+---------------------------------+------------+------------+---------------------+-----------+------------
 <top 10 rows>
 
+```
+
+
+### List Tables and Views
+
+```javascript
 ```
