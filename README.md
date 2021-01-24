@@ -6,7 +6,7 @@ See more information, click http://www.datconn.com/products/sqlcon.html
 
 ## Overview
 
-### All Command and Help
+### All Commands and Help
 
 ```javascript
 \localdb> help
@@ -88,7 +88,7 @@ exec ...
 ```
 
 
-### Mount database server an list databases
+### Mount database server and list databases
 
 ```javascript
 \> mount localdb=localhost\sqlexpress /u:sa /p:password
@@ -189,20 +189,20 @@ TABLE: dbo.Orders
 ```csharp
 
 \localdb\Northwind\dbo.Products> type /top:10
-+-----------+---------------------------------+------------+------------+---------------------+-----------+------------
-| ProductID | ProductName                     | SupplierID | CategoryID | QuantityPerUnit     | UnitPrice | UnitsInStoc
-+-----------+---------------------------------+------------+------------+---------------------+-----------+------------
-| 1         | Chai                            | 1          | 1          | 10 boxes x 20 bags  | 18.0000   | 39
-| 2         | Chang                           | 1          | 1          | 24 - 12 oz bottles  | 19.0000   | 17
-| 3         | Aniseed Syrup                   | 1          | 2          | 12 - 550 ml bottles | 10.0000   | 13
-| 4         | Chef Anton's Cajun Seasoning    | 2          | 2          | 48 - 6 oz jars      | 22.0000   | 53
-| 5         | Chef Anton's Gumbo Mix          | 2          | 2          | 36 boxes            | 21.3500   | 0
-| 6         | Grandma's Boysenberry Spread    | 3          | 2          | 12 - 8 oz jars      | 25.0000   | 120
-| 7         | Uncle Bob's Organic Dried Pears | 3          | 7          | 12 - 1 lb pkgs.     | 30.0000   | 15
-| 8         | Northwoods Cranberry Sauce      | 3          | 2          | 12 - 12 oz jars     | 40.0000   | 6
-| 9         | Mishi Kobe Niku                 | 4          | 6          | 18 - 500 g pkgs.    | 97.0000   | 29
-| 10        | Ikura                           | 4          | 8          | 12 - 200 ml jars    | 31.0000   | 31
-+-----------+---------------------------------+------------+------------+---------------------+-----------+------------
++-----------+---------------------------------+------------+------------+---------------------+-----------+--------------+--------------+--------------+--------------+
+| ProductID | ProductName                     | SupplierID | CategoryID | QuantityPerUnit     | UnitPrice | UnitsInStock | UnitsOnOrder | ReorderLevel | Discontinued |
++-----------+---------------------------------+------------+------------+---------------------+-----------+--------------+--------------+--------------+--------------+
+| 1         | Chai                            | 1          | 1          | 10 boxes x 20 bags  | 18.0000   | 39           | 0            | 10           | False        |
+| 2         | Chang                           | 1          | 1          | 24 - 12 oz bottles  | 19.0000   | 17           | 40           | 25           | False        |
+| 3         | Aniseed Syrup                   | 1          | 2          | 12 - 550 ml bottles | 10.0000   | 13           | 70           | 25           | False        |
+| 4         | Chef Anton's Cajun Seasoning    | 2          | 2          | 48 - 6 oz jars      | 22.0000   | 53           | 0            | 0            | False        |
+| 5         | Chef Anton's Gumbo Mix          | 2          | 2          | 36 boxes            | 21.3500   | 0            | 0            | 0            | True         |
+| 6         | Grandma's Boysenberry Spread    | 3          | 2          | 12 - 8 oz jars      | 25.0000   | 120          | 0            | 25           | False        |
+| 7         | Uncle Bob's Organic Dried Pears | 3          | 7          | 12 - 1 lb pkgs.     | 30.0000   | 15           | 0            | 10           | False        |
+| 8         | Northwoods Cranberry Sauce      | 3          | 2          | 12 - 12 oz jars     | 40.0000   | 6            | 0            | 0            | False        |
+| 9         | Mishi Kobe Niku                 | 4          | 6          | 18 - 500 g pkgs.    | 97.0000   | 29           | 0            | 0            | True         |
+| 10        | Ikura                           | 4          | 8          | 12 - 200 ml jars    | 31.0000   | 31           | 0            | 0            | False        |
++-----------+---------------------------------+------------+------------+---------------------+-----------+--------------+--------------+--------------+--------------+
 <top 10 rows>
 
 ```
@@ -211,21 +211,21 @@ TABLE: dbo.Orders
 
 ```csharp
 \localdb\Northwind\dbo.Products> type *tofu*
-+-----------+---------------+------------+------------+------------------+-----------+------------
-| ProductID | ProductName   | SupplierID | CategoryID | QuantityPerUnit  | UnitPrice | UnitsInStoc
-+-----------+---------------+------------+------------+------------------+-----------+------------
-| 14        | Tofu          | 6          | 7          | 40 - 100 g pkgs. | 23.2500   | 35
-| 74        | Longlife Tofu | 4          | 7          | 5 kg pkg.        | 10.0000   | 4
-+-----------+---------------+------------+------------+------------------+-----------+------------
++-----------+---------------+------------+------------+------------------+-----------+--------------+--------------+--------------+--------------+
+| ProductID | ProductName   | SupplierID | CategoryID | QuantityPerUnit  | UnitPrice | UnitsInStock | UnitsOnOrder | ReorderLevel | Discontinued |
++-----------+---------------+------------+------------+------------------+-----------+--------------+--------------+--------------+--------------+
+| 14        | Tofu          | 6          | 7          | 40 - 100 g pkgs. | 23.2500   | 35           | 0            | 0            | False        |
+| 74        | Longlife Tofu | 4          | 7          | 5 kg pkg.        | 10.0000   | 4            | 20           | 5            | False        |
++-----------+---------------+------------+------------+------------------+-----------+--------------+--------------+--------------+--------------+
 <2 rows>
 
 \localdb\Northwind\dbo.Products> type UnitPrice>100
-+-----------+-------------------------+------------+------------+----------------------+----------
-| ProductID | ProductName             | SupplierID | CategoryID | QuantityPerUnit      | UnitPrice
-+-----------+-------------------------+------------+------------+----------------------+----------
-| 29        | Thüringer Rostbratwurst | 12         | 6          | 50 bags x 30 sausgs. | 123.7900
-| 38        | Côte de Blaye           | 18         | 1          | 12 - 75 cl bottles   | 263.5000
-+-----------+-------------------------+------------+------------+----------------------+----------
++-----------+-------------------------+------------+------------+----------------------+-----------+--------------+--------------+--------------+--------------+
+| ProductID | ProductName             | SupplierID | CategoryID | QuantityPerUnit      | UnitPrice | UnitsInStock | UnitsOnOrder | ReorderLevel | Discontinued |
++-----------+-------------------------+------------+------------+----------------------+-----------+--------------+--------------+--------------+--------------+
+| 29        | Thüringer Rostbratwurst | 12         | 6          | 50 bags x 30 sausgs. | 123.7900  | 0            | 0            | 0            | True         |
+| 38        | Côte de Blaye           | 18         | 1          | 12 - 75 cl bottles   | 263.5000  | 17           | 0            | 15           | False        |
++-----------+-------------------------+------------+------------+----------------------+-----------+--------------+--------------+--------------+--------------+
 <2 rows>
 
 \localdb\Northwind\dbo.Products> type *tofu* /t
