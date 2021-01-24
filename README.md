@@ -1,6 +1,22 @@
 # **sqlcon**
 
-console application which connects multiple sql servers in tree structures
+sqlcon is a console application which connects multiple sql servers in tree structures.
+
+* It supports database servers including SQL Sever, SQL Server Express, LocalDb and Azure SQL Database.
+* It supports XML data sources such as ADO.NET DataSet, DataTable which can be connected from http web link and ftp file link.
+* It supports JSON data sources.
+* It supports Data Contract classes in .NET assembly files as data source.
+
+The main features
+
+* Run SQL commands, SQL scripts.
+* Search, edit database or table either in console mode or GUI.
+* Compare database, tables accross differnet data sources.
+* Copy tables among data sources or databases.
+* Export/Import data in XML, JSON.
+* Export table schema in C# data contract classes, entity classes, Linq to SQL classes.
+* Export read only data rows in Enum, List<>, Dictionary<,> and LookUp<,>
+* Export data rows into SQL INSERT/UPDATE/DELETE clauses.
 
 See more information, click http://www.datconn.com/products/sqlcon.html
 
@@ -144,6 +160,14 @@ exec ...
  [29]             dbo.Summary of Sales by Year              <VIEW>
         13 Table(s)
         16 View(s)
+
+\localdb\Northwind> dir pro*
+  [9]             dbo.Products                              <TABLE>
+ [22]             dbo.Product Sales for 1997                <VIEW>
+ [23]             dbo.Products Above Average Price          <VIEW>
+ [24]             dbo.Products by Category                  <VIEW>
+        1 Table(s)
+        3 View(s)
 ```
 
 ### Display Table Schema
@@ -182,11 +206,21 @@ TABLE: dbo.Orders
  [14]              [ShipCountry] nvarchar(15)                      null
         14 Column(s)
 
+\localdb\Northwind\dbo.Products> cd ..
+\localdb\Northwind> dir products /dep
+<Dependencies>
++-----------+---------------+-----------+-----------+----------+-----------+---------------------------+
+| FK_Schema | FK_Table      | FK_Column | PK_Schema | PK_Table | PK_Column | Constraint_Name           |
++-----------+---------------+-----------+-----------+----------+-----------+---------------------------+
+| dbo       | Order Details | ProductID | dbo       | Products | ProductID | FK_Order_Details_Products |
++-----------+---------------+-----------+-----------+----------+-----------+---------------------------+
+<1 row>
+
 ```
 
 ### Type Table Rows
 
-```csharp
+```javascript
 
 \localdb\Northwind\dbo.Products> type /top:10
 +-----------+---------------------------------+------------+------------+---------------------+-----------+--------------+--------------+--------------+--------------+
@@ -276,6 +310,21 @@ TABLE: dbo.Orders
     }
   ]
 }
+```
+
+## SQL Commands
+
+```javascript
+\localdb\Northwind> select * from products where unitprice>90;
++-----------+-------------------------+------------+------------+----------------------+-----------+--------------+--------------+--------------+--------------+
+| ProductID | ProductName             | SupplierID | CategoryID | QuantityPerUnit      | UnitPrice | UnitsInStock | UnitsOnOrder | ReorderLevel | Discontinued |
++-----------+-------------------------+------------+------------+----------------------+-----------+--------------+--------------+--------------+--------------+
+| 9         | Mishi Kobe Niku         | 4          | 6          | 18 - 500 g pkgs.     | 97.0000   | 29           | 0            | 0            | True         |
+| 29        | Thüringer Rostbratwurst | 12         | 6          | 50 bags x 30 sausgs. | 123.7900  | 0            | 0            | 0            | True         |
+| 38        | Côte de Blaye           | 18         | 1          | 12 - 75 cl bottles   | 263.5000  | 17           | 0            | 15           | False        |
++-----------+-------------------------+------------+------------+----------------------+-----------+--------------+--------------+--------------+--------------+
+<3 rows>
+
 ```
 
 ### Next Command
