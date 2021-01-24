@@ -6,6 +6,88 @@ See more information, click http://www.datconn.com/products/sqlcon.html
 
 ## Overview
 
+### All Command and Help
+
+```javascript
+\localdb> help
+Path points to server, database,tables, data rows
+      \server\database\table\filter\filter\....
+Notes: table names support wildcard matching, e.g. Prod*,Pro?ucts
+exit                    : quit application
+help                    : this help
+?                       : this help
+rem                     : comments or remarks
+ver                     : display version
+cls                     : clears the screen
+echo /?                 : display text
+dir,ls /?               : display path(server, database, table)
+cd,chdir /?             : change path
+md,mkdir /?             : create path or filter
+rd,rmdir /?             : remove path or filter
+type /?                 : type content of table
+set /?                  : update values
+let /?                  : assign value to variable, see more info
+del,erase /?            : delete path
+ren,rename /?           : rename database, table, column name
+attrib /?               : add/remove primary key, foreign key and identity key
+copy /?                 : copy table schema or rows
+xcopy /?                : copy large size table
+comp /?                 : compare table schema or data
+compare path1 [path2]   : compare table scheam or data
+          /s            : compare schema, otherwise compare data
+          /e            : compare common existing tables only
+          /col:c1,c2    : skip columns defined during comparing
+sync table1 table2      : synchronize, make table2 is the same as table1
+import /?               : import data into database
+export /?               : generate SQL script, JSON, C# code
+clean /?                : clean duplicated rows
+mount /?                : mount new database server
+umount /?               : unmount database server
+open /?                 : open result file
+load /?                 : load JSON, XML data and cfg file
+save /?                 : save data
+edit /?                 : open GUI edit window
+chk,check /?            : check syntax of key-value table
+last                    : display last result
+
+<File Command>
+lcd [path]              : change or display current directory
+ldir [path]             : display local files on the directory
+ltype [path]            : display local file content
+path [path]             : set environment variable PATH
+run [path]file          : run a batch program (.sqc)
+call [path]file [/dump] : call Tie program (.sqt), if option /dump used, memory dumps to output file
+execute [path]file      : execute sql script(.sql)
+
+<Schema Commands>
+find /?                 : see more info
+show view               : show all views
+show proc               : show all stored proc and func
+show index              : show all indices
+show vw viewnames       : show view structure
+show pk                 : show all tables with primary keys
+show npk                : show all tables without primary keys
+
+<State Command>
+show connection         : show connection-string list
+show current            : show current active connection-string
+show var                : show variable list
+
+<SQL Command>
+type [;] to execute following SQL script or functions
+select ... from table where ...
+update table set ... where ...
+delete from table where...
+create table ...
+drop table ...
+alter ...
+exec ...
+<Variables>
+  maxrows               : max number of row shown on select query
+  DataReader            : true: use SqlDataReader; false: use Fill DataSet
+```
+
+
 ### Mount database server an list databases
 
 ```javascript
@@ -125,8 +207,78 @@ TABLE: dbo.Orders
 
 ```
 
+### Search in Table
 
-### List Tables and Views
+```csharp
+\localdb\Northwind\dbo.Products> type *tofu*
++-----------+---------------+------------+------------+------------------+-----------+------------
+| ProductID | ProductName   | SupplierID | CategoryID | QuantityPerUnit  | UnitPrice | UnitsInStoc
++-----------+---------------+------------+------------+------------------+-----------+------------
+| 14        | Tofu          | 6          | 7          | 40 - 100 g pkgs. | 23.2500   | 35
+| 74        | Longlife Tofu | 4          | 7          | 5 kg pkg.        | 10.0000   | 4
++-----------+---------------+------------+------------+------------------+-----------+------------
+<2 rows>
+
+\localdb\Northwind\dbo.Products> type UnitPrice>100
++-----------+-------------------------+------------+------------+----------------------+----------
+| ProductID | ProductName             | SupplierID | CategoryID | QuantityPerUnit      | UnitPrice
++-----------+-------------------------+------------+------------+----------------------+----------
+| 29        | Thüringer Rostbratwurst | 12         | 6          | 50 bags x 30 sausgs. | 123.7900
+| 38        | Côte de Blaye           | 18         | 1          | 12 - 75 cl bottles   | 263.5000
++-----------+-------------------------+------------+------------+----------------------+----------
+<2 rows>
+
+\localdb\Northwind\dbo.Products> type *tofu* /t
++-----------------+------------------+---------------+
+| ProductID       | 14               | 74            |
+| ProductName     | Tofu             | Longlife Tofu |
+| SupplierID      | 6                | 4             |
+| CategoryID      | 7                | 7             |
+| QuantityPerUnit | 40 - 100 g pkgs. | 5 kg pkg.     |
+| UnitPrice       | 23.2500          | 10.0000       |
+| UnitsInStock    | 35               | 4             |
+| UnitsOnOrder    | 0                | 20            |
+| ReorderLevel    | 0                | 5             |
+| Discontinued    | False            | False         |
++-----------------+------------------+---------------+
+<2 rows>
+```
+
+### Output as JSON
+
+```javascript
+\localdb\Northwind\dbo.Products> type *tofu* /json
+{
+  "Products" : [
+    {
+      "ProductID" : 14,
+      "ProductName" : "Tofu",
+      "SupplierID" : 6,
+      "CategoryID" : 7,
+      "QuantityPerUnit" : "40 - 100 g pkgs.",
+      "UnitPrice" : (decimal)23.2500,
+      "UnitsInStock" : 35,
+      "UnitsOnOrder" : 0,
+      "ReorderLevel" : 0,
+      "Discontinued" : false
+    },
+    {
+      "ProductID" : 74,
+      "ProductName" : "Longlife Tofu",
+      "SupplierID" : 4,
+      "CategoryID" : 7,
+      "QuantityPerUnit" : "5 kg pkg.",
+      "UnitPrice" : (decimal)10.0000,
+      "UnitsInStock" : 4,
+      "UnitsOnOrder" : 20,
+      "ReorderLevel" : 5,
+      "Discontinued" : false
+    }
+  ]
+}
+```
+
+### Next Command
 
 ```javascript
 ```
