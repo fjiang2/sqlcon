@@ -278,6 +278,13 @@ TABLE: dbo.Orders
 <2 rows>
 ```
 
+### Edit Data Rows in Table
+```javascript
+\localdb\Northwind\dbo.Products> type /edit
+```
+
+![Image of Yaktocat](https://github.com/fjiang2/sqlcon/blob/feature/updated_readme_and_tutorial/images/edit-products.png?raw=true)
+
 ### Output as JSON
 
 ```javascript
@@ -312,6 +319,8 @@ TABLE: dbo.Orders
 }
 ```
 
+
+
 ## SQL Commands
 
 ```javascript
@@ -327,7 +336,47 @@ TABLE: dbo.Orders
 
 ```
 
+
+
 ### Next Command
 
 ```javascript
+```
+
+## Advanced Commands
+
+```javascript
+\> mount /?
+mount database server
+mount alias=server_name   : alias must start with letter
+options:
+   /db:database           : initial catalog, default is 'master'
+   /u:username            : user id, default is 'sa'
+   /p:password            : password, default is empty, use Windows Security when /u /p not setup
+   /pvd:provider          : default is SQL Server client
+        sqldb               SQL Server, default provider
+        sqloledb            ODBC Database Server
+        file/db/xml         sqlcon Database Schema, default provider for xml file
+        file/dataset/json   System.Data.DataSet
+        file/dataset/xml    System.Data.DataSet
+        file/datalake/json  Dictionary<string, System.Data.DataSet>
+        file/datalake/xml   Dictionary<string, System.Data.DataSet>
+        file/assembly       .Net assembly dll
+        file/c#             C# data contract classes
+        riadb               Remote Invoke Agent
+   /namespace:xxx           wildcard of namespace name filter on assembly
+   /class:xxxx              wildcard of class name filter on assembly
+example:
+  mount ip100=192.168.0.100\sqlexpress /u:sa /p:p@ss
+  mount web=http://192.168.0.100/db/northwind.xml /u:sa /p:p@ss
+  mount xml=file://c:\db\northwind.xml
+  mount cs=file://c:\db\northwind.cs /pvd:file/c#
+  mount dll=file://c:\db\any.dll /pvd:file/assembly /namespace:Sys* /class:Employee*
+\>  
+\> mount localdb=localhost\sqlexpress /u:sa /p:password
+\localdb> dir
+ [1]                  Northwind <DB>         29 Tables/Views
+ [2]         AdventureWorks2019 <DB>        132 Tables/Views
+        2 Database(s)
+\localdb>
 ```
