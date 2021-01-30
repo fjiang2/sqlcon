@@ -56,30 +56,30 @@ namespace Sys
                     return new VAL(ConfigurationEnvironment.MyDocuments);
 
                 case _FUNC_LOCAL_IP:
-                    if (parameters.Size > 1)
+                    if (parameters.Size > 2)
                     {
                         cerr.WriteLine($"function {_FUNC_LOCAL_IP} requires 0, 1 or 2 parameters");
                         return new VAL();
                     }
 
-                    if (parameters.Size == 1 && parameters[0].VALTYPE != VALTYPE.intcon)
+                    if (parameters.Size >= 1 && parameters[0].VALTYPE != VALTYPE.intcon)
                     {
                         cerr.WriteLine($"function {_FUNC_LOCAL_IP}(nic) requires integer parameter");
                         return new VAL();
                     }
 
-                    if (parameters.Size == 2 && parameters[1].VALTYPE != VALTYPE.intcon)
+                    if (parameters.Size >= 2 && parameters[1].VALTYPE != VALTYPE.intcon)
                     {
                         cerr.WriteLine($"function {_FUNC_LOCAL_IP}(nic, port) requires integer parameter");
                         return new VAL();
                     }
 
                     int index = 0;
-                    if (parameters.Size == 1)
+                    if (parameters.Size >= 1)
                         index = (int)parameters[0];
 
                     int port = 0;
-                    if (parameters.Size == 2)
+                    if (parameters.Size >= 2)
                         port = (int)parameters[1];
 
                     string address = LocalHost.GetLocalIP(index);

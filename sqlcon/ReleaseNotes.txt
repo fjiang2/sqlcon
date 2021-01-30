@@ -1,24 +1,32 @@
 ﻿sqlcon release notes
 
+1/32/2021 v2.3.2.0
+	Improvements/Enhancements:
+	1. function localip(-1) returns IP address of last NIC.
+
+12/8/2020 v2.3.1.0
+	Improvements/Enhancements:
+	1. Create C# data either data-only or class-only, or both.
+
 10/24/2020 v2.3.0.0
 	Improvements/Enhancements:
-	1. Implemented Sys.Data.Linq API which is similar to System.Data.Linq. See the tese cases on the unit test
+	1. Implemented Sys.Data.Linq API which is similar to System.Data.Linq. See the tese cases on the unit test.
 
 9/25/2020 v2.2.14.0
 	Improvements/Enhancements:
 	1. New command "path" It is similar with Windows environment variable "PATH"
 	   path c:\bin;c:\program files\sqlcon
 	   path {path};d:\bin
-	2. command "run" supports searching paths 
+	2. command "run" supports searching paths. 
 
 9/23/2020 v2.2.13.0
 	Improvements/Enhancements:
 	1. command "export /l2s" support code-style: pascal|camel|original
-	2. class Configuration is exposed which can be used as API in syscore.dll
+	2. class Configuration is exposed which can be used as API in syscore.dll.
 
 8/19/2020 v2.2.12.0
 	Improvements/Enhancements:
-	1. command "execute" support batch-size to improve performace in very large Sql script file
+	1. command "execute" support batch-size to improve performace in very large Sql script file.
 	   use command:
 	   execute file-name.sql /batch-size:1000 /verbose
 
