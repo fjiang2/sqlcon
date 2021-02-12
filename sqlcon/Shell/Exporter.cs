@@ -835,18 +835,12 @@ namespace sqlcon
         }
 
 
-        private void ExportResx()
+        private void ExportResourceData()
         {
             var dt = LastOrCurrentTable();
+
+            string format = cmd.GetValue("format") ?? "resx";
             string language = cmd.GetValue("language") ?? "en";
-
-            Resx resx = new Resx();
-            ResxFile resxFile = new ResxFile
-            {
-                Directory = cmd.OutputDirectory() ?? ".",
-                CultureInfo = System.Globalization.CultureInfo.CreateSpecificCulture(language)
-            };
-
             string name = cmd.GetValue("name-column");
             string value = cmd.GetValue("value-column") ?? name;
             bool append = cmd.Has("append");
@@ -857,7 +851,7 @@ namespace sqlcon
                 return;
             }
 
-            if(!dt.Columns.Contains(name))
+            if (!dt.Columns.Contains(name))
             {
                 cerr.WriteLine($"name-column doesn't exist: {name}");
                 return;
@@ -869,10 +863,38 @@ namespace sqlcon
                 return;
             }
 
-            resx.Load(dt, name, value);
-            int count = resx.UpdateResx(resxFile.FullName, append);
-            string _append = append ? "appended" : "updated";
-            cout.WriteLine($"{count} of entries {_append}");
+            int count = 0;
+            string path;
+            Localization resx = new Localization();
+            switch (format)
+            {
+                case "resx":
+                    ResxFile resxFile = new ResxFile
+                    {
+                        Directory = cmd.OutputDirectory() ?? ".",
+                        CultureInfo = System.Globalization.CultureInfo.CreateSpecificCulture(language)
+                    };
+
+                    path = resxFile.FullName;
+                    resx.Load(dt, name, value);
+                    count = resx.UpdateResx(path, append);
+                    string _append = append ? "appended" : "updated";
+                    cout.WriteLine($"{count} of entries {_append} on \"{path}\"");
+                    break;
+
+                case "xliff":
+                    XlfFile xlfFile = new XlfFile
+                    {
+                        Directory = cmd.OutputDirectory() ?? ".",
+                        CultureInfo = System.Globalization.CultureInfo.CreateSpecificCulture(language)
+                    };
+                    
+                    path = xlfFile.FullName;
+                    resx.Load(dt, name, value);
+                    count = resx.UpdateResx(path, append);
+                    cout.WriteLine($"{count} of entries updated  on \"{path}\"");
+                    break;
+            }
         }
 
         public static void Help()
@@ -899,15 +921,17 @@ namespace sqlcon
             cout.WriteLine("   /csv     : generate table csv file");
             cout.WriteLine("   /ds      : generate data set xml file");
             cout.WriteLine("   /json    : generate json from last result");
-            cout.WriteLine("      [/ds-name:]: data set name");
-            cout.WriteLine("      [/dt-names:]: data table name list");
-            cout.WriteLine("      [/style:]: json style: normal|extended|coded");
+            cout.WriteLine("      [/ds-name:]     : data set name");
+            cout.WriteLine("      [/dt-names:  ]  : data table name list");
+            cout.WriteLine("      [/style:]       : json style: normal|extended|coded");
             cout.WriteLine("      [/exclude-table]: exclude table name in json");
-            cout.WriteLine("   /resx    : generate Resx from last result");
-            cout.WriteLine("      [/name-column:]: name column");
+            cout.WriteLine("   /resource: generate i18n resource file from last result");
+            cout.WriteLine("      [/format:]      : resource format: resx|xliff|json, default:resx");
+            cout.WriteLine("      [/name-column:] : name column");
             cout.WriteLine("      [/value-column:]: value column");
-            cout.WriteLine("      [/language:]: language: en|es|...");
-            cout.WriteLine("      [/out:]: resource file directory");
+            cout.WriteLine("      [/language:]    : language: en|es|..., default:en");
+            cout.WriteLine("      [/out:]         : resource file directory, default: current working directory");
+            cout.WriteLine("      [/append]       : update or append to resource file");
             cout.WriteLine("option of code generation:");
             cout.WriteLine("   /dpo     : generate C# table class");
             cout.WriteLine("   /l2s     : generate C# Linq to SQL class");
@@ -1019,8 +1043,8 @@ namespace sqlcon
                 ExportConfigurationFile();
             else if (cmd.Has("ds"))
                 ExportDataSetXml();
-            else if (cmd.Has("resx"))
-                ExportResx();
+            else if (cmd.Has("resource"))
+                ExportResourceData();
             else
                 cerr.WriteLine("invalid command options");
         }
