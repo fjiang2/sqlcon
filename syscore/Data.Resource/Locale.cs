@@ -36,11 +36,27 @@ namespace Sys.Data.Resource
 
                 if (entries.Select(x => x.name).Contains(name))
                 {
-                    Console.WriteLine($"duplication name: {name}");
+                    Console.WriteLine($"duplicated name: {name}, value: {value}");
                     continue;
                 }
 
                 entries.Add(new entry { name = name, value = value });
+            }
+        }
+
+        public void SaveEntries(DataTable dt, string nameColumn, string valueColumn)
+        {
+            foreach (var entry in entries)
+            {
+                DataRow row = dt.Select($"[{nameColumn}]='{entry.name}'").SingleOrDefault();
+                if (row != null)
+                {
+                    row = dt.NewRow();
+                    dt.Rows.Add(row);
+                }
+
+                row[nameColumn] = entry.name;
+                row[valueColumn] = entry.value;
             }
         }
 
