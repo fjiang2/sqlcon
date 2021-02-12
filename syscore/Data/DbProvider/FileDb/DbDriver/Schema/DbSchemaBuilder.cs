@@ -63,6 +63,9 @@ namespace Sys.Data
                         FKContraintName = null,
                     };
 
+                    if (_column.IsPrimary)
+                        _column.PKContraintName = $"PK_{dtSchema.TableName.ToIdent()}";
+
                     var newRow = dtSchema.NewRow();
                     _column.UpdateRow(newRow);
                     dtSchema.Rows.Add(newRow);

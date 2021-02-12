@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Sys.Stdio;
+using Sys.Data.Resource;
 using Tie;
 
 namespace sqlcon
@@ -1748,6 +1749,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("save [file]");
                 cout.WriteLine("options:");
                 cout.WriteLine("  /output       : copy sql script ouput to clipboard for Windows only");
+                cout.WriteLine("  /string       : ");
                 cout.WriteLine("example:");
                 cout.WriteLine("  save /output");
                 return;
@@ -1769,12 +1771,38 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 #endif
                 }
             }
+            else if(cmd.Has("string"))
+            {
+                var pt = mgr.current;
+                if (pt.Item is DatabaseName)
+                {
+                    DatabaseName dname = (DatabaseName)pt.Item;
+                    TableName tname = new TableName(dname, "dbo", "syx");
+                    
+                    StringExtractor extractor = new StringExtractor(tname);
+                    
+                    extractor.Add(
+                        @"C:\src\Trafficware\atms.next\Atms.Now.SynchroIntegration.Service\Program.cs",
+                        21,
+                        "",
+                        "SYNCHRO_INTEGRATION",
+                        "Synchro Integration"
+                        );
+
+                    string SqlFileName = cmd.OutputFile(cfg.OutputFile);
+                    using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
+                    {
+                        extractor.Save(writer);
+                    }
+
+                    cout.WriteLine($"SQL script generated on \"{SqlFileName}\"");
+                    return;
+                }
+            }
             else
             {
                 cerr.WriteLine("invalid arguments");
             }
-
-            return;
         }
 
         public void echo(ApplicationCommand cmd)

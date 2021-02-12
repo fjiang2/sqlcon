@@ -115,8 +115,7 @@ namespace Sys.Data
         #region CREATE/DROP Table
         private string CREATE_TABLE()
         {
-            TableSchema schema1 = new TableSchema(tableName);
-            string format = TableClause.GenerateCREATE_TABLE(schema1);
+            string format = TableClause.GenerateCREATE_TABLE(schema);
             string script = string.Format(format, tableName.FormalName);
             return script;
         }

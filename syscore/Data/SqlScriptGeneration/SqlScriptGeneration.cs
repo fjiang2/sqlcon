@@ -62,7 +62,7 @@ namespace Sys.Data
             GenerateByDbTable(dt, writer);
         }
 
-        private int GenerateByDbTable(DataTable dt, StreamWriter writer)
+        public int GenerateByDbTable(DataTable dt, StreamWriter writer)
         {
             string[] columns = dt.Columns.ToEnumerable<DataColumn, string>(col => col.ColumnName).ToArray();
             object[] values = new object[columns.Length];
