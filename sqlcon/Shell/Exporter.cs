@@ -891,7 +891,20 @@ namespace sqlcon
                     
                     path = xlfFile.FullName;
                     resx.Load(dt, name, value);
-                    count = resx.UpdateResx(path, append);
+                    count = resx.UpdateXlf(path);
+                    cout.WriteLine($"{count} of entries updated  on \"{path}\"");
+                    break;
+
+                case "json":
+                    JsonFile jsonFile = new JsonFile
+                    {
+                        Directory = cmd.OutputDirectory() ?? ".",
+                        CultureInfo = System.Globalization.CultureInfo.CreateSpecificCulture(language)
+                    };
+
+                    path = jsonFile.FullName;
+                    resx.Load(dt, name, value);
+                    count = resx.UpdateJson(path);
                     cout.WriteLine($"{count} of entries updated  on \"{path}\"");
                     break;
             }

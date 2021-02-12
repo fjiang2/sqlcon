@@ -30,6 +30,12 @@ namespace Sys.Data.Resource
                 if (name == string.Empty)
                     continue;
 
+                if (entries.Select(x => x.name).Contains(name))
+                {
+                    Console.WriteLine($"duplication name: {name}");
+                    continue;
+                }
+
                 entries.Add(new entry { name = name, value = value });
             }
         }
@@ -63,75 +69,90 @@ namespace Sys.Data.Resource
             }
 
             xdoc.Save(path, SaveOptions.OmitDuplicateNamespaces);
-            
+
             return count;
         }
 
-		public int UpdateXlf(string path)
-		{
-			var dict = entries.ToDictionary(x => x.name, x => x.value);
+        public int UpdateXlf(string path)
+        {
+            var dict = entries.ToDictionary(x => x.name, x => x.value);
 
-			XNamespace xmlns = "urn:oasis:names:tc:xliff:document:1.2";
+            XNamespace xmlns = "urn:oasis:names:tc:xliff:document:1.2";
 
-			XElement xdoc = XElement.Load(path);
-			var units = xdoc.Element(xmlns + "file").Element(xmlns + "body").Elements();
+            XElement xdoc = XElement.Load(path);
+            var units = xdoc.Element(xmlns + "file").Element(xmlns + "body").Elements();
 
-			int count = 0;
-			foreach (XElement unit in units)
-			{
-				XElement source = unit.Element(xmlns + "source");
-				XElement target = unit.Element(xmlns + "target");
+            int count = 0;
+            foreach (XElement unit in units)
+            {
+                XElement source = unit.Element(xmlns + "source");
+                XElement target = unit.Element(xmlns + "target");
 
-				string key = string.Empty;
-				string value = string.Empty;
+                string key = string.Empty;
+                string value = string.Empty;
 
-				if (source.FirstNode is XText)
-				{
-					key = source.Value;
+                if (source.FirstNode is XText)
+                {
+                    key = source.Value;
 
-					if (!dict.ContainsKey(key))
-					{
-						value = key;
-						Console.WriteLine($"cannot find translate: \"{key}\"");
-					}
-					else
-					{
-						value = dict[key];
-					}
+                    if (!dict.ContainsKey(key))
+                    {
+                        value = key;
+                        Console.WriteLine($"cannot find translate: \"{key}\"");
+                    }
+                    else
+                    {
+                        value = dict[key];
+                    }
 
-					if (target == null)
-					{
-						target = new XElement(xmlns + "target", value);
-						source.AddAfterSelf(target);
-						//unit.Add(target);
-					}
-					else
-					{
-						target.SetValue(value);
-					}
-				}
-				else
-				{
-					if (target == null)
-					{
-						target = new XElement(source);
-						target.Name = "target";
-						source.AddAfterSelf(target);
-					}
-					else
-					{
-						//skip complex nodes
-						Console.WriteLine($"skip: {source.FirstNode}");
-					}
-				}
+                    if (target == null)
+                    {
+                        target = new XElement(xmlns + "target", value);
+                        source.AddAfterSelf(target);
+                        //unit.Add(target);
+                    }
+                    else
+                    {
+                        target.SetValue(value);
+                    }
+                }
+                else
+                {
+                    if (target == null)
+                    {
+                        target = new XElement(source);
+                        target.Name = "target";
+                        source.AddAfterSelf(target);
+                    }
+                    else
+                    {
+                        //skip complex nodes
+                        Console.WriteLine($"skip: {source.FirstNode}");
+                    }
+                }
 
-				count++;
-			}
+                count++;
+            }
 
-			xdoc.Save(path, SaveOptions.OmitDuplicateNamespaces);
+            xdoc.Save(path, SaveOptions.OmitDuplicateNamespaces);
 
-			return count;
+            return count;
 
-		}
-	}
+        }
+
+        public int UpdateJson(string path)
+        {
+            Tie.VAL val = new Tie.VAL();
+            foreach(var entry in entries)
+            {
+                val.AddMember(entry.name, new Tie.VAL(entry.value));
+            }
+
+            string json = Json.WriteObject(val);
+            File.WriteAllText(path, json);
+
+            return entries.Count;
+        }
+
+    }
 }
