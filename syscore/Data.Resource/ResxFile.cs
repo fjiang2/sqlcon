@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace Sys.Data.Resource
 {
-    public class ResxFile
+    class ResxFile : IResourceFile
     {
         public CultureInfo CultureInfo { get; set; } = CultureInfo.InvariantCulture;
         public string Directory { get; set; } = ".";

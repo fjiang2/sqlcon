@@ -839,75 +839,44 @@ namespace sqlcon
         {
             var dt = LastOrCurrentTable();
 
-            string format = cmd.GetValue("format") ?? "resx";
+            ResourceFomat format = cmd.GetEnum("format", ResourceFomat.resx);
             string language = cmd.GetValue("language") ?? "en";
-            string name = cmd.GetValue("name-column");
-            string value = cmd.GetValue("value-column") ?? name;
+            string directory = cmd.OutputDirectory() ?? ".";
+            string name_column = cmd.GetValue("name-column");
+            string value_column = cmd.GetValue("value-column") ?? name_column;
             bool append = cmd.Has("append");
 
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name_column))
             {
                 cerr.WriteLine("name-column is undefined");
                 return;
             }
 
-            if (!dt.Columns.Contains(name))
+            if (!dt.Columns.Contains(name_column))
             {
-                cerr.WriteLine($"name-column doesn't exist: {name}");
+                cerr.WriteLine($"name-column doesn't exist: {name_column}");
                 return;
             }
 
-            if (!dt.Columns.Contains(value))
+            if (!dt.Columns.Contains(value_column))
             {
-                cerr.WriteLine($"value-column doesn't exist: {value}");
+                cerr.WriteLine($"value-column doesn't exist: {value_column}");
                 return;
             }
 
-            int count = 0;
-            string path;
-            Localization resx = new Localization();
-            switch (format)
+            Locale locale = new Locale
             {
-                case "resx":
-                    ResxFile resxFile = new ResxFile
-                    {
-                        Directory = cmd.OutputDirectory() ?? ".",
-                        CultureInfo = System.Globalization.CultureInfo.CreateSpecificCulture(language)
-                    };
+                Format = format,
+                Append = append,
+            };
 
-                    path = resxFile.FullName;
-                    resx.Load(dt, name, value);
-                    count = resx.UpdateResx(path, append);
-                    string _append = append ? "appended" : "updated";
-                    cout.WriteLine($"{count} of entries {_append} on \"{path}\"");
-                    break;
+            //load entries from database
+            locale.LoadEntries(dt, name_column, value_column);
+            var file = locale.GetResourceFile(language, directory);
+            int count = locale.Update(file);
+            string _append = append ? "appended" : "updated";
 
-                case "xliff":
-                    XlfFile xlfFile = new XlfFile
-                    {
-                        Directory = cmd.OutputDirectory() ?? ".",
-                        CultureInfo = System.Globalization.CultureInfo.CreateSpecificCulture(language)
-                    };
-                    
-                    path = xlfFile.FullName;
-                    resx.Load(dt, name, value);
-                    count = resx.UpdateXlf(path);
-                    cout.WriteLine($"{count} of entries updated  on \"{path}\"");
-                    break;
-
-                case "json":
-                    JsonFile jsonFile = new JsonFile
-                    {
-                        Directory = cmd.OutputDirectory() ?? ".",
-                        CultureInfo = System.Globalization.CultureInfo.CreateSpecificCulture(language)
-                    };
-
-                    path = jsonFile.FullName;
-                    resx.Load(dt, name, value);
-                    count = resx.UpdateJson(path);
-                    cout.WriteLine($"{count} of entries updated  on \"{path}\"");
-                    break;
-            }
+            cout.WriteLine($"{count} of entries {_append} on \"{file}\"");
         }
 
         public static void Help()
@@ -939,7 +908,7 @@ namespace sqlcon
             cout.WriteLine("      [/style:]       : json style: normal|extended|coded");
             cout.WriteLine("      [/exclude-table]: exclude table name in json");
             cout.WriteLine("   /resource: generate i18n resource file from last result");
-            cout.WriteLine("      [/format:]      : resource format: resx|xliff|json, default:resx");
+            cout.WriteLine("      [/format:]      : resource format: resx|xlf|json, default:resx");
             cout.WriteLine("      [/name-column:] : name column");
             cout.WriteLine("      [/value-column:]: value column");
             cout.WriteLine("      [/language:]    : language: en|es|..., default:en");

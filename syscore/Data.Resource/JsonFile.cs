@@ -8,7 +8,7 @@ using System.Globalization;
 
 namespace Sys.Data.Resource
 {
-    public class JsonFile
+    class JsonFile : IResourceFile
     {
         public CultureInfo CultureInfo { get; set; } = CultureInfo.InvariantCulture;
         public string Directory { get; set; } = ".";

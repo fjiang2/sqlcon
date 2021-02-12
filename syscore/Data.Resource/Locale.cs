@@ -6,19 +6,23 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Xml.Linq;
 using System.Data;
+using System.Globalization;
 
 namespace Sys.Data.Resource
 {
-    public class Localization
+    public class Locale
     {
-        List<entry> entries = new List<entry>();
+        private List<entry> entries = new List<entry>();
 
-        public Localization()
+        public ResourceFomat Format { get; set; } = ResourceFomat.resx;
+        public bool Append { get; set; } = false;
+
+        public Locale()
         {
 
         }
 
-        public void Load(DataTable dt, string nameColumn, string valueColumn)
+        public void LoadEntries(DataTable dt, string nameColumn, string valueColumn)
         {
             entries.Clear();
 
@@ -40,7 +44,60 @@ namespace Sys.Data.Resource
             }
         }
 
-        public int UpdateResx(string path, bool append = true)
+        public IResourceFile GetResourceFile(string language, string directory)
+        {
+            switch (Format)
+            {
+                case ResourceFomat.resx:
+                    return new ResxFile
+                    {
+                        Directory = directory,
+                        CultureInfo = CultureInfo.CreateSpecificCulture(language)
+                    };
+
+                case ResourceFomat.xlf:
+                    return new XlfFile
+                    {
+                        Directory = directory,
+                        CultureInfo = CultureInfo.CreateSpecificCulture(language)
+                    };
+
+                case ResourceFomat.json:
+                    return new JsonFile
+                    {
+                        Directory = directory,
+                        CultureInfo = CultureInfo.CreateSpecificCulture(language)
+                    };
+            }
+
+            return null;
+        }
+
+        public int Update(IResourceFile file)
+        {
+            string path = file.FullName;
+            int count = 0;
+
+            switch (Format)
+            {
+                case ResourceFomat.resx:
+                    count = UpdateResx(path, Append);
+                    break;
+
+                case ResourceFomat.xlf:
+                    count = UpdateXlf(path);
+                    break;
+
+                case ResourceFomat.json:
+                    count = UpdateJson(path);
+                    break;
+            }
+
+            return count;
+        }
+
+
+        private int UpdateResx(string path, bool append = true)
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException(path);
@@ -73,7 +130,7 @@ namespace Sys.Data.Resource
             return count;
         }
 
-        public int UpdateXlf(string path)
+        private int UpdateXlf(string path)
         {
             var dict = entries.ToDictionary(x => x.name, x => x.value);
 
@@ -140,10 +197,10 @@ namespace Sys.Data.Resource
 
         }
 
-        public int UpdateJson(string path)
+        private int UpdateJson(string path)
         {
             Tie.VAL val = new Tie.VAL();
-            foreach(var entry in entries)
+            foreach (var entry in entries)
             {
                 val.AddMember(entry.name, new Tie.VAL(entry.value));
             }
@@ -154,5 +211,9 @@ namespace Sys.Data.Resource
             return entries.Count;
         }
 
+        public override string ToString()
+        {
+            return base.ToString();
+        }
     }
 }
