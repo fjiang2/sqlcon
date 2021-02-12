@@ -1778,20 +1778,14 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 {
                     string table_name = cmd.GetValue("table-name") ?? "Table";
                     string schema_name = cmd.GetValue("schema-name") ?? TableName.dbo;
-
+                    string root = cmd.GetValue("root") ?? ".";
                     DatabaseName dname = (DatabaseName)pt.Item;
                     TableName tname = new TableName(dname, schema_name, table_name);
                     
                     StringDumper dumper = new StringDumper(tname);
-                    
-                    dumper.Add(
-                        @"C:\src\Trafficware\atms.next\Atms.Now.SynchroIntegration.Service\Program.cs",
-                        21,
-                        "",
-                        "SYNCHRO_INTEGRATION",
-                        "Synchro Integration"
-                        );
-
+                    StringExtractor extractor = new StringExtractor(dumper);
+                    extractor.Extract(root);
+                  
                     string SqlFileName = cmd.OutputFile(cfg.OutputFile);
                     using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
                     {

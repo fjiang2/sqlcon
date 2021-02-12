@@ -8,10 +8,11 @@ using Tie;
 
 namespace Sys.Data.Resource
 {
-    class Lex
+    public class StringExtractor
     {
         public List<string> includes = new List<string>
         {
+            ".cs"
         };
 
         public List<string> excludes = new List<string>
@@ -31,12 +32,12 @@ namespace Sys.Data.Resource
 
         private StringDumper dumper;
 
-        public Lex(StringDumper dumper)
+        public StringExtractor(StringDumper dumper)
         {
             this.dumper = dumper;
         }
 
-        public void Run(string root)
+        public void Extract(string root)
         {
             var files = Directory.GetFiles(root, "*.cs", SearchOption.AllDirectories);
 
@@ -56,7 +57,7 @@ namespace Sys.Data.Resource
             }
         }
 
-        public void Run(string[] files)
+        public void Extract(string[] files)
         {
             foreach (string file in files)
             {
