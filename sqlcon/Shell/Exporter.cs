@@ -9,6 +9,7 @@ using Sys;
 using Sys.Data;
 using Sys.Data.Comparison;
 using Sys.Data.Manager;
+using Sys.Data.Resource;
 using Sys.Stdio;
 
 namespace sqlcon
@@ -833,23 +834,68 @@ namespace sqlcon
 
         }
 
+
+        private void ExportResourceData()
+        {
+            var dt = LastOrCurrentTable();
+
+            ResourceFomat format = cmd.GetEnum("format", ResourceFomat.resx);
+            string language = cmd.GetValue("language") ?? "en";
+            string directory = cmd.OutputDirectory() ?? ".";
+            string name_column = cmd.GetValue("name-column");
+            string value_column = cmd.GetValue("value-column") ?? name_column;
+            bool append = cmd.Has("append");
+
+            if (string.IsNullOrEmpty(name_column))
+            {
+                cerr.WriteLine("name-column is undefined");
+                return;
+            }
+
+            if (!dt.Columns.Contains(name_column))
+            {
+                cerr.WriteLine($"name-column doesn't exist: {name_column}");
+                return;
+            }
+
+            if (!dt.Columns.Contains(value_column))
+            {
+                cerr.WriteLine($"value-column doesn't exist: {value_column}");
+                return;
+            }
+
+            Locale locale = new Locale
+            {
+                Format = format,
+                Append = append,
+            };
+
+            //load entries from database
+            locale.LoadEntries(dt, name_column, value_column);
+            var file = locale.GetResourceFile(language, directory);
+            int count = locale.Update(file);
+            string _append = append ? "appended" : "updated";
+
+            cout.WriteLine($"{count} of entries {_append} on \"{file}\"");
+        }
+
         public static void Help()
         {
             cout.WriteLine("export data, schema, class, and template on current selected server/db/table");
             cout.WriteLine("option:");
             cout.WriteLine("   /out:xxx : output path or file name");
             cout.WriteLine("option of SQL generation:");
-            cout.WriteLine("   /INSERT  : export INSERT INTO script on current table/database");
-            cout.WriteLine("   /UPDATE  : export UPDATE SETscript on current table/database");
-            cout.WriteLine("   /SAVE    : export IF NOT EXISTS INSERT ELSE UPDATE script on current table/database");
+            cout.WriteLine("   /INSERT  : export data in INSERT INTO script on current table/database");
+            cout.WriteLine("   /UPDATE  : export data in UPDATE SET script on current table/database");
+            cout.WriteLine("   /SAVE    : export data in IF NOT EXISTS INSERT ELSE UPDATE script on current table/database");
             cout.WriteLine("   [/if]    : option /if generate if exists row then UPDATE else INSERT; or check existence of table when drop table");
             cout.WriteLine("   /create  : generate CREATE TABLE script on current table/database");
-            cout.WriteLine("   /select  : generate SELECT FROM WHERE template");
-            cout.WriteLine("   /insert  : generate INSERT INTO template");
-            cout.WriteLine("   /update  : generate UPDATE SET WHERE template");
-            cout.WriteLine("   /save    : generate IF EXISTS UPDATE ELSE INSERT template");
-            cout.WriteLine("   /delete  : generate DELETE FROM WHERE template, delete rows with foreign keys constraints");
-            cout.WriteLine("   /drop    : generate DROP TABLE template, drop tables with foreign keys constraints");
+            cout.WriteLine("   /select  : generate template SELECT FROM WHERE");
+            cout.WriteLine("   /insert  : generate template INSERT INTO");
+            cout.WriteLine("   /update  : generate template UPDATE SET WHERE");
+            cout.WriteLine("   /save    : generate template IF EXISTS UPDATE ELSE INSERT");
+            cout.WriteLine("   /delete  : generate template DELETE FROM WHERE, delete rows with foreign keys constraints");
+            cout.WriteLine("   /drop    : generate template DROP TABLE, drop tables with foreign keys constraints");
             cout.WriteLine("option of data generation:");
             cout.WriteLine("   /schema  : generate database schema xml file");
             cout.WriteLine("   /data    : generate database/table data xml file");
@@ -857,10 +903,17 @@ namespace sqlcon
             cout.WriteLine("   /csv     : generate table csv file");
             cout.WriteLine("   /ds      : generate data set xml file");
             cout.WriteLine("   /json    : generate json from last result");
-            cout.WriteLine("      [/ds-name:]: data set name");
-            cout.WriteLine("      [/dt-names:]: data table name list");
-            cout.WriteLine("      [/style:]: json style: normal|extended|coded");
+            cout.WriteLine("      [/ds-name:]     : data set name");
+            cout.WriteLine("      [/dt-names:  ]  : data table name list");
+            cout.WriteLine("      [/style:]       : json style: normal|extended|coded");
             cout.WriteLine("      [/exclude-table]: exclude table name in json");
+            cout.WriteLine("   /resource: generate i18n resource file from last result");
+            cout.WriteLine("      [/format:]      : resource format: resx|xlf|json, default:resx");
+            cout.WriteLine("      [/name-column:] : name column");
+            cout.WriteLine("      [/value-column:]: value column");
+            cout.WriteLine("      [/language:]    : language: en|es|..., default:en");
+            cout.WriteLine("      [/out:]         : resource file directory, default: current working directory");
+            cout.WriteLine("      [/append]       : update or append to resource file");
             cout.WriteLine("option of code generation:");
             cout.WriteLine("   /dpo     : generate C# table class");
             cout.WriteLine("   /l2s     : generate C# Linq to SQL class");
@@ -972,6 +1025,8 @@ namespace sqlcon
                 ExportConfigurationFile();
             else if (cmd.Has("ds"))
                 ExportDataSetXml();
+            else if (cmd.Has("resource"))
+                ExportResourceData();
             else
                 cerr.WriteLine("invalid command options");
         }
