@@ -1776,12 +1776,15 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 var pt = mgr.current;
                 if (pt.Item is DatabaseName)
                 {
+                    string table_name = cmd.GetValue("table-name") ?? "Table";
+                    string schema_name = cmd.GetValue("schema-name") ?? TableName.dbo;
+
                     DatabaseName dname = (DatabaseName)pt.Item;
-                    TableName tname = new TableName(dname, "dbo", "syx");
+                    TableName tname = new TableName(dname, schema_name, table_name);
                     
-                    StringExtractor extractor = new StringExtractor(tname);
+                    StringDumper dumper = new StringDumper(tname);
                     
-                    extractor.Add(
+                    dumper.Add(
                         @"C:\src\Trafficware\atms.next\Atms.Now.SynchroIntegration.Service\Program.cs",
                         21,
                         "",
@@ -1792,7 +1795,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     string SqlFileName = cmd.OutputFile(cfg.OutputFile);
                     using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
                     {
-                        extractor.Save(writer);
+                        dumper.Save(writer);
                     }
 
                     cout.WriteLine($"SQL script generated on \"{SqlFileName}\"");

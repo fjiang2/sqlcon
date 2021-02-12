@@ -94,7 +94,8 @@
     <Compile Include="Configuration\ConfigurationEnvironment.cs" />
     <Compile Include="Configuration\ConnectionString.cs" />
     <Compile Include="CodeBuilder\CodeStyle.cs" />
-    <Compile Include="Data.Resource\ExtractString.cs" />
+    <Compile Include="Data.Resource\Lex.cs" />
+    <Compile Include="Data.Resource\StringDumper.cs" />
     <Compile Include="Data.Resource\IResourceFile.cs" />
     <Compile Include="Data.Resource\JsonFile.cs" />
     <Compile Include="Data.Resource\Locale.cs" />

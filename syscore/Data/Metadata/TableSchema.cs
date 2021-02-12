@@ -47,7 +47,7 @@ namespace Sys.Data
         /// <summary>
         /// Create Table Schema from data table
         /// </summary>
-        /// <param name="dt"></param>
+        /// <param name="dt">data rows</param>
         /// <returns></returns>
         public static ITableSchema CreateSchema(TableName tname, DataTable dt)
         {

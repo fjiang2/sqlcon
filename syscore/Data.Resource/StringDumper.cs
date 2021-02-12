@@ -8,12 +8,12 @@ using System.IO;
 
 namespace Sys.Data.Resource
 {
-    public class StringExtractor
+    public class StringDumper
     {
         private TableName tname;
         private DataTable dt;
 
-        public StringExtractor(TableName tname)
+        public StringDumper(TableName tname)
         {
             this.tname = tname;
 
