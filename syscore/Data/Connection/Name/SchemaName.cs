@@ -8,6 +8,8 @@ namespace Sys.Data
 {
     public class SchemaName
     {
+        public const string dbo = "dbo";
+
         private DataTable dt;
         public SchemaName(DataTable dt)
         {
@@ -18,7 +20,7 @@ namespace Sys.Data
         {
             dt.TableName = tname.Name;
 
-            if (tname.SchemaName != TableName.dbo)
+            if (tname.SchemaName != dbo)
                 dt.Prefix = tname.SchemaName;
 
             if (dt.DataSet == null)
@@ -37,7 +39,7 @@ namespace Sys.Data
                 if (string.IsNullOrEmpty(dt.Prefix))
                     return true;
 
-                return dt.Prefix == TableName.dbo;
+                return dt.Prefix == dbo;
             }
         }
 
@@ -46,7 +48,7 @@ namespace Sys.Data
             get
             {
                 if (string.IsNullOrEmpty(dt.Prefix))
-                    return TableName.dbo;
+                    return dbo;
                 else
                     return dt.Prefix;
             }

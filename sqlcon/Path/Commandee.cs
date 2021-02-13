@@ -1777,7 +1777,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 if (pt.Item is DatabaseName)
                 {
                     string table_name = cmd.GetValue("table-name") ?? "Table";
-                    string schema_name = cmd.GetValue("schema-name") ?? TableName.dbo;
+                    string schema_name = cmd.GetValue("schema-name") ?? SchemaName.dbo;
                     string root = cmd.GetValue("directory") ?? ".";
                     DatabaseName dname = (DatabaseName)pt.Item;
                     TableName tname = new TableName(dname, schema_name, table_name);

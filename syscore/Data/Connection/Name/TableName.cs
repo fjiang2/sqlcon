@@ -23,7 +23,7 @@ namespace Sys.Data
 {
     public class TableName : IComparable<TableName>, IComparable, IDataPath
     {
-        public const string dbo = "dbo";
+        protected const string dbo = Sys.Data.SchemaName.dbo;
 
         protected DatabaseName baseName;
         protected string schema = dbo;

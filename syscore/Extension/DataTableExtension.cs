@@ -78,7 +78,7 @@ namespace Sys.Data
             int count = 0;
             foreach (DataTable dt in ds.Tables)
             {
-                TableName tname = new TableName(dname, TableName.dbo, dt.TableName);
+                TableName tname = new TableName(dname, SchemaName.dbo, dt.TableName);
                 count += WriteSql(dt, writer, tname);
             }
 

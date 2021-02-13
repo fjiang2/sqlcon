@@ -27,7 +27,7 @@ namespace Sys.Data.Manager
     {
 
         public ClassTableName(DatabaseName databaseName, string tableName)
-            : this(new TableName(databaseName, TableName.dbo, tableName))
+            : this(new TableName(databaseName, dbo, tableName))
         {
         }
 

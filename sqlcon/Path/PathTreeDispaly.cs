@@ -149,7 +149,7 @@ namespace sqlcon
                 TableName tname = (TableName)node.Item;
                 ++i;
 
-                if (IsMatch(cmd.wildcard, tname.Path) || (tname.SchemaName == TableName.dbo && IsMatch(cmd.wildcard, tname.Name)))
+                if (IsMatch(cmd.wildcard, tname.Path) || (tname.SchemaName == SchemaName.dbo && IsMatch(cmd.wildcard, tname.Name)))
                 {
                     if (!tname.IsViewName) count[0]++;
                     if (tname.IsViewName) count[1]++;

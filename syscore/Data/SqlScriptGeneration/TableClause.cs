@@ -216,7 +216,7 @@ namespace Sys.Data
         public string ADD_FOREIGN_KEY(IForeignKey foreignKey)
         {
             string reference;
-            if (foreignKey.PK_Schema != TableName.dbo)
+            if (foreignKey.PK_Schema != SchemaName.dbo)
                 reference = string.Format(" [{0}].[{1}]([{2}])", foreignKey.PK_Schema, foreignKey.PK_Table, foreignKey.PK_Column);
             else
                 reference = string.Format(" [{0}]([{1}])", foreignKey.PK_Table, foreignKey.PK_Column);
