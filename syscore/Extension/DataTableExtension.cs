@@ -44,6 +44,24 @@ namespace Sys.Data
             return _columns;
         }
 
+        public static void SetSchemaAndTableName(this DataTable dt, TableName tname)
+        {
+            var sname = new SchemaName(dt);
+            sname.SetSchemaAndTableName(tname);
+        }
+
+        public static bool IsDbo(this DataTable dt)
+        {
+            var sname = new SchemaName(dt);
+            return sname.IsDbo;
+        }
+
+        public static string GetSchemaName(this DataTable dt)
+        {
+            var sname = new SchemaName(dt);
+            return sname.Name;
+        }
+
         public static int WriteSql(this DataTable dt, TextWriter writer, TableName tname)
         {
             tname.SetTableSchema(dt);

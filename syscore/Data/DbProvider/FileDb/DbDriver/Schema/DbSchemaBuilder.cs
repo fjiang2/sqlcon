@@ -44,7 +44,7 @@ namespace Sys.Data
                 {
                     DbSchemaColumn _column = new DbSchemaColumn
                     {
-                        SchemaName = TableName.dbo,
+                        SchemaName = dt.GetSchemaName(),
                         TableName = dt.TableName,
                         ColumnName = column.ColumnName,
                         DataType = column.DataType.ToCType().GetSqlType(),
@@ -84,6 +84,6 @@ namespace Sys.Data
                 AddSchema(ds);
             }
         }
-      
+
     }
 }

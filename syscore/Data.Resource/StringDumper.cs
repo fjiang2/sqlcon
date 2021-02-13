@@ -17,17 +17,10 @@ namespace Sys.Data.Resource
         {
             this.tname = tname;
 
-            DataSet ds = new DataSet
-            {
-                DataSetName = tname.DatabaseName.Name,
-            };
-
-            this.dt = new DataTable
-            {
-                TableName = tname.Name
-            };
-
+            DataSet ds = new DataSet();
+            this.dt = new DataTable();
             ds.Tables.Add(dt);
+            dt.SetSchemaAndTableName(tname);
 
             dt.Columns.Add(new DataColumn("File", typeof(string)) { MaxLength = 200 });
             dt.Columns.Add(new DataColumn("Line", typeof(int)));
@@ -48,7 +41,7 @@ namespace Sys.Data.Resource
         public void Add(string file, int line, string type, string name, string value)
         {
             DataRow row = dt.NewRow();
-            
+
             row["File"] = file;
             row["Line"] = line;
             row["Type"] = type;
@@ -58,15 +51,9 @@ namespace Sys.Data.Resource
             dt.Rows.Add(row);
         }
 
-        public int Save(StreamWriter writer)
+        public int Save(TextWriter writer)
         {
-            tname.SetTableSchema(dt);
-            string SQL = tname.GenerateCreateTableClause(appendGO: true);
-            writer.WriteLine(SQL);
-
-            TableSchema schema = new TableSchema(tname);
-            SqlScriptGeneration gen = new SqlScriptGeneration(SqlScriptType.INSERT, schema);
-            return gen.GenerateByDbTable(dt, writer);
+            return dt.WriteSql(writer, tname);
         }
     }
 }

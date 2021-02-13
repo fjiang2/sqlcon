@@ -90,11 +90,8 @@ namespace sqlcon
         private static DataTable FillTable(TableName tname)
         {
             var dt = new SqlCmd(tname.Provider, $"SELECT TOP 1 * FROM {tname.FormalName}").FillDataTable();
-            dt.TableName = tname.Name;
-
-            if (tname.SchemaName != TableName.dbo)
-                dt.Prefix = tname.SchemaName;
-
+            dt.SetSchemaAndTableName(tname);
+            
             var schema = new TableSchema(tname);
             dt.PrimaryKeys(schema.PrimaryKeys.Keys);
             foreach (IColumn column in schema.Columns)
