@@ -50,7 +50,7 @@ namespace Sys.Data
             return count;
         }
 
-        private void Generate(SqlCmd cmd, DbDataReader reader, StreamWriter writer)
+        private void Generate(SqlCmd cmd, DbDataReader reader, TextWriter writer)
         {
             if (reader != null)
             {
@@ -62,7 +62,7 @@ namespace Sys.Data
             GenerateByDbTable(dt, writer);
         }
 
-        public int GenerateByDbTable(DataTable dt, StreamWriter writer)
+        public int GenerateByDbTable(DataTable dt, TextWriter writer)
         {
             string[] columns = dt.Columns.ToEnumerable<DataColumn, string>(col => col.ColumnName).ToArray();
             object[] values = new object[columns.Length];
@@ -84,7 +84,7 @@ namespace Sys.Data
             return count;
         }
 
-        private int GenerateByDbReader(DbDataReader reader, StreamWriter writer)
+        private int GenerateByDbReader(DbDataReader reader, TextWriter writer)
         {
             DataTable schema1 = reader.GetSchemaTable();
 
@@ -114,7 +114,7 @@ namespace Sys.Data
             return count;
         }
 
-        private void GenerateRow(StreamWriter writer, ColumnPairCollection pairs)
+        private void GenerateRow(TextWriter writer, ColumnPairCollection pairs)
         {
             switch (type)
             {

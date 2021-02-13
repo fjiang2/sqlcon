@@ -110,6 +110,7 @@ namespace Sys.Data
         {
             get { return this.schema; }
         }
+
         public DatabaseName DatabaseName
         {
             get { return this.baseName; }
@@ -177,17 +178,7 @@ namespace Sys.Data
             return FullName;
         }
 
-
-
-        public int Id
-        {
-            get
-            {
-                return this.GetTableSchema().TableID;
-            }
-        }
-
-
+        public int Id => this.GetTableSchema().TableID;
 
         public int ColumnId(string columnName)
         {
@@ -211,8 +202,31 @@ namespace Sys.Data
         }
 
 
-        public DataTable TableSchema()
+        private DataTable dtSchema = null;
+
+        /// <summary>
+        /// Create table schema by rows in data table. It is used to create a table by DataTable 
+        /// </summary>
+        /// <param name="dt"></param>
+        internal void SetTableSchema(DataTable dt)
         {
+            DataSet ds = dt.DataSet;
+            if (ds == null)
+            {
+                ds = new DataSet { DataSetName = DatabaseName.Name, };
+                ds.Tables.Add(dt);
+            }
+
+            DbSchemaBuilder dbb = new DbSchemaBuilder();
+            dbb.AddSchema(ds);
+            this.dtSchema = dbb.DbSchmea.Tables[0];
+        }
+
+        internal DataTable TableSchema()
+        {
+            if (dtSchema != null)
+                return dtSchema;
+
             return Provider.Schema.GetTableSchema(this);
         }
 

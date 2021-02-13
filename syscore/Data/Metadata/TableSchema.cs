@@ -31,30 +31,10 @@ namespace Sys.Data
     public class TableSchema : ITableSchema
     {
         protected TableName tableName;
-        private DataTable schemaRows;
 
         public TableSchema(TableName tname)
         {
             this.tableName = tname;
-        }
-
-        private TableSchema(TableName tname, DataTable schemaRows)
-        {
-            this.tableName = tname;
-            this.schemaRows = schemaRows;
-        }
-
-        /// <summary>
-        /// Create Table Schema from data table
-        /// </summary>
-        /// <param name="dt">data rows</param>
-        /// <returns></returns>
-        public static ITableSchema CreateSchema(TableName tname, DataTable dt)
-        {
-            DbSchemaBuilder dbb = new DbSchemaBuilder();
-            dbb.AddSchema(dt.DataSet);
-            TableSchema schema = new TableSchema(tname, dbb.DbSchmea.Tables[0]);
-            return schema;
         }
 
         public override string ToString()
@@ -64,12 +44,11 @@ namespace Sys.Data
 
         protected virtual void LoadSchema()
         {
-            if (schemaRows == null)
-                this.schemaRows = tableName.TableSchema();
+            var dtSchema = tableName.TableSchema();
 
             this._columns = new ColumnCollection(this);
 
-            foreach (DataRow row in schemaRows.Rows)
+            foreach (DataRow row in dtSchema.Rows)
             {
                 this._columns.Add(new ColumnSchema(row));
             }

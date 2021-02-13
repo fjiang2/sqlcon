@@ -46,13 +46,21 @@ namespace sqlcon
                     Directory.CreateDirectory(directory);
             }
 
-            if (Path.GetExtension(path) == string.Empty)
+            string ext = Path.GetExtension(path);
+            if (ext == string.Empty)
                 path = Path.ChangeExtension(path, ".xml");
 
-            if (Path.GetExtension(path) == ".json")
+            if (ext == ".json")
             {
                 string json = ds.WriteJson(JsonStyle.Normal);
                 File.WriteAllText(path, json);
+            }
+            else if (ext == ".sql")
+            {
+                using (var writer = new StreamWriter(path))
+                {
+                    ds.WriteSql(writer, new DatabaseName(ConnectionProviderManager.DefaultProvider, ds.DataSetName));
+                }
             }
             else
             {

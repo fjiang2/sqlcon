@@ -1778,13 +1778,13 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 {
                     string table_name = cmd.GetValue("table-name") ?? "Table";
                     string schema_name = cmd.GetValue("schema-name") ?? TableName.dbo;
-                    string root = cmd.GetValue("root") ?? ".";
+                    string root = cmd.GetValue("directory") ?? ".";
                     DatabaseName dname = (DatabaseName)pt.Item;
                     TableName tname = new TableName(dname, schema_name, table_name);
                     
                     StringDumper dumper = new StringDumper(tname);
-                    StringExtractor extractor = new StringExtractor(dumper);
-                    extractor.Extract(root);
+                    //StringExtractor extractor = new StringExtractor(dumper);
+                    //extractor.Extract(root);
                   
                     string SqlFileName = cmd.OutputFile(cfg.OutputFile);
                     using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
@@ -1917,7 +1917,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("last [path]                :");
                 cout.WriteLine("options:");
                 cout.WriteLine("  /load                    : load C#, json or xml file to last dataset");
-                cout.WriteLine("  /save                    : save last dataset to json or xml file");
+                cout.WriteLine("  /save                    : save last dataset to sql, json or xml file");
                 cout.WriteLine("  /datalake                : format of json file is data lake");
                 cout.WriteLine("example:");
                 cout.WriteLine("  last                     : display last dataset");
@@ -1928,6 +1928,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("  last products.xml /save  : save last dataset to a xml file");
                 cout.WriteLine("  last /save               : use table name as file name and save");
                 cout.WriteLine("  last products.json /save : save last dataset to a json file");
+                cout.WriteLine("  last products.sql /save  : save last dataset to a sql file");
                 cout.WriteLine("  last products.cs  /load  : load c# file to last dataset");
                 cout.WriteLine("  last products.xml /load  : load xml file to last dataset");
                 cout.WriteLine("  last products.json /load : load json file to last dataset");

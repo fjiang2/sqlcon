@@ -60,12 +60,11 @@ namespace Sys.Data.Resource
 
         public int Save(StreamWriter writer)
         {
-            ITableSchema schema = TableSchema.CreateSchema(tname, dt);
-            var script = new TableClause(schema);
-            string SQL = script.GenerateCreateTableScript();
+            tname.SetTableSchema(dt);
+            string SQL = tname.GenerateCreateTableClause(appendGO: true);
             writer.WriteLine(SQL);
-            writer.WriteLine(SqlScript.GO);
 
+            TableSchema schema = new TableSchema(tname);
             SqlScriptGeneration gen = new SqlScriptGeneration(SqlScriptType.INSERT, schema);
             return gen.GenerateByDbTable(dt, writer);
         }
