@@ -2,61 +2,64 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Data;
 
 namespace Sys.Data
 {
     public class SchemaName
     {
+        public static readonly SchemaName Dbo = new SchemaName(dbo);
         public const string dbo = "dbo";
 
-        private DataTable dt;
-        public SchemaName(DataTable dt)
+        private string name;
+
+        public SchemaName()
         {
-            this.dt = dt;
+            this.name = string.Empty;
         }
 
-        public void SetSchemaAndTableName(TableName tname)
+        public SchemaName(string name)
         {
-            dt.TableName = tname.Name;
-
-            if (tname.SchemaName != dbo)
-                dt.Prefix = tname.SchemaName;
-
-            if (dt.DataSet == null)
-            {
-                DataSet ds = new DataSet();
-                ds.Tables.Add(dt);
-            }
-
-            dt.DataSet.DataSetName = tname.DatabaseName.Name;
+            this.name = name;
         }
 
-        public bool IsDbo
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(dt.Prefix))
-                    return true;
+        public bool IsDbo => name == dbo;
 
-                return dt.Prefix == dbo;
-            }
+        public bool IsEmpty => string.IsNullOrEmpty(name);
+
+        public override bool Equals(object obj)
+        {
+            SchemaName schemaName = obj as SchemaName;
+            if (obj == null)
+                return false;
+
+            return name.ToLower().Equals(schemaName.name.ToLower());
         }
 
-        public string Name
+        public override int GetHashCode()
         {
-            get
-            {
-                if (string.IsNullOrEmpty(dt.Prefix))
-                    return dbo;
-                else
-                    return dt.Prefix;
-            }
+            return name.GetHashCode();
         }
 
-        public override string ToString()
+        public override string ToString() => name;
+
+        public static explicit operator string(SchemaName a)
         {
-            return Name;
+            return a.name;
+        }
+
+        public static implicit operator SchemaName(string name)
+        {
+            return new SchemaName(name);
+        }
+
+        public static bool operator ==(SchemaName a, SchemaName b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(SchemaName a, SchemaName b)
+        {
+            return !a.Equals(b);
         }
     }
 }
