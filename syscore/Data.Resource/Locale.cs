@@ -28,8 +28,8 @@ namespace Sys.Data.Resource
 
             foreach (DataRow row in dt.Rows)
             {
-                string name = row.GetField<string>(nameColumn).Trim();
-                string value = row.GetField<string>(valueColumn).Trim();
+                string name = row.GetField<string>(nameColumn);
+                string value = row.GetField<string>(valueColumn);
 
                 if (name == string.Empty)
                     continue;

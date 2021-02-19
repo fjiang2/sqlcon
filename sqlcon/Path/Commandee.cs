@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Sys.Stdio;
+using Sys.Data.Resource;
 using Tie;
 
 namespace sqlcon
@@ -1748,6 +1749,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("save [file]");
                 cout.WriteLine("options:");
                 cout.WriteLine("  /output       : copy sql script ouput to clipboard for Windows only");
+                cout.WriteLine("  /string       : ");
                 cout.WriteLine("example:");
                 cout.WriteLine("  save /output");
                 return;
@@ -1769,12 +1771,35 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 #endif
                 }
             }
+            else if(cmd.Has("string"))
+            {
+                var pt = mgr.current;
+                if (pt.Item is DatabaseName)
+                {
+                    string table_name = cmd.GetValue("table-name") ?? "Table";
+                    string schema_name = cmd.GetValue("schema-name") ?? SchemaName.dbo;
+                    string root = cmd.GetValue("directory") ?? ".";
+                    DatabaseName dname = (DatabaseName)pt.Item;
+                    TableName tname = new TableName(dname, schema_name, table_name);
+                    
+                    StringDumper dumper = new StringDumper(tname);
+                    //StringExtractor extractor = new StringExtractor(dumper);
+                    //extractor.Extract(root);
+                  
+                    string SqlFileName = cmd.OutputFile(cfg.OutputFile);
+                    using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
+                    {
+                        dumper.Save(writer);
+                    }
+
+                    cout.WriteLine($"SQL script generated on \"{SqlFileName}\"");
+                    return;
+                }
+            }
             else
             {
                 cerr.WriteLine("invalid arguments");
             }
-
-            return;
         }
 
         public void echo(ApplicationCommand cmd)
@@ -1892,7 +1917,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("last [path]                :");
                 cout.WriteLine("options:");
                 cout.WriteLine("  /load                    : load C#, json or xml file to last dataset");
-                cout.WriteLine("  /save                    : save last dataset to json or xml file");
+                cout.WriteLine("  /save                    : save last dataset to sql, json or xml file");
                 cout.WriteLine("  /datalake                : format of json file is data lake");
                 cout.WriteLine("example:");
                 cout.WriteLine("  last                     : display last dataset");
@@ -1903,6 +1928,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("  last products.xml /save  : save last dataset to a xml file");
                 cout.WriteLine("  last /save               : use table name as file name and save");
                 cout.WriteLine("  last products.json /save : save last dataset to a json file");
+                cout.WriteLine("  last products.sql /save  : save last dataset to a sql file");
                 cout.WriteLine("  last products.cs  /load  : load c# file to last dataset");
                 cout.WriteLine("  last products.xml /load  : load xml file to last dataset");
                 cout.WriteLine("  last products.json /load : load json file to last dataset");

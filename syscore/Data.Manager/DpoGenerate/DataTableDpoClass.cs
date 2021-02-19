@@ -25,7 +25,7 @@ namespace Sys.Data.Manager
 
             this.table = table;
 
-            this.tableName = new ClassTableName(new TableName(dname, TableName.dbo, table.TableName));
+            this.tableName = new ClassTableName(new TableName(dname, SchemaName.dbo, table.TableName));
 
 
 

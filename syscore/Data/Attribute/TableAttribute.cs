@@ -52,11 +52,11 @@ namespace Sys.Data
                 switch (this.Level)
                 {
                     case Level.System:
-                        tname = new TableName(new DatabaseName(dataProvider, Const.DB_SYSTEM), TableName.dbo, this.tableName);
+                        tname = new TableName(new DatabaseName(dataProvider, Const.DB_SYSTEM), SchemaName.dbo, this.tableName);
                         break;
 
                     case Level.Application:
-                        tname = new TableName(new DatabaseName(dataProvider, Const.DB_APPLICATION), TableName.dbo, this.tableName);
+                        tname = new TableName(new DatabaseName(dataProvider, Const.DB_APPLICATION), SchemaName.dbo, this.tableName);
                         break; 
 
                     default:

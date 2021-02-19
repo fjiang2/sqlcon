@@ -44,12 +44,11 @@ namespace Sys.Data
 
         protected virtual void LoadSchema()
         {
-            DataTable schema;
-            schema = tableName.TableSchema();
+            var dtSchema = tableName.TableSchema();
 
             this._columns = new ColumnCollection(this);
 
-            foreach (DataRow row in schema.Rows)
+            foreach (DataRow row in dtSchema.Rows)
             {
                 this._columns.Add(new ColumnSchema(row));
             }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Data;
 
 namespace Sys.Data
@@ -42,6 +42,47 @@ namespace Sys.Data
                 .ToArray();
 
             return _columns;
+        }
+
+        public static void SetSchemaAndTableName(this DataTable dt, TableName tname)
+        {
+            var sname = new DataTableSchemaName(dt);
+            sname.SetSchemaAndTableName(tname);
+        }
+
+        public static bool IsDbo(this DataTable dt)
+        {
+            var sname = new DataTableSchemaName(dt);
+            return sname.IsDbo;
+        }
+
+        public static string GetSchemaName(this DataTable dt)
+        {
+            var sname = new DataTableSchemaName(dt);
+            return sname.SchemaName;
+        }
+
+        public static int WriteSql(this DataTable dt, TextWriter writer, TableName tname)
+        {
+            tname.SetTableSchema(dt);
+            string SQL = tname.GenerateCreateTableClause(appendGO: true);
+            writer.WriteLine(SQL);
+
+            TableSchema schema = new TableSchema(tname);
+            SqlScriptGeneration gen = new SqlScriptGeneration(SqlScriptType.INSERT, schema);
+            return gen.GenerateByDbTable(dt, writer);
+        }
+
+        public static int WriteSql(this DataSet ds, TextWriter writer, DatabaseName dname)
+        {
+            int count = 0;
+            foreach (DataTable dt in ds.Tables)
+            {
+                TableName tname = new TableName(dname, SchemaName.dbo, dt.TableName);
+                count += WriteSql(dt, writer, tname);
+            }
+
+            return count;
         }
     }
 }

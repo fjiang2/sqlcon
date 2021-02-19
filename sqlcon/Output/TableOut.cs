@@ -93,7 +93,7 @@ namespace sqlcon
             try
             {
                 DataTable table = builder.SqlCmd.FillDataTable();
-                table.TableName = tname.ShortName;
+                table.SetSchemaAndTableName(tname);
                 ShellHistory.SetLastResult(table);
 
                 return Display(cmd, table, top);

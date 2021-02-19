@@ -44,7 +44,7 @@ namespace Sys.Data
                 {
                     DbSchemaColumn _column = new DbSchemaColumn
                     {
-                        SchemaName = TableName.dbo,
+                        SchemaName = dt.GetSchemaName(),
                         TableName = dt.TableName,
                         ColumnName = column.ColumnName,
                         DataType = column.DataType.ToCType().GetSqlType(),
@@ -62,6 +62,9 @@ namespace Sys.Data
                         PK_Column = null,
                         FKContraintName = null,
                     };
+
+                    if (_column.IsPrimary)
+                        _column.PKContraintName = $"PK_{dtSchema.TableName.ToIdent()}";
 
                     var newRow = dtSchema.NewRow();
                     _column.UpdateRow(newRow);
@@ -81,6 +84,6 @@ namespace Sys.Data
                 AddSchema(ds);
             }
         }
-      
+
     }
 }

@@ -158,7 +158,7 @@ namespace sqlcon
 
             string seg = segment;
             if (node.Item is DatabaseName && segment.IndexOf(".") == -1)
-                seg = TableName.dbo + "." + segment;
+                seg = SchemaName.dbo + "." + segment;
 
             var xnode = node.Nodes.Find(x => x.Item.Path.ToUpper() == seg.ToUpper());
             if (xnode != null)
