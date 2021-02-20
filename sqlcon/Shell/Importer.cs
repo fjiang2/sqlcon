@@ -144,7 +144,10 @@ namespace sqlcon
                 }
             }
 
-            DataTable dt = new TableReader(tname).Table;
+            DataTable dt = new TableReader(tname)
+            {
+                CaseSensitive = true,
+            }.Table;
 
             if (string.IsNullOrEmpty(name_column))
             {
@@ -190,8 +193,9 @@ namespace sqlcon
             bool commit = cmd.Has("commit");
             if (commit)
             {
+                cout.WriteLine($"starting to save changes into table \"{tname}\"");
                 writer.SubmitChanges(entries);
-                cout.WriteLine($"submit changes to table {tname}");
+                cout.WriteLine($"completed to save on table \"{tname}\"");
             }
         }
 

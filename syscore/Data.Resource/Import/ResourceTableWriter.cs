@@ -62,7 +62,7 @@ namespace Sys.Data.Resource
                 builder.Clear();
                 if (!string.IsNullOrEmpty(SQL))
                 {
-                    SqlCmd cmd = new SqlCmd(SQL);
+                    SqlCmd cmd = new SqlCmd(tname.Provider, SQL);
                     cmd.ExecuteNonQuery();
                 }
             }

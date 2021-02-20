@@ -35,6 +35,7 @@ namespace Sys.Data
         private string sql;
         private TableName tableName;
         private DataTable table;
+        public bool CaseSensitive { get; set; } = false;
 
         internal TableReader(TableName tableName, string sql)
         {
@@ -108,6 +109,7 @@ namespace Sys.Data
         private DataTable LoadData()
         {
             DataTable dt = cmd.FillDataTable();
+            dt.CaseSensitive = CaseSensitive;
             var schema = new TableSchema(tableName);
             string[] keys = schema.PrimaryKeys.Keys;
             dt.PrimaryKey = dt.Columns.OfType<DataColumn>().Where(column => keys.Contains(column.ColumnName)).ToArray();
