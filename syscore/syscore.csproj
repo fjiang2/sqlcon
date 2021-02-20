@@ -94,6 +94,9 @@
     <Compile Include="Configuration\ConfigurationEnvironment.cs" />
     <Compile Include="Configuration\ConnectionString.cs" />
     <Compile Include="CodeBuilder\CodeStyle.cs" />
+    <Compile Include="Data.Resource\Import\ResourceEntry.cs" />
+    <Compile Include="Data.Resource\Import\ResourceFileReader.cs" />
+    <Compile Include="Data.Resource\Import\ResourceTableWriter.cs" />
     <Compile Include="Data.Resource\StringExtractor.cs" />
     <Compile Include="Data.Resource\StringDumper.cs" />
     <Compile Include="Data.Resource\IResourceFile.cs" />
