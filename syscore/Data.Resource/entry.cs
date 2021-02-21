@@ -4,5 +4,7 @@
     {
         public string name { get; set; }
         public string value { get; set; }
+
+        public override string ToString() => $"\"{name}\" : \"{value}\"";
     }
 }

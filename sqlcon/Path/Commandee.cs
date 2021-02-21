@@ -1220,6 +1220,26 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cerr.WriteLine("select server, database or table first");
         }
 
+        public void import(ApplicationCommand cmd, IApplicationConfiguration cfg, ShellContext context)
+        {
+            if (cmd.HasHelp)
+            {
+                Importer.Help();
+                return;
+            }
+
+            if (!Navigate(cmd.Path1))
+                return;
+
+            if (pt.Item is TableName || pt.Item is Locator || pt.Item is DatabaseName || pt.Item is ServerName)
+            {
+                var importer = new Importer(mgr, pt, cmd, cfg);
+                importer.Run();
+            }
+            else
+                cerr.WriteLine("select server, database or table first");
+        }
+
         public void mount(ApplicationCommand cmd, IConnectionConfiguration cfg)
         {
             if (cmd.HasHelp)
@@ -1405,9 +1425,6 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 }
             }
         }
-
-
-
 
 
         public void OpenEditor()
@@ -2193,51 +2210,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             return true; // NextStep.COMPLETED;
         }
 
-        public void import(ApplicationCommand cmd, IApplicationConfiguration cfg, ShellContext context)
-        {
-            if (cmd.HasHelp)
-            {
-                cout.WriteLine("import data");
-                cout.WriteLine("import [path]              :");
-                cout.WriteLine("options:");
-                cout.WriteLine("  /zip                     : dump variables memory to output file");
-                cout.WriteLine("  /out                     : define output file or directory");
-                cout.WriteLine("example:");
-                cout.WriteLine("  import insert.sql        : run script");
-                cout.WriteLine("  import insert.zip  /zip  : run script, default extension is .sqt");
-                return;
-            }
 
-            string file = cmd.arg1;
-            if (file == null)
-            {
-                cerr.WriteLine("file name not specified");
-                return;
-            }
-
-            if (!File.Exists(file))
-            {
-                cerr.WriteLine($"cannot find the file \"{file}\"");
-                return;
-            }
-
-            bool zip = false;
-            if (Path.GetExtension(file) == ".zip")
-                zip = true;
-
-            if (cmd.Has("zip"))
-                zip = true;
-
-            using (var reader = new StreamReader(file))
-            {
-                if (zip)
-                {
-                    ZipFileReader.ProcessZipArchive(file, line => Console.WriteLine(line));
-                }
-            }
-
-
-        }
     }
 }
 

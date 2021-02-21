@@ -836,7 +836,7 @@ namespace sqlcon
         {
             var dt = LastOrCurrentTable();
 
-            ResourceFomat format = cmd.GetEnum("format", ResourceFomat.resx);
+            ResourceFormat format = cmd.GetEnum("format", ResourceFormat.resx);
             string language = cmd.GetValue("language") ?? "en";
             string directory = cmd.OutputDirectory() ?? ".";
             string name_column = cmd.GetValue("name-column");

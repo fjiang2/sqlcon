@@ -1,6 +1,6 @@
 ﻿namespace Sys.Data.Resource
 {
-    public enum ResourceFomat
+    public enum ResourceFormat
     {
         resx,
         xlf,
