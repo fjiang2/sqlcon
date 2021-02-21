@@ -12,6 +12,17 @@ namespace Sys.Data.Resource
 {
     public class ResourceFileReader
     {
+        /// <summary>
+        /// remove extra space from attribute "name"
+        /// </summary>
+        public bool TrimPropertyName { get; set; }
+
+        /// <summary>
+        /// remove extra space from element "value"
+        /// </summary>
+        public bool TrimPropertyValue { get; set; }
+
+
         public ResourceFileReader()
         {
         }
@@ -27,10 +38,19 @@ namespace Sys.Data.Resource
             int count = 0;
             foreach (XElement element in elements)
             {
+                string name = ((string)element.Attribute("name"));
+                string value = ((string)element.Element("value"));
+
+                if (TrimPropertyName)
+                    name = name.Trim();
+
+                if (TrimPropertyValue)
+                    value = value.Trim();
+
                 entry token = new entry
                 {
-                    name = ((string)element.Attribute("name")),
-                    value = ((string)element.Element("value")),
+                    name = name,
+                    value = value,
                 };
 
                 if (list.Select(x => x.name).Contains(token.name))

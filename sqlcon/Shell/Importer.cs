@@ -115,6 +115,8 @@ namespace sqlcon
             string table_name = cmd.GetValue("table-name");
             string name_column = cmd.GetValue("name-column") ?? "name";
             string value_column = cmd.GetValue("value-column") ?? name_column;
+            bool trim_name = cmd.Has("trim-name");
+            bool trim_value = cmd.Has("trim-value");
 
             if (file_name == null)
             {
@@ -176,7 +178,7 @@ namespace sqlcon
             }
 
             ResourceTableWriter writer = new ResourceTableWriter(file_name, tname, name_column, value_column);
-            List<ResourceEntry> entries = writer.Difference(format, dt);
+            List<ResourceEntry> entries = writer.Difference(format, dt, trim_name, trim_value);
             foreach (var entry in entries)
             {
                 if (entry.Action == DataRowAction.Add)
@@ -191,6 +193,8 @@ namespace sqlcon
 
             if (entries.Count > 0)
                 cout.WriteLine($"{entries.Count} of entries were changed");
+            else
+                cout.WriteLine($"no entry is changed");
 
             if (entries.Count > 0)
             {
@@ -219,7 +223,9 @@ namespace sqlcon
             cout.WriteLine("      [/table-name:]  : default is current table selected");
             cout.WriteLine("      [/name-column:] : name column, default is name");
             cout.WriteLine("      [/value-column:]: value column");
-            cout.WriteLine("      [/commit]      : save entries into database");
+            cout.WriteLine("      [/trim-name]    : trim string of property [name]");
+            cout.WriteLine("      [/trim-value]   : trim string of property [value]");
+            cout.WriteLine("      [/commit]       : save entries into database");
             cout.WriteLine("example:");
             cout.WriteLine("  import insert.sql        : run script");
             cout.WriteLine("  import insert.zip  /zip  : run script, default extension is .sqt");
