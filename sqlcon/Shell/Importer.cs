@@ -118,6 +118,7 @@ namespace sqlcon
             string order_column = cmd.GetValue("order-column");
             bool trim_name = cmd.Has("trim-name");
             bool trim_value = cmd.Has("trim-value");
+            bool deleteRowNotInResource = cmd.Has("delete-rows-not-in-resource-file");
 
             if (file_name == null)
             {
@@ -179,16 +180,22 @@ namespace sqlcon
             }
 
             ResourceTableWriter writer = new ResourceTableWriter(file_name, tname, name_column, value_column, order_column);
-            List<ResourceEntry> entries = writer.Difference(format, dt, trim_name, trim_value);
+            List<ResourceEntry> entries = writer.Differ(format, dt, trim_name, trim_value);
             foreach (var entry in entries)
             {
-                if (entry.Action == DataRowAction.Add)
+                switch (entry.Action)
                 {
-                    cout.WriteLine($"new entry: \"{entry.Name}\", \"{entry.NewValue}\"");
-                }
-                else if (entry.Action == DataRowAction.Change)
-                {
-                    cout.WriteLine($"update entry: \"{entry.Name}\", \"{entry.OldValue}\" -> \"{entry.NewValue}\"");
+                    case DataRowAction.Add:
+                        cout.WriteLine($"new entry: \"{entry.Name}\", \"{entry.NewValue}\"");
+                        break;
+
+                    case DataRowAction.Change:
+                        cout.WriteLine($"update entry: \"{entry.Name}\", \"{entry.OldValue}\" -> \"{entry.NewValue}\"");
+                        break;
+
+                    case DataRowAction.Delete:
+                        cout.WriteLine($"delete entry: \"{entry.Name}\"");
+                        break;
                 }
             }
 
@@ -203,7 +210,7 @@ namespace sqlcon
                 if (commit)
                 {
                     cout.WriteLine($"starting to save changes into table \"{tname}\"");
-                    writer.SubmitChanges(entries);
+                    writer.SubmitChanges(entries, deleteRowNotInResource);
                     cout.WriteLine($"completed to save on table \"{tname}\" from \"{file_name}\"");
                 }
             }

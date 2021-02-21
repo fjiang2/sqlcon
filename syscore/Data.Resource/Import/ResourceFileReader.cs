@@ -72,8 +72,8 @@ namespace Sys.Data.Resource
                 if (list.Select(x => x.name).Contains(entry.name))
                 {
                     var result = list.Find(x => x.name == entry.name);
-                    cerr.WriteLine($"duplicated {result}");
-                    cerr.WriteLine($"duplicated {entry}");
+                    cerr.WriteLine($"duplicated in resx: {result}");
+                    cerr.WriteLine($"duplicated in resx: {entry}");
                 }
 
                 list.Add(entry);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data;
 using System.Text;
+using Sys.Collections;
 
 namespace Sys.Data.Resource
 {
@@ -32,7 +33,7 @@ namespace Sys.Data.Resource
         /// Save into database
         /// </summary>
         /// <param name="entries"></param>
-        public void SubmitChanges(List<ResourceEntry> entries)
+        public void SubmitChanges(List<ResourceEntry> entries, bool deleteRowNotInResource)
         {
             SqlMaker gen = new SqlMaker(tname.FormalName)
             {
@@ -58,6 +59,11 @@ namespace Sys.Data.Resource
 
                     case DataRowAction.Change:
                         builder.AppendLine(gen.Update());
+                        break;
+
+                    case DataRowAction.Delete:
+                        if (deleteRowNotInResource)
+                            builder.AppendLine(gen.Delete());
                         break;
                 }
 
@@ -87,8 +93,11 @@ namespace Sys.Data.Resource
         /// <param name="format"></param>
         /// <param name="dt"></param>
         /// <returns></returns>
-        public List<ResourceEntry> Difference(ResourceFormat format, DataTable dt, bool trimName, bool trimValue)
+        public List<ResourceEntry> Differ(ResourceFormat format, DataTable dt, bool trimName, bool trimValue)
         {
+            List<ResourceEntry> list = new List<ResourceEntry>();
+            int index = 0;
+
             //load data rows from database
             var rows = dt.ToList(row => new entry
             {
@@ -96,50 +105,43 @@ namespace Sys.Data.Resource
                 value = row.GetField<string>(value_column)
             });
 
+            //load data from resx file
             ResourceFileReader reader = new ResourceFileReader
             {
                 TrimPropertyName = trimName,
                 TrimPropertyValue = trimValue,
             };
-
             List<entry> entries = reader.Read(format, path);
 
-            var list = Preprocess(entries, rows);
-            return list;
-        }
 
 
-        private List<ResourceEntry> Preprocess(List<entry> entries, List<entry> rows)
-        {
-            List<ResourceEntry> list = new List<ResourceEntry>();
+            DifferenceList<entry> diff = new DifferenceList<entry>(rows);
 
-            int index = 0;
-            foreach (entry entry in entries)
+            diff.OnItemAdded(x => list.Add(new ResourceEntry
             {
-                var found = rows.SingleOrDefault(row => row.name == entry.name);
-                ResourceEntry item = new ResourceEntry
-                {
-                    Name = entry.name,
-                    NewValue = entry.value,
-                    Index = index++,
-                };
+                Action = DataRowAction.Add,
+                Name = x.name,
+                NewValue = x.value,
+                Index = index++
+            }));
 
-                if (found == null)
-                {
-                    item.Action = DataRowAction.Add;
-                    list.Add(item);
-                }
-                else if (found.value != entry.value)
-                {
-                    item.Action = DataRowAction.Change;
-                    item.OldValue = found.value;
-                    list.Add(item);
-                }
-                else
-                {
-                    //no change
-                }
-            }
+            diff.OnItemModified((x, y) => list.Add(new ResourceEntry
+            {
+                Action = DataRowAction.Change,
+                Name = x.name,
+                OldValue = x.value,
+                NewValue = y.value,
+                Index = index++
+            }));
+
+            diff.OnItemDeleted(x => list.Add(new ResourceEntry
+            {
+                Action = DataRowAction.Delete,
+                Name = x.name,
+                Index = index++
+            }));
+
+            diff.Differ(entries);
 
             return list;
         }
