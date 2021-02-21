@@ -27,7 +27,21 @@ namespace Sys.Data.Resource
         {
         }
 
-        internal List<entry> ReadResx(string path)
+        internal List<entry> Read(ResourceFormat format, string path)
+        {
+            switch(format)
+            {
+                case ResourceFormat.resx:
+                    return ReadResx(path);
+
+                case ResourceFormat.json:
+                    return ReadJson(path);
+            }
+
+            return new List<entry>();
+        }
+
+        private List<entry> ReadResx(string path)
         {
             List<entry> list = new List<entry>();
             XElement xdoc = XElement.Load(path);
@@ -66,5 +80,12 @@ namespace Sys.Data.Resource
 
             return list;
         }
+
+        private List<entry> ReadJson(string path)
+        {
+            List<entry> list = new List<entry>();
+
+            return list;
+        }
+        }
     }
-}

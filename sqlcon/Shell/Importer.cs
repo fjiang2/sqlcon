@@ -110,7 +110,7 @@ namespace sqlcon
         private void ImportResourceData()
         {
             string file_name = cmd.InputPath();
-            ResourceFomat format = cmd.GetEnum("format", ResourceFomat.resx);
+            ResourceFormat format = cmd.GetEnum("format", ResourceFormat.resx);
             string schema_name = cmd.GetValue("schema-name") ?? SchemaName.dbo;
             string table_name = cmd.GetValue("table-name");
             string name_column = cmd.GetValue("name-column") ?? "name";

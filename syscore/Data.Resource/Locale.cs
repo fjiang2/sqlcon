@@ -14,7 +14,7 @@ namespace Sys.Data.Resource
     {
         private List<entry> entries = new List<entry>();
 
-        public ResourceFomat Format { get; set; } = ResourceFomat.resx;
+        public ResourceFormat Format { get; set; } = ResourceFormat.resx;
         public bool Append { get; set; } = false;
 
         public Locale()
@@ -64,21 +64,21 @@ namespace Sys.Data.Resource
         {
             switch (Format)
             {
-                case ResourceFomat.resx:
+                case ResourceFormat.resx:
                     return new ResxFile
                     {
                         Directory = directory,
                         CultureInfo = CultureInfo.CreateSpecificCulture(language)
                     };
 
-                case ResourceFomat.xlf:
+                case ResourceFormat.xlf:
                     return new XlfFile
                     {
                         Directory = directory,
                         CultureInfo = CultureInfo.CreateSpecificCulture(language)
                     };
 
-                case ResourceFomat.json:
+                case ResourceFormat.json:
                     return new JsonFile
                     {
                         Directory = directory,
@@ -96,15 +96,15 @@ namespace Sys.Data.Resource
 
             switch (Format)
             {
-                case ResourceFomat.resx:
+                case ResourceFormat.resx:
                     count = UpdateResx(path, Append);
                     break;
 
-                case ResourceFomat.xlf:
+                case ResourceFormat.xlf:
                     count = UpdateXlf(path);
                     break;
 
-                case ResourceFomat.json:
+                case ResourceFormat.json:
                     count = UpdateJson(path);
                     break;
             }

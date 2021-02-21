@@ -87,7 +87,7 @@ namespace Sys.Data.Resource
         /// <param name="format"></param>
         /// <param name="dt"></param>
         /// <returns></returns>
-        public List<ResourceEntry> Difference(ResourceFomat format, DataTable dt, bool trimName, bool trimValue)
+        public List<ResourceEntry> Difference(ResourceFormat format, DataTable dt, bool trimName, bool trimValue)
         {
             //load data rows from database
             var rows = dt.ToList(row => new entry
@@ -102,10 +102,7 @@ namespace Sys.Data.Resource
                 TrimPropertyValue = trimValue,
             };
 
-            List<entry> entries = new List<entry>();
-
-            if (format == ResourceFomat.resx)
-                entries = reader.ReadResx(path);
+            List<entry> entries = reader.Read(format, path);
 
             var list = Preprocess(entries, rows);
             return list;
