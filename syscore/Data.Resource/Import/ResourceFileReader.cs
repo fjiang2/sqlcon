@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using System.Data;
+using System.IO;
+using Tie;
 using Sys.Stdio;
 
 namespace Sys.Data.Resource
@@ -29,7 +31,7 @@ namespace Sys.Data.Resource
 
         internal List<entry> Read(ResourceFormat format, string path)
         {
-            switch(format)
+            switch (format)
             {
                 case ResourceFormat.resx:
                     return ReadResx(path);
@@ -61,20 +63,20 @@ namespace Sys.Data.Resource
                 if (TrimPropertyValue)
                     value = value.Trim();
 
-                entry token = new entry
+                entry entry = new entry
                 {
                     name = name,
                     value = value,
                 };
 
-                if (list.Select(x => x.name).Contains(token.name))
+                if (list.Select(x => x.name).Contains(entry.name))
                 {
-                    var result = list.Find(x => x.name == token.name);
+                    var result = list.Find(x => x.name == entry.name);
                     cerr.WriteLine($"duplicated {result}");
-                    cerr.WriteLine($"duplicated {token}");
+                    cerr.WriteLine($"duplicated {entry}");
                 }
 
-                list.Add(token);
+                list.Add(entry);
                 count++;
             }
 
@@ -84,8 +86,20 @@ namespace Sys.Data.Resource
         private List<entry> ReadJson(string path)
         {
             List<entry> list = new List<entry>();
+            string json = File.ReadAllText(path);
+            VAL val = Script.Evaluate(json);
+            foreach (var item in val)
+            {
+                entry entry = new entry
+                {
+                    name = (string)item[0],
+                    value = (string)item[1],
+                };
+
+                list.Add(entry);
+            }
 
             return list;
         }
-        }
     }
+}
