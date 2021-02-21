@@ -8,6 +8,11 @@ namespace Sys.Data.Resource
         public string Name { get; set; }
         public string NewValue { get; set; }
         public string OldValue { get; set; }
+        public int Index { get; set; }
+
+        public ResourceEntry()
+        {
+        }
 
         public override string ToString()
         {

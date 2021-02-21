@@ -115,6 +115,7 @@ namespace sqlcon
             string table_name = cmd.GetValue("table-name");
             string name_column = cmd.GetValue("name-column") ?? "name";
             string value_column = cmd.GetValue("value-column") ?? name_column;
+            string order_column = cmd.GetValue("order-column");
             bool trim_name = cmd.Has("trim-name");
             bool trim_value = cmd.Has("trim-value");
 
@@ -177,7 +178,7 @@ namespace sqlcon
                 return;
             }
 
-            ResourceTableWriter writer = new ResourceTableWriter(file_name, tname, name_column, value_column);
+            ResourceTableWriter writer = new ResourceTableWriter(file_name, tname, name_column, value_column, order_column);
             List<ResourceEntry> entries = writer.Difference(format, dt, trim_name, trim_value);
             foreach (var entry in entries)
             {
@@ -198,7 +199,7 @@ namespace sqlcon
 
             if (entries.Count > 0)
             {
-                bool commit = cmd.Has("commit");
+                bool commit = cmd.Has("submit-changes");
                 if (commit)
                 {
                     cout.WriteLine($"starting to save changes into table \"{tname}\"");
@@ -217,18 +218,20 @@ namespace sqlcon
             cout.WriteLine("  /zip                     : dump variables memory to output file");
             cout.WriteLine("  /out                     : define output file or directory");
             cout.WriteLine("  /resource: import resource file into a table");
-            cout.WriteLine("      [/in:]          : resource file name");
-            cout.WriteLine("      [/format:]      : resource format: resx|xlf|json, default:resx");
-            cout.WriteLine("      [/schema-name:] : default is dbo");
-            cout.WriteLine("      [/table-name:]  : default is current table selected");
-            cout.WriteLine("      [/name-column:] : name column, default is name");
-            cout.WriteLine("      [/value-column:]: value column");
-            cout.WriteLine("      [/trim-name]    : trim string of property [name]");
-            cout.WriteLine("      [/trim-value]   : trim string of property [value]");
-            cout.WriteLine("      [/commit]       : save entries into database");
+            cout.WriteLine("      [/in:]            : resource file name");
+            cout.WriteLine("      [/format:]        : resource format: resx|xlf|json, default:resx");
+            cout.WriteLine("      [/schema-name:]   : default is dbo");
+            cout.WriteLine("      [/table-name:]    : default is current table selected");
+            cout.WriteLine("      [/name-column:]   : name column, default is name");
+            cout.WriteLine("      [/value-column:]  : value column");
+            cout.WriteLine("      [/order-column:]  : keep order of entries, it is integer");
+            cout.WriteLine("      [/trim-name]      : trim string of property [name]");
+            cout.WriteLine("      [/trim-value]     : trim string of property [value]");
+            cout.WriteLine("      [/submit-changes] : save entries into database");
             cout.WriteLine("example:");
             cout.WriteLine("  import insert.sql        : run script");
             cout.WriteLine("  import insert.zip  /zip  : run script, default extension is .sqt");
+            cout.WriteLine("  import /resource /format:resx /table-name:i18n-resx-table /name-column:name /value-column:es /in:.\resource.es.resx /commit");
         }
     }
 }

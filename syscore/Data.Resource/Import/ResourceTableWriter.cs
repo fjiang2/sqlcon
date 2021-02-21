@@ -17,13 +17,15 @@ namespace Sys.Data.Resource
 
         private readonly string name_column;
         private readonly string value_column;
+        private readonly string order_column;
 
-        public ResourceTableWriter(string path, TableName tname, string name_column, string value_column)
+        public ResourceTableWriter(string path, TableName tname, string name_column, string value_column, string order_column)
         {
             this.path = path;
             this.tname = tname;
             this.name_column = name_column;
             this.value_column = value_column;
+            this.order_column = order_column;
         }
 
         /// <summary>
@@ -43,29 +45,30 @@ namespace Sys.Data.Resource
             foreach (var entry in entries)
             {
                 gen.Clear();
+                gen.Add(name_column, entry.Name);
+                gen.Add(value_column, entry.NewValue);
+                if (order_column != null)
+                    gen.Add(order_column, entry.Index);
+
                 switch (entry.Action)
                 {
                     case DataRowAction.Add:
-                        gen.Add(name_column, entry.Name);
-                        gen.Add(value_column, entry.NewValue);
                         builder.AppendLine(gen.Insert());
                         break;
 
                     case DataRowAction.Change:
-                        gen.Add(name_column, entry.Name);
-                        gen.Add(value_column, entry.NewValue);
                         builder.AppendLine(gen.Update());
                         break;
                 }
 
                 count = (count + 1) % max;
                 if (count == 0)
-                    execute();
+                    ExecuteNonQuery();
             }
 
-            execute();
+            ExecuteNonQuery();
 
-            void execute()
+            void ExecuteNonQuery()
             {
                 string SQL = builder.ToString();
                 builder.Clear();
@@ -112,6 +115,8 @@ namespace Sys.Data.Resource
         private List<ResourceEntry> Preprocess(List<entry> entries, List<entry> rows)
         {
             List<ResourceEntry> list = new List<ResourceEntry>();
+
+            int index = 0;
             foreach (entry entry in entries)
             {
                 var found = rows.SingleOrDefault(row => row.name == entry.name);
@@ -119,6 +124,7 @@ namespace Sys.Data.Resource
                 {
                     Name = entry.name,
                     NewValue = entry.value,
+                    Index = index++,
                 };
 
                 if (found == null)
