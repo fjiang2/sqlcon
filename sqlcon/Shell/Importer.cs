@@ -109,12 +109,18 @@ namespace sqlcon
 
         private void ImportResourceData()
         {
+            string file_name = cmd.InputPath();
             ResourceFomat format = cmd.GetEnum("format", ResourceFomat.resx);
-            string file_name = cmd.InputPath() ?? ".";
             string schema_name = cmd.GetValue("schema-name") ?? SchemaName.dbo;
             string table_name = cmd.GetValue("table-name");
-            string name_column = cmd.GetValue("name-column");
+            string name_column = cmd.GetValue("name-column") ?? "name";
             string value_column = cmd.GetValue("value-column") ?? name_column;
+
+            if (file_name == null)
+            {
+                cerr.WriteLine($"file name is not defined, use option /in:file_name");
+                return;
+            }
 
             if (!File.Exists(file_name))
             {
@@ -149,6 +155,8 @@ namespace sqlcon
                 CaseSensitive = true,
             }.Table;
 
+            cout.WriteLine($"{dt.Rows.Count} of entries on \"{file_name}\"");
+
             if (string.IsNullOrEmpty(name_column))
             {
                 cerr.WriteLine("name-column is undefined");
@@ -167,35 +175,32 @@ namespace sqlcon
                 return;
             }
 
-            ResourceTableWriter writer = new ResourceTableWriter(file_name)
-            {
-                tname = tname,
-                dt = dt,
-                name_column = name_column,
-                value_column = value_column,
-            };
-
-            List<ResourceEntry> entries = writer.Preprocess(format, dt, name_column, value_column);
+            ResourceTableWriter writer = new ResourceTableWriter(file_name, tname, name_column, value_column);
+            List<ResourceEntry> entries = writer.Difference(format, dt);
             foreach (var entry in entries)
             {
                 if (entry.Action == DataRowAction.Add)
                 {
-                    Console.WriteLine($"new entry: \"{entry.Name}\", \"{entry.NewValue}\"");
+                    cout.WriteLine($"new entry: \"{entry.Name}\", \"{entry.NewValue}\"");
                 }
                 else if (entry.Action == DataRowAction.Change)
                 {
-                    Console.WriteLine($"update entry: \"{entry.Name}\", \"{entry.OldValue}\" -> \"{entry.NewValue}\"");
+                    cout.WriteLine($"update entry: \"{entry.Name}\", \"{entry.OldValue}\" -> \"{entry.NewValue}\"");
                 }
             }
 
-            cout.WriteLine($"{entries.Count} of entries on \"{file_name}\"");
+            if (entries.Count > 0)
+                cout.WriteLine($"{entries.Count} of entries were changed");
 
-            bool commit = cmd.Has("commit");
-            if (commit)
+            if (entries.Count > 0)
             {
-                cout.WriteLine($"starting to save changes into table \"{tname}\"");
-                writer.SubmitChanges(entries);
-                cout.WriteLine($"completed to save on table \"{tname}\"");
+                bool commit = cmd.Has("commit");
+                if (commit)
+                {
+                    cout.WriteLine($"starting to save changes into table \"{tname}\"");
+                    writer.SubmitChanges(entries);
+                    cout.WriteLine($"completed to save on table \"{tname}\" from \"{file_name}\"");
+                }
             }
         }
 
@@ -208,13 +213,13 @@ namespace sqlcon
             cout.WriteLine("  /zip                     : dump variables memory to output file");
             cout.WriteLine("  /out                     : define output file or directory");
             cout.WriteLine("  /resource: import resource file into a table");
+            cout.WriteLine("      [/in:]          : resource file name");
             cout.WriteLine("      [/format:]      : resource format: resx|xlf|json, default:resx");
             cout.WriteLine("      [/schema-name:] : default is dbo");
             cout.WriteLine("      [/table-name:]  : default is current table selected");
-            cout.WriteLine("      [/name-column:] : name column");
+            cout.WriteLine("      [/name-column:] : name column, default is name");
             cout.WriteLine("      [/value-column:]: value column");
-            cout.WriteLine("      [/language:]    : language: en|es|..., default:en");
-            cout.WriteLine("      [/in:]          : resource file name");
+            cout.WriteLine("      [/commit]      : save entries into database");
             cout.WriteLine("example:");
             cout.WriteLine("  import insert.sql        : run script");
             cout.WriteLine("  import insert.zip  /zip  : run script, default extension is .sqt");

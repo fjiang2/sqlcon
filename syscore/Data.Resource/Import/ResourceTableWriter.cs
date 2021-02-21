@@ -6,21 +6,30 @@ using System.Text;
 
 namespace Sys.Data.Resource
 {
+
+    /// <summary>
+    /// Write data row into resource definition table
+    /// </summary>
     public class ResourceTableWriter
     {
-        private string path { get; }
-        public TableName tname { get; set; }
-        public DataTable dt { get; set; }
+        private readonly string path;
+        private readonly TableName tname;
 
-        public string name_column { get; set; }
-        public string value_column { get; set; }
+        private readonly string name_column;
+        private readonly string value_column;
 
-
-        public ResourceTableWriter(string path)
+        public ResourceTableWriter(string path, TableName tname, string name_column, string value_column)
         {
             this.path = path;
+            this.tname = tname;
+            this.name_column = name_column;
+            this.value_column = value_column;
         }
 
+        /// <summary>
+        /// Save into database
+        /// </summary>
+        /// <param name="entries"></param>
         public void SubmitChanges(List<ResourceEntry> entries)
         {
             SqlMaker gen = new SqlMaker(tname.FormalName)
@@ -68,7 +77,14 @@ namespace Sys.Data.Resource
             }
         }
 
-        public List<ResourceEntry> Preprocess(ResourceFomat format, DataTable dt, string name_column, string value_column)
+
+        /// <summary>
+        /// Compare data table and resouce file, and find differences
+        /// </summary>
+        /// <param name="format"></param>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        public List<ResourceEntry> Difference(ResourceFomat format, DataTable dt)
         {
             //load data rows from database
             var rows = dt.ToList(row => new entry

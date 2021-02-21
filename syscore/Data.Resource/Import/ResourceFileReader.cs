@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using System.Data;
+using Sys.Stdio;
 
 namespace Sys.Data.Resource
 {
@@ -35,15 +36,14 @@ namespace Sys.Data.Resource
                 if (list.Select(x => x.name).Contains(token.name))
                 {
                     var result = list.Find(x => x.name == token.name);
-                    Console.WriteLine($"duplicated {result}");
-                    Console.WriteLine($"duplicated {token}");
+                    cerr.WriteLine($"duplicated {result}");
+                    cerr.WriteLine($"duplicated {token}");
                 }
 
                 list.Add(token);
                 count++;
             }
 
-            Console.WriteLine($"Completed {path}");
             return list;
         }
     }
