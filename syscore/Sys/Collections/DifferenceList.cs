@@ -20,12 +20,14 @@ namespace Sys.Collections
         private bool isDirty = false;
 
         /// <summary>
-        /// Use GetHashCode() as default key
+        /// Use GetHashCode() as default key. 
+        /// It can be used on default contructor
         /// </summary>
         public Func<T, int> PrimaryKey { get; set; } = item => item.GetHashCode();
 
         /// <summary>
         /// Use Equals() as default comparer
+        /// It can be used on default contructor
         /// </summary>
         public Func<T, T, bool> Compare { get; set; } = (a, b) => a.Equals(b);
 
@@ -33,6 +35,9 @@ namespace Sys.Collections
         private Action<T> onItemDeleted;
         private Action<T, T> onItemModified;
 
+        /// <summary>
+        /// Func property PrimaryKey and Compare can be used here
+        /// </summary>
         public DifferenceList()
         {
             dt = new DataTable
@@ -49,7 +54,9 @@ namespace Sys.Collections
         }
 
         /// <summary>
-        /// Add new items as comparison base
+        /// Add new items as comparison base. 
+        /// typeof(T) must override int GetHashCode() and bool Equals() 
+        /// Don't use Func property PrimaryKey and Compare here
         /// </summary>
         /// <param name="items"></param>
         public DifferenceList(IEnumerable<T> items)
@@ -57,7 +64,9 @@ namespace Sys.Collections
         {
             foreach (T item in items)
             {
-                int key = PrimaryKey(item);
+                // Must use default PrimaryKey = item=>item.GetHashCode(), 
+                // becuase user defined PrimaryKey is not ready in this code line.
+                int key = PrimaryKey(item);         
 
                 DataRow newRow = dt.NewRow();
                 newRow[_KEY] = key;
