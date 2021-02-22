@@ -159,25 +159,14 @@ namespace sqlcon
                 CaseSensitive = true,
             }.Table;
 
+            if (!ValidateColumn<string>(dt, name_column, "name-column", required: true))
+                return;
+            if (!ValidateColumn<string>(dt, value_column, "value-column", required: true))
+                return;
+            if (!ValidateColumn<int>(dt, order_column, "order-column", required: false))
+                return;
+
             cout.WriteLine($"{dt.Rows.Count} of entries on \"{file_name}\"");
-
-            if (string.IsNullOrEmpty(name_column))
-            {
-                cerr.WriteLine("name-column is undefined");
-                return;
-            }
-
-            if (!dt.Columns.Contains(name_column))
-            {
-                cerr.WriteLine($"name-column doesn't exist: {name_column}");
-                return;
-            }
-
-            if (!dt.Columns.Contains(value_column))
-            {
-                cerr.WriteLine($"value-column doesn't exist: {value_column}");
-                return;
-            }
 
             ResourceTableWriter writer = new ResourceTableWriter(file_name, tname, name_column, value_column, order_column);
             List<ResourceEntry> entries = writer.Differ(format, dt, trim_name, trim_value);
@@ -216,6 +205,32 @@ namespace sqlcon
             }
         }
 
+        public static bool ValidateColumn<T>(DataTable dt, string columnName, string option, bool required)
+        {
+            if (columnName == null)
+            {
+                if (!required)
+                    return true;
+
+                cerr.WriteLine($"{option} is undefined");
+                return false;
+            }
+
+            if (!dt.Columns.Contains(columnName))
+            {
+                cerr.WriteLine($"{option} doesn't exist: {columnName}");
+                return false;
+            }
+
+            DataColumn column = dt.Columns[columnName];
+            if (column.DataType != typeof(T))
+            {
+                cerr.WriteLine($"{option} data type is required: {typeof(T)}");
+                return false;
+            }
+
+            return true;
+        }
 
         public static void Help()
         {
