@@ -118,6 +118,7 @@ namespace sqlcon
             string order_column = cmd.GetValue("order-column");
             bool trim_name = cmd.Has("trim-name");
             bool trim_value = cmd.Has("trim-value");
+            bool deleteRowNotInResource = cmd.Has("delete-rows-not-in-resource-file");
 
             if (file_name == null)
             {
@@ -158,37 +159,32 @@ namespace sqlcon
                 CaseSensitive = true,
             }.Table;
 
+            if (!ValidateColumn<string>(dt, name_column, "name-column", required: true))
+                return;
+            if (!ValidateColumn<string>(dt, value_column, "value-column", required: true))
+                return;
+            if (!ValidateColumn<int>(dt, order_column, "order-column", required: false))
+                return;
+
             cout.WriteLine($"{dt.Rows.Count} of entries on \"{file_name}\"");
 
-            if (string.IsNullOrEmpty(name_column))
-            {
-                cerr.WriteLine("name-column is undefined");
-                return;
-            }
-
-            if (!dt.Columns.Contains(name_column))
-            {
-                cerr.WriteLine($"name-column doesn't exist: {name_column}");
-                return;
-            }
-
-            if (!dt.Columns.Contains(value_column))
-            {
-                cerr.WriteLine($"value-column doesn't exist: {value_column}");
-                return;
-            }
-
             ResourceTableWriter writer = new ResourceTableWriter(file_name, tname, name_column, value_column, order_column);
-            List<ResourceEntry> entries = writer.Difference(format, dt, trim_name, trim_value);
+            List<ResourceEntry> entries = writer.Differ(format, dt, trim_name, trim_value);
             foreach (var entry in entries)
             {
-                if (entry.Action == DataRowAction.Add)
+                switch (entry.Action)
                 {
-                    cout.WriteLine($"new entry: \"{entry.Name}\", \"{entry.NewValue}\"");
-                }
-                else if (entry.Action == DataRowAction.Change)
-                {
-                    cout.WriteLine($"update entry: \"{entry.Name}\", \"{entry.OldValue}\" -> \"{entry.NewValue}\"");
+                    case DataRowAction.Add:
+                        cout.WriteLine($"new entry: \"{entry.Name}\", \"{entry.NewValue}\"");
+                        break;
+
+                    case DataRowAction.Change:
+                        cout.WriteLine($"update entry: \"{entry.Name}\", \"{entry.OldValue}\" -> \"{entry.NewValue}\"");
+                        break;
+
+                    case DataRowAction.Delete:
+                        cout.WriteLine($"delete entry: \"{entry.Name}\"");
+                        break;
                 }
             }
 
@@ -203,12 +199,38 @@ namespace sqlcon
                 if (commit)
                 {
                     cout.WriteLine($"starting to save changes into table \"{tname}\"");
-                    writer.SubmitChanges(entries);
+                    writer.SubmitChanges(entries, deleteRowNotInResource);
                     cout.WriteLine($"completed to save on table \"{tname}\" from \"{file_name}\"");
                 }
             }
         }
 
+        public static bool ValidateColumn<T>(DataTable dt, string columnName, string option, bool required)
+        {
+            if (columnName == null)
+            {
+                if (!required)
+                    return true;
+
+                cerr.WriteLine($"{option} is undefined");
+                return false;
+            }
+
+            if (!dt.Columns.Contains(columnName))
+            {
+                cerr.WriteLine($"{option} doesn't exist: {columnName}");
+                return false;
+            }
+
+            DataColumn column = dt.Columns[columnName];
+            if (column.DataType != typeof(T))
+            {
+                cerr.WriteLine($"{option} data type is required: {typeof(T)}");
+                return false;
+            }
+
+            return true;
+        }
 
         public static void Help()
         {
@@ -231,7 +253,8 @@ namespace sqlcon
             cout.WriteLine("example:");
             cout.WriteLine("  import insert.sql        : run script");
             cout.WriteLine("  import insert.zip  /zip  : run script, default extension is .sqt");
-            cout.WriteLine("  import /resource /format:resx /table-name:i18n-resx-table /name-column:name /value-column:es /in:.\resource.es.resx /commit");
+            cout.WriteLine("  import /resource /format:resx /table-name:i18n-resx-table /name-column:name /value-column:es /in:.\\resource.es.resx /submit-changes");
+            cout.WriteLine("  import /resource /format:json /table-name:i18n-json-table /name-column:name /value-column:es /in:.\\es.json /submit-changes");
         }
     }
 }

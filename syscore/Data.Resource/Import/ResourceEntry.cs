@@ -14,12 +14,29 @@ namespace Sys.Data.Resource
         {
         }
 
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            var entry = obj as ResourceEntry;
+            if (entry == null)
+                return false;
+
+            return this.Name == entry.Name;
+        }
+
         public override string ToString()
         {
+            if (OldValue == null && NewValue == null)
+                return $"{Action} | \"{Name}\"";
+
             if (OldValue == null)
-                return $"\"{Name}\" : \"{NewValue}\"";
-            else
-                return $"\"{Name}\" : \"{OldValue}\" -> \"{NewValue}\"";
+                return $"{Action} | \"{Name}\" : \"{NewValue}\"";
+
+            return $"{Action} | \"{Name}\" : \"{OldValue}\" -> \"{NewValue}\"";
         }
     }
 }

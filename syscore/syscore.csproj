@@ -336,6 +336,7 @@
     <Compile Include="EventArgs\MessageEventArgs.cs" />
     <Compile Include="Extension\Iteratable.cs" />
     <Compile Include="IO\FileName.cs" />
+    <Compile Include="Sys\Collections\DifferenceList.cs" />
     <Compile Include="Sys\Wildcard\IWildcard.cs" />
     <Compile Include="Extension\JsonExtension.cs" />
     <Compile Include="Sys\Wildcard\Matchable.cs" />
@@ -416,6 +417,7 @@
       <Version>2.0.7</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
