@@ -21,7 +21,7 @@
             if (entry == null)
                 return false;
 
-            return this.name == entry.name;
+            return this.name == entry.name && this.value == entry.value;
         }
 
 
