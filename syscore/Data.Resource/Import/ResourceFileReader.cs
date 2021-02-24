@@ -120,10 +120,16 @@ namespace Sys.Data.Resource
                 XElement target = unit.Element(xmlns + "target");
 
                 if (source == null)
-                    throw new Exception($"cannot find <source>");
+                {
+                    cerr.WriteLine($"cannot find <source>");
+                    continue;
+                }
 
                 if (target == null)
-                    throw new Exception($"cannot find <target> in {source}");
+                {
+                    cerr.WriteLine($"cannot find <target> in {source}");
+                    continue;
+                }
 
                 entry entry = new entry();
                 if (source.Elements().Any())
