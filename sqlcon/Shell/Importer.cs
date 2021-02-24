@@ -193,16 +193,24 @@ namespace sqlcon
             else
                 cout.WriteLine($"no entry is changed");
 
-            if (entries.Count > 0)
+            if (entries.Count == 0)
+                return;
+
+            bool commit = cmd.Has("submit-changes");
+            if (!commit)
+                return;
+
+            cout.WriteLine($"starting to save changes into table \"{tname}\"");
+            try
             {
-                bool commit = cmd.Has("submit-changes");
-                if (commit)
-                {
-                    cout.WriteLine($"starting to save changes into table \"{tname}\"");
-                    writer.SubmitChanges(entries, deleteRowNotInResource);
-                    cout.WriteLine($"completed to save on table \"{tname}\" from \"{file_name}\"");
-                }
+                writer.SubmitChanges(entries, deleteRowNotInResource);
+                cout.WriteLine($"completed to save on table \"{tname}\" from \"{file_name}\"");
             }
+            catch (Exception ex)
+            {
+                cerr.WriteLine($"failed to save in \"{tname}\" , {ex.AllMessages()}");
+            }
+
         }
 
         public static bool ValidateColumn<T>(DataTable dt, string columnName, string option, bool required)
