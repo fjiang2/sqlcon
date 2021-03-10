@@ -90,9 +90,9 @@ namespace sqlcon
             Field field;
 
             //schema name
-            if (!string.IsNullOrEmpty(dt.Prefix))
+            if (!dt.IsDbo())
             {
-                field = new Field(new TypeInfo { Type = typeof(string) }, "SchemaName", new Value(dt.Prefix))
+                field = new Field(new TypeInfo { Type = typeof(string) }, "SchemaName", new Value(dt.GetSchemaName()))
                 {
                     Modifier = Modifier.Public | Modifier.Const
                 };

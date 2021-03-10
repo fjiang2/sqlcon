@@ -1,6 +1,14 @@
 ﻿sqlcon release notes
 
-1/32/2021 v2.3.2.0
+2/12/2021 v2.3.3.0
+	Improvements/Enhancements:
+	1. Support to generate i18n resource files for .Net Framework, Angular 11, and @ngx-translate.
+	2. Examples:
+	   a. export /resource /format:resx /language:en /name-column:en /value-column:en /out:c:\temp
+	   b. export /resource /format:xlf /language:es /name-column:en /value-column:es /out:c:\temp
+	   c. export /resource /format:json /language:es /name-column:en /value-column:es /out:c:\temp
+
+1/31/2021 v2.3.2.0
 	Improvements/Enhancements:
 	1. function localip(-1) returns IP address of last NIC.
 

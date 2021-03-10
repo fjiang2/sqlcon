@@ -32,7 +32,7 @@
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>index.html</WebPage>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>2.3.1.%2a</ApplicationVersion>
+    <ApplicationVersion>2.3.3.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -64,10 +64,10 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>false</SignManifests>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>FB3773F0843E4491183F03544A0F5775AA99D568</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>4CA360EB0E2BC4FDB6594DC0E642538D0EDAC756</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>sqlcon_TemporaryKey.pfx</ManifestKeyFile>
@@ -129,6 +129,7 @@
     <Compile Include="Output\OutputDataTable.cs" />
     <Compile Include="Path\CommandPath.cs" />
     <Compile Include="Path\CommandState.cs" />
+    <Compile Include="Shell\Importer.cs" />
     <Compile Include="Shell\Loader.cs" />
     <Compile Include="Shell\ShellHelp.cs" />
     <Compile Include="Shell\ShellHistory.cs" />
@@ -184,6 +185,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Output\ConsoleGrid.cs" />
+    <None Include="sqlcon_TemporaryKey.pfx" />
     <Resource Include="Windows\images\Home_16x16.png" />
     <Resource Include="Windows\images\Close_16x16.png" />
     <Resource Include="Windows\images\Table_16x16.png" />
@@ -193,7 +195,6 @@
     <Resource Include="Windows\images\server_error.png" />
     <Resource Include="Windows\images\key.png" />
     <Resource Include="Windows\images\AlignHorizontalTop_16x16.png" />
-    <None Include="sqlcon_TemporaryKey.pfx" />
     <Resource Include="Windows\images\New_16x16.png" />
     <Resource Include="Windows\images\Next_16x16.png" />
     <Resource Include="Windows\images\Open_16x16.png" />

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Sys.Stdio;
+using Sys.Data.Resource;
 using Tie;
 
 namespace sqlcon
@@ -1219,6 +1220,26 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cerr.WriteLine("select server, database or table first");
         }
 
+        public void import(ApplicationCommand cmd, IApplicationConfiguration cfg, ShellContext context)
+        {
+            if (cmd.HasHelp)
+            {
+                Importer.Help();
+                return;
+            }
+
+            if (!Navigate(cmd.Path1))
+                return;
+
+            if (pt.Item is TableName || pt.Item is Locator || pt.Item is DatabaseName || pt.Item is ServerName)
+            {
+                var importer = new Importer(mgr, pt, cmd, cfg);
+                importer.Run();
+            }
+            else
+                cerr.WriteLine("select server, database or table first");
+        }
+
         public void mount(ApplicationCommand cmd, IConnectionConfiguration cfg)
         {
             if (cmd.HasHelp)
@@ -1404,9 +1425,6 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 }
             }
         }
-
-
-
 
 
         public void OpenEditor()
@@ -1748,6 +1766,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("save [file]");
                 cout.WriteLine("options:");
                 cout.WriteLine("  /output       : copy sql script ouput to clipboard for Windows only");
+                cout.WriteLine("  /string       : ");
                 cout.WriteLine("example:");
                 cout.WriteLine("  save /output");
                 return;
@@ -1769,12 +1788,35 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 #endif
                 }
             }
+            else if(cmd.Has("string"))
+            {
+                var pt = mgr.current;
+                if (pt.Item is DatabaseName)
+                {
+                    string table_name = cmd.GetValue("table-name") ?? "Table";
+                    string schema_name = cmd.GetValue("schema-name") ?? SchemaName.dbo;
+                    string root = cmd.GetValue("directory") ?? ".";
+                    DatabaseName dname = (DatabaseName)pt.Item;
+                    TableName tname = new TableName(dname, schema_name, table_name);
+                    
+                    StringDumper dumper = new StringDumper(tname);
+                    //StringExtractor extractor = new StringExtractor(dumper);
+                    //extractor.Extract(root);
+                  
+                    string SqlFileName = cmd.OutputFile(cfg.OutputFile);
+                    using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
+                    {
+                        dumper.Save(writer);
+                    }
+
+                    cout.WriteLine($"SQL script generated on \"{SqlFileName}\"");
+                    return;
+                }
+            }
             else
             {
                 cerr.WriteLine("invalid arguments");
             }
-
-            return;
         }
 
         public void echo(ApplicationCommand cmd)
@@ -1892,7 +1934,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("last [path]                :");
                 cout.WriteLine("options:");
                 cout.WriteLine("  /load                    : load C#, json or xml file to last dataset");
-                cout.WriteLine("  /save                    : save last dataset to json or xml file");
+                cout.WriteLine("  /save                    : save last dataset to sql, json or xml file");
                 cout.WriteLine("  /datalake                : format of json file is data lake");
                 cout.WriteLine("example:");
                 cout.WriteLine("  last                     : display last dataset");
@@ -1903,6 +1945,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("  last products.xml /save  : save last dataset to a xml file");
                 cout.WriteLine("  last /save               : use table name as file name and save");
                 cout.WriteLine("  last products.json /save : save last dataset to a json file");
+                cout.WriteLine("  last products.sql /save  : save last dataset to a sql file");
                 cout.WriteLine("  last products.cs  /load  : load c# file to last dataset");
                 cout.WriteLine("  last products.xml /load  : load xml file to last dataset");
                 cout.WriteLine("  last products.json /load : load json file to last dataset");
@@ -2167,51 +2210,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             return true; // NextStep.COMPLETED;
         }
 
-        public void import(ApplicationCommand cmd, IApplicationConfiguration cfg, ShellContext context)
-        {
-            if (cmd.HasHelp)
-            {
-                cout.WriteLine("import data");
-                cout.WriteLine("import [path]              :");
-                cout.WriteLine("options:");
-                cout.WriteLine("  /zip                     : dump variables memory to output file");
-                cout.WriteLine("  /out                     : define output file or directory");
-                cout.WriteLine("example:");
-                cout.WriteLine("  import insert.sql        : run script");
-                cout.WriteLine("  import insert.zip  /zip  : run script, default extension is .sqt");
-                return;
-            }
 
-            string file = cmd.arg1;
-            if (file == null)
-            {
-                cerr.WriteLine("file name not specified");
-                return;
-            }
-
-            if (!File.Exists(file))
-            {
-                cerr.WriteLine($"cannot find the file \"{file}\"");
-                return;
-            }
-
-            bool zip = false;
-            if (Path.GetExtension(file) == ".zip")
-                zip = true;
-
-            if (cmd.Has("zip"))
-                zip = true;
-
-            using (var reader = new StreamReader(file))
-            {
-                if (zip)
-                {
-                    ZipFileReader.ProcessZipArchive(file, line => Console.WriteLine(line));
-                }
-            }
-
-
-        }
     }
 }
 
