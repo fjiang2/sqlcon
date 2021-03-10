@@ -283,7 +283,7 @@ TABLE: dbo.Orders
 \localdb\Northwind\dbo.Products> type /edit
 ```
 
-![Image of Yaktocat](https://github.com/fjiang2/sqlcon/blob/feature/updated_readme_and_tutorial/images/edit-products.png?raw=true)
+![Image of Yaktocat](https://github.com/fjiang2/sqlcon/blob/master/images/edit-products.png?raw=true)
 
 ### Output as JSON
 
