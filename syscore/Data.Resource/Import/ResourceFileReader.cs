@@ -38,6 +38,9 @@ namespace Sys.Data.Resource
 
                 case ResourceFormat.json:
                     return ReadJson(path);
+
+                case ResourceFormat.xlf:
+                    return ReadXlf(path);
             }
 
             return new List<entry>();
@@ -100,6 +103,60 @@ namespace Sys.Data.Resource
             }
 
             return list;
+        }
+
+        private List<entry> ReadXlf(string path)
+        {
+            List<entry> list = new List<entry>();
+
+            XNamespace xmlns = "urn:oasis:names:tc:xliff:document:1.2";
+
+            XElement xdoc = XElement.Load(path);
+            var units = xdoc.Element(xmlns + "file").Element(xmlns + "body").Elements();
+
+            foreach (XElement unit in units)
+            {
+                XElement source = unit.Element(xmlns + "source");
+                XElement target = unit.Element(xmlns + "target");
+
+                if (source == null)
+                {
+                    cerr.WriteLine($"cannot find <source>");
+                    continue;
+                }
+
+                if (target == null)
+                {
+                    cerr.WriteLine($"cannot find <target> in {source}");
+                    continue;
+                }
+
+                entry entry = new entry();
+                if (source.Elements().Any())
+                {
+                    //todo: when source has children elements
+                }
+                else
+                {
+                    entry.name = source.Value;
+                }
+
+
+                if (target.Elements().Any())
+                {
+                    //todo: when target has children elements
+                }
+                else
+                {
+                    entry.value = target.Value;
+                }
+
+
+                list.Add(entry);
+            }
+
+            return list;
+
         }
     }
 }
