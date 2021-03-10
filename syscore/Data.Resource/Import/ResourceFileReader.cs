@@ -134,7 +134,7 @@ namespace Sys.Data.Resource
                 entry entry = new entry();
                 if (source.Elements().Any())
                 {
-
+                    //todo: when source has children elements
                 }
                 else
                 {
@@ -144,6 +144,7 @@ namespace Sys.Data.Resource
 
                 if (target.Elements().Any())
                 {
+                    //todo: when target has children elements
                 }
                 else
                 {
