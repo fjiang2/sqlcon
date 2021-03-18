@@ -1,5 +1,10 @@
 ﻿sqlcon release notes
 
+2/12/2021 v2.3.4.0
+	Bug Fixes:
+	1. Cannot copy or xcopy table rows when table schema is not dbo
+
+
 2/12/2021 v2.3.3.0
 	Improvements/Enhancements:
 	1. Support to generate i18n resource files for .Net Framework, Angular 11, and @ngx-translate.
