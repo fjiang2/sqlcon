@@ -50,7 +50,7 @@ namespace sqlcon
                 TableName tname2 = mgr.GetPathFrom<TableName>(ps2.Node);
                 if (tname2 == null)
                 {
-                    tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
+                    tname2 = new TableName(dname2, tname1.SchemaName, tname1.Name);
                 }
 
                 action(tname1, tname2);

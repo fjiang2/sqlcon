@@ -87,7 +87,7 @@ namespace sqlcon
                         if (i < N2.Length && N2[i].DatabaseName == tname1.DatabaseName)
                             tname2 = N2[i];
                         else
-                            tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
+                            tname2 = new TableName(dname2, tname1.SchemaName, tname1.Name);
                     }
 
                     if (compareType == ActionType.CompareData && !match.Contains(tname1))
