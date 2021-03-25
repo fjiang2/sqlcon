@@ -549,7 +549,7 @@ namespace sqlcon
                     TableName tname2 = mgr.GetPathFrom<TableName>(both.ps2.Node);
                     if (tname2 == null)
                     {
-                        tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
+                        tname2 = new TableName(dname2, tname1.SchemaName, tname1.Name);
                     }
 
                     var adapter = new CompareAdapter(cmd, both.ps1.side, both.ps2.side);
@@ -1488,7 +1488,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
                     TableName tname2 = mgr.GetPathFrom<TableName>(both.ps2.Node);
                     if (tname2 == null)
-                        tname2 = new TableName(dname2, tname1.SchemaName, tname1.ShortName);
+                        tname2 = new TableName(dname2, tname1.SchemaName, tname1.Name);
 
                     if (cmd.IsSchema)
                     {
