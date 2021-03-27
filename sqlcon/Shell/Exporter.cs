@@ -978,7 +978,7 @@ namespace sqlcon
                 ExportInsertOrUpdateData(SqlScriptType.INSERT);
             else if (cmd.Has("UPDATE"))
                 ExportInsertOrUpdateData(SqlScriptType.UPDATE);
-            else if (cmd.Has("SAVE"))
+            else if (cmd.Has("SAVE") || cmd.Has("UPSERT"))
                 ExportInsertOrUpdateData(SqlScriptType.INSERT_OR_UPDATE);
             else if (cmd.Has("create"))
                 ExportCreate();
@@ -992,7 +992,7 @@ namespace sqlcon
                 ExportScud(SqlScriptType.DROP);
             else if (cmd.Has("update"))
                 ExportScud(SqlScriptType.UPDATE);
-            else if (cmd.Has("save"))
+            else if (cmd.Has("save") || cmd.Has("upsert"))
                 ExportScud(SqlScriptType.INSERT_OR_UPDATE);
             else if (cmd.Has("schema"))
                 ExportSchema();
