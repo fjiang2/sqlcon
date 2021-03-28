@@ -71,6 +71,8 @@ namespace sqlcon
                 ProcessZipArchive();
             else if (cmd.Has("resource"))
                 ImportResourceData();
+            else if (cmd.Has("extract-string"))
+                ExtractStringList();
             else
                 cerr.WriteLine("invalid command options");
         }
@@ -205,6 +207,128 @@ namespace sqlcon
             {
                 writer.SubmitChanges(entries, deleteRowNotInResource);
                 cout.WriteLine($"completed to save on table \"{tname}\" from \"{file_name}\"");
+            }
+            catch (Exception ex)
+            {
+                cerr.WriteLine($"failed to save in \"{tname}\" , {ex.AllMessages()}");
+            }
+
+        }
+
+        private void ExtractStringList()
+        {
+            const string _File = "File";
+            const string _Line = "Line";
+            const string _Col = "Col";
+            const string _Type = "Type";
+            const string _String = "String";
+            Dictionary<string, string> defaultColumns = new Dictionary<string, string>
+            {
+                [_File] = "File",
+                [_Line] = "Line",
+                [_Col] = "Col",
+                [_Type] = "Type",
+                [_String] = "String",
+            };
+
+            string schema_name = cmd.GetValue("schema-name") ?? SchemaName.dbo;
+            string table_name = cmd.GetValue("table-name");
+            bool allDirectories = cmd.Has("include-subdirectory");
+            string[] file_names = cmd.InputFiles(allDirectories);
+            string[] includes = cmd.Includes;
+            string[] excludes = cmd.Excludes;
+
+            IDictionary<string, string> column_names = cmd.GetDictionary("column-name", defaultColumns);
+
+            if (file_names == null)
+            {
+                cerr.WriteLine($"file name or directory is not defined, use option /in:file_name");
+                return;
+            }
+
+            if (file_names.Length == 0)
+            {
+                cerr.WriteLine($"file doesn't exist: \"{file_names}\"");
+                return;
+            }
+
+            if (tname == null)
+            {
+                if (table_name == null)
+                {
+                    cerr.WriteLine($"/table-name is not defined");
+                    return;
+                }
+
+                if (dname == null)
+                {
+                    cerr.WriteLine($"required to select a database");
+                    return;
+                }
+
+                tname = new TableName(dname, schema_name, table_name);
+                if (!tname.Exists())
+                {
+                    cerr.WriteLine($"table-name doesn't exist: {tname}");
+                    return;
+                }
+            }
+
+            DataTable dt = new TableReader(tname)
+            {
+                CaseSensitive = true,
+            }.Table;
+
+            StringDumper dumper = new StringDumper(tname)
+            {
+                Line = column_names[_Line],
+                Column = column_names[_Col],
+                Type = column_names[_Type],
+                FileName = column_names[_File],
+                Value = column_names[_String],
+            };
+
+            dumper.Initialize();
+            StringExtractor extractor = new StringExtractor(dumper);
+
+            if (!ValidateColumn<int>(dt, dumper.Line, "column-name", required: true))
+                return;
+            if (!ValidateColumn<int>(dt, dumper.Column, "column-name", required: true))
+                return;
+            if (!ValidateColumn<string>(dt, dumper.FileName, "column-name", required: false))
+                return;
+            if (!ValidateColumn<string>(dt, dumper.Type, "column-name", required: false))
+                return;
+            if (!ValidateColumn<string>(dt, dumper.Value, "column-name", required: false))
+                return;
+
+
+            foreach (string file in file_names)
+            {
+                if (file.IsMatch(excludes))
+                {
+                    Console.WriteLine($"skip: {file}");
+                    continue;
+                }
+
+                if (file.EndsWith("AssemblyInfo.cs"))
+                    continue;
+
+                int count = extractor.Extract(file);
+                if (count > 0)
+                    cout.WriteLine($"{count} of strings were extracted in file: \"{file}\"");
+                else
+                    cout.WriteLine($"no string found in file: \"{file}\"");
+            }
+
+            bool commit = cmd.Has("submit-changes");
+            if (!commit)
+                return;
+
+            cout.WriteLine($"starting to save changes into table \"{tname}\"");
+            try
+            {
+                cout.WriteLine($"completed to save on table \"{tname}\" from \"{cmd.InputPath()}\"");
             }
             catch (Exception ex)
             {
