@@ -328,6 +328,8 @@ namespace sqlcon
             cout.WriteLine($"starting to save changes into table \"{tname}\"");
             try
             {
+                TableWriter tableWriter = new TableWriter(tname);
+                tableWriter.Save(dumper.Table);
                 cout.WriteLine($"completed to save on table \"{tname}\" from \"{cmd.InputPath()}\"");
             }
             catch (Exception ex)

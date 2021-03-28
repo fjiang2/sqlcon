@@ -198,8 +198,8 @@ namespace Sys.Data
 
         protected string selectQuery()
         {
-            string selector = string.Join(",", fields.Select(field => string.Format("[{0}]", field.Name))); ;
-            return template.Insert(selector, locator.ToString());
+            string selector = string.Join(",", fields.Select(field => string.Format("[{0}]", field.Name)));
+            return template.Select(selector, locator.ToString());
         }
 
         protected string deleteQuery()
