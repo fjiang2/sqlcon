@@ -217,11 +217,11 @@ namespace sqlcon
 
         private void ExtractStringList()
         {
-            const string _File = "File";
-            const string _Line = "Line";
-            const string _Col = "Col";
-            const string _Type = "Type";
-            const string _String = "String";
+            const string _File = "file";
+            const string _Line = "line";
+            const string _Col = "col";
+            const string _Type = "type";
+            const string _String = "string";
             Dictionary<string, string> defaultColumns = new Dictionary<string, string>
             {
                 [_File] = "File",
@@ -233,12 +233,11 @@ namespace sqlcon
 
             string schema_name = cmd.GetValue("schema-name") ?? SchemaName.dbo;
             string table_name = cmd.GetValue("table-name");
-            bool allDirectories = cmd.Has("include-subdirectory");
+            bool allDirectories = cmd.Has("subdirectory");
             string[] file_names = cmd.InputFiles(allDirectories);
-            string[] includes = cmd.Includes;
             string[] excludes = cmd.Excludes;
 
-            IDictionary<string, string> column_names = cmd.GetDictionary("column-name", defaultColumns);
+            IDictionary<string, string> column_names = cmd.GetDictionary("column-names", defaultColumns);
 
             if (file_names == null)
             {
@@ -384,11 +383,19 @@ namespace sqlcon
             cout.WriteLine("      [/trim-name]      : trim string of property [name]");
             cout.WriteLine("      [/trim-value]     : trim string of property [value]");
             cout.WriteLine("      [/submit-changes] : save entries into database");
+            cout.WriteLine("  /extract-string: extract string from source code files for string resources");
+            cout.WriteLine("      [/in:]            : source code file name or directory");
+            cout.WriteLine("      [/subdirectory]   : include subdirectory");
+            cout.WriteLine("      [/schema-name:]   : default is dbo");
+            cout.WriteLine("      [/table-name:]    : default is current table selected");
+            cout.WriteLine("      [/column-names:]  : string list table definition [file,line,col,type,string]");
+            cout.WriteLine("      [/submit-changes] : save strings into database");
             cout.WriteLine("example:");
             cout.WriteLine("  import insert.sql        : run script");
             cout.WriteLine("  import insert.zip  /zip  : run script, default extension is .sqt");
             cout.WriteLine("  import /resource /format:resx /table-name:i18n-resx-table /name-column:name /value-column:es /in:.\\resource.es.resx /submit-changes");
             cout.WriteLine("  import /resource /format:json /table-name:i18n-json-table /name-column:name /value-column:es /in:.\\es.json /submit-changes");
+            cout.WriteLine("  import /extract-string /table-name:StringList /column-names:file=FileName,line=Line,col=Col,type=StringType,string=String /subdirectory /in:*.cs /submit-changes");
         }
     }
 }
