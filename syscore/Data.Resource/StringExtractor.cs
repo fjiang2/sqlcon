@@ -10,18 +10,6 @@ namespace Sys.Data.Resource
 {
     public class StringExtractor
     {
-        public List<string> includes = new List<string>
-        {
-            ".cs"
-        };
-
-        public List<string> excludes = new List<string>
-        {
-            "\\bin\\",
-            "\\obj\\",
-            "DS.Designer.cs",
-        };
-
         public string[] fonts = new string[]
         {
             "Microsoft Sans Serif",
@@ -37,54 +25,7 @@ namespace Sys.Data.Resource
             this.dumper = dumper;
         }
 
-        public void Extract(string root)
-        {
-            var files = Directory.GetFiles(root, "*.cs", SearchOption.AllDirectories);
-
-            foreach (string file in files)
-            {
-                if (!MatchFileName(file))
-                {
-                    //Console.WriteLine($"skip: {file}");
-                    continue;
-                }
-
-                if (file.EndsWith("AssemblyInfo.cs"))
-                    continue;
-
-                Console.WriteLine(file);
-                ProcessFile(file);
-            }
-        }
-
-        public void Extract(string[] files)
-        {
-            foreach (string file in files)
-            {
-                Console.WriteLine(file);
-                ProcessFile(file);
-            }
-        }
-
-
-        private bool MatchFileName(string path)
-        {
-            foreach (string a in excludes)
-            {
-                if (path.IndexOf(a) > 0)
-                    return false;
-            }
-
-            foreach (string a in includes)
-            {
-                if (path.IndexOf(a) > 0)
-                    return true;
-            }
-
-            return false;
-        }
-
-        private List<Token> ProcessFile(string path)
+        public int Extract(string path)
         {
             string code = File.ReadAllText(path);
             var L = Script.Tokenize(code).ToArray();
@@ -105,7 +46,8 @@ namespace Sys.Data.Resource
                         {
                             name = current.tok,
                             value = current.tok,
-                            line = 0 // current.line,
+                            line = i, // current.line,
+                            col = 0, 
                         };
 
                         tok.name = ToIdentifier(current.tok);
@@ -119,11 +61,11 @@ namespace Sys.Data.Resource
             }
 
             if (L2.Count == 0)
-                return L2;
+                return 0;
 
             Output(path, L2);
 
-            return L2;
+            return L2.Count;
         }
 
         private void Output(string cs, List<Token> L2)
@@ -136,9 +78,9 @@ namespace Sys.Data.Resource
                         stringTokens.Add(line.name, line);
 
                     if (line.type != null)
-                        dumper.Add(cs, line.line, "$", line.name, line.value);
+                        dumper.Add(cs, line.line, line.col, "$", line.name, line.value);
                     else
-                        dumper.Add(cs, line.line, "", line.name, line.value);
+                        dumper.Add(cs, line.line, line.col, "", line.name, line.value);
                 }
             }
         }
@@ -184,6 +126,7 @@ namespace Sys.Data.Resource
             public string value { get; set; }
             public string type { get; set; }
             public int line { get; set; }
+            public int col { get; set; }
         }
     }
 

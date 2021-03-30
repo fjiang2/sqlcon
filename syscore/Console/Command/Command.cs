@@ -12,8 +12,17 @@ namespace Sys.Stdio
     {
         public bool badcommand { get; private set; }
         protected List<string> paths = new List<string>();
-
+        
+        /// <summary>
+        /// Action is the command in command line
+        /// e.g. command> cd ..
+        /// Action is cd
+        /// </summary>
         public string Action;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public string args { get; private set; }
         public string arg1 { get; private set; }
         public string arg2 { get; private set; }

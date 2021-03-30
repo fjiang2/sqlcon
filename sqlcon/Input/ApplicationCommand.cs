@@ -184,6 +184,69 @@ namespace sqlcon
             }
         }
 
+        /// <summary>
+        /// Get dictionary
+        /// e.g. /column:file=File,type=Type
+        ///   GetNapArray("column") => {file:"File", type: "Type"};
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public IDictionary<string, string> GetDictionary(string name, Dictionary<string, string> defaultValue = null)
+        {
+            Dictionary<string, string> dict;
+            if (defaultValue != null)
+            {
+                dict = new Dictionary<string, string>(defaultValue);
+            }
+            else
+            {
+                dict = new Dictionary<string, string>();
+            }
+
+            string value = GetValue(name);
+            if (value == null)
+                return dict;
+
+            string[] values = value.Split(',');
+            foreach (string kvp in values)
+            {
+                string[] items = kvp.Split('=');
+                string key = null;
+                string val = null;
+                switch (items.Length)
+                {
+                    case 0:
+                        break;
+
+                    case 1:
+                        key = items[0];
+                        val = items[0];
+                        break;
+
+                    case 2:
+                        key = items[0];
+                        val = items[1];
+                        break;
+
+                    default:
+                        key = items[0];
+                        val = items[1];
+                        break;
+                }
+
+                if (key == null)
+                    continue;
+
+                if (dict.ContainsKey(key))
+                    dict.Remove(key);
+
+                dict.Add(key, val);
+            }
+
+            return dict;
+        }
+
         public string OutputDirectory()
         {
             string path = OutputPath();
@@ -235,6 +298,42 @@ namespace sqlcon
         public string OutputPath(string configKey, string defaultPath)
         {
             return OutputPath() ?? cfg.GetValue<string>(configKey, defaultPath);
+        }
+
+        public string InputDirectory()
+        {
+            string path = InputPath();
+            if (path == null)
+                return null;
+
+            if (Directory.Exists(path))
+                return path;
+
+            string directory = Path.GetDirectoryName(path);
+            if (Directory.Exists(directory))
+                return directory;
+
+            return null;
+        }
+
+        public string[] InputFiles(bool allDirectories)
+        {
+            string path = InputPath();
+            if (path == null)
+                return null;
+
+            if (Directory.Exists(path))
+                return Directory.GetFiles(path);
+
+            string directory = Path.GetDirectoryName(path);
+            string file = Path.GetFileName(path);
+            if (Directory.Exists(directory))
+                return Directory.GetFiles(directory, file, allDirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+
+            if (File.Exists(path))
+                return new string[] { path };
+
+            return null;
         }
 
         public string InputPath()

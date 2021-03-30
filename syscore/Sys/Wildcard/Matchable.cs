@@ -26,6 +26,22 @@ namespace Sys
             return source.Where(x => selector(x).IsMatch(wildcard));
         }
 
+        public static bool IsMatch(this string text, IEnumerable<string> patterns)
+        {
+            if (patterns == null)
+                return false;
+
+            if (patterns.Count() == 0)
+                return false;
+
+            foreach (string pattern in patterns)
+            {
+                if (text.IsMatch(pattern))
+                    return true;
+            }
+
+            return false;
+        }
 
         public static bool IsMatch(this string text, string pattern)
         {

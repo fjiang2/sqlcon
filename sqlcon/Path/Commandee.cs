@@ -1800,8 +1800,6 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     TableName tname = new TableName(dname, schema_name, table_name);
                     
                     StringDumper dumper = new StringDumper(tname);
-                    //StringExtractor extractor = new StringExtractor(dumper);
-                    //extractor.Extract(root);
                   
                     string SqlFileName = cmd.OutputFile(cfg.OutputFile);
                     using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
