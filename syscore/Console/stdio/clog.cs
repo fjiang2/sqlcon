@@ -10,12 +10,21 @@ namespace Sys.Stdio
 {
     public class clog
     {
-        private static StreamWriter writer = null;
+        private static TextWriter writer = null;
 
         static clog()
         {
             string fileName = Context.GetValue<string>(stdio.FILE_LOG, "clog.log");
-            writer = NewStreamWriter(fileName);
+
+            try
+            {
+                writer = NewStreamWriter(fileName);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"failed to create clog file:\"{fileName}\", {ex.AllMessages()}");
+                writer = Console.Error;
+            }
         }
 
         ~clog()
