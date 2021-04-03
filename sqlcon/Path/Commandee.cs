@@ -1520,21 +1520,16 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     if (both.ps1.Node.Item is Locator)
                     {
                         Locator locator = mgr.GetCombinedLocator(both.ps1.Node);
-                        string where = locator.Path;
-                        tableReader = new TableReader(tname1, where.Inject());
+                        tableReader = new TableReader(tname1, locator);
                     }
-                    else
-                        tableReader = new TableReader(tname1);
-
-                    long _cnt = tableReader.Count;
-                    int count = 0;
-                    if (_cnt < int.MaxValue)
-                        count = (int)_cnt;
                     else
                     {
-                        count = int.MaxValue;
-                        cerr.WriteLine($"total count={_cnt}, too many rows, progress bar may not be accurate");
+                        tableReader = new TableReader(tname1);
                     }
+
+                    long cnt = tableReader.Count;
+                    int count = Tools.ForceLongToInteger(cnt);
+
                     cout.Write($"copying {tname1.Name} ");
                     using (var progress = new ProgressBar { Count = count })
                     {
@@ -1553,7 +1548,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     }
 
                     if (!cts.IsCancellationRequested)
-                        cout.WriteLine($", Done on rows({_cnt}).");
+                        cout.WriteLine($", Done on rows({cnt}).");
                 }
             });
         }

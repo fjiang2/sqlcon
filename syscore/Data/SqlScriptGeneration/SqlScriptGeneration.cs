@@ -36,7 +36,7 @@ namespace Sys.Data
             this.script = new TableDataClause(schema);
         }
 
-        public int Generate(StreamWriter writer)
+        public int Generate(StreamWriter writer, IProgress<int> progress)
         {
             TableName tableName = schema.TableName;
             string sql = string.Format("SELECT * FROM {0}", tableName);
@@ -46,15 +46,15 @@ namespace Sys.Data
             SqlCmd cmd = new SqlCmd(tableName.Provider, sql);
 
             count = 0;
-            cmd.Read(reader => Generate(cmd, reader, writer));
+            cmd.Read(reader => Generate(cmd, reader, writer, progress));
             return count;
         }
 
-        private void Generate(SqlCmd cmd, DbDataReader reader, TextWriter writer)
+        private void Generate(SqlCmd cmd, DbDataReader reader, TextWriter writer, IProgress<int> progress)
         {
             if (reader != null)
             {
-                GenerateByDbReader(reader, writer);
+                GenerateByDbReader(reader, writer, progress);
                 return;
             }
 
@@ -84,17 +84,23 @@ namespace Sys.Data
             return count;
         }
 
-        private int GenerateByDbReader(DbDataReader reader, TextWriter writer)
+        private int GenerateByDbReader(DbDataReader reader, TextWriter writer, IProgress<int> progress)
         {
             DataTable schema1 = reader.GetSchemaTable();
 
             string[] columns = schema1.AsEnumerable().Select(row => row.Field<string>("ColumnName")).ToArray();
             object[] values = new object[columns.Length];
 
+            int step = 0;
             while (reader.HasRows)
             {
                 while (reader.Read())
                 {
+                    step++;
+
+                    if (step % 19 == 0)
+                        progress?.Report(step);
+
                     reader.GetValues(values);
                     var pairs = new ColumnPairCollection(columns, values);
                     GenerateRow(writer, pairs);

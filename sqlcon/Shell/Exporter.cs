@@ -91,7 +91,7 @@ namespace sqlcon
         {
             var dt = new SqlCmd(tname.Provider, $"SELECT TOP 1 * FROM {tname.FormalName}").FillDataTable();
             dt.SetSchemaAndTableName(tname);
-            
+
             var schema = new TableSchema(tname);
             dt.PrimaryKeys(schema.PrimaryKeys.Keys);
             foreach (IColumn column in schema.Columns)
@@ -200,31 +200,38 @@ namespace sqlcon
             if (tname != null)
             {
                 var node = mgr.GetCurrentNode<Locator>();
-                int count;
-
+                int count = 0;
                 using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
                 {
+                    //cout.WriteLine($"start to generate {tname} script to file: \"{SqlFileName}\"");
+                    Locator locator = null;
+                    string WHERE = "";
                     if (node != null)
                     {
-                        cout.WriteLine("start to generate {0} INSERT script to file: {1}", tname, SqlFileName);
-                        Locator locator = mgr.GetCombinedLocator(node);
-                        count = Compare.GenerateRows(type, writer, new TableSchema(tname), locator, option);
-                        cout.WriteLine($"{type} clauses (SELECT * FROM {tname} WHERE {locator}) generated to \"{SqlFileName}\"");
+                        locator = mgr.GetCombinedLocator(node);
+                        WHERE = $" WHERE {locator}";
                     }
-                    else
+
+                    long cnt = tname.GetTableRowCount(locator);
+                    count = Tools.ForceLongToInteger(cnt);
+                    using (var progress = new ProgressBar { Count = count })
                     {
-                        count = Compare.GenerateRows(type, writer, new TableSchema(tname), null, option);
-                        cout.WriteLine($"{type} clauses (SELECT * FROM {tname}) generated to \"{SqlFileName}\"");
+                        count = Compare.GenerateRows(type, writer, new TableSchema(tname), locator, option, progress);
                     }
+                    cout.WriteLine($"{type} clauses (SELECT * FROM {tname}{WHERE}) generated to \"{SqlFileName}\", Done on rows({cnt})");
                 }
             }
             else if (dname != null)
             {
-                cout.WriteLine("start to generate {0} script to file: {1}", dname, SqlFileName);
+                //cout.WriteLine($"start to generate {dname} script to file: \"{SqlFileName}\"");
                 using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
                 {
                     var md = new MatchedDatabase(dname, cmd);
                     TableName[] tnames = md.TableNames();
+
+                    if (tnames.Length > 5 && !cin.YesOrNo($"Are you sure to export {tnames.Length} tables on {dname} (y/n)?"))
+                        return;
+
                     CancelableWork.CanCancel(cts =>
                     {
                         foreach (var tn in tnames)
@@ -232,17 +239,22 @@ namespace sqlcon
                             if (cts.IsCancellationRequested)
                                 return;
 
-                            int count = new SqlCmd(tn.Provider, string.Format("SELECT COUNT(*) FROM {0}", tn)).FillObject<int>();
-                            if (count > cfg.MaxRows)
+                            long cnt = tn.GetTableRowCount();
+                            if (cnt > cfg.MaxRows)
                             {
-                                if (!cin.YesOrNo($"are you sure to export {count} rows on {tn.ShortName} (y/n)?"))
+                                if (!cin.YesOrNo($"Are you sure to export {cnt} rows on {tn.ShortName} (y/n)?"))
                                 {
                                     cout.WriteLine("\n{0,10} skipped", tn.ShortName);
                                     continue;
                                 }
                             }
 
-                            count = Compare.GenerateRows(type, writer, new TableSchema(tn), null, option);
+                            int count = Tools.ForceLongToInteger(cnt);
+                            using (var progress = new ProgressBar { Count = count })
+                            {
+                                count = Compare.GenerateRows(type, writer, new TableSchema(tn), null, option, progress);
+                            }
+
                             cout.WriteLine($"{count,10} row(s) generated on {tn.ShortName}");
                         }
 
