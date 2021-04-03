@@ -215,7 +215,7 @@ namespace Sys.Data.Linq
                     case PropertyInfo propertyInfo:
                         return propertyInfo.GetValue(container);
 
-                    default: 
+                    default:
                         return null;
                 }
             }
@@ -230,6 +230,9 @@ namespace Sys.Data.Linq
 
                 case MemberExpression memberExpression when memberExpression.Expression is null: // static
                     return GetMemberValue(memberExpression.Member);
+
+                case MemberExpression memberExpression:
+                    return GetMemberValue(memberExpression.Member, GetValue(memberExpression.Expression));
 
                 case MethodCallExpression methodCallExpression:
                     return Expression.Lambda(methodCallExpression).Compile().DynamicInvoke();

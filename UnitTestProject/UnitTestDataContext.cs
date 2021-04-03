@@ -411,7 +411,8 @@ namespace UnitTestProject
         [TestMethod]
         public void TestQueryExtension()
         {
-            var orders = Query.Select<Orders>(row => row.OrderID == 10254 || row.OrderID == 10260);
+            var req = new { OrderId = 10254 };
+            var orders = Query.Select<Orders>(row => row.OrderID == req.OrderId || row.OrderID == 10260);
 
             var order_details = orders.Expand<Orders, Order_Details>();
             var products = order_details.Expand<Order_Details, Products>();
