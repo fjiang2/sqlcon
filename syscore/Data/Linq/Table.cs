@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Sys.Data.Linq
 {
@@ -211,6 +212,38 @@ namespace Sys.Data.Linq
             gen.Clear();
         }
 
+        public int PartialUpdateOnSubmit(TEntity entity, Expression<Func<TEntity, object>> modifiedProperties, Expression<Func<TEntity, bool>> where)
+        {
+            if (entity == null)
+                throw new ArgumentNullException($"argument {nameof(entity)} cannot be null");
+
+            List<string> names = new PropertyTranslator().Translate(modifiedProperties);
+            string _where = new QueryTranslator().Translate(where);
+
+            var gen = this.Generator;
+            foreach (var propertyInfo in entity.GetType().GetProperties())
+            {
+                if (names.IndexOf(propertyInfo.Name) == -1)
+                    continue;
+
+                object value = propertyInfo.GetValue(entity);
+                gen.Add(propertyInfo.Name, value);
+            }
+
+            Context.CodeBlock.AppendLine<TEntity>(gen.Update());
+
+            var evt = new RowEvent
+            {
+                TypeName = typeof(TEntity).Name,
+                Operation = RowOperation.PartialUpdate,
+                Row = gen.ToDictionary(),
+            };
+
+            Context.RowEvents.Add(evt);
+
+            gen.Clear();
+            return 0;
+        }
 
         public override string ToString()
         {
