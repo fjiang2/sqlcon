@@ -42,10 +42,11 @@ namespace Sys.Data
 
         public string Select()
         {
-            if (PrimaryKeys.Length > 0)
-                return template.Select("*", Condition());
-            else
+            string where = Condition();
+            if (string.IsNullOrEmpty(where))
                 return template.Select("*");
+
+            return template.Select("*", where);
         }
 
         public string SelectRows() => SelectRows("*");
@@ -74,13 +75,19 @@ namespace Sys.Data
 
         public string InsertOrUpdate()
         {
+            string where = Condition();
+            if(string.IsNullOrEmpty(where))
+            {
+                throw new InvalidOperationException("WHERE is blank");
+            }
+
             if (PrimaryKeys.Length + notUpdateColumns.Length == columns.Count)
             {
-                return template.IfNotExistsInsert(Condition(), Insert());
+                return template.IfNotExistsInsert(where, Insert());
             }
             else
             {
-                return template.IfExistsUpdateElseInsert(Condition(), Update(), Insert());
+                return template.IfExistsUpdateElseInsert(where, Update(), Insert());
             }
         }
 
@@ -97,16 +104,26 @@ namespace Sys.Data
         {
             var C2 = columns.Where(c => !PrimaryKeys.Contains(c.ColumnName) && !notUpdateColumns.Contains(c.ColumnName));
             var L2 = string.Join(",", C2.Select(c => c.ToString()));
-            
+
             if (C2.Count() == 0)
                 return string.Empty;
 
-            return template.Update(L2, Condition());
+            string where = Condition();
+
+            if (string.IsNullOrEmpty(where))
+                return template.Update(L2);
+
+            return template.Update(L2, where);
         }
 
         public string Delete()
         {
-            return template.Delete(Condition());
+            string where = Condition();
+
+            if(string.IsNullOrEmpty(where))
+                return template.Delete();
+
+            return template.Delete(where);
         }
 
         public string DeleteAll()
