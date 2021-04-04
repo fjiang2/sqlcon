@@ -194,7 +194,7 @@ namespace sqlcon
             var option = new SqlScriptGenerationOption
             {
                 HasIfExists = cmd.HasIfExists,
-                InsertWithoutColumns = cmd.Has("without-columns"),
+                InsertWithoutColumns = cmd.Has("no-columns"),
             };
 
             if (tname != null)
@@ -891,13 +891,14 @@ namespace sqlcon
         public static void Help()
         {
             cout.WriteLine("export data, schema, class, and template on current selected server/db/table");
-            cout.WriteLine("option:");
+            cout.WriteLine("Option:");
             cout.WriteLine("   /out:xxx : output path or file name");
-            cout.WriteLine("option of SQL generation:");
-            cout.WriteLine("   /INSERT  : export data in INSERT INTO script on current table/database");
+            cout.WriteLine("Option of SQL generation:");
+            cout.WriteLine("   /INSERT  : export data in INSERT INTO script on current table/database"); 
             cout.WriteLine("   /UPDATE  : export data in UPDATE SET script on current table/database");
             cout.WriteLine("   /SAVE    : export data in IF NOT EXISTS INSERT ELSE UPDATE script on current table/database");
-            cout.WriteLine("   [/if]    : option /if generate if exists row then UPDATE else INSERT; or check existence of table when drop table");
+            cout.WriteLine("      [/if]           : option /if generate if exists row then UPDATE else INSERT; or check existence of table when drop table");
+            cout.WriteLine("      [/no-columns]   : no columns in INSERT INTO clause");
             cout.WriteLine("   /create  : generate CREATE TABLE script on current table/database");
             cout.WriteLine("   /select  : generate template SELECT FROM WHERE");
             cout.WriteLine("   /insert  : generate template INSERT INTO");
@@ -905,7 +906,7 @@ namespace sqlcon
             cout.WriteLine("   /save    : generate template IF EXISTS UPDATE ELSE INSERT");
             cout.WriteLine("   /delete  : generate template DELETE FROM WHERE, delete rows with foreign keys constraints");
             cout.WriteLine("   /drop    : generate template DROP TABLE, drop tables with foreign keys constraints");
-            cout.WriteLine("option of data generation:");
+            cout.WriteLine("Option of data generation:");
             cout.WriteLine("   /schema  : generate database schema xml file");
             cout.WriteLine("   /data    : generate database/table data xml file");
             cout.WriteLine("      [/include]: include table names with wildcard");
@@ -923,7 +924,7 @@ namespace sqlcon
             cout.WriteLine("      [/language:]    : language: en|es|..., default:en");
             cout.WriteLine("      [/out:]         : resource file directory, default: current working directory");
             cout.WriteLine("      [/append]       : update or append to resource file");
-            cout.WriteLine("option of code generation:");
+            cout.WriteLine("Option of code generation:");
             cout.WriteLine("   /dpo     : generate C# table class");
             cout.WriteLine("   /l2s     : generate C# Linq to SQL class");
             cout.WriteLine("      [/code-style]: orginal|pascal|camel");

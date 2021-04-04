@@ -128,7 +128,7 @@ namespace Sys.Data
                     if (Option.HasIfExists)
                         writer.WriteLine(script.IF_NOT_EXISTS_INSERT(pairs));
                     else
-                        writer.WriteLine(script.INSERT(pairs));
+                        writer.WriteLine(script.INSERT(pairs, Option.InsertWithoutColumns));
                     break;
 
                 case SqlScriptType.UPDATE:
