@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Sys.Data.Linq
 {
@@ -84,7 +85,7 @@ namespace Sys.Data.Linq
                 PartialUpdateOnSubmit(entity, throwException);
             }
         }
-
+     
         private void OperateOnSubmitRange(RowOperation operation, IEnumerable<TEntity> entities)
         {
             foreach (var entity in entities)
@@ -211,6 +212,46 @@ namespace Sys.Data.Linq
             gen.Clear();
         }
 
+        /// <summary>
+        /// Update rows 
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="modifiedProperties">The properties are modified</param>
+        /// <param name="where"></param>
+        public void PartialUpdateOnSubmit(TEntity entity, Expression<Func<TEntity, object>> modifiedProperties, Expression<Func<TEntity, bool>> where)
+        {
+            if (entity == null)
+                throw new ArgumentNullException($"argument {nameof(entity)} cannot be null");
+
+            List<string> names = new PropertyTranslator().Translate(modifiedProperties);
+            string _where = new QueryTranslator().Translate(where);
+
+            var gen = new SqlColumnValuePairCollection();
+            foreach (var propertyInfo in entity.GetType().GetProperties())
+            {
+                if (names.IndexOf(propertyInfo.Name) == -1)
+                    continue;
+
+                object value = propertyInfo.GetValue(entity);
+                gen.Add(propertyInfo.Name, value);
+            }
+
+            SqlTemplate template = new SqlTemplate(formalName);
+            string update = template.Update(gen.Join(","), _where);
+            Context.CodeBlock.AppendLine<TEntity>(update);
+
+            var evt = new RowEvent
+            {
+                TypeName = typeof(TEntity).Name,
+                Operation = RowOperation.PartialUpdate,
+                Row = gen.ToDictionary(),
+            };
+
+            Context.RowEvents.Add(evt);
+
+            gen.Clear();
+            return ;
+        }
 
         public override string ToString()
         {
