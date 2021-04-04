@@ -116,16 +116,21 @@ namespace UnitTestProject
                 };
 
                 table.PartialUpdateOnSubmit(product);
+                string SQL = db.GetNonQueryScript();
+                Debug.Assert(SQL.StartsWith("UPDATE [Products] SET [ProductName] = 'iPhone' WHERE [ProductID] = 100"));
+            }
 
+            using (var db = new DataContext(connectionString))
+            {
+                var table = db.GetTable<Products>();
                 Products prod = new Products
                 {
                     ProductID = 200,
                     ProductName = "iPhone"
                 };
                 table.PartialUpdateOnSubmit(prod, row => new { row.ProductID, row.ProductName }, row => row.ProductID == 1);
-
                 string SQL = db.GetNonQueryScript();
-                Debug.Assert(SQL.StartsWith("UPDATE [Products] SET [ProductName] = 'iPhone' WHERE [ProductID] = 100"));
+                Debug.Assert(SQL.StartsWith("UPDATE [Products] SET [ProductID] = 200,[ProductName] = 'iPhone' WHERE (ProductID = 1)"));
             }
         }
 

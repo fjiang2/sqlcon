@@ -57,6 +57,17 @@ namespace Sys.Data.Linq
         public static int PatialUpdate<TEntity>(this IEnumerable<object> entities, bool throwException = false) where TEntity : class
             => Submit<TEntity>(table => table.PartialUpdateOnSubmit(entities, throwException));
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="modifiedProperties">The properties are modified</param>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public static int PatialUpdate<TEntity>(this TEntity entity, Expression<Func<TEntity, object>> modifiedProperties, Expression<Func<TEntity, bool>> where) where TEntity : class
+            => Submit<TEntity>(table => table.PartialUpdateOnSubmit(entity, modifiedProperties, where));
+
         public static int InsertOrUpdate<TEntity>(this IEnumerable<TEntity> entities) where TEntity : class
             => Submit<TEntity>(table => table.InsertOrUpdateOnSubmit(entities));
 

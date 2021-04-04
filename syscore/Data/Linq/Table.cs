@@ -85,7 +85,7 @@ namespace Sys.Data.Linq
                 PartialUpdateOnSubmit(entity, throwException);
             }
         }
-
+     
         private void OperateOnSubmitRange(RowOperation operation, IEnumerable<TEntity> entities)
         {
             foreach (var entity in entities)
@@ -212,7 +212,13 @@ namespace Sys.Data.Linq
             gen.Clear();
         }
 
-        public int PartialUpdateOnSubmit(TEntity entity, Expression<Func<TEntity, object>> modifiedProperties, Expression<Func<TEntity, bool>> where)
+        /// <summary>
+        /// Update rows 
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="modifiedProperties">The properties are modified</param>
+        /// <param name="where"></param>
+        public void PartialUpdateOnSubmit(TEntity entity, Expression<Func<TEntity, object>> modifiedProperties, Expression<Func<TEntity, bool>> where)
         {
             if (entity == null)
                 throw new ArgumentNullException($"argument {nameof(entity)} cannot be null");
@@ -220,7 +226,7 @@ namespace Sys.Data.Linq
             List<string> names = new PropertyTranslator().Translate(modifiedProperties);
             string _where = new QueryTranslator().Translate(where);
 
-            var gen = this.Generator;
+            var gen = new SqlColumnValuePairCollection();
             foreach (var propertyInfo in entity.GetType().GetProperties())
             {
                 if (names.IndexOf(propertyInfo.Name) == -1)
@@ -230,7 +236,9 @@ namespace Sys.Data.Linq
                 gen.Add(propertyInfo.Name, value);
             }
 
-            Context.CodeBlock.AppendLine<TEntity>(gen.Update());
+            SqlTemplate template = new SqlTemplate(formalName);
+            string update = template.Update(gen.Join(","), _where);
+            Context.CodeBlock.AppendLine<TEntity>(update);
 
             var evt = new RowEvent
             {
@@ -242,7 +250,7 @@ namespace Sys.Data.Linq
             Context.RowEvents.Add(evt);
 
             gen.Clear();
-            return 0;
+            return ;
         }
 
         public override string ToString()

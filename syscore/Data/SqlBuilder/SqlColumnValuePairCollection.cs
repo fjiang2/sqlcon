@@ -125,6 +125,18 @@ namespace Sys.Data
             return columns.Select(c => new SqlColumnAndValue { Name = c.ColumnFormalName, Value = c.Value.ToString("N") }).ToList();
         }
 
+        public string Join(Func<SqlColumnValuePair, string> expr, string separator)
+        {
+            var L = columns.Select(pair => expr(pair));
+            return string.Join(separator, L);
+        }
+
+        public string Join(string separator)
+        {
+            return Join(pair => $"{pair.ColumnFormalName} = {pair.Value}", separator);
+        }
+
+
         public override string ToString()
         {
             return columns.ToString();
