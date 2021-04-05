@@ -33,11 +33,22 @@ namespace Sys.Data.Linq
 
         protected override Expression VisitMethodCall(MethodCallExpression expr)
         {
-            if (expr.Method.DeclaringType == typeof(Queryable) && expr.Method.Name == "Where")
+            if (expr.Method.DeclaringType != typeof(Queryable))
+                throw new NotSupportedException(string.Format("The method '{0}' is not supported", expr.Method.Name));
+
+            if (expr.Method.Name == "Where")
             {
                 this.Visit(expr.Arguments[0]);
                 LambdaExpression lambda = (LambdaExpression)StripQuotes(expr.Arguments[1]);
                 this.Visit(lambda.Body);
+                return expr;
+            }
+
+            if (expr.Method.Name == "Contains")
+            {
+                this.Visit(expr.Arguments[1]);
+                builder.Append(" IN ");
+                this.Visit(expr.Arguments[0]);
                 return expr;
             }
 
@@ -190,7 +201,7 @@ namespace Sys.Data.Linq
                     return "'{value}'";
 
                 case TypeCode.Object:
-                    throw new NotSupportedException(string.Format("The constant for '{0}' is not supported", value));
+                    return new SqlValue(value).ToString("N");
 
                 default:
                     return value;

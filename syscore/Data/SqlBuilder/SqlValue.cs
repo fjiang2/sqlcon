@@ -15,6 +15,7 @@
 //                                                                                                  //
 //--------------------------------------------------------------------------------------------------//
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -98,6 +99,15 @@ namespace Sys.Data
             }
             else if (value is Guid)
                 sb.Append("N" + DELIMETER).Append(value).Append(DELIMETER);
+            else if (value is IEnumerable)
+            {
+                List<string> list = new List<string>();
+                foreach (var x in value as IEnumerable)
+                {
+                    list.Add(new SqlValue(x).ToString(format));
+                }
+                return $"({string.Join(",", list)})";
+            }
             else
             {
                 sb.Append(value);

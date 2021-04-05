@@ -498,6 +498,20 @@ namespace UnitTestProject
             }
         }
 
+        [TestMethod]
+        public void TestContains()
+        {
+            using (var db = new DataContext(connectionString))
+            {
+                var L = new int[] { 10, 30, 40 }.AsQueryable(); 
+                var table = db.GetTable<Products>();
+                table.SelectOnSubmit(row => L.Contains(row.ProductID));
+
+                string SQL = db.GetQueryScript();
+                Debug.Assert(SQL == "SELECT * FROM [Products] WHERE ProductID IN (10,30,40)");
+            }
+        }
+
     }
 }
 
