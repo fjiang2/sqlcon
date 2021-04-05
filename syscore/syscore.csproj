@@ -133,7 +133,6 @@
     <Compile Include="Data\Persistence\Level0\IDbCmd.cs" />
     <Compile Include="Data\Persistence\Level0\StringBuffer.cs" />
     <Compile Include="Data\Persistence\Level0\SqlExecutionEventArgs.cs" />
-    <Compile Include="Data\SqlBuilder\SqlColumnAndValue.cs" />
     <Compile Include="Data\SqlBuilder\SqlColumnValuePair.cs" />
     <Compile Include="Data\SqlBuilder\SqlColumnValuePairCollection.cs" />
     <Compile Include="Data\SqlScriptGeneration\ColumnPairCollection.cs" />

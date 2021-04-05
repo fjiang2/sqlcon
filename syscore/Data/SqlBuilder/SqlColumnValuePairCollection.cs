@@ -120,9 +120,9 @@ namespace Sys.Data
         /// To SQL column/value list
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<SqlColumnAndValue> ToList()
+        public IEnumerable<SqlColumnValuePair> ToList()
         {
-            return columns.Select(c => new SqlColumnAndValue { Name = c.ColumnFormalName, Value = c.Value.ToString("N") }).ToList();
+            return columns;
         }
 
         public string Join(Func<SqlColumnValuePair, string> expr, string separator)
