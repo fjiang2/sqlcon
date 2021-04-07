@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 
 using UnitTestProject.Northwind.dbo;
+using Sys;
 using Sys.Data.Linq;
 using Sys.Data;
 
@@ -512,6 +513,18 @@ namespace UnitTestProject
             }
         }
 
+        [TestMethod]
+        public void Test2TableContains()
+        {
+            using (var db = new DataContext(connectionString))
+            {
+                //"SELECT * FROM [Products] WHERE CategoryID IN (SELECT CategoryID FROM Categories WHERE CategoryName == 'Beverages')"
+                var products = Query.Select<Categories, int, Products>(row => row.CategoryName == "Beverages", row => row.CategoryID, row => row.CategoryID);
+                string text = products.Select(row => row.ProductID).ToSimpleString();
+
+                Debug.Assert(text == "[1,2,24,34,35,38,39,43,67,70,75,76]");
+            }
+        }
     }
 }
 

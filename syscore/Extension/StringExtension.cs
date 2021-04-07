@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 
@@ -117,8 +119,141 @@ namespace Sys
             return value.Substring(left, len - left - right);
         }
 
-      
 
-    
+        public static string ToSimpleString(this IDictionary dict)
+        {
+            StringBuilder builder = new StringBuilder("{");
+            int i = 0;
+            foreach (var key in dict.Keys)
+            {
+                object val = dict[key];
+                builder
+                    .Append(key)
+                    .Append(":")
+                    .Append(ToSimpleString(val));
+
+                if (i++ < dict.Count - 1)
+                    builder.Append(",");
+            }
+
+            builder.Append("}");
+            return builder.ToString();
+        }
+
+        public static string ToSimpleString(this IEnumerable source)
+        {
+            StringBuilder builder = new StringBuilder("[");
+            int i = 0;
+            foreach (var item in source)
+            {
+                if (i++ > 0)
+                    builder.Append(",");
+
+                builder.Append(ToSimpleString(item));
+            }
+
+            builder.Append("]");
+            return builder.ToString();
+        }
+
+
+        public static string ToSimpleString(this DataSet set)
+        {
+            if (set.Tables.Count == 1)
+                return ToSimpleString(set.Tables[0]);
+
+            StringBuilder builder = new StringBuilder("{");
+
+            int i = 0;
+            foreach (DataTable table in set.Tables)
+            {
+                if (i++ > 0)
+                    builder.Append(",");
+
+                builder.Append(table.TableName).Append(":");
+                builder.Append(ToSimpleString(table));
+            }
+
+            builder.Append("}");
+            return builder.ToString();
+        }
+
+        public static string ToSimpleString(this DataTable table)
+        {
+            StringBuilder builder = new StringBuilder();
+            int i = 0;
+            int n = table.Rows.Count;
+
+            if (n > 1)
+                builder.Append("[");
+
+            foreach (DataRow row in table.Rows)
+            {
+                builder.Append(ToSimpleString(row));
+                if (i++ < n - 1)
+                    builder.Append(",");
+            }
+
+            if (n > 1)
+                builder.Append("]");
+
+            return builder.ToString();
+        }
+
+        public static string ToSimpleString(this DataRow row)
+        {
+            StringBuilder builder = new StringBuilder();
+            int i = 0;
+
+            var columns = row.Table.Columns;
+            int m = columns.Count;
+            builder.Append("{");
+            for (int k = 0; k < m; k++)
+            {
+                string key = columns[k].ColumnName;
+                object val = row[k];
+
+                builder
+                    .Append(key)
+                    .Append(":")
+                    .Append(ToSimpleString(val));
+
+                if (i++ < m - 1)
+                    builder.Append(",");
+            }
+
+            builder.Append("}");
+
+            return builder.ToString();
+        }
+
+        public static string ToSimpleString(this Enum obj)
+        {
+            return obj.ToString().Replace(", ", "|");
+        }
+
+        public static string ToSimpleString(this object val)
+        {
+            if (val == null)
+                return "null";
+
+            if (val is DBNull)
+                return "NULL";
+            else if (val is string)
+                return "\"" + val + "\"";
+            else if (val is DateTime)
+                return "\"" + val + "\"";
+            else if (val is Tie.VAL)
+                return (val as Tie.VAL).ToSimpleString();
+            else if (val is IDictionary)
+                return ToSimpleString((IDictionary)val);
+            else if (val is IEnumerable)
+                return ToSimpleString((IEnumerable)val);
+
+
+            return val.ToString();
+        }
+
+
     }
 }

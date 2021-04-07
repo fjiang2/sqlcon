@@ -28,6 +28,22 @@ namespace Sys.Data.Linq
         {
             return Invoke(db => db.GetTable<TEntity>().Select(where));
         }
+        public static IEnumerable<TResult> Select<TEntity, TKey, TResult>(this Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, TKey>> keySelector, Expression<Func<TResult, TKey>> resultSelector)
+            where TEntity : class
+            where TResult : class
+        {
+            var translator = new QueryTranslator();
+            string _where = translator.Translate(where);
+            string _keySelector = translator.Translate(keySelector);
+            string _resultSelector = translator.Translate(resultSelector);
+
+            return Invoke(db =>
+            {
+                var dt = db.GetTable<TEntity>();
+                string SQL = $"{_resultSelector} IN (SELECT {_keySelector} FROM {dt} WHERE {_where})";
+                return db.GetTable<TResult>().Select(SQL);
+            });
+        }
 
         public static QueryResultReader Select(this Action<DataContext> action)
         {
