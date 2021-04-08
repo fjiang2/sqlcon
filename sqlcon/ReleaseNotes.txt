@@ -3,7 +3,8 @@
 4/3/2021 v2.4.0.0
 	Improvements/Enhancements:
 	1. Import/extract string from C# source code into SQL table for string resource.
-	2. Display progess bar during exporting SQL table data rows into SQL script.
+	2. Display progress bar during exporting SQL table data rows into SQL script.
+	3. Export INSERT INTO VALUES without column-name to reduce script size.
 	
 	Bug Fixes:
 	1. Crash when sqlcon doesn't have permssion to create clog file in the disk.
