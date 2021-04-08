@@ -91,7 +91,7 @@ namespace sqlcon
         {
             var dt = new SqlCmd(tname.Provider, $"SELECT TOP 1 * FROM {tname.FormalName}").FillDataTable();
             dt.SetSchemaAndTableName(tname);
-            
+
             var schema = new TableSchema(tname);
             dt.PrimaryKeys(schema.PrimaryKeys.Keys);
             foreach (IColumn column in schema.Columns)
@@ -194,37 +194,44 @@ namespace sqlcon
             var option = new SqlScriptGenerationOption
             {
                 HasIfExists = cmd.HasIfExists,
-                InsertWithoutColumns = cmd.Has("without-columns"),
+                InsertWithoutColumns = cmd.Has("no-columns"),
             };
 
             if (tname != null)
             {
                 var node = mgr.GetCurrentNode<Locator>();
-                int count;
-
+                int count = 0;
                 using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
                 {
+                    //cout.WriteLine($"start to generate {tname} script to file: \"{SqlFileName}\"");
+                    Locator locator = null;
+                    string WHERE = "";
                     if (node != null)
                     {
-                        cout.WriteLine("start to generate {0} INSERT script to file: {1}", tname, SqlFileName);
-                        Locator locator = mgr.GetCombinedLocator(node);
-                        count = Compare.GenerateRows(type, writer, new TableSchema(tname), locator, option);
-                        cout.WriteLine($"{type} clauses (SELECT * FROM {tname} WHERE {locator}) generated to \"{SqlFileName}\"");
+                        locator = mgr.GetCombinedLocator(node);
+                        WHERE = $" WHERE {locator}";
                     }
-                    else
+
+                    long cnt = tname.GetTableRowCount(locator);
+                    count = Tools.ForceLongToInteger(cnt);
+                    using (var progress = new ProgressBar { Count = count })
                     {
-                        count = Compare.GenerateRows(type, writer, new TableSchema(tname), null, option);
-                        cout.WriteLine($"{type} clauses (SELECT * FROM {tname}) generated to \"{SqlFileName}\"");
+                        count = Compare.GenerateRows(type, writer, new TableSchema(tname), locator, option, progress);
                     }
+                    cout.WriteLine($"{type} clauses (SELECT * FROM {tname}{WHERE}) generated to \"{SqlFileName}\", Done on rows({cnt})");
                 }
             }
             else if (dname != null)
             {
-                cout.WriteLine("start to generate {0} script to file: {1}", dname, SqlFileName);
+                //cout.WriteLine($"start to generate {dname} script to file: \"{SqlFileName}\"");
                 using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
                 {
                     var md = new MatchedDatabase(dname, cmd);
                     TableName[] tnames = md.TableNames();
+
+                    if (tnames.Length > 5 && !cin.YesOrNo($"Are you sure to export {tnames.Length} tables on {dname} (y/n)?"))
+                        return;
+
                     CancelableWork.CanCancel(cts =>
                     {
                         foreach (var tn in tnames)
@@ -232,17 +239,22 @@ namespace sqlcon
                             if (cts.IsCancellationRequested)
                                 return;
 
-                            int count = new SqlCmd(tn.Provider, string.Format("SELECT COUNT(*) FROM {0}", tn)).FillObject<int>();
-                            if (count > cfg.MaxRows)
+                            long cnt = tn.GetTableRowCount();
+                            if (cnt > cfg.MaxRows)
                             {
-                                if (!cin.YesOrNo($"are you sure to export {count} rows on {tn.ShortName} (y/n)?"))
+                                if (!cin.YesOrNo($"Are you sure to export {cnt} rows on {tn.ShortName} (y/n)?"))
                                 {
                                     cout.WriteLine("\n{0,10} skipped", tn.ShortName);
                                     continue;
                                 }
                             }
 
-                            count = Compare.GenerateRows(type, writer, new TableSchema(tn), null, option);
+                            int count = Tools.ForceLongToInteger(cnt);
+                            using (var progress = new ProgressBar { Count = count })
+                            {
+                                count = Compare.GenerateRows(type, writer, new TableSchema(tn), null, option, progress);
+                            }
+
                             cout.WriteLine($"{count,10} row(s) generated on {tn.ShortName}");
                         }
 
@@ -879,13 +891,14 @@ namespace sqlcon
         public static void Help()
         {
             cout.WriteLine("export data, schema, class, and template on current selected server/db/table");
-            cout.WriteLine("option:");
+            cout.WriteLine("Option:");
             cout.WriteLine("   /out:xxx : output path or file name");
-            cout.WriteLine("option of SQL generation:");
-            cout.WriteLine("   /INSERT  : export data in INSERT INTO script on current table/database");
+            cout.WriteLine("Option of SQL generation:");
+            cout.WriteLine("   /INSERT  : export data in INSERT INTO script on current table/database"); 
             cout.WriteLine("   /UPDATE  : export data in UPDATE SET script on current table/database");
             cout.WriteLine("   /SAVE    : export data in IF NOT EXISTS INSERT ELSE UPDATE script on current table/database");
-            cout.WriteLine("   [/if]    : option /if generate if exists row then UPDATE else INSERT; or check existence of table when drop table");
+            cout.WriteLine("      [/if]           : option /if generate if exists row then UPDATE else INSERT; or check existence of table when drop table");
+            cout.WriteLine("      [/no-columns]   : no columns in INSERT INTO clause");
             cout.WriteLine("   /create  : generate CREATE TABLE script on current table/database");
             cout.WriteLine("   /select  : generate template SELECT FROM WHERE");
             cout.WriteLine("   /insert  : generate template INSERT INTO");
@@ -893,7 +906,7 @@ namespace sqlcon
             cout.WriteLine("   /save    : generate template IF EXISTS UPDATE ELSE INSERT");
             cout.WriteLine("   /delete  : generate template DELETE FROM WHERE, delete rows with foreign keys constraints");
             cout.WriteLine("   /drop    : generate template DROP TABLE, drop tables with foreign keys constraints");
-            cout.WriteLine("option of data generation:");
+            cout.WriteLine("Option of data generation:");
             cout.WriteLine("   /schema  : generate database schema xml file");
             cout.WriteLine("   /data    : generate database/table data xml file");
             cout.WriteLine("      [/include]: include table names with wildcard");
@@ -911,7 +924,7 @@ namespace sqlcon
             cout.WriteLine("      [/language:]    : language: en|es|..., default:en");
             cout.WriteLine("      [/out:]         : resource file directory, default: current working directory");
             cout.WriteLine("      [/append]       : update or append to resource file");
-            cout.WriteLine("option of code generation:");
+            cout.WriteLine("Option of code generation:");
             cout.WriteLine("   /dpo     : generate C# table class");
             cout.WriteLine("   /l2s     : generate C# Linq to SQL class");
             cout.WriteLine("      [/code-style]: orginal|pascal|camel");
@@ -978,7 +991,7 @@ namespace sqlcon
                 ExportInsertOrUpdateData(SqlScriptType.INSERT);
             else if (cmd.Has("UPDATE"))
                 ExportInsertOrUpdateData(SqlScriptType.UPDATE);
-            else if (cmd.Has("SAVE"))
+            else if (cmd.Has("SAVE") || cmd.Has("UPSERT"))
                 ExportInsertOrUpdateData(SqlScriptType.INSERT_OR_UPDATE);
             else if (cmd.Has("create"))
                 ExportCreate();
@@ -992,7 +1005,7 @@ namespace sqlcon
                 ExportScud(SqlScriptType.DROP);
             else if (cmd.Has("update"))
                 ExportScud(SqlScriptType.UPDATE);
-            else if (cmd.Has("save"))
+            else if (cmd.Has("save") || cmd.Has("upsert"))
                 ExportScud(SqlScriptType.INSERT_OR_UPDATE);
             else if (cmd.Has("schema"))
                 ExportSchema();

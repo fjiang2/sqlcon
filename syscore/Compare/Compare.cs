@@ -155,7 +155,7 @@ namespace Sys.Data.Comparison
             return builder.ToString();
         }
 
-        public static int GenerateRows(SqlScriptType type, StreamWriter writer, ITableSchema schema, Locator where, SqlScriptGenerationOption option)
+        public static int GenerateRows(SqlScriptType type, StreamWriter writer, ITableSchema schema, Locator where, SqlScriptGenerationOption option, IProgress<int> progress)
         {
             SqlScriptGeneration gen = new SqlScriptGeneration(type, schema)
             {
@@ -163,7 +163,7 @@ namespace Sys.Data.Comparison
                 Option = option,
             };
 
-            return gen.Generate(writer);
+            return gen.Generate(writer, progress);
         }
 
         public static string GenerateTemplate(ITableSchema schema, SqlScriptType type, bool ifExists)

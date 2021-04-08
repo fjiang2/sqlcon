@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 
 using UnitTestProject.Northwind.dbo;
+using Sys;
 using Sys.Data.Linq;
 using Sys.Data;
 
@@ -118,6 +119,19 @@ namespace UnitTestProject
                 table.PartialUpdateOnSubmit(product);
                 string SQL = db.GetNonQueryScript();
                 Debug.Assert(SQL.StartsWith("UPDATE [Products] SET [ProductName] = 'iPhone' WHERE [ProductID] = 100"));
+            }
+
+            using (var db = new DataContext(connectionString))
+            {
+                var table = db.GetTable<Products>();
+                Products prod = new Products
+                {
+                    ProductID = 200,
+                    ProductName = "iPhone"
+                };
+                table.PartialUpdateOnSubmit(prod, row => new { row.ProductID, row.ProductName }, row => row.ProductID == 1);
+                string SQL = db.GetNonQueryScript();
+                Debug.Assert(SQL.StartsWith("UPDATE [Products] SET [ProductID] = 200,[ProductName] = 'iPhone' WHERE (ProductID = 1)"));
             }
         }
 
@@ -411,7 +425,8 @@ namespace UnitTestProject
         [TestMethod]
         public void TestQueryExtension()
         {
-            var orders = Query.Select<Orders>(row => row.OrderID == 10254 || row.OrderID == 10260);
+            var req = new { OrderId = 10254 };
+            var orders = Query.Select<Orders>(row => row.OrderID == req.OrderId || row.OrderID == 10260);
 
             var order_details = orders.Expand<Orders, Order_Details>();
             var products = order_details.Expand<Order_Details, Products>();
@@ -484,6 +499,32 @@ namespace UnitTestProject
             }
         }
 
+        [TestMethod]
+        public void TestContains()
+        {
+            using (var db = new DataContext(connectionString))
+            {
+                var L = new int[] { 10, 30, 40 }.AsQueryable(); 
+                var table = db.GetTable<Products>();
+                table.SelectOnSubmit(row => L.Contains(row.ProductID));
+
+                string SQL = db.GetQueryScript();
+                Debug.Assert(SQL == "SELECT * FROM [Products] WHERE ProductID IN (10,30,40)");
+            }
+        }
+
+        [TestMethod]
+        public void Test2TableContains()
+        {
+            using (var db = new DataContext(connectionString))
+            {
+                //"SELECT * FROM [Products] WHERE CategoryID IN (SELECT CategoryID FROM Categories WHERE CategoryName == 'Beverages')"
+                var products = Query.Select<Categories, int, Products>(row => row.CategoryName == "Beverages", row => row.CategoryID, row => row.CategoryID);
+                string text = products.Select(row => row.ProductID).ToSimpleString();
+
+                Debug.Assert(text == "[1,2,24,34,35,38,39,43,67,70,75,76]");
+            }
+        }
     }
 }
 

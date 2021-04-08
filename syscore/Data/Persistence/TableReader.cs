@@ -69,6 +69,10 @@ namespace Sys.Data
         {
         }
 
+        public TableReader(TableName tableName, Locator locator)
+            : this(tableName, locator.Path.Inject())
+        {
+        }
 
         public long Count
         {

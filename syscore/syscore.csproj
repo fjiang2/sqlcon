@@ -118,6 +118,7 @@
     <Compile Include="Data\Linq\ITableSchema.cs" />
     <Compile Include="Data\Linq\Query.cs" />
     <Compile Include="Data\Linq\QueryResultReader.cs" />
+    <Compile Include="Data\Linq\PropertyTranslator.cs" />
     <Compile Include="Data\Linq\RowEvent.cs" />
     <Compile Include="Data\Linq\RowEventArgs.cs" />
     <Compile Include="Data\Linq\RowOperation.cs" />
@@ -132,6 +133,8 @@
     <Compile Include="Data\Persistence\Level0\IDbCmd.cs" />
     <Compile Include="Data\Persistence\Level0\StringBuffer.cs" />
     <Compile Include="Data\Persistence\Level0\SqlExecutionEventArgs.cs" />
+    <Compile Include="Data\SqlBuilder\SqlColumnValuePair.cs" />
+    <Compile Include="Data\SqlBuilder\SqlColumnValuePairCollection.cs" />
     <Compile Include="Data\SqlScriptGeneration\ColumnPairCollection.cs" />
     <Compile Include="Data\SqlScriptGeneration\ColumnPair.cs" />
     <Compile Include="Data\SqlScriptGeneration\ColumnValue.cs" />

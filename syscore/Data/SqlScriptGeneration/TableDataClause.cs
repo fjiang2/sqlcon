@@ -40,7 +40,7 @@ namespace Sys.Data
             return template.IfNotExistsInsert(WHERE(pairs), INSERT(pairs));
         }
 
-        public string INSERT(ColumnPairCollection pairs)
+        public string INSERT(ColumnPairCollection pairs, bool InsertWithoutColumns = false)
         {
             var L1 = pairs
               .Where(column => !ik.Contains(column.ColumnName))
@@ -49,7 +49,10 @@ namespace Sys.Data
             var x1 = L1.Select(p => p.ColumnName.ColumnName());
             var x2 = L1.Select(p => p.Value.ToScript());
 
-            return template.Insert(string.Join(",", x1), string.Join(",", x2));
+            if (InsertWithoutColumns)
+                return template.Insert(string.Join(",", x2));
+            else
+                return template.Insert(string.Join(",", x1), string.Join(",", x2));
         }
 
 

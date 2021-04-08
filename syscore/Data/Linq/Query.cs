@@ -28,6 +28,22 @@ namespace Sys.Data.Linq
         {
             return Invoke(db => db.GetTable<TEntity>().Select(where));
         }
+        public static IEnumerable<TResult> Select<TEntity, TKey, TResult>(this Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, TKey>> keySelector, Expression<Func<TResult, TKey>> resultSelector)
+            where TEntity : class
+            where TResult : class
+        {
+            var translator = new QueryTranslator();
+            string _where = translator.Translate(where);
+            string _keySelector = translator.Translate(keySelector);
+            string _resultSelector = translator.Translate(resultSelector);
+
+            return Invoke(db =>
+            {
+                var dt = db.GetTable<TEntity>();
+                string SQL = $"{_resultSelector} IN (SELECT {_keySelector} FROM {dt} WHERE {_where})";
+                return db.GetTable<TResult>().Select(SQL);
+            });
+        }
 
         public static QueryResultReader Select(this Action<DataContext> action)
         {
@@ -56,6 +72,17 @@ namespace Sys.Data.Linq
 
         public static int PatialUpdate<TEntity>(this IEnumerable<object> entities, bool throwException = false) where TEntity : class
             => Submit<TEntity>(table => table.PartialUpdateOnSubmit(entities, throwException));
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="modifiedProperties">The properties are modified</param>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public static int PatialUpdate<TEntity>(this TEntity entity, Expression<Func<TEntity, object>> modifiedProperties, Expression<Func<TEntity, bool>> where) where TEntity : class
+            => Submit<TEntity>(table => table.PartialUpdateOnSubmit(entity, modifiedProperties, where));
 
         public static int InsertOrUpdate<TEntity>(this IEnumerable<TEntity> entities) where TEntity : class
             => Submit<TEntity>(table => table.InsertOrUpdateOnSubmit(entities));

@@ -46,38 +46,44 @@ namespace Sys.Data
             }
         }
 
+        private string IfNotExists(string where)
+            => $"IF NOT EXISTS(SELECT * FROM {formalName} WHERE {where})";
+        private string IfExists(string where)
+            => $"IF EXISTS(SELECT * FROM {formalName} WHERE {where})";
 
         public string IfNotExistsInsert(string where, string insert)
-            => $"IF NOT EXISTS(SELECT * FROM {formalName} WHERE {where}) {NewLine}{insert}";
+            => $"{IfNotExists(where)} {NewLine}{insert}";
         public string IfNotExistsInsertElseUpdate(string where, string insert, string update)
-            => $@"IF NOT EXISTS(SELECT * FROM {formalName} WHERE {where}) {NewLine}{insert} {NewLine}ELSE {NewLine}{update}";
+            => $@"{IfNotExists(where)} {NewLine}{insert} {NewLine}ELSE {NewLine}{update}";
 
         public string IfExistsUpdate(string where, string update)
-            => $"IF EXISTS(SELECT * FROM {formalName} WHERE {where}) {NewLine}{update}";
+            => $"{IfExists(where)} {NewLine}{update}";
         public string IfExistsUpdateElseInsert(string where, string update, string insert)
-            => $"IF EXISTS(SELECT * FROM {formalName} WHERE {where}) {update} ELSE {insert}";
+            => $"{IfExists(where)} {NewLine}{update} {NewLine}ELSE {NewLine}{insert}";
 
         public string Select(string select)
             => $"SELECT {select} {NewLine}FROM {formalName}";
         public string Select(string select, string where)
-            => $"SELECT {select} {NewLine}FROM {formalName} {NewLine}WHERE {where}";
+            => $"{Select(select)} {NewLine}WHERE {where}";
 
+        public string Update(string set)
+            => $"UPDATE {formalName} {NewLine}SET {set}";
         public string Update(string set, string where)
-            => $"UPDATE {formalName} {NewLine}SET {set} {NewLine}WHERE {where}";
+            => $"{Update(set)} {NewLine}WHERE {where}";
 
         public string Insert(string values)
             => $"INSERT INTO {formalName} VALUES({values})";
         public string Insert(string columns, string values)
             => $"INSERT INTO {formalName}({columns}) {NewLine}VALUES({values})";
         public string Insert(string columns, string values, string identity)
-            => $"INSERT INTO {formalName}({columns}) {NewLine}VALUES({values}){identity}";
+            => $"{Insert(columns, values)} {NewLine}{identity}";
         public string InsertWithIdentityOff(string columns, string values)
             => $"SET IDENTITY_INSERT {formalName} ON; {Insert(columns, values)}; SET IDENTITY_INSERT {formalName} OFF";
 
-        public string Delete(string where)
-            => $"DELETE FROM {formalName} {NewLine}WHERE {where}";
         public string Delete()
-            => $"DELETE FROM {formalName} {NewLine}";
+            => $"DELETE FROM {formalName}";
+        public string Delete(string where)
+            => $"{Delete()} {NewLine}WHERE {where}";
 
 
         public string AddPrimaryKey(string primaryKey)
