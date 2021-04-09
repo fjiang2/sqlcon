@@ -12,6 +12,20 @@ namespace sqlcon
 {
     static class Helper
     {
+        public static Version ApplicationVerison
+        {
+            get
+            {
+                if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
+                {
+                    System.Deployment.Application.ApplicationDeployment ad = System.Deployment.Application.ApplicationDeployment.CurrentDeployment;
+                    Version version = ad.CurrentVersion;
+                    return version;
+                }
+                return System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+            }
+        }
+
         public static string OutputFile(this ApplicationCommand cmd, string defaultOutputFile, bool createDirectoryIfNotExists = true)
         {
             string outputFile = cmd.OutputPath();
