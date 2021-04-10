@@ -1,24 +1,40 @@
 # **sqlcon**
 
-sqlcon is a console application which connects multiple sql servers in tree structures.
+[Release Notes](https://github.com/fjiang2/sqlcon/blob/master/sqlcon/ReleaseNotes.txt)
+
+sqlcon is a console application which connects multiple sql servers in tree structures. The hierarchy includes servers -> databases -> tables/views -> rows filters.
 
 * It supports database servers including SQL Sever, SQL Server Express, LocalDb and Azure SQL Database.
 * It supports XML data sources such as ADO.NET DataSet, DataTable which can be connected from http web link and ftp file link.
 * It supports JSON data sources.
 * It supports Data Contract classes in .NET assembly files as data source.
 
-The main features
+## The main features
 
-* Run SQL commands, SQL scripts.
+* Run SQL commands, SQL script files.
 * Search, edit database or table either in console mode or GUI.
-* Compare database, tables accross differnet data sources.
-* Copy tables among data sources or databases.
-* Export/Import data in XML, JSON.
+* Compare database, tables accross differnet data sources and generate result in SQL Script.
+* Copy tables among different data sources or databases.
+* Editor supports GUI.
+* Export/Import data in SQL, XML, CSV and JSON
 * Export table schema in C# data contract classes, entity classes, Linq to SQL classes.
-* Export read only data rows in Enum, List<>, Dictionary<,> and LookUp<,>
-* Export data rows into SQL INSERT/UPDATE/DELETE clauses.
+* Export read only data rows in Enum, Array, List<>, Dictionary<,> and LookUp<,>
+* Export data rows into SQL INSERT/UPDATE/DELETE/UPSERT clauses.
+* Export table schema in SQL template INSERT/UPDATE/DELETE/UPSERT.
+* Extract strings from C# source files and save into data table.
+* Generate i18n resources from data table for .NET framework, Angular 11, and @ngx-translate.
+* Create Linq to SQL classes.
+* Create addtional methods for Entity framework.
+* Build-in .sqc command script file which is composed of a list of sqlcon commands.
+* Clean duplicated data rows.
+* Execute SQL script files.
 
 See more information, click http://www.datconn.com/products/sqlcon.html
+
+Nuget package: https://www.nuget.org/packages/sqlcon/
+
+Installation: http://sqlcon.azurewebsites.net/release/sqlcon/index.html
+
 
 ## Overview
 
@@ -279,6 +295,7 @@ TABLE: dbo.Orders
 ```
 
 ### Edit Data Rows in Table
+
 ```javascript
 \localdb\Northwind\dbo.Products> type /edit
 ```
@@ -915,4 +932,24 @@ example:
  [2]         AdventureWorks2019 <DB>        132 Tables/Views
         2 Database(s)
 \localdb>
+```
+
+## sqlcon Command Script .sqc Tutorial
+
+### Create Entity classes for NorthWind database
+
+```javascript
+\localdb\Northwind> ltype gen-northwind.sqc
+
+let dest = @"c:\sqlcon\code-generation";
+export /dc  /ns:Sys.DataModel.DC  /out:{dest}\DataModel\DC
+rem /methods:NewObject,FillObject,UpdateRow,CreateTable,ToDataTable,ToDictionary,FromDictionary,CopyTo,CompareTo,ToSimpleString
+export /dc1 /ns:Sys.DataModel.DC1 /out:{dest}\DataModel\DC1
+rem /methods:NewObject,FillObject,UpdateRow,Equals,CopyTo,CreateTable,ToString
+export /dc2 /ns:Sys.DataModel.DC2 /out:{dest}\DataModel\DC2
+export /dpo /ns:Sys.DataModel.Dpo /out:{dest}\DataModel\Dpo
+export /l2s /ns:Sys.DataModel.Linq2SQL /out:{dest}\DataModel\L2s
+rem /methods:Map,Copy,Clone,Equals,GetHashCode,Compare,ToDictionary,ToString
+export /entity /ns:code_gen /out:{dest}\DataModel\Entity
+
 ```
