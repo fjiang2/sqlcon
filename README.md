@@ -338,7 +338,7 @@ TABLE: dbo.Orders
 
 
 
-### Alter Table
+## Alter Table
 
 ```javascript
 command attrib: update column property
@@ -366,7 +366,7 @@ refine columns:
     /string                              : shrink string(NVARCHAR,VARCHAR,NCHAR,CHAR)
 ```
 
-### Compare Table
+## Compare Table
 
 ```javascript
 \localdb\Northwind_prod> compare /?
@@ -380,7 +380,7 @@ compare [/count]       : compare number of rows
 
 ```
 
-#### Compare Schema
+### Compare Schema
 
 ```javascript
 \localdb\Northwind_prod> attrib Products +c:Description=varchar(20)+null
@@ -415,7 +415,7 @@ ALTER TABLE [Products] ADD [Description] varchar(20) NULL
 
 ```
 
-#### Compare Data Rows
+### Compare Data Rows
 
 ```javascript
 
@@ -438,6 +438,75 @@ UPDATE [Products] SET [ProductName] = N'Apple' WHERE [ProductID] = 4
 GO
 result in "c:\temp\cmp_Products.sql"
 
+\localdb\Northwind_prod> ltype c:\temp\cmp_Products.sql
+-- sqlcon:
+-- compare server=(LocalDB)\MSSQLLocalDB db=Northwind_prod
+--         server=(LocalDB)\MSSQLLocalDB db=Northwind @ 4/10/2021 9:17:22 AM
+UPDATE [Products] SET [ProductName] = N'Apple' WHERE [ProductID] = 4
+GO
+
+```
+
+### Compare Multiple Table
+
+```javascript
+\localdb\Northwind_prod> compare Custom* ..\Northwind /out:c:\temp\cmp.sql
+server1: (LocalDB)\MSSQLLocalDB default database:Northwind_prod
+server2: (LocalDB)\MSSQLLocalDB default database:Northwind
+completed to compare table data [Northwind_prod].dbo.[CustomerDemographics] => [Northwind].dbo.[CustomerDemographics]
+DELETE FROM [CustomerDemographics] WHERE [CustomerTypeID] = N'IT        '
+DELETE FROM [CustomerDemographics] WHERE [CustomerTypeID] = N'EE        '
+GO
+
+completed to compare table data [Northwind_prod].dbo.[Customers] => [Northwind].dbo.[Customers]
+completed to compare table data [Northwind_prod].dbo.[CustomerCustomerDemo] => [Northwind].dbo.[CustomerCustomerDemo]
+DELETE FROM [CustomerCustomerDemo] WHERE [CustomerID] = N'ALFKI' AND [CustomerTypeID] = N'IT        '
+GO
+
+result in "c:\temp\cmp.sql"
+
+```
+
+## Export Data
+
+```javascript
+\localdb\Northwind_prod> export Products /INSERT /out:c:\temp\Products.sql
+INSERT clauses (SELECT * FROM [Northwind_prod].dbo.[Products]) generated to "c:\temp\Products.sql", Done on rows(77)
+
+\localdb\Northwind_prod> ltype c:\temp\products.sql
+INSERT INTO [Products]([ProductName],[SupplierID],[CategoryID],[QuantityPerUnit],[UnitPrice],[UnitsInStock],[UnitsOnOrder],[ReorderLevel],[Discontinued]) VALUES(N'Chai',1,1,N'10 boxes x 20 bags',18.0000,39,0,10,0)
+INSERT INTO [Products]([ProductName],[SupplierID],[CategoryID],[QuantityPerUnit],[UnitPrice],[UnitsInStock],[UnitsOnOrder],[ReorderLevel],[Discontinued]) VALUES(N'Chang',1,1,N'24 - 12 oz bottles',19.0000,17,40,25,0)
+INSERT INTO [Products]([ProductName],[SupplierID],[CategoryID],[QuantityPerUnit],[UnitPrice],[UnitsInStock],[UnitsOnOrder],[ReorderLevel],[Discontinued]) VALUES(N'Aniseed Syrup',1,2,N'12 - 550 ml bottles',10.0000,13,70,25,0)
+
+
+\localdb\Northwind_prod> export Products /INSERT /if /out:c:\temp\Products.sql
+INSERT clauses (SELECT * FROM [Northwind_prod].dbo.[Products]) generated to "c:\temp\Products.sql", Done on rows(77)
+
+\localdb\Northwind_prod> ltype c:\temp\products.sql
+IF NOT EXISTS(SELECT * FROM [Products] WHERE [ProductID] = 1) INSERT INTO [Products]([ProductName],[SupplierID],[CategoryID],[QuantityPerUnit],[UnitPrice],[UnitsInStock],[UnitsOnOrder],[ReorderLevel],[Discontinued]) VALUES(N'Chai',1,1,N'10 boxes x 20 bags',18.0000,39,0,10,0)
+IF NOT EXISTS(SELECT * FROM [Products] WHERE [ProductID] = 2) INSERT INTO [Products]([ProductName],[SupplierID],[CategoryID],[QuantityPerUnit],[UnitPrice],[UnitsInStock],[UnitsOnOrder],[ReorderLevel],[Discontinued]) VALUES(N'Chang',1,1,N'24 - 12 oz bottles',19.0000,17,40,25,0)
+IF NOT EXISTS(SELECT * FROM [Products] WHERE [ProductID] = 3) INSERT INTO [Products]([ProductName],[SupplierID],[CategoryID],[QuantityPerUnit],[UnitPrice],[UnitsInStock],[UnitsOnOrder],[ReorderLevel],[Discontinued]) VALUES(N'Aniseed Syrup',1,2,N'12 - 550 ml bottles',10.0000,13,70,25,0)
+
+
+\localdb\Northwind_prod> export Products /SAVE /IF /out:c:\temp\Products.sql
+INSERT_OR_UPDATE clauses (SELECT * FROM [Northwind_prod].dbo.[Products]) generated to "c:\temp\Products.sql", Done on rows(77)
+
+\localdb\Northwind_prod> ltype c:\temp\products.sql
+IF NOT EXISTS(SELECT * FROM [Products] WHERE [ProductID] = 1) INSERT INTO [Products]([ProductName],[SupplierID],[CategoryID],[QuantityPerUnit],[UnitPrice],[UnitsInStock],[UnitsOnOrder],[ReorderLevel],[Discontinued]) VALUES(N'Chai',1,1,N'10 boxes x 20 bags',18.0000,39,0,10,0) ELSE UPDATE [Products] SET [ProductName] = N'Chai',[SupplierID] = 1,[CategoryID] = 1,[QuantityPerUnit] = N'10 boxes x 20 bags',[UnitPrice] = 18.0000,[UnitsInStock] = 39,[UnitsOnOrder] = 0,[ReorderLevel] = 10,[Discontinued] = 0 WHERE [ProductID] = 1
+IF NOT EXISTS(SELECT * FROM [Products] WHERE [ProductID] = 2) INSERT INTO [Products]([ProductName],[SupplierID],[CategoryID],[QuantityPerUnit],[UnitPrice],[UnitsInStock],[UnitsOnOrder],[ReorderLevel],[Discontinued]) VALUES(N'Chang',1,1,N'24 - 12 oz bottles',19.0000,17,40,25,0) ELSE UPDATE [Products] SET [ProductName] = N'Chang',[SupplierID] = 1,[CategoryID] = 1,[QuantityPerUnit] = N'24 - 12 oz bottles',[UnitPrice] = 19.0000,[UnitsInStock] = 17,[UnitsOnOrder] = 40,[ReorderLevel] = 25,[Discontinued] = 0 WHERE [ProductID] = 2
+IF NOT EXISTS(SELECT * FROM [Products] WHERE [ProductID] = 3) INSERT INTO [Products]([ProductName],[SupplierID],[CategoryID],[QuantityPerUnit],[UnitPrice],[UnitsInStock],[UnitsOnOrder],[ReorderLevel],[Discontinued]) VALUES(N'Aniseed Syrup',1,2,N'12 - 550 ml bottles',10.0000,13,70,25,0) ELSE UPDATE [Products] SET [ProductName] = N'Aniseed Syrup',[SupplierID] = 1,[CategoryID] = 2,[QuantityPerUnit] = N'12 - 550 ml bottles',[UnitPrice] = 10.0000,[UnitsInStock] = 13,[UnitsOnOrder] = 70,[ReorderLevel] = 25,[Discontinued] = 0 WHERE [ProductID] = 3
+....
+
+
+```
+
+```javascript
+```
+
+```javascript
+```
+
+```javascript
 ```
 
 ## Advanced Commands
