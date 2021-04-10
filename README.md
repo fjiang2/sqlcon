@@ -338,9 +338,106 @@ TABLE: dbo.Orders
 
 
 
-### Next Command
+### Alter Table
 
 ```javascript
+command attrib: update column property
+add primary key, foreign key or identity key
+columns:
+  attrib [table] +c:col1=varchar(2)+null : add column or alter column
+  attrib [table] +c:col1=varchar(10)     : add column or alter column
+  attrib [table] -c:col1                 : remove column
+primary keys:
+  attrib [table] +p:col1,col2            : add primary key
+  attrib [table] +p:col1,col2            : remove primary key
+foreign keys:
+  attrib [table] +f:col1=table2[.col2]   : add foreign key
+  attrib [table] -f:col1                 : remove foreign key
+identiy key:
+  attrib [table] +i:col1                 : add identity
+  attrib [table] -i:col1                 : remove identity
+refine columns:
+  attrib [table] /refine                 : refine column type and nullable
+  attrib [table] /refine  /commit        : refine and save changes
+  refine option:
+    /not-null                            : change to NOT NULL
+    /int                                 : convert to int
+    /bit                                 : convert to bit
+    /string                              : shrink string(NVARCHAR,VARCHAR,NCHAR,CHAR)
+```
+
+### Compare Table
+
+```javascript
+\localdb\Northwind_prod> compare /?
+compare table schema or records
+compare path1 [path2]  : compare data
+compare [/s]           : compare schema
+compare [/e]           : find common existing table names
+compare [/count]       : compare number of rows
+        [/pk]          : if primary key doesn't exist
+                         for example /pk:table1=pk1+pk2,table=pk1
+
+```
+
+#### Compare Schema
+
+```javascript
+\localdb\Northwind_prod> attrib Products +c:Description=varchar(20)+null
+
+\localdb\Northwind_prod> dir Products /def
+TABLE: dbo.Products
+  [1]                [ProductID] int                   ++,pk   not null
+  [2]              [ProductName] nvarchar(40)                  not null
+  [3]               [SupplierID] int                      fk       null
+  [4]               [CategoryID] int                      fk       null
+  [5]          [QuantityPerUnit] nvarchar(20)                      null
+  [6]                [UnitPrice] money                             null
+  [7]             [UnitsInStock] smallint                          null
+  [8]             [UnitsOnOrder] smallint                          null
+  [9]             [ReorderLevel] smallint                          null
+ [10]             [Discontinued] bit                           not null
+ [11]              [Description] varchar(20)                       null
+        11 Column(s)
+
+\localdb\Northwind_prod> compare Products ..\northwind\products /s /out:c:\temp\cmp_products.sql
+server1: (LocalDB)\MSSQLLocalDB default database:Northwind_prod
+server2: (LocalDB)\MSSQLLocalDB default database:Northwind
+completed to compare table schema [Northwind_prod].dbo.[Products] => [Northwind].dbo.[Products]
+ALTER TABLE [Products] ADD [Description] varchar(20) NULL
+result in "c:\temp\cmp_products.sql"        
+
+\localdb\Northwind_prod> ltype c:\temp\cmp_Products.sql
+-- sqlcon:
+-- compare server=(LocalDB)\MSSQLLocalDB db=Northwind_prod
+--         server=(LocalDB)\MSSQLLocalDB db=Northwind @ 4/10/2021 9:04:12 AM
+ALTER TABLE [Products] ADD [Description] varchar(20) NULL
+
+```
+
+#### Compare Data Rows
+
+```javascript
+
+\localdb\Northwind_prod> compare Products ..\northwind\products /out:c:\temp\cmp_products.sql
+server1: (LocalDB)\MSSQLLocalDB default database:Northwind_prod
+server2: (LocalDB)\MSSQLLocalDB default database:Northwind
+failed to compare becuase of different table schemas
+result in "c:\temp\cmp_products.sql"
+
+\localdb\Northwind_prod> attrib Products -c:Description
+
+\localdb\Northwind_prod> UPDATE Products SET ProductName='Apple' WHERE ProductID=4;
+1 of row(s) affected
+
+\localdb\Northwind_prod> compare Products ..\Northwind /out:c:\temp\cmp_Products.sql
+server1: (LocalDB)\MSSQLLocalDB default database:Northwind_prod
+server2: (LocalDB)\MSSQLLocalDB default database:Northwind
+completed to compare table data [Northwind_prod].dbo.[Products] => [Northwind].dbo.[Products]
+UPDATE [Products] SET [ProductName] = N'Apple' WHERE [ProductID] = 4
+GO
+result in "c:\temp\cmp_Products.sql"
+
 ```
 
 ## Advanced Commands
