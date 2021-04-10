@@ -467,7 +467,106 @@ result in "c:\temp\cmp.sql"
 
 ```
 
-## Export Data
+## Export Data and Code
+
+```javascript
+\localdb\Northwind_prod> export /?
+export data, schema, class, and template on current selected server/db/table
+Option:
+   /out:xxx : output path or file name
+Option of SQL generation:
+   /INSERT  : export data in INSERT INTO script on current table/database
+   /UPDATE  : export data in UPDATE SET script on current table/database
+   /SAVE    : export data in IF NOT EXISTS INSERT ELSE UPDATE script on current table/database
+      [/if]           : option /if generate if exists row then UPDATE else INSERT; or check existence of table when drop table
+      [/no-columns]   : no columns in INSERT INTO clause
+   /create  : generate CREATE TABLE script on current table/database
+   /select  : generate template SELECT FROM WHERE
+   /insert  : generate template INSERT INTO
+   /update  : generate template UPDATE SET WHERE
+   /save    : generate template IF EXISTS UPDATE ELSE INSERT
+   /delete  : generate template DELETE FROM WHERE, delete rows with foreign keys constraints
+   /drop    : generate template DROP TABLE, drop tables with foreign keys constraints
+Option of data generation:
+   /schema  : generate database schema xml file
+   /data    : generate database/table data xml file
+      [/include]: include table names with wildcard
+   /csv     : generate table csv file
+   /ds      : generate data set xml file
+   /json    : generate json from last result
+      [/ds-name:]     : data set name
+      [/dt-names:  ]  : data table name list
+      [/style:]       : json style: normal|extended|coded
+      [/exclude-table]: exclude table name in json
+   /resource: generate i18n resource file from last result
+      [/format:]      : resource format: resx|xlf|json, default:resx
+      [/name-column:] : name column
+      [/value-column:]: value column
+      [/language:]    : language: en|es|..., default:en
+      [/out:]         : resource file directory, default: current working directory
+      [/append]       : update or append to resource file
+Option of code generation:
+   /dpo     : generate C# table class
+   /l2s     : generate C# Linq to SQL class
+      [/code-style]: orginal|pascal|camel
+   /dc      : generate C# data contract class
+   /dc1     : generate C# data contract class and extension class
+      /fk   : create foreign key constraint
+      /assoc: create association classes
+      [/methods:NewObject,FillObject,UpdateRow,CreateTable,ToDataTable,ToDictionary,FromDictionary,CopyTo,CompareTo,ToSimpleString]
+   /dc2     : generate C# data contract class and extension class
+      option of data contract /[dc|dc1|dc2] :
+      [/readonly]: contract class for reading only
+      [/last]: generate C# data contract from last result
+      [/method:name] default convert method is defined on the .cfg
+      [/methods:NewObject,FillObject,UpdateRow,Equals,CopyTo,CreateTable,ToString]
+      [/NULL] allow column type be nullable
+      [/col:pk1,pk2] default primary key is the first column
+   /entity  : generate C# method copy/compare/clone for Entity framework
+      [/base:type] define base class or interface, use ~ to represent generic class itself, delimited by ;
+      [/field:constMap] create const fields for name of columns
+      [/methods:Map,Copy,Equals,Clone,GetHashCode,ToString] create Copy,Equals,Clone,GetHashCode, and ToString method
+   /c#      : generate C# data from last result
+      [/type:dict|list|array|enum|const] data type, default is list
+      [/code-column:col1=usertype1;col2=usertyp2] define user type for columns
+      [/field:col1,col2] const filed name
+      [/value:col1,col2] const filed value
+      [/dataclass] data-class name, default is DbReadOnly
+      [/dataonly] create data only
+      [/classonly] create class only
+   /conf    : generate Config C# class
+      [/type:k|d|f|p|F|P] C# class type, default is kdP
+          k : generate class of const key
+          d : generate class of default value
+          P : generate class of static property
+          F : generate class of static field
+          M : generate class of static method
+          p : generate class of hierarchial property
+          f : generate class of hierarchial field
+          m : generate class of hierarchial method
+          t : generate data contract classes
+          j : geneerat data classes from JSON
+      [/method:name] GetValue method name, default is "GetValue<>"
+      [/key:column] column key, required
+      [/default:column] column default value, required
+      [/kc:name] class name of const key
+      [/dc:name] class name of default value
+   /cfg    : generate config file
+      [/type:f|h] script type
+          h : generate TIE hierarchial config script file
+          f : generate TIE config script file
+common options /conf and /cfg
+      [/in:path] input path(.cfg)
+      [/key:column] column of key on config table
+      [/default:column] column of default value config table
+common options for code generation
+      [/ns:name] default name space is defined on the .cfg
+      [/class:name] default class name is defined on the .cfg
+      [/using:assembly] allow the use of types in a namespace, delimited by ;
+      [/out:path] output directory or file name (.cs)
+```
+
+### Export Data IN SQL
 
 ```javascript
 \localdb\Northwind_prod> export Products /INSERT /out:c:\temp\Products.sql
@@ -495,19 +594,290 @@ INSERT_OR_UPDATE clauses (SELECT * FROM [Northwind_prod].dbo.[Products]) generat
 IF NOT EXISTS(SELECT * FROM [Products] WHERE [ProductID] = 1) INSERT INTO [Products]([ProductName],[SupplierID],[CategoryID],[QuantityPerUnit],[UnitPrice],[UnitsInStock],[UnitsOnOrder],[ReorderLevel],[Discontinued]) VALUES(N'Chai',1,1,N'10 boxes x 20 bags',18.0000,39,0,10,0) ELSE UPDATE [Products] SET [ProductName] = N'Chai',[SupplierID] = 1,[CategoryID] = 1,[QuantityPerUnit] = N'10 boxes x 20 bags',[UnitPrice] = 18.0000,[UnitsInStock] = 39,[UnitsOnOrder] = 0,[ReorderLevel] = 10,[Discontinued] = 0 WHERE [ProductID] = 1
 IF NOT EXISTS(SELECT * FROM [Products] WHERE [ProductID] = 2) INSERT INTO [Products]([ProductName],[SupplierID],[CategoryID],[QuantityPerUnit],[UnitPrice],[UnitsInStock],[UnitsOnOrder],[ReorderLevel],[Discontinued]) VALUES(N'Chang',1,1,N'24 - 12 oz bottles',19.0000,17,40,25,0) ELSE UPDATE [Products] SET [ProductName] = N'Chang',[SupplierID] = 1,[CategoryID] = 1,[QuantityPerUnit] = N'24 - 12 oz bottles',[UnitPrice] = 19.0000,[UnitsInStock] = 17,[UnitsOnOrder] = 40,[ReorderLevel] = 25,[Discontinued] = 0 WHERE [ProductID] = 2
 IF NOT EXISTS(SELECT * FROM [Products] WHERE [ProductID] = 3) INSERT INTO [Products]([ProductName],[SupplierID],[CategoryID],[QuantityPerUnit],[UnitPrice],[UnitsInStock],[UnitsOnOrder],[ReorderLevel],[Discontinued]) VALUES(N'Aniseed Syrup',1,2,N'12 - 550 ml bottles',10.0000,13,70,25,0) ELSE UPDATE [Products] SET [ProductName] = N'Aniseed Syrup',[SupplierID] = 1,[CategoryID] = 2,[QuantityPerUnit] = N'12 - 550 ml bottles',[UnitPrice] = 10.0000,[UnitsInStock] = 13,[UnitsOnOrder] = 70,[ReorderLevel] = 25,[Discontinued] = 0 WHERE [ProductID] = 3
+
+
+\localdb\Northwind_prod> export Products /UPDATE /if /out:c:\temp\Products.sql
+UPDATE clauses (SELECT * FROM [Northwind_prod].dbo.[Products]) generated to "c:\temp\Products.sql", Done on rows(77)
+
+\localdb\Northwind_prod> ltype c:\temp\products.sql
+UPDATE [Products] SET [ProductName] = N'Chai',[SupplierID] = 1,[CategoryID] = 1,[QuantityPerUnit] = N'10 boxes x 20 bags',[UnitPrice] = 18.0000,[UnitsInStock] = 39,[UnitsOnOrder] = 0,[ReorderLevel] = 10,[Discontinued] = 0 WHERE [ProductID] = 1
+UPDATE [Products] SET [ProductName] = N'Chang',[SupplierID] = 1,[CategoryID] = 1,[QuantityPerUnit] = N'24 - 12 oz bottles',[UnitPrice] = 19.0000,[UnitsInStock] = 17,[UnitsOnOrder] = 40,[ReorderLevel] = 25,[Discontinued] = 0 WHERE [ProductID] = 2
+UPDATE [Products] SET [ProductName] = N'Aniseed Syrup',[SupplierID] = 1,[CategoryID] = 2,[QuantityPerUnit] = N'12 - 550 ml bottles',[UnitPrice] = 10.0000,[UnitsInStock] = 13,[UnitsOnOrder] = 70,[ReorderLevel] = 25,[Discontinued] = 0 WHERE [ProductID] = 3
 ....
 
-
 ```
 
-```javascript
-```
+### Export Data IN JSON
 
 ```javascript
+\localdb\Northwind_prod> cd Products
+
+\localdb\Northwind_prod\dbo.Products> md ProductID<5 /name:LT5
+
+\localdb\Northwind_prod\dbo.Products> cd LT5
+
+\localdb\Northwind_prod\dbo.Products\LT5> export /json /out:c:\temp\Products.json
+completed to generate json on file: "c:\temp\Products.json"
+
+\localdb\Northwind_prod\dbo.Products\LT5> ltype c:\temp\Products.json
+{
+  "Products" : [
+    {
+      "ProductID" : 1,
+      "ProductName" : "Chai",
+      "SupplierID" : 1,
+      "CategoryID" : 1,
+      "QuantityPerUnit" : "10 boxes x 20 bags",
+      "UnitPrice" : 18.00,
+      "UnitsInStock" : 39,
+      "UnitsOnOrder" : 0,
+      "ReorderLevel" : 10,
+      "Discontinued" : false
+    },
+    {
+      "ProductID" : 2,
+      "ProductName" : "Chang",
+      "SupplierID" : 1,
+      "CategoryID" : 1,
+      "QuantityPerUnit" : "24 - 12 oz bottles",
+      "UnitPrice" : 19.00,
+      "UnitsInStock" : 17,
+      "UnitsOnOrder" : 40,
+      "ReorderLevel" : 25,
+      "Discontinued" : false
+    },
+    {
+      "ProductID" : 3,
+      "ProductName" : "Aniseed Syrup",
+      "SupplierID" : 1,
+      "CategoryID" : 2,
+      "QuantityPerUnit" : "12 - 550 ml bottles",
+      "UnitPrice" : 10.00,
+      "UnitsInStock" : 13,
+      "UnitsOnOrder" : 70,
+      "ReorderLevel" : 25,
+      "Discontinued" : false
+    },
+    {
+      "ProductID" : 4,
+      "ProductName" : "Apple",
+      "SupplierID" : 2,
+      "CategoryID" : 2,
+      "QuantityPerUnit" : "48 - 6 oz jars",
+      "UnitPrice" : 22.00,
+      "UnitsInStock" : 53,
+      "UnitsOnOrder" : 0,
+      "ReorderLevel" : 0,
+      "Discontinued" : false
+    }
+  ]
+}
+
 ```
 
+### Export Data in CSharp
+
+#### Export into List
+
 ```javascript
+\localdb\Northwind_prod\dbo.Products\LT5> export /c# /type:list /ns:Northwind.Data /out:c:\temp\ProductData.cs
+created on c:\temp\ProductData.cs
+
+\localdb\Northwind_prod\dbo.Products\LT5> ltype c:\temp\ProductData.cs
+
+namespace Northwind.Data
+{
+        public partial class Products
+        {
+                public int ProductID { get; set; }
+                public string ProductName { get; set; }
+                public int SupplierID { get; set; }
+                public int CategoryID { get; set; }
+                public string QuantityPerUnit { get; set; }
+                public decimal UnitPrice { get; set; }
+                public short UnitsInStock { get; set; }
+                public short UnitsOnOrder { get; set; }
+                public short ReorderLevel { get; set; }
+                public bool Discontinued { get; set; }
+        }
+
+        public partial class DbReadOnly
+        {
+                public static readonly List<Products> ProductsData = new List<Products>
+                {
+                        new Products
+                        {
+                                ProductID = 1,
+                                ProductName = "Chai",
+                                SupplierID = 1,
+                                CategoryID = 1,
+                                QuantityPerUnit = "10 boxes x 20 bags",
+                                UnitPrice = 18.0000,
+                                UnitsInStock = 39,
+                                UnitsOnOrder = 0,
+                                ReorderLevel = 10,
+                                Discontinued = false
+                        },
+                        new Products
+                        {
+                                ProductID = 2,
+                                ProductName = "Chang",
+                                SupplierID = 1,
+                                CategoryID = 1,
+                                QuantityPerUnit = "24 - 12 oz bottles",
+                                UnitPrice = 19.0000,
+                                UnitsInStock = 17,
+                                UnitsOnOrder = 40,
+                                ReorderLevel = 25,
+                                Discontinued = false
+                        },
+                        new Products
+                        {
+                                ProductID = 3,
+                                ProductName = "Aniseed Syrup",
+                                SupplierID = 1,
+                                CategoryID = 2,
+                                QuantityPerUnit = "12 - 550 ml bottles",
+                                UnitPrice = 10.0000,
+                                UnitsInStock = 13,
+                                UnitsOnOrder = 70,
+                                ReorderLevel = 25,
+                                Discontinued = false
+                        },
+                        new Products
+                        {
+                                ProductID = 4,
+                                ProductName = "Apple",
+                                SupplierID = 2,
+                                CategoryID = 2,
+                                QuantityPerUnit = "48 - 6 oz jars",
+                                UnitPrice = 22.0000,
+                                UnitsInStock = 53,
+                                UnitsOnOrder = 0,
+                                ReorderLevel = 0,
+                                Discontinued = false
+                        }
+                };
+        }
+}
+
 ```
+
+#### Export into Dictionary
+
+```javascript
+\localdb\Northwind_prod\dbo.Products\LT5> export /c# /type:dict /out:c:\temp\ProductData.cs
+created on c:\temp\ProductData.cs
+
+\localdb\Northwind_prod\dbo.Products\LT5> ltype c:\temp\ProductData.cs
+
+namespace Sys.DataModel.Db
+{
+        public partial class Products
+        {
+                public int ProductID { get; set; }
+                public string ProductName { get; set; }
+                public int SupplierID { get; set; }
+                public int CategoryID { get; set; }
+                public string QuantityPerUnit { get; set; }
+                public decimal UnitPrice { get; set; }
+                public short UnitsInStock { get; set; }
+                public short UnitsOnOrder { get; set; }
+                public short ReorderLevel { get; set; }
+                public bool Discontinued { get; set; }
+        }
+
+        public partial class DbReadOnly
+        {
+                public static readonly Dictionary<int, Products> ProductsData = new Dictionary<int, Products>
+                {
+                        [1] = new Products
+                        {
+                                ProductID = 1,
+                                ProductName = "Chai",
+                                SupplierID = 1,
+                                CategoryID = 1,
+                                QuantityPerUnit = "10 boxes x 20 bags",
+                                UnitPrice = 18.0000,
+                                UnitsInStock = 39,
+                                UnitsOnOrder = 0,
+                                ReorderLevel = 10,
+                                Discontinued = false
+                        },
+                        [2] = new Products
+                        {
+                                ProductID = 2,
+                                ProductName = "Chang",
+                                SupplierID = 1,
+                                CategoryID = 1,
+                                QuantityPerUnit = "24 - 12 oz bottles",
+                                UnitPrice = 19.0000,
+                                UnitsInStock = 17,
+                                UnitsOnOrder = 40,
+                                ReorderLevel = 25,
+                                Discontinued = false
+                        },
+                        [3] = new Products
+                        {
+                                ProductID = 3,
+                                ProductName = "Aniseed Syrup",
+                                SupplierID = 1,
+                                CategoryID = 2,
+                                QuantityPerUnit = "12 - 550 ml bottles",
+                                UnitPrice = 10.0000,
+                                UnitsInStock = 13,
+                                UnitsOnOrder = 70,
+                                ReorderLevel = 25,
+                                Discontinued = false
+                        },
+                        [4] = new Products
+                        {
+                                ProductID = 4,
+                                ProductName = "Apple",
+                                SupplierID = 2,
+                                CategoryID = 2,
+                                QuantityPerUnit = "48 - 6 oz jars",
+                                UnitPrice = 22.0000,
+                                UnitsInStock = 53,
+                                UnitsOnOrder = 0,
+                                ReorderLevel = 0,
+                                Discontinued = false
+                        }
+                };
+        }
+}
+
+```
+
+#### Export into Enum
+
+```javascript
+\localdb\Northwind_prod\dbo.Products\LT5> export /c# /type:enum /out:c:\temp\ProductData.cs
+created on c:\temp\ProductData.cs
+
+\localdb\Northwind_prod\dbo.Products\LT5> ltype c:\temp\ProductData.cs
+using System.ComponentModel;
+
+namespace Sys.DataModel.Db
+{
+        public enum Products
+        {
+                [Description("10 boxes x 20 bags")]
+                Chai = 1,
+
+                [Description("24 - 12 oz bottles")]
+                Chang = 2,
+
+                [Description("12 - 550 ml bottles")]
+                Aniseed Syrup = 3,
+
+                [Description("48 - 6 oz jars")]
+                Apple = 4,
+        }
+}
+
+```
+
 
 ## Advanced Commands
 
