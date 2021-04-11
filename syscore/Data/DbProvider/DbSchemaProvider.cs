@@ -43,7 +43,19 @@ namespace Sys.Data
 
         public abstract TableName[] GetViewNames(DatabaseName dname);
 
+
+        /// <summary>
+        /// Get stored procedure names and function names
+        /// </summary>
+        /// <param name="dname"></param>
+        /// <returns></returns>
         public abstract TableName[] GetProcedureNames(DatabaseName dname);
+
+        /// <summary>
+        /// Get definition of stored procedure and function
+        /// </summary>
+        /// <param name="pname"></param>
+        /// <returns></returns>
         public abstract string GetProcedure(TableName pname);
 
         public abstract DataSet GetServerSchema(ServerName sname);

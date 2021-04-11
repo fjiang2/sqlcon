@@ -9,9 +9,9 @@ namespace Sys.Data
 {
     static class ConnectionProviderExtension
     {
-        public static object ExecuteScalar(this ConnectionProvider provider, string script, params object[] args)
+        public static object ExecuteScalar(this ConnectionProvider provider, string script)
         {
-            SqlCmd cmd = new SqlCmd(provider, string.Format(script, args));
+            SqlCmd cmd = new SqlCmd(provider, script);
             return cmd.ExecuteScalar();
         }
 

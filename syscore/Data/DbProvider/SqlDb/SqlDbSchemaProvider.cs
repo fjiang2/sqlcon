@@ -151,32 +151,36 @@ namespace Sys.Data
         {
             var table = dname.FillDataTable($"USE [{dname.Name}]; SELECT ROUTINE_SCHEMA,ROUTINE_NAME,ROUTINE_TYPE FROM INFORMATION_SCHEMA.ROUTINES");
 
-            List<TableName> list = new List<TableName>();
-            foreach (DataRow row in table.Rows)
+            var L = table.AsEnumerable().Select(row => new
             {
-                string type = row.Field<string>("ROUTINE_TYPE");
-                string schema = row.Field<string>("ROUTINE_SCHEMA");
-                string name = row.Field<string>("ROUTINE_NAME");
-                TableNameType _type = TableNameType.Table;
+                type = row.Field<string>("ROUTINE_TYPE"),
+                schema = row.Field<string>("ROUTINE_SCHEMA"),
+                name = row.Field<string>("ROUTINE_NAME")
+            })
+                .Where(row => !(row.name.StartsWith("sp_") || row.name.StartsWith("fn_")))                  //System Procedure or Function
+                .OrderByDescending(row => row.type)                                                         // Sort: Procedure, Function
+                .ThenBy(row => row.name)
+                .ToList();
 
-                //System Procedure or Function
-                if (name.StartsWith("sp_") || name.StartsWith("fn_"))
-                    continue;
+            List<TableName> list = new List<TableName>();
+            foreach (var row in L)
+            {
+                TableNameType type = TableNameType.Table;
 
-                switch (type)
+                switch (row.type)
                 {
                     case "PROCEDURE":
-                        _type = TableNameType.Procedure;
+                        type = TableNameType.Procedure;
                         break;
 
                     case "FUNCTION":
-                        _type = TableNameType.Function;
+                        type = TableNameType.Function;
                         break;
                 }
 
-                TableName tname = new TableName(dname, schema, name)
+                TableName tname = new TableName(dname, row.schema, row.name)
                 {
-                    Type = _type
+                    Type = type
                 };
 
                 list.Add(tname);
