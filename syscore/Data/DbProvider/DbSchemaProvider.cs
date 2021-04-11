@@ -43,6 +43,8 @@ namespace Sys.Data
 
         public abstract TableName[] GetViewNames(DatabaseName dname);
 
+        public abstract TableName[] GetProcedureNames(DatabaseName dname);
+
         public abstract DataSet GetServerSchema(ServerName sname);
         public abstract DataTable GetDatabaseSchema(DatabaseName dname);
         public abstract DataTable GetTableSchema(TableName tname);

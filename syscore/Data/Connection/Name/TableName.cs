@@ -188,7 +188,7 @@ namespace Sys.Data
         }
 
 
-        public bool IsViewName { get; set; }
+        public TableNameType Type { get; set; } = TableNameType.Table;
 
         public ConnectionProvider Provider
         {
@@ -201,10 +201,11 @@ namespace Sys.Data
         }
     }
 
-    public enum TableNameKind
+    public enum TableNameType
     {
         Table,
         View,
-        StoredProcedure,
+        Procedure,
+        Function,
     }
 }

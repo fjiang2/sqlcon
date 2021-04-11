@@ -140,7 +140,7 @@ namespace sqlcon
             }
 
             int i = 0;
-            int[] count = new int[] { 0, 0 };
+            int[] count = new int[] { 0, 0, 0, 0 };
             int h = 0;
 
             List<string> values = new List<string>();
@@ -151,10 +151,32 @@ namespace sqlcon
 
                 if (IsMatch(cmd.wildcard, tname.Path) || (tname.SchemaName == SchemaName.dbo && IsMatch(cmd.wildcard, tname.Name)))
                 {
-                    if (!tname.IsViewName) count[0]++;
-                    if (tname.IsViewName) count[1]++;
+                    string desc = "TABLE";
+                    switch (tname.Type)
+                    {
+                        case TableNameType.Table:
+                            desc = "TABLE";
+                            count[0]++;
+                            break;
 
-                    cout.WriteLine("{0,5} {1,15}.{2,-37} <{3}>", sub(i), tname.SchemaName, tname.Name, tname.IsViewName ? "VIEW" : "TABLE");
+                        case TableNameType.View:
+                            desc = "VIEW";
+                            count[1]++;
+                            break;
+
+                        case TableNameType.Procedure:
+                            desc = "PROC";
+                            count[2]++;
+                            break;
+
+                        case TableNameType.Function:
+                            desc = "FUNC";
+                            count[3]++;
+                            break;
+                    }
+
+
+                    cout.WriteLine("{0,5} {1,15}.{2,-37} <{3}>", sub(i), tname.SchemaName, tname.Name, desc);
 
                     h = PagePause(cmd, ++h);
 
@@ -165,6 +187,8 @@ namespace sqlcon
             Assign(cmd, values);
             cout.WriteLine("\t{0} Table(s)", count[0]);
             cout.WriteLine("\t{0} View(s)", count[1]);
+            cout.WriteLine("\t{0} Procedure(s)", count[2]);
+            cout.WriteLine("\t{0} Function(s)", count[3]);
 
             return true;
         }
@@ -194,7 +218,7 @@ namespace sqlcon
 
             if (cmd.HasDefinition)
             {
-                if (tname.IsViewName)
+                if (tname.Type == TableNameType.View)
                 {
                     cout.WriteLine("cannot display view structure");
                     return false;
@@ -354,7 +378,7 @@ namespace sqlcon
                 return false;
 
             TableName vname = (TableName)pt.Item;
-            if (!vname.IsViewName)
+            if (vname.Type != TableNameType.View)
                 return false;
 
             DataTable schema = vname.ViewSchema();
