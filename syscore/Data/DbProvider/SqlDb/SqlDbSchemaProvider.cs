@@ -185,6 +185,14 @@ namespace Sys.Data
             return list.ToArray();
         }
 
+        public override string GetProcedure(TableName pname)
+        {
+            var table = pname.FillDataTable($"USE [{pname.DatabaseName.Name}]; SELECT ROUTINE_DEFINITION FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_SCHEMA='{pname.SchemaName}' AND ROUTINE_NAME='{pname.Name}'");
+            return table.AsEnumerable()
+                .Select(row => row.Field<string>("ROUTINE_DEFINITION"))
+                .FirstOrDefault();
+        }
+
         public override DataTable GetTableSchema(TableName tname)
         {
             return InformationSchema.SqlTableSchema(tname);

@@ -62,6 +62,11 @@ namespace Sys.Data
             return new TableName[] { };
         }
 
+        public override string GetProcedure(TableName pname)
+        {
+            return string.Empty;
+        }
+
         public override DataTable GetTableSchema(TableName tname)
         {
             return InformationSchema.XmlTableSchema(tname, dbSchema.Tables[tname.DatabaseName.Name]);

@@ -124,7 +124,7 @@ namespace Sys.Data
 
                 if (table != null)
                     return table.AsEnumerable()
-                    .Select(row => new TableName(dname, row.Field<string>(0), row.Field<string>(1)) { Type = TableNameType.View})
+                    .Select(row => new TableName(dname, row.Field<string>(0), row.Field<string>(1)) { Type = TableNameType.View })
                     .ToArray();
             }
             else
@@ -141,6 +141,14 @@ namespace Sys.Data
             }
 
             return new TableName[] { };
+        }
+
+        public override string GetProcedure(TableName pname)
+        {
+            var table = pname.FillDataTable($"USE [{pname.DatabaseName.Name}]; SELECT ROUTINE_DEFINITION FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_SCHEMA='{pname.SchemaName}' AND ROUTINE_NAME='{pname.Name}'");
+            return table.AsEnumerable()
+                .Select(row => row.Field<string>("ROUTINE_DEFINITION"))
+                .FirstOrDefault();
         }
 
         public override TableName[] GetProcedureNames(DatabaseName dname)

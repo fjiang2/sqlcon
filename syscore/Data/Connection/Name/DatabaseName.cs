@@ -111,6 +111,11 @@ namespace Sys.Data
             return Provider.Schema.GetProcedureNames(this);
         }
 
+        public string GetProcedure(TableName pname)
+        {
+            return Provider.Schema.GetProcedure(pname);
+        }
+
         public TableName[] GetDependencyTableNames()
         {
             var dependencies = Provider
