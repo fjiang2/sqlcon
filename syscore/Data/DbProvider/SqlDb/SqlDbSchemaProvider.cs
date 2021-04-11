@@ -128,7 +128,7 @@ namespace Sys.Data
 
                 if (table != null)
                     return table.AsEnumerable()
-                    .Select(row => new TableName(dname, row.Field<string>(0), row.Field<string>(1)) { IsViewName = true })
+                    .Select(row => new TableName(dname, row.Field<string>(0), row.Field<string>(1)) { Type = TableNameType.View })
                     .ToArray();
             }
             else
@@ -139,7 +139,7 @@ namespace Sys.Data
                     return table
                         .AsEnumerable()
                         .Where(row => row.Field<string>("TABLE_TYPE") == "VIEW")
-                        .Select(row => new TableName(dname, row.Field<string>("TABLE_OWNER"), row.Field<string>("TABLE_NAME")) { IsViewName = true })
+                        .Select(row => new TableName(dname, row.Field<string>("TABLE_OWNER"), row.Field<string>("TABLE_NAME")) { Type = TableNameType.View })
                         .ToArray();
                 }
             }
@@ -147,6 +147,51 @@ namespace Sys.Data
             return new TableName[] { };
         }
 
+        public override TableName[] GetProcedureNames(DatabaseName dname)
+        {
+            var table = dname.FillDataTable($"USE [{dname.Name}]; SELECT ROUTINE_SCHEMA,ROUTINE_NAME,ROUTINE_TYPE FROM INFORMATION_SCHEMA.ROUTINES");
+
+            List<TableName> list = new List<TableName>();
+            foreach (DataRow row in table.Rows)
+            {
+                string type = row.Field<string>("ROUTINE_TYPE");
+                string schema = row.Field<string>("ROUTINE_SCHEMA");
+                string name = row.Field<string>("ROUTINE_NAME");
+                TableNameType _type = TableNameType.Table;
+
+                //System Procedure or Function
+                if (name.StartsWith("sp_") || name.StartsWith("fn_"))
+                    continue;
+
+                switch (type)
+                {
+                    case "PROCEDURE":
+                        _type = TableNameType.Procedure;
+                        break;
+
+                    case "FUNCTION":
+                        _type = TableNameType.Function;
+                        break;
+                }
+
+                TableName tname = new TableName(dname, schema, name)
+                {
+                    Type = _type
+                };
+
+                list.Add(tname);
+            }
+
+            return list.ToArray();
+        }
+
+        public override string GetProcedure(TableName pname)
+        {
+            var table = pname.FillDataTable($"USE [{pname.DatabaseName.Name}]; SELECT ROUTINE_DEFINITION FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_SCHEMA='{pname.SchemaName}' AND ROUTINE_NAME='{pname.Name}'");
+            return table.AsEnumerable()
+                .Select(row => row.Field<string>("ROUTINE_DEFINITION"))
+                .FirstOrDefault();
+        }
 
         public override DataTable GetTableSchema(TableName tname)
         {

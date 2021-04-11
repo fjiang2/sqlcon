@@ -106,6 +106,15 @@ namespace Sys.Data
             return Provider.Schema.GetViewNames(this);
         }
 
+        public TableName[] GetProcedureNames()
+        {
+            return Provider.Schema.GetProcedureNames(this);
+        }
+
+        public string GetProcedure(TableName pname)
+        {
+            return Provider.Schema.GetProcedure(pname);
+        }
 
         public TableName[] GetDependencyTableNames()
         {

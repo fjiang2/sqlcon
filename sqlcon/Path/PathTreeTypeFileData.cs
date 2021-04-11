@@ -72,8 +72,20 @@ namespace sqlcon
             {
                 TableName tname = (TableName)pt.Item;
 
-                tout = new TableOut(tname);
-                return tout.Display(cmd);
+                if (tname.Type == TableNameType.Table || tname.Type == TableNameType.View)
+                {
+                    tout = new TableOut(tname);
+                    return tout.Display(cmd);
+                }
+                else
+                {
+                    string code = tname.DatabaseName.GetProcedure(tname);
+                    if (!string.IsNullOrEmpty(code))
+                    {
+                        cout.WriteLine(code);
+                        return true;
+                    }
+                }
             }
 
             return false;

@@ -44,7 +44,7 @@ namespace Sys.Data
 
         protected virtual void LoadSchema()
         {
-            var dtSchema = tableName.TableSchema();
+            var dtSchema = TableSchemaManager.GetTableSchema(tableName);
 
             this._columns = new ColumnCollection(this);
 

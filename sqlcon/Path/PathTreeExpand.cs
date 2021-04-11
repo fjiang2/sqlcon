@@ -68,8 +68,12 @@ namespace sqlcon
                     TableName[] vnames = dname.GetViewNames();
                     foreach (var vname in vnames)
                         pt.Nodes.Add(new TreeNode<IDataPath>(vname));
+
+                    TableName[] pnames = dname.GetProcedureNames();
+                    foreach (var pname in pnames)
+                        pt.Nodes.Add(new TreeNode<IDataPath>(pname));
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     cerr.WriteLine($"failed to retrieve table names from {dname}, {ex.Message}");
                     return false;

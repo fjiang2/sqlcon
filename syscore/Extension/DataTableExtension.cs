@@ -64,7 +64,7 @@ namespace Sys.Data
 
         public static int WriteSql(this DataTable dt, TextWriter writer, TableName tname)
         {
-            tname.SetTableSchema(dt);
+            TableSchemaManager.SetTableSchema(tname, dt);
             string SQL = tname.GenerateCreateTableClause(appendGO: true);
             writer.WriteLine(SQL);
 

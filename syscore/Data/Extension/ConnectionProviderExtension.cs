@@ -26,12 +26,13 @@ namespace Sys.Data
             SqlCmd cmd = new SqlCmd(dname.Provider, script);
             return cmd.FillDataTable();
         }
+
         public static DataTable FillDataTable(this TableName tname, string script)
         {
             SqlCmd cmd = new SqlCmd(tname.Provider, script);
             return cmd.FillDataTable();
         }
-
+        
         public static DataTable FillDataTable(this ConnectionProvider provider, string script)
         {
             SqlCmd cmd = new SqlCmd(provider, script);
