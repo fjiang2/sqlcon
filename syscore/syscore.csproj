@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Sys</RootNamespace>
     <AssemblyName>syscore</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -106,8 +106,10 @@
     <Compile Include="Data.Resource\ResxFile.cs" />
     <Compile Include="Data.Resource\entry.cs" />
     <Compile Include="Data.Resource\XlfFile.cs" />
+    <Compile Include="Data\Metadata\TableSchemaManager.cs" />
     <Compile Include="Data\DataTableSchemaName.cs" />
     <Compile Include="Data\Connection\Name\SchemaName.cs" />
+    <Compile Include="Data\Extension\TableNameExtension.cs" />
     <Compile Include="Data\Linq\DataContext.cs" />
     <Compile Include="Data\Linq\Constraint.cs" />
     <Compile Include="Data\Linq\DataContextHelper.cs" />

@@ -1,5 +1,10 @@
 ﻿sqlcon release notes
 
+4/11/2021 v2.4.1.0
+	Improvements/Enhancements:
+	1. Command "dir" can display stored procedures and functions.
+	2. Command "type" can display definition of stored procedures and functions.
+
 4/3/2021 v2.4.0.0
 	Improvements/Enhancements:
 	1. Import/extract string from C# source code into SQL table for string resource.

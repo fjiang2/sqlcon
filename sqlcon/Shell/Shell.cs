@@ -254,7 +254,7 @@ namespace sqlcon
                     return NextStep.COMPLETED;
 
                 case "ver":
-                    cout.WriteLine("sqlcon [Version {0}]", SysExtension.ApplicationVerison);
+                    cout.WriteLine("sqlcon [Version {0}]", Helper.ApplicationVerison);
                     return NextStep.COMPLETED;
 
                 case "show":

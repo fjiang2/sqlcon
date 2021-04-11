@@ -12,6 +12,20 @@ namespace sqlcon
 {
     static class Helper
     {
+        public static Version ApplicationVerison
+        {
+            get
+            {
+                if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
+                {
+                    System.Deployment.Application.ApplicationDeployment ad = System.Deployment.Application.ApplicationDeployment.CurrentDeployment;
+                    Version version = ad.CurrentVersion;
+                    return version;
+                }
+                return System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+            }
+        }
+
         public static string OutputFile(this ApplicationCommand cmd, string defaultOutputFile, bool createDirectoryIfNotExists = true)
         {
             string outputFile = cmd.OutputPath();
@@ -78,55 +92,7 @@ namespace sqlcon
             return new StreamWriter(fileName, append);
         }
 
-
-
-        public static bool parse(this string arg, out string t1, out string t2)
-        {
-            if (string.IsNullOrEmpty(arg) || arg.StartsWith("/"))
-            {
-                t1 = null;
-                t2 = null;
-                return false;
-            }
-
-            string[] x = arg.Split(':');
-            if (x.Length == 1)
-            {
-                t1 = x[0];
-                t2 = x[0];
-            }
-            else
-            {
-                t1 = x[0];
-                t2 = x[1];
-            }
-
-            return true;
-        }
-
-
-
-        public static bool IsGoodConnectionString(this SqlConnectionStringBuilder cs)
-        {
-            SqlConnection conn = new SqlConnection(cs.ConnectionString);
-            try
-            {
-                conn.Open();
-                SqlCommand cmd = new SqlCommand("EXEC sp_databases", conn);
-                cmd.ExecuteScalar();
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-            finally
-            {
-                conn.Close();
-            }
-
-            return true;
-        }
-
+ 
         public static string Message(this SqlException ex)
         {
             StringBuilder builder = new StringBuilder();

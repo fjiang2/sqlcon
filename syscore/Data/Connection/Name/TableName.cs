@@ -16,7 +16,6 @@
 //--------------------------------------------------------------------------------------------------//
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Text;
 
 namespace Sys.Data
@@ -189,7 +188,7 @@ namespace Sys.Data
         }
 
 
-        public bool IsViewName { get; set; }
+        public TableNameType Type { get; set; } = TableNameType.Table;
 
         public ConnectionProvider Provider
         {
@@ -200,59 +199,13 @@ namespace Sys.Data
         {
             return Provider.Schema.Exists(this);
         }
+    }
 
-
-        private DataTable dtSchema = null;
-
-        /// <summary>
-        /// Create table schema by rows in data table. It is used to create a table by DataTable 
-        /// </summary>
-        /// <param name="dt"></param>
-        internal void SetTableSchema(DataTable dt)
-        {
-            DataSet ds = dt.DataSet;
-            if (ds == null)
-            {
-                ds = new DataSet { DataSetName = DatabaseName.Name, };
-                ds.Tables.Add(dt);
-            }
-
-            DbSchemaBuilder dbb = new DbSchemaBuilder();
-            dbb.AddSchema(ds);
-            this.dtSchema = dbb.DbSchmea.Tables[0];
-        }
-
-        internal DataTable TableSchema()
-        {
-            if (dtSchema != null)
-                return dtSchema;
-
-            return Provider.Schema.GetTableSchema(this);
-        }
-
-        public string GenerateIfDropClause()
-        {
-            TableSchema schema = new TableSchema(this);
-            var script = new TableClause(schema);
-
-            StringBuilder builder = new StringBuilder();
-            builder.Append(script.IF_EXISTS_DROP_TABLE())
-                .AppendLine(SqlScript.GO);
-
-            return builder.ToString();
-        }
-
-
-        public string GenerateCreateTableClause(bool appendGO)
-        {
-            TableSchema schema = new TableSchema(this);
-            var script = new TableClause(schema);
-
-            string SQL = script.GenerateCreateTableScript();
-            if (!appendGO)
-                return SQL;
-            else
-                return new StringBuilder(SQL).AppendLine(SqlScript.GO).ToString();
-        }
+    public enum TableNameType
+    {
+        Table,
+        View,
+        Procedure,
+        Function,
     }
 }
