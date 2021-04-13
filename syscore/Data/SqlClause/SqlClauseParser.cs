@@ -22,7 +22,7 @@ namespace Sys.Data
         {
             return new UpdateClause
             {
-                ClauseType = SqlClauseType.Update
+                ClauseAction = SqlClauseAction.Update
             };
         }
 
@@ -30,7 +30,7 @@ namespace Sys.Data
         {
             return new UpdateClause
             {
-                ClauseType = SqlClauseType.Update
+                ClauseAction = SqlClauseAction.Update
             };
         }
 
@@ -38,7 +38,7 @@ namespace Sys.Data
         {
             return new InsertClause
             {
-                ClauseType = SqlClauseType.Insert
+                ClauseAction = SqlClauseAction.Insert
             };
         }
 
@@ -46,7 +46,7 @@ namespace Sys.Data
         {
             return new DeleteClause
             {
-                ClauseType = SqlClauseType.Delete
+                ClauseAction = SqlClauseAction.Delete
             };
         }
 
