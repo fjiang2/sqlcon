@@ -18,6 +18,9 @@ namespace Sys.Data.Linq
 
         public string Translate(Expression expression)
         {
+            if (expression == null)
+                return null;
+
             this.builder.Clear();
             this.Visit(expression);
             return this.builder.ToString();

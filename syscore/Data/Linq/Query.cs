@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
+using System.Data;
 
 namespace Sys.Data.Linq
 {
@@ -18,6 +19,10 @@ namespace Sys.Data.Linq
                 return func(db);
             }
         }
+        public static IEnumerable<TEntity> Select<TEntity>() where TEntity : class
+        {
+            return Invoke(db => db.GetTable<TEntity>().Select(where: string.Empty));
+        }
 
         public static IEnumerable<TEntity> Select<TEntity>(string where = null) where TEntity : class
         {
@@ -28,6 +33,38 @@ namespace Sys.Data.Linq
         {
             return Invoke(db => db.GetTable<TEntity>().Select(where));
         }
+
+        public static IEnumerable<TEntity> Select<TEntity>(this Expression<Func<TEntity, object>> selectedColumns, Expression<Func<TEntity, bool>> where = null) where TEntity : class, new()
+        {
+            TEntity CreateInstance(System.Reflection.PropertyInfo[] properties, DataRow row, IEnumerable<string> columns)
+            {
+                TEntity entity = new TEntity();
+                foreach (var property in properties)
+                {
+                    if (columns.Contains(property.Name))
+                        property.SetValue(entity, row.GetField<object>(property.Name));
+                }
+
+                return entity;
+            }
+
+            return Invoke(db =>
+            {
+                var table = db.GetTable<TEntity>();
+
+                List<string> _columns = new PropertyTranslator().Translate(selectedColumns);
+                string _where = new QueryTranslator().Translate(where);
+                string SQL = table.SelectFromWhere(_where, _columns);
+
+                var dt = db.FillDataTable(SQL);
+                if (dt == null || dt.Rows.Count == 0)
+                    return new List<TEntity>();
+
+                var properties = typeof(TEntity).GetProperties();
+                return dt.ToList(row => CreateInstance(properties, row, _columns));
+            });
+        }
+
         public static IEnumerable<TResult> Select<TEntity, TKey, TResult>(this Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, TKey>> keySelector, Expression<Func<TResult, TKey>> resultSelector)
             where TEntity : class
             where TResult : class

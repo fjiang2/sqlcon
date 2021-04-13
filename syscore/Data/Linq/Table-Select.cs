@@ -45,19 +45,22 @@ namespace Sys.Data.Linq
             return (List<TEntity>)obj;
         }
 
-
         private string SelectFromWhere(string where)
         {
-            string SQL;
+            return SelectFromWhere(where);
+        }
 
-            if (where != null)
-            {
-                SQL = $"SELECT * FROM {formalName} WHERE {where}";
-            }
+        internal string SelectFromWhere(string where, IEnumerable<string> columns = null)
+        {
+            string SQL;
+            string _columns = "*";
+            if (columns != null && columns.Count() == 0)
+                _columns = string.Join(",", columns);
+
+            if (!string.IsNullOrEmpty(where))
+                SQL = $"SELECT {_columns} FROM {formalName} WHERE {where}";
             else
-            {
-                SQL = $"SELECT * FROM {formalName}";
-            }
+                SQL = $"SELECT {_columns } FROM {formalName}";
 
             return SQL;
         }
