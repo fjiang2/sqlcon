@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tie;
 
 namespace Sys.Data
 {
@@ -90,8 +91,8 @@ namespace Sys.Data
             int top = 0;
             var lexer = new SqlTokenizer(columns);
 
-            string token = lexer.GetNextToken();
-            if (token == "TOP")
+            var token = lexer.GetNextToken();
+            if (token.ty == tokty.identsy && token.tok == "TOP")
             {
                 if (!lexer.ExpectInt32(out top))
                     throw new Exception($"integer expected after keyword TOP, {columns}");
