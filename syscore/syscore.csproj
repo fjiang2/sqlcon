@@ -137,6 +137,8 @@
     <Compile Include="Data\Persistence\Level0\SqlExecutionEventArgs.cs" />
     <Compile Include="Data\SqlBuilder\SqlColumnValuePair.cs" />
     <Compile Include="Data\SqlBuilder\SqlColumnValuePairCollection.cs" />
+    <Compile Include="Data\SqlClause\ColumnDescriptor.cs" />
+    <Compile Include="Data\SqlClause\SqlClauseAction.cs" />
     <Compile Include="Data\SqlScriptGeneration\ColumnPairCollection.cs" />
     <Compile Include="Data\SqlScriptGeneration\ColumnPair.cs" />
     <Compile Include="Data\SqlScriptGeneration\ColumnValue.cs" />

@@ -8,15 +8,7 @@ namespace Sys.Data
 {
     public class SqlClause
     {
-        public SqlClauseType ClauseType { get; set; } = SqlClauseType.Select;
+        public SqlClauseAction ClauseAction { get; set; } = SqlClauseAction.Select;
         public TableName TableName { get; set; }
-    }
-
-    public enum SqlClauseType
-    {
-        Select,
-        Insert,
-        Update,
-        Delete,
     }
 }
