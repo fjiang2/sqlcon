@@ -47,7 +47,7 @@ namespace Sys.Data
         /// <param name="where"></param>
         public TableReader(SqlExpr where)
         {
-            this.reader = new TableReader(TableName, new SqlBuilder().SELECT.COLUMNS().FROM(TableName).WHERE(where).Clause);
+            this.reader = new TableReader(TableName, new SqlBuilder().SELECT().COLUMNS().FROM(TableName).WHERE(where).Clause);
         }
 
         private TableName TableName

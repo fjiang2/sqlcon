@@ -65,7 +65,7 @@ namespace Sys.Data
         /// <param name="tableName"></param>
         /// <param name="where"></param>
         public TableReader(TableName tableName, SqlExpr where)
-            : this(tableName, new SqlBuilder().SELECT.COLUMNS().FROM(tableName).WHERE(where).Clause)
+            : this(tableName, new SqlBuilder().SELECT().COLUMNS().FROM(tableName).WHERE(where).Clause)
         {
         }
 

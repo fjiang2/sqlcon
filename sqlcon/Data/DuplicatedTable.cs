@@ -42,7 +42,7 @@ namespace sqlcon
                 this._columns = columns;
 
             var builder = new SqlBuilder()
-                .SELECT
+                .SELECT()
                 .Append($"COUNT(*) AS [{COUNT_COLUMN_NAME}], ")
                 .COLUMNS(_columns)
                 .FROM(tname)
@@ -63,7 +63,7 @@ namespace sqlcon
                 else
                     cout.WriteLine("{0}", where);
 
-                var builder = new SqlBuilder().SELECT.COLUMNS().FROM(tname).WHERE(where);
+                var builder = new SqlBuilder().SELECT().COLUMNS().FROM(tname).WHERE(where);
                 display(builder.SqlCmd.FillDataTable());
                 cout.WriteLine();
             }
