@@ -130,12 +130,12 @@ namespace Sys.Data
 
 
 
-        public static T GetField<T>(this DataRow row, string columnName)
+        public static T GetField<T>(this DataRow row, string columnName, T defaultValue = default(T))
         {
             if (!row.Table.Columns.Contains(columnName))
-                return default(T);
+                return defaultValue;
 
-            return IsNull<T>(row[columnName], default(T));
+            return IsNull<T>(row[columnName], defaultValue);
         }
 
         public static void SetField(this DataRow row, string columnName, object value)

@@ -170,7 +170,7 @@ namespace Sys.Data
             var builder = new SqlBuilder().INSERT(TableName, columns.ToArray()).VALUES(values.ToArray());
             new SqlCmd(builder).ExecuteNonQuery();
 
-            builder = new SqlBuilder().SELECT.COLUMNS(SqlExpr.PHYSLOC).FROM(TableName).WHERE(where.AND());
+            builder = new SqlBuilder().SELECT().COLUMNS(SqlExpr.PHYSLOC).FROM(TableName).WHERE(where.AND());
             var loc = new SqlCmd(builder).FillObject<byte[]>();
             LOC.Add(loc);
 

@@ -263,51 +263,6 @@ namespace Sys.Data
             return dt.AsEnumerable().Select(row => newObject(row)).ToList();
         }
 
-        public List<T> ToList<T>() where T : new()
-        {
-            var dt = FillDataTable();
-            if (dt == null)
-                return null;
-
-            List<T> list = new List<T>();
-            if (dt.Rows.Count == 0)
-                return list;
-
-            var properties = typeof(T).GetProperties();
-            Dictionary<DataColumn, System.Reflection.PropertyInfo> d = new Dictionary<DataColumn, System.Reflection.PropertyInfo>();
-            foreach (DataColumn column in dt.Columns)
-            {
-                var property = properties.FirstOrDefault(p => p.Name.ToUpper() == column.ColumnName.ToUpper());
-                if (property != null)
-                {
-                    Type ct = column.DataType;
-                    Type pt = property.PropertyType;
-
-                    if (pt == ct || (pt.GetGenericTypeDefinition() == typeof(Nullable<>) && pt.GetGenericArguments()[0] == ct))
-                        d.Add(column, property);
-                }
-            }
-
-            foreach (DataRow row in dt.Rows)
-            {
-                T item = new T();
-                foreach (DataColumn column in dt.Columns)
-                {
-                    if (d.ContainsKey(column))
-                    {
-                        var propertyInfo = d[column];
-                        object obj = row[column];
-
-                        if (obj != null && obj != DBNull.Value)
-                            propertyInfo.SetValue(item, obj);
-                    }
-                }
-
-                list.Add(item);
-            }
-
-            return list;
-        }
 
         public void Read(Action<DbDataReader> action)
         {

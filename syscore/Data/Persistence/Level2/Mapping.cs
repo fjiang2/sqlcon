@@ -79,12 +79,12 @@ namespace Sys.Data
             if (mappingType == MappingType.Many2Many)
             {
                 this.clause1 = new SqlBuilder()
-                    .SELECT.COLUMNS(association.Relation2)
+                    .SELECT().COLUMNS(association.Relation2)
                     .FROM(association.TRelation)
                     .WHERE(association.Relation1.ColumnName() == association.Column1.ParameterName());
 
                 this.clause2 = new SqlBuilder()
-                    .SELECT
+                    .SELECT()
                     .COLUMNS()
                     .FROM(dpoType2)
                     .WHERE(association.Relation2.ColumnName().IN(this.clause1));
@@ -97,7 +97,7 @@ namespace Sys.Data
                     where = where.AND(association.Filter);
 
                 this.clause2 = new SqlBuilder()
-                    .SELECT
+                    .SELECT()
                     .COLUMNS()
                     .FROM(dpoType2)
                     .WHERE(where);

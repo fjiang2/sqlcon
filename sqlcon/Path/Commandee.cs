@@ -979,7 +979,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
 
             Locator locator = new Locator(setting.KeyName.ColumnName() == key);
-            SqlBuilder builder = new SqlBuilder().SELECT.COLUMNS(setting.ValueName.ColumnName()).FROM(tname).WHERE(locator);
+            SqlBuilder builder = new SqlBuilder().SELECT().COLUMNS(setting.ValueName.ColumnName()).FROM(tname).WHERE(locator);
             var L = new SqlCmd(builder).FillDataColumn<string>(0);
             if (L.Count() == 0)
             {
@@ -1884,7 +1884,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 string colKey = cmd.GetValue("key") ?? "Key";
                 string colValue = cmd.GetValue("value") ?? "Value";
 
-                SqlBuilder builder = new SqlBuilder().SELECT.COLUMNS(new string[] { colKey, colValue }).FROM(tname);
+                SqlBuilder builder = new SqlBuilder().SELECT().COLUMNS(new string[] { colKey, colValue }).FROM(tname);
                 var L = new SqlCmd(builder).ToList(row => new { Key = row.GetField<string>(colKey), Value = row.GetField<string>(colValue) });
 
                 Memory DS = new Memory();

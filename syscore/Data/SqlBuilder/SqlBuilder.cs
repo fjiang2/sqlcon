@@ -127,11 +127,11 @@ namespace Sys.Data
 
         #region SELECT clause
 
-        public SqlBuilder SELECT => Append("SELECT ");
+        public SqlBuilder SELECT() => Append("SELECT ");
 
-        public SqlBuilder DISTINCT => Append("DISTINCT ");
+        public SqlBuilder DISTINCT() => Append("DISTINCT ");
 
-        public SqlBuilder ALL => Append("ALL ");
+        public SqlBuilder ALL() => Append("ALL ");
 
         public SqlBuilder TOP(int n)
         {
@@ -348,13 +348,13 @@ namespace Sys.Data
 
         #region INNER/OUT JOIN clause
 
-        public SqlBuilder LEFT => Append("LEFT ");
+        public SqlBuilder LEFT() => Append("LEFT ");
 
-        public SqlBuilder RIGHT => Append("RIGHT ");
+        public SqlBuilder RIGHT() => Append("RIGHT ");
 
-        public SqlBuilder INNER => Append("INNER ");
+        public SqlBuilder INNER() => Append("INNER ");
 
-        public SqlBuilder OUTTER => Append("OUTTER ");
+        public SqlBuilder OUTTER() => Append("OUTTER ");
 
 
         public SqlBuilder JOIN(DPObject dpo, string alias = null)
@@ -422,10 +422,10 @@ namespace Sys.Data
         }
 
 
-        public SqlBuilder UNION => Append("UNION ");
+        public SqlBuilder UNION() => Append("UNION ");
 
 
-        public SqlBuilder DESC => Append("DESC ");
+        public SqlBuilder DESC() => Append("DESC ");
 
 
         private int tab = 0;
@@ -440,7 +440,7 @@ namespace Sys.Data
             return Append($"({exp})");
         }
 
-        private SqlBuilder SPACE => Append(" ");
+        private SqlBuilder SPACE() => Append(" ");
 
 
         #region Concatenate
