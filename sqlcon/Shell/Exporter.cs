@@ -99,6 +99,13 @@ namespace sqlcon
                 DataColumn col = dt.Columns[column.ColumnName];
                 col.AllowDBNull = column.Nullable;
                 col.AutoIncrement = column.IsIdentity;
+                
+                //because string supports Unicode
+                if (column.CType == CType.NVarChar || column.CType == CType.NChar)
+                {
+                    if (column.Length > 0)
+                        col.MaxLength = column.Length / 2;
+                }
             }
 
             if (dt.Rows.Count > 0)
