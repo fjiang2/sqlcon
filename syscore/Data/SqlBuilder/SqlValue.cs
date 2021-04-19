@@ -82,9 +82,9 @@ namespace Sys.Data
                   .AppendFormat("{0} {1}", time.ToString("d"), time.ToString("HH:mm:ss.fff"))
                   .Append(DELIMETER);
             }
-            else if (Value is DateTimeOffset)
+            else if (value is DateTimeOffset || value is DateTimeOffset?)
             {
-                DateTimeOffset time = (DateTimeOffset)Value;
+                DateTimeOffset time = (DateTimeOffset)value;
                 var d = DELIMETER + string.Format("{0} {1}", time.ToString("d"), time.ToString("HH:mm:ss.fff zzz"), time.Offset) + DELIMETER;
                 return d;
             }
@@ -97,7 +97,7 @@ namespace Sys.Data
                 sb.Append("0x" + BitConverter.ToString((byte[])value).Replace("-", ""));
                 //sb.Append("0x" + Comparison.ColumnValue.ByteArrayToHexString((byte[])value));
             }
-            else if (value is Guid)
+            else if (value is Guid || value is Guid?)
                 sb.Append("N" + DELIMETER).Append(value).Append(DELIMETER);
             else if (value is IEnumerable)
             {
