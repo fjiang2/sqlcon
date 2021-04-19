@@ -41,10 +41,17 @@ namespace sqlcon
             foreach (string _path in cfg.Path.Split(';'))
             {
                 WorkingDirectory working = new WorkingDirectory(_path);
-                fullPath = working.GetFullPath(path, EXT);
-                if (File.Exists(fullPath))
+                try
                 {
-                    return fullPath;
+                    fullPath = working.GetFullPath(path, EXT);
+                    if (File.Exists(fullPath))
+                    {
+                        return fullPath;
+                    }
+                }
+                catch(Exception ex)
+                {
+                    cerr.WriteLine($"invalid path:\"{_path}\", using ; as delimiter", ex);
                 }
             }
 

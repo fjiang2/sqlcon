@@ -85,7 +85,7 @@ namespace Sys.CodeBuilder
             {
                 line.tab++;
             }
-            Insert("{");
+            InsertLine("{");
             AppendLine("}");
             return this;
         }
@@ -127,7 +127,15 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        public void Insert(string str, int index = 0)
+        /// <summary>
+        /// Insert blank line at the beginning
+        /// </summary>
+        public void InsertLine()
+        {
+            InsertLine(string.Empty);
+        }
+
+        public void InsertLine(string str, int index = 0)
         {
             var line = new CodeLine { tab = curruent, line = str };
             lines.Insert(index, line);

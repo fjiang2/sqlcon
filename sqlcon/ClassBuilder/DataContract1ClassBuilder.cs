@@ -241,9 +241,27 @@ namespace sqlcon
             sent.AppendLine("DataTable dt = new DataTable();");
             foreach (DataColumn column in dt.Columns)
             {
-                Type ty = dict[column].Type;
+                TypeInfo ty = new TypeInfo(dict[column].Type);
                 var name = COLUMN(column);
-                sent.AppendLine($"dt.Columns.Add(new DataColumn({name}, typeof({ty})));");
+
+                string text = string.Empty;
+                CodeBlock codeBlock = new CodeBlock();
+                if (column.Unique)
+                    codeBlock.AppendLine($"{nameof(column.Unique)} = true,");
+                if (!column.AllowDBNull)
+                    codeBlock.AppendLine($"{nameof(column.AllowDBNull)} = false,");
+                if (column.MaxLength > 0)
+                    codeBlock.AppendLine($"{nameof(column.MaxLength)} = {column.MaxLength},");
+                if (column.AutoIncrement)
+                    codeBlock.AppendLine($"{nameof(column.AutoIncrement)} = true,");
+                if (codeBlock.Count > 0)
+                {
+                    codeBlock = codeBlock.WrapByBeginEnd();
+                    codeBlock.InsertLine();
+                    text = codeBlock.ToString();
+                }
+
+                sent.AppendLine($"dt.Columns.Add(new DataColumn({name}, typeof({ty})){text});");
             }
             sent.AppendLine();
             sent.AppendLine("return dt;");
