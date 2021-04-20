@@ -47,7 +47,7 @@ namespace Sys.Data.Linq
 
         private string SelectFromWhere(string where)
         {
-            return SelectFromWhere(where);
+            return SelectFromWhere(where, null);
         }
 
         internal string SelectFromWhere(string where, IEnumerable<string> columns = null)
