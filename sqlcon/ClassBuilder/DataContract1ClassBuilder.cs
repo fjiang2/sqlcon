@@ -246,28 +246,25 @@ namespace sqlcon
                 TypeInfo ty = new TypeInfo(dict[column].Type);
                 var name = COLUMN(column);
 
-                string text = string.Empty;
+                List<Expression> expr = new List<Expression>();
                 if (hasColumnProperty)
                 {
-                    CodeBlock codeBlock = new CodeBlock();
                     if (column.Unique)
-                        codeBlock.AppendLine($"{nameof(column.Unique)} = true,");
+                        expr.Add(new Expression(nameof(column.Unique), true));
                     if (!column.AllowDBNull)
-                        codeBlock.AppendLine($"{nameof(column.AllowDBNull)} = false,");
+                        expr.Add(new Expression(nameof(column.AllowDBNull), false));
                     if (column.MaxLength > 0)
-                        codeBlock.AppendLine($"{nameof(column.MaxLength)} = {column.MaxLength},");
+                        expr.Add(new Expression(nameof(column.MaxLength), column.MaxLength));
                     if (column.AutoIncrement)
-                        codeBlock.AppendLine($"{nameof(column.AutoIncrement)} = true,");
-                    if (codeBlock.Count > 0)
-                    {
-                        codeBlock = codeBlock.WrapByBeginEnd();
-                        codeBlock.InsertLine();
-                        text = codeBlock.ToString();
-                    }
+                        expr.Add(new Expression(nameof(column.AutoIncrement), true));
                 }
 
-                sent.AppendLine($"dt.Columns.Add(new DataColumn({name}, typeof({ty})){text});");
+                var _args = new Arguments(new Argument(new Expression(name)), new Argument(ty));
+                var _column = new Expression(typeof(DataColumn), _args, expr);
+
+                sent.AppendLine($"dt.Columns.Add({_column});");
             }
+
             sent.AppendLine();
             sent.AppendLine("return dt;");
         }

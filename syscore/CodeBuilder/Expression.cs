@@ -25,7 +25,7 @@ namespace Sys.CodeBuilder
             this.expr = $"{property} = {expr}";
         }
 
-        public Expression(TypeInfo type, Expression[] expressions)
+        public Expression(TypeInfo type, IEnumerable<Expression> expressions)
             : this(type, null, expressions)
         {
         }
@@ -35,10 +35,10 @@ namespace Sys.CodeBuilder
         {
         }
 
-        public Expression(TypeInfo type, Arguments args, Expression[] expressions)
+        public Expression(TypeInfo type, Arguments args, IEnumerable<Expression> expressions)
         {
             CodeBlock codeBlock = new CodeBlock();
-            if (expressions == null || expressions.Length == 0)
+            if (expressions == null || expressions.Count() == 0)
             {
                 if (args != null)
                     codeBlock.Append($"new {type}({args})");
@@ -95,7 +95,8 @@ namespace Sys.CodeBuilder
 
         public static implicit operator Expression(string value)
         {
-            return new Expression(Tie.VAL.Boxing(value).ToString());
+            //return new Expression(Tie.VAL.Boxing(value).ToString());
+            return new Expression(value);
         }
 
         public static implicit operator Expression(bool value)
