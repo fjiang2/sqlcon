@@ -20,7 +20,7 @@ namespace Sys.CodeBuilder
             this.expr = expr.ToString();
         }
 
-        public Expression(string property, Expression expr)
+        public Expression(Identifier property, Expression expr)
         {
             this.expr = $"{property} = {expr}";
         }
@@ -87,7 +87,7 @@ namespace Sys.CodeBuilder
         }
 
 
-        public static implicit operator Expression(ident ident)
+        public static implicit operator Expression(Identifier ident)
         {
             return new Expression(ident.ToString());
         }
@@ -95,8 +95,12 @@ namespace Sys.CodeBuilder
 
         public static implicit operator Expression(string value)
         {
-            //return new Expression(Tie.VAL.Boxing(value).ToString());
             return new Expression(value);
+        }
+
+        public static implicit operator Expression(Value value)
+        {
+            return new Expression(value.ToString());
         }
 
         public static implicit operator Expression(bool value)

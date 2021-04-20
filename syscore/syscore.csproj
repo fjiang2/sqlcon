@@ -55,6 +55,7 @@
     <Compile Include="Account\IAccount.cs" />
     <Compile Include="CodeBuilder\Alignment.cs" />
     <Compile Include="CodeBuilder\Argument.cs" />
+    <Compile Include="CodeBuilder\Identifier.cs" />
     <Compile Include="CodeBuilder\Struct.cs" />
     <Compile Include="CodeBuilder\Parameter.cs" />
     <Compile Include="CodeBuilder\Parameters.cs" />

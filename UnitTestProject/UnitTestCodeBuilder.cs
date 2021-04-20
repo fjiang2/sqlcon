@@ -27,12 +27,12 @@ namespace UnitTestProject
         public void TestNewInstance()
         {
             Statement sent = new Statement();
-            sent.ASSIGN("x", new Expression(typeof(string[]), new Expression[] { "a", "b", "c" }));
+            sent.ASSIGN("x", new Expression(typeof(string[]), new Expression[] { new Value("a"), new Value("b"), new Value("c") }));
             string code = sent.ToString();
             Debug.Assert(code == "x = new string[] { \"a\", \"b\", \"c\" };");
 
             sent = new Statement();
-            sent.ASSIGN("x", new Expression(typeof(List<string>), new Expression[] { "a", "b", "c" }));
+            sent.ASSIGN("x", new Expression(typeof(List<string>), new Expression[] { new Value("a"), new Value("b"), new Value("c") }));
             code = sent.ToString();
             Debug.Assert(code == "x = new List<string> { \"a\", \"b\", \"c\" };");
 
@@ -57,7 +57,7 @@ namespace UnitTestProject
             };
             sent.ASSIGN("x", new Expression(typeof(DataColumn), _args, _expr));
             code = sent.ToString();
-            Debug.Assert(code == "x = new DataColumn(\"EmployeeID\", typeof(string)) { Unique = true, AllowDBNull = true, MaxLength = 24 };");
+            Debug.Assert(code == "x = new DataColumn(EmployeeID, typeof(string)) { Unique = true, AllowDBNull = true, MaxLength = 24 };");
         }
     }
 }
