@@ -20,9 +20,9 @@ namespace Sys.CodeBuilder
             this.expr = expr.ToString();
         }
 
-        public Expression(string variable, Expression expr)
+        public Expression(string property, Expression expr)
         {
-            this.expr = $"{variable} = {expr}";
+            this.expr = $"{property} = {expr}";
         }
 
         public Expression(TypeInfo type, Expression[] expressions)
@@ -54,12 +54,12 @@ namespace Sys.CodeBuilder
             else
                 codeBlock.Append($"new {type}");
 
-            codeBlock.Begin();
-            foreach (Expression assign in expressions)
-            {
-                codeBlock.AppendLine($"{assign},");
-            }
-            codeBlock.End();
+            codeBlock.Append(" { ");
+            expressions.ForEach(
+                assign => codeBlock.Append($"{assign}"),
+                assign => codeBlock.Append(", ")
+            );
+            codeBlock.Append(" }");
 
             expr = codeBlock.ToString();
         }
