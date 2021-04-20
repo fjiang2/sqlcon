@@ -20,11 +20,51 @@ namespace Sys.CodeBuilder
             this.expr = expr.ToString();
         }
 
-
-        public static Expression ASSIGN(string variable, Expression exp)
+        public Expression(string variable, Expression expr)
         {
-            return new Expression($"{variable} = {exp}");
+            this.expr = $"{variable} = {expr}";
         }
+
+        public Expression(TypeInfo type, Expression[] expressions)
+            : this(type, null, expressions)
+        {
+        }
+
+        public Expression(TypeInfo type, Arguments args)
+            : this(type, args, null)
+        {
+        }
+
+        public Expression(TypeInfo type, Arguments args, Expression[] expressions)
+        {
+            CodeBlock codeBlock = new CodeBlock();
+            if (expressions == null || expressions.Length == 0)
+            {
+                if (args != null)
+                    codeBlock.Append($"new {type}({args})");
+                else
+                    codeBlock.Append($"new {type}()");
+
+                expr = codeBlock.ToString();
+                return;
+            }
+
+            if (args != null)
+                codeBlock.Append($"new {type}({args})");
+            else
+                codeBlock.Append($"new {type}");
+
+            codeBlock.Begin();
+            foreach (Expression assign in expressions)
+            {
+                codeBlock.AppendLine($"{assign},");
+            }
+            codeBlock.End();
+
+            expr = codeBlock.ToString();
+        }
+
+
 
         public static Expression ANDAND(params Expression[] exp)
         {
@@ -55,12 +95,12 @@ namespace Sys.CodeBuilder
 
         public static implicit operator Expression(string value)
         {
-            return new Expression(value);
+            return new Expression(Tie.VAL.Boxing(value).ToString());
         }
 
         public static implicit operator Expression(bool value)
         {
-            return new Expression(value);
+            return new Expression(value ? "true" : "false");
         }
 
 
@@ -129,6 +169,11 @@ namespace Sys.CodeBuilder
         {
             string type = value.GetType().Name;
             return new Expression($"{type}.{value}");
+        }
+
+        public static implicit operator Expression(TypeInfo value)
+        {
+            return new Expression($"typeof({value})");
         }
 
         public override string ToString()
