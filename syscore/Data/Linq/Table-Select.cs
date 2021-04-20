@@ -50,7 +50,7 @@ namespace Sys.Data.Linq
             return SelectFromWhere(where, null);
         }
 
-        internal string SelectFromWhere(string where, IEnumerable<string> columns = null)
+        internal string SelectFromWhere(string where, IEnumerable<string> columns)
         {
             string SQL;
             string _columns = "*";
@@ -60,7 +60,7 @@ namespace Sys.Data.Linq
             if (!string.IsNullOrEmpty(where))
                 SQL = $"SELECT {_columns} FROM {formalName} WHERE {where}";
             else
-                SQL = $"SELECT {_columns } FROM {formalName}";
+                SQL = $"SELECT {_columns} FROM {formalName}";
 
             return SQL;
         }
