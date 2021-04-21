@@ -20,7 +20,7 @@ namespace sqlcon
         protected IDictionary<DataColumn, TypeInfo> dict { get; }
 
         public DataTableClassBuilder(ApplicationCommand cmd, TableName tname, DataTable dt, bool allowDbNull)
-            :base(cmd)
+            : base(cmd)
         {
             this.tname = tname;
             this.dt = dt;
@@ -60,6 +60,18 @@ namespace sqlcon
             return dict;
         }
 
+        protected string GetField
+        {
+            get
+            {
+                string _GetField = "Field";
+                
+                if (base.MethodName != null)
+                    _GetField = base.MethodName;
+                
+                return _GetField;
+            }
+        }
         public static string COLUMN(DataColumn column) => COLUMN(column.ColumnName);
         public static string COLUMN(string columnName)
         {
@@ -126,15 +138,12 @@ namespace sqlcon
 
             int count = dt.Columns.Count;
             int i = 0;
-            string _GetField = "Field";
-            if (base.MethodName != null)
-                _GetField = base.MethodName;
 
             foreach (DataColumn column in dt.Columns)
             {
                 var type = dict[column];
                 var name = COLUMN(column);
-                var line = $"{PropertyName(column)} = row.{_GetField}<{type}>({name})";
+                var line = $"{PropertyName(column)} = row.{GetField}<{type}>({name})";
                 if (++i < count)
                     line += ",";
 

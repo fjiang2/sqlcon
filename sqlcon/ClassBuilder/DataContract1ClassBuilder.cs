@@ -151,10 +151,6 @@ namespace sqlcon
       
         private void Method_FillObject(Class clss)
         {
-            string _GetField = "Field";
-            if (base.MethodName != null)
-                _GetField = base.MethodName;
-
             Method method = new Method("FillObject")
             {
                 Modifier = Modifier.Public | Modifier.Static,
@@ -167,7 +163,7 @@ namespace sqlcon
             {
                 var type = dict[column];
                 var name = COLUMN(column);
-                var line = $"item.{PropertyName(column)} = row.{_GetField}<{type}>({name});";
+                var line = $"item.{PropertyName(column)} = row.{GetField}<{type}>({name});";
 
                 sent1.AppendLine(line);
             }
