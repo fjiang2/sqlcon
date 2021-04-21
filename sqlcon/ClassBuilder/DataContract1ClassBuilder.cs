@@ -10,20 +10,15 @@ using Sys.Data;
 
 namespace sqlcon
 {
-    class DataContract1ClassBuilder : TheClassBuilder
+    class DataContract1ClassBuilder : DataTableClassBuilder
     {
         private const string _ToDataTable = "ToDataTable";
 
-        private TableName tname;
-        private DataTable dt;
-        private IDictionary<DataColumn, TypeInfo> dict { get; }
-
         public DataContract1ClassBuilder(ApplicationCommand cmd, TableName tname, DataTable dt, bool allowDbNull)
-            : base(cmd)
+            : base(cmd, tname, dt, allowDbNull)
         {
             this.tname = tname;
             this.dt = dt;
-            this.dict = DataContract2ClassBuilder.CreateMapOfTypeInfo(dt, allowDbNull);
 
             builder.AddUsing("System");
             builder.AddUsing("System.Collections.Generic");
@@ -229,45 +224,7 @@ namespace sqlcon
             }
         }
 
-        private void Method_CreateTable(Class clss)
-        {
-            Method method = new Method("CreateTable")
-            {
-                Modifier = Modifier.Public | Modifier.Static,
-                Type = new TypeInfo { Type = typeof(DataTable) }
-            };
-            clss.Add(method);
-
-            bool hasColumnProperty = cmd.Has("data-column-property");
-            Statement sent = method.Statement;
-            sent.AppendLine("DataTable dt = new DataTable();");
-            foreach (DataColumn column in dt.Columns)
-            {
-                TypeInfo ty = new TypeInfo(dict[column].Type);
-                var name = COLUMN(column);
-
-                List<Expression> expr = new List<Expression>();
-                if (hasColumnProperty)
-                {
-                    if (column.Unique)
-                        expr.Add(new Expression(nameof(column.Unique), true));
-                    if (!column.AllowDBNull)
-                        expr.Add(new Expression(nameof(column.AllowDBNull), false));
-                    if (column.MaxLength > 0)
-                        expr.Add(new Expression(nameof(column.MaxLength), column.MaxLength));
-                    if (column.AutoIncrement)
-                        expr.Add(new Expression(nameof(column.AutoIncrement), true));
-                }
-
-                var _args = new Arguments(new Argument(new Expression(name)), new Argument(ty));
-                var _column = new Expression(typeof(DataColumn), _args, expr);
-
-                sent.AppendLine($"dt.Columns.Add({_column});");
-            }
-
-            sent.AppendLine();
-            sent.AppendLine("return dt;");
-        }
+      
 
         private void Method_ToDataTable1(Class clss)
         {

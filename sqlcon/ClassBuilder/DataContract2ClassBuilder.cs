@@ -11,19 +11,13 @@ using Sys.Data;
 namespace sqlcon
 {
 
-    class DataContract2ClassBuilder : TheClassBuilder
+    class DataContract2ClassBuilder : DataTableClassBuilder
     {
-        private TableName tname;
-        private DataTable dt;
 
-        private IDictionary<DataColumn, TypeInfo> dict { get; }
 
         public DataContract2ClassBuilder(ApplicationCommand cmd, TableName tname, DataTable dt, bool allowDbNull)
-            : base(cmd)
+            : base(cmd, tname, dt, allowDbNull)
         {
-            this.tname = tname;
-            this.dt = dt;
-            this.dict = CreateMapOfTypeInfo(dt, allowDbNull);
 
             builder.AddUsing("System");
             builder.AddUsing("System.Collections.Generic");
@@ -34,36 +28,7 @@ namespace sqlcon
             AddOptionalUsing();
         }
 
-        public static IDictionary<DataColumn, TypeInfo> CreateMapOfTypeInfo(DataTable dt, bool allowDbNull)
-        {
-            Dictionary<DataColumn, TypeInfo> dict = new Dictionary<DataColumn, TypeInfo>();
-
-            foreach (DataColumn column in dt.Columns)
-            {
-                TypeInfo ty = new TypeInfo { Type = column.DataType };
-
-                if (allowDbNull)
-                {
-                    if (column.AllowDBNull)
-                    {
-                        ty.Nullable = true;
-                    }
-                    else
-                    {
-                        foreach (DataRow row in dt.Rows)
-                        {
-                            if (row[column] == DBNull.Value)
-                                ty.Nullable = true;
-                            break;
-                        }
-                    }
-                }
-
-                dict.Add(column, ty);
-            }
-
-            return dict;
-        }
+      
 
 
         protected override void CreateClass()
@@ -221,27 +186,7 @@ namespace sqlcon
             sent.End(";");
         }
 
-        private void Method_CreateTable(Class clss)
-        {
-            Method method = new Method("CreateTable")
-            {
-                Modifier = Modifier.Public | Modifier.Static,
-                Type = new TypeInfo { Type = typeof(DataTable) }
-            };
-            clss.Add(method);
-
-            Statement sent = method.Statement;
-            sent.AppendLine("DataTable dt = new DataTable();");
-            foreach (DataColumn column in dt.Columns)
-            {
-                Type ty = dict[column].Type;
-                var NAME = COLUMN(column);
-                sent.AppendLine($"dt.Columns.Add(new DataColumn({NAME}, typeof({ty})));");
-            }
-            sent.AppendLine();
-            sent.AppendLine("return dt;");
-        }
-
+        
         private void Method_ToString(Class clss)
         {
             Method method = new Method(new TypeInfo { Type = typeof(string) }, "ToString")
