@@ -14,8 +14,8 @@ namespace sqlcon
 {
     abstract class TheClassBuilder : ClassMaker
     {
-        protected string EXTENSION = "Extension";
-        protected string ASSOCIATION = "Association";
+        protected const string EXTENSION = "Extension";
+        protected const string ASSOCIATION = "Association";
 
         protected CSharpBuilder builder;
 
@@ -85,7 +85,7 @@ namespace sqlcon
                 return "_" + name;
         }
 
-        public void CreateTableSchemaFields(TableName tname, DataTable dt, Class clss)
+        public static void CreateTableSchemaFields(TableName tname, DataTable dt, Class clss)
         {
             Field field;
 
@@ -139,7 +139,7 @@ namespace sqlcon
 
         }
 
-        protected Field CreateConstraintField(TableName tname)
+        protected static Field CreateConstraintField(TableName tname)
         {
             const string CONSTRAINT = nameof(Constraint);
             Value ToColumn(string table, string column)
@@ -206,7 +206,7 @@ namespace sqlcon
             public string FK_Column { get; set; }
         }
 
-        protected List<AssociationPropertyInfo> CreateAssoicationClass(TableName tname, Class clss)
+        protected static List<AssociationPropertyInfo> CreateAssoicationClass(TableName tname, Class clss)
         {
             List<AssociationPropertyInfo> properties = new List<AssociationPropertyInfo>();
 

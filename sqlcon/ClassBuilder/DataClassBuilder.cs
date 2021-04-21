@@ -12,15 +12,6 @@ using Sys.Stdio;
 
 namespace sqlcon
 {
-    enum DataClassType
-    {
-        Undefined,
-        Array,
-        List,
-        Dictionary,
-        Enum,
-        Constant
-    }
 
     class DataClassBuilder : ClassMaker
     {
