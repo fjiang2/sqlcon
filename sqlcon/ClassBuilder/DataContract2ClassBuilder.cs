@@ -61,8 +61,6 @@ namespace sqlcon
                 Method_CopyTo(clss);
             if (ContainsMethod("Equals"))
                 Method_Equals(clss);
-            if (ContainsMethod("NewObject"))
-                Method_NewObject(clss);
             if (ContainsMethod("CreateTable"))
                 Method_CreateTable(clss);
             if (ContainsMethod("ToDictionary"))
