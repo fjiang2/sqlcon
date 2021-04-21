@@ -157,36 +157,6 @@ namespace sqlcon
             sent.Append(";");
         }
 
-        private void Method_NewObject(Class clss)
-        {
-            Method mtdNewObject = new Method("NewObject")
-            {
-                Modifier = Modifier.Public | Modifier.Static,
-                Type = new TypeInfo { UserType = ClassName },
-                Params = new Parameters().Add(typeof(DataRow), "row"),
-                IsExtensionMethod = false
-            };
-            clss.Add(mtdNewObject);
-            Statement sent = mtdNewObject.Statement;
-            sent.AppendLine($"return new {ClassName}");
-            sent.Begin();
-
-            int count = dt.Columns.Count;
-            int i = 0;
-            foreach (DataColumn column in dt.Columns)
-            {
-                var type = dict[column];
-                var NAME = COLUMN(column);
-                var line = $"{PropertyName(column)} = row.Field<{type}>({NAME})";
-                if (++i < count)
-                    line += ",";
-
-                sent.AppendLine(line);
-            }
-            sent.End(";");
-        }
-
-        
         private void Method_ToString(Class clss)
         {
             Method method = new Method(new TypeInfo { Type = typeof(string) }, "ToString")

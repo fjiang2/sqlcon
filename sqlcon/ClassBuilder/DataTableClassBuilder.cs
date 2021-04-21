@@ -110,6 +110,40 @@ namespace sqlcon
             sent.AppendLine("return dt;");
         }
 
+        protected void Method_NewObject(Class clss)
+        {
+            Method method = new Method("NewObject")
+            {
+                Modifier = Modifier.Public | Modifier.Static,
+                Type = new TypeInfo { UserType = ClassName },
+                Params = new Parameters().Add(typeof(DataRow), "row"),
+                IsExtensionMethod = false
+            };
+            clss.Add(method);
+            Statement sent = method.Statement;
+            sent.AppendLine($"return new {ClassName}");
+            sent.Begin();
+
+            int count = dt.Columns.Count;
+            int i = 0;
+            string _GetField = "Field";
+            if (base.MethodName != null)
+                _GetField = base.MethodName;
+
+            foreach (DataColumn column in dt.Columns)
+            {
+                var type = dict[column];
+                var name = COLUMN(column);
+                var line = $"{PropertyName(column)} = row.{_GetField}<{type}>({name})";
+                if (++i < count)
+                    line += ",";
+
+                sent.AppendLine(line);
+            }
+            sent.End(";");
+        }
+
+
         public static void CreateTableSchemaFields(TableName tname, DataTable dt, Class clss)
         {
             Field field;
