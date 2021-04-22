@@ -10,24 +10,18 @@ namespace Sys.Data.Linq
 
     public sealed partial class Table<TEntity> : ITable
     {
-        private readonly Type type;
-        private readonly Type extension;
-        private readonly ITableSchema schema;
-        private readonly MethodInfo functionToDictionary;
+        private readonly IDataContract<TEntity> broker;
         private readonly string formalName;
+        private readonly ITableSchema schema;
 
         public SqlMaker Generator { get; }
         public DataContext Context { get; }
 
         internal Table(DataContext context)
         {
-
             this.Context = context;
-
-            this.type = typeof(TEntity);
-            this.schema = type.GetTableSchema(out var ext);
-            this.extension = ext;
-
+            this.broker = new DataContract1<TEntity>();
+            this.schema = broker.Schema;
             this.formalName = schema.FormalTableName();
 
             this.Generator = new SqlMaker(schema.FormalTableName())
@@ -36,35 +30,6 @@ namespace Sys.Data.Linq
                 IdentityKeys = schema.IdentityKeys,
             };
 
-            this.functionToDictionary = extension.GetMethod(nameof(ToDictionary), BindingFlags.Public | BindingFlags.Static);
-        }
-
-        private object Invoke(string name, object[] parameters)
-        {
-            var methodInfo = extension.GetMethod(name, BindingFlags.Public | BindingFlags.Static);
-            if (methodInfo != null)
-                return methodInfo.Invoke(null, parameters);
-
-            return null;
-        }
-
-        private static T Invoke<T>(MethodInfo methodInfo, params object[] parameters)
-        {
-            if (methodInfo != null)
-                return (T)methodInfo.Invoke(null, parameters);
-
-            return default(T);
-        }
-
-        internal IDictionary<string, object> ToDictionary(TEntity entity)
-        {
-            return Invoke<IDictionary<string, object>>(functionToDictionary, entity);
-        }
-
-        internal TEntity FromDictionary(IDictionary<string, object> dict)
-        {
-            object obj = Invoke(nameof(FromDictionary), new object[] { dict });
-            return (TEntity)obj;
         }
 
 
@@ -85,7 +50,7 @@ namespace Sys.Data.Linq
                 PartialUpdateOnSubmit(entity, throwException);
             }
         }
-     
+
         private void OperateOnSubmitRange(RowOperation operation, IEnumerable<TEntity> entities)
         {
             foreach (var entity in entities)
@@ -98,15 +63,8 @@ namespace Sys.Data.Linq
         {
             SqlMaker gen = this.Generator;
 
-            if (functionToDictionary != null)
-            {
-                var dict = ToDictionary(entity);
-                gen.AddRange(dict);
-            }
-            else
-            {
-                gen.AddRange(entity);
-            }
+            var dict = broker.ToDictionary(entity);
+            gen.AddRange(dict);
 
             string sql = null;
             switch (operation)
@@ -164,7 +122,7 @@ namespace Sys.Data.Linq
             }
 
             var gen = this.Generator;
-            List<string> names = type.GetProperties().Select(x => x.Name).ToList();
+            List<string> names = typeof(TEntity).GetProperties().Select(x => x.Name).ToList();
 
             if (entity is IDictionary<string, object>)
             {
@@ -250,7 +208,7 @@ namespace Sys.Data.Linq
             Context.RowEvents.Add(evt);
 
             gen.Clear();
-            return ;
+            return;
         }
 
         public override string ToString()

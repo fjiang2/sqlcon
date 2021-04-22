@@ -35,7 +35,7 @@ namespace sqlcon
         {
             TypeInfo[] _base = new TypeInfo[]
             {
-                new TypeInfo { Type = typeof(IDataContractRow) },
+                //new TypeInfo { Type = typeof(IDataContractRow) },
                 new TypeInfo { Type = typeof(IEntityRow) },
                 new TypeInfo { UserType = $"IEquatable<{ClassName}>" }
             };
@@ -168,7 +168,7 @@ namespace sqlcon
             sent.AppendLine("return ");
             IEnumerable<string> variables = dict.Keys.Select(column => PropertyName(column));
             variables.ForEach(
-                variable => sent.Append($"this.{variable} == obj.{variable}"),
+                variable => sent.Append($"this.{variable}.Equals(obj.{variable})"),
                 variable => sent.AppendLine("&& ")
             );
 

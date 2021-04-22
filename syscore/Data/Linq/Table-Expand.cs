@@ -73,11 +73,11 @@ namespace Sys.Data.Linq
         public Type[] ExpandOnSubmit(TEntity entity)
         {
             List<Type> types = new List<Type>();
-            var dict = ToDictionary(entity);
+            var dict = broker.ToDictionary(entity);
 
             foreach (var a in schema.Constraints)
             {
-                var schema = a.OtherType.GetTableSchema(out var _);
+                var schema = a.OtherType.GetTableSchemaFromExtensionType(out var _);
                 var formalName = schema.FormalTableName();
 
                 object value = dict[a.ThisKey];
@@ -102,10 +102,10 @@ namespace Sys.Data.Linq
 
             foreach (var a in schema.Constraints)
             {
-                var schema = a.OtherType.GetTableSchema(out var _);
+                var schema = a.OtherType.GetTableSchemaFromExtensionType(out var _);
                 var formalName = schema.FormalTableName();
 
-                string where = Compare(a.OtherKey, entities.Select(entity => ToDictionary(entity)[a.ThisKey]));
+                string where = Compare(a.OtherKey, entities.Select(entity => broker.ToDictionary(entity)[a.ThisKey]));
                 var SQL = $"SELECT * FROM {formalName} WHERE {where}";
 
                 Context.CodeBlock.AppendQuery(a.OtherType, SQL);
@@ -121,7 +121,7 @@ namespace Sys.Data.Linq
             if (a == null)
                 throw new InvalidConstraintException($"invalid assoication from {typeof(TEntity)} to {typeof(TSubEntity)}");
 
-            var dict = ToDictionary(entity);
+            var dict = broker.ToDictionary(entity);
             object value = dict[a.ThisKey];
             return Compare(a.OtherKey, value);
         }
@@ -132,7 +132,7 @@ namespace Sys.Data.Linq
             if (a == null)
                 throw new InvalidConstraintException($"invalid assoication from {typeof(TEntity)} to {typeof(TSubEntity)}");
 
-            return Compare(a.OtherKey, entities.Select(entity => ToDictionary(entity)[a.ThisKey]));
+            return Compare(a.OtherKey, entities.Select(entity => broker.ToDictionary(entity)[a.ThisKey]));
         }
 
         private static string Compare(string column, object value)

@@ -1,0 +1,61 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Reflection;
+using System.Data;
+
+namespace Sys.Data.Linq
+{
+    class DataContract1<TEntity> : IDataContract<TEntity>
+    {
+        private readonly Type type;
+        private readonly Type extension;
+        private readonly MethodInfo functionToDictionary;
+        public ITableSchema Schema { get; }
+
+        public DataContract1()
+        {
+            this.type = typeof(TEntity);
+            this.Schema = type.GetTableSchemaFromExtensionType(out var ext);
+            this.extension = ext;
+            this.functionToDictionary = extension.GetMethod(nameof(ToDictionary), BindingFlags.Public | BindingFlags.Static);
+        }
+
+        private object Invoke(string name, object[] parameters)
+        {
+            var methodInfo = extension.GetMethod(name, BindingFlags.Public | BindingFlags.Static);
+            if (methodInfo != null)
+                return methodInfo.Invoke(null, parameters);
+
+            return null;
+        }
+
+        private static T Invoke<T>(MethodInfo methodInfo, params object[] parameters)
+        {
+            if (methodInfo != null)
+                return (T)methodInfo.Invoke(null, parameters);
+
+            return default(T);
+        }
+
+        public IDictionary<string, object> ToDictionary(TEntity entity)
+        {
+            return Invoke<IDictionary<string, object>>(functionToDictionary, entity);
+        }
+
+        public TEntity FromDictionary(IDictionary<string, object> dict)
+        {
+            object obj = Invoke(nameof(FromDictionary), new object[] { dict });
+            return (TEntity)obj;
+        }
+
+        public List<TEntity> ToList(DataTable dt)
+        {
+            object obj = Invoke($"To{type.Name}Collection", new object[] { dt });
+            return (List<TEntity>)obj;
+        }
+
+    }
+}

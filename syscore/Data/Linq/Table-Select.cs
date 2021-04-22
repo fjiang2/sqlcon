@@ -41,8 +41,7 @@ namespace Sys.Data.Linq
 
         public List<TEntity> ToList(DataTable dt)
         {
-            object obj = Invoke($"To{type.Name}Collection", new object[] { dt });
-            return (List<TEntity>)obj;
+            return broker.ToList(dt);
         }
 
         private string SelectFromWhere(string where)
