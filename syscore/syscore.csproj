@@ -108,6 +108,7 @@
     <Compile Include="Data.Resource\ResxFile.cs" />
     <Compile Include="Data.Resource\entry.cs" />
     <Compile Include="Data.Resource\XlfFile.cs" />
+    <Compile Include="Data\Linq\DataContract2.cs" />
     <Compile Include="Data\Linq\DataContract1.cs" />
     <Compile Include="Data\Linq\EntityExtension.cs" />
     <Compile Include="Data\DataContract\IEntityRow.cs" />

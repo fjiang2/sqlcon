@@ -24,7 +24,7 @@ namespace Sys.Data.Linq
             this.schema = broker.Schema;
             this.formalName = schema.FormalTableName();
 
-            this.Generator = new SqlMaker(schema.FormalTableName())
+            this.Generator = new SqlMaker(formalName)
             {
                 PrimaryKeys = schema.PrimaryKeys,
                 IdentityKeys = schema.IdentityKeys,

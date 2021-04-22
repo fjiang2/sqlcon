@@ -45,11 +45,11 @@ namespace Sys.Data.Linq
             return Invoke<IDictionary<string, object>>(functionToDictionary, entity);
         }
 
-        public TEntity FromDictionary(IDictionary<string, object> dict)
-        {
-            object obj = Invoke(nameof(FromDictionary), new object[] { dict });
-            return (TEntity)obj;
-        }
+        //public TEntity FromDictionary(IDictionary<string, object> dict)
+        //{
+        //    object obj = Invoke(nameof(FromDictionary), new object[] { dict });
+        //    return (TEntity)obj;
+        //}
 
         public List<TEntity> ToList(DataTable dt)
         {
