@@ -1,18 +1,10 @@
 ﻿using System;
 using System.Reflection;
-using Tie;
 
 namespace Sys.Data.Linq
 {
     static class TableSchemaExtension
     {
-        public static ITableSchema GetTableSchemaFromExtensionType(this Type type, out Type extension)
-        {
-            const string EXTENSION = "Extension";
-            extension = HostType.GetType(type.FullName + EXTENSION);
-            return extension.GetTableSchemaFromType();
-        }
-
         public static ITableSchema GetTableSchemaFromType(this Type extension)
         {
             string schemaName = extension.GetStaticField(nameof(ITableSchema.SchemaName), SchemaName.dbo);

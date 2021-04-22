@@ -5,11 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Data;
+using Tie;
 
 namespace Sys.Data.Linq
 {
     class DataContract1<TEntity> : IDataContract<TEntity>
     {
+        private const string EXTENSION = "Extension";
+
         private readonly Type type;
         private readonly Type extension;
         private readonly MethodInfo functionToDictionary;
@@ -18,9 +21,16 @@ namespace Sys.Data.Linq
         public DataContract1()
         {
             this.type = typeof(TEntity);
-            this.Schema = type.GetTableSchemaFromExtensionType(out var ext);
-            this.extension = ext;
+            this.extension = HostType.GetType(type.FullName + EXTENSION);
+
+            this.Schema = extension.GetTableSchemaFromType();
             this.functionToDictionary = extension.GetMethod(nameof(ToDictionary), BindingFlags.Public | BindingFlags.Static);
+        }
+
+        public ITableSchema GetSchmea(Type type)
+        {
+            var extension = HostType.GetType(type.FullName + EXTENSION);
+            return extension.GetTableSchemaFromType();
         }
 
         private object Invoke(string name, object[] parameters)

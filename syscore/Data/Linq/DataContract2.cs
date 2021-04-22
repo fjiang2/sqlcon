@@ -19,6 +19,11 @@ namespace Sys.Data.Linq
             this.Schema = type.GetTableSchemaFromType();
         }
 
+        public ITableSchema GetSchmea(Type type)
+        {
+            return type.GetTableSchemaFromType();
+        }
+
         public IDictionary<string, object> ToDictionary(TEntity entity)
         {
             return entity.ToDictionary();

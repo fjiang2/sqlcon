@@ -77,7 +77,7 @@ namespace Sys.Data.Linq
 
             foreach (var a in schema.Constraints)
             {
-                var schema = a.OtherType.GetTableSchemaFromExtensionType(out var _);
+                var schema = broker.GetSchmea(a.OtherType);
                 var formalName = schema.FormalTableName();
 
                 object value = dict[a.ThisKey];
@@ -102,7 +102,7 @@ namespace Sys.Data.Linq
 
             foreach (var a in schema.Constraints)
             {
-                var schema = a.OtherType.GetTableSchemaFromExtensionType(out var _);
+                var schema = broker.GetSchmea(a.OtherType);
                 var formalName = schema.FormalTableName();
 
                 string where = Compare(a.OtherKey, entities.Select(entity => broker.ToDictionary(entity)[a.ThisKey]));
