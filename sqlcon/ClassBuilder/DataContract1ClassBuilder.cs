@@ -10,20 +10,15 @@ using Sys.Data;
 
 namespace sqlcon
 {
-    class DataContract1ClassBuilder : TheClassBuilder
+    class DataContract1ClassBuilder : DataTableClassBuilder
     {
         private const string _ToDataTable = "ToDataTable";
 
-        private TableName tname;
-        private DataTable dt;
-        private IDictionary<DataColumn, TypeInfo> dict { get; }
-
         public DataContract1ClassBuilder(ApplicationCommand cmd, TableName tname, DataTable dt, bool allowDbNull)
-            : base(cmd)
+            : base(cmd, tname, dt, allowDbNull)
         {
             this.tname = tname;
             this.dt = dt;
-            this.dict = DataContract2ClassBuilder.CreateMapOfTypeInfo(dt, allowDbNull);
 
             builder.AddUsing("System");
             builder.AddUsing("System.Collections.Generic");
@@ -153,45 +148,9 @@ namespace sqlcon
             sent.AppendLine(".ToList();");
         }
 
-        private void Method_NewObject(Class clss)
-        {
-            Method method = new Method("NewObject")
-            {
-                Modifier = Modifier.Public | Modifier.Static,
-                Type = new TypeInfo { UserType = ClassName },
-                Params = new Parameters().Add(typeof(DataRow), "row"),
-                IsExtensionMethod = false
-            };
-            clss.Add(method);
-            Statement sent = method.Statement;
-            sent.AppendLine($"return new {ClassName}");
-            sent.Begin();
-
-            int count = dt.Columns.Count;
-            int i = 0;
-            string _GetField = "Field";
-            if (base.MethodName != null)
-                _GetField = base.MethodName;
-
-            foreach (DataColumn column in dt.Columns)
-            {
-                var type = dict[column];
-                var name = COLUMN(column);
-                var line = $"{PropertyName(column)} = row.{_GetField}<{type}>({name})";
-                if (++i < count)
-                    line += ",";
-
-                sent.AppendLine(line);
-            }
-            sent.End(";");
-        }
-
+      
         private void Method_FillObject(Class clss)
         {
-            string _GetField = "Field";
-            if (base.MethodName != null)
-                _GetField = base.MethodName;
-
             Method method = new Method("FillObject")
             {
                 Modifier = Modifier.Public | Modifier.Static,
@@ -204,7 +163,7 @@ namespace sqlcon
             {
                 var type = dict[column];
                 var name = COLUMN(column);
-                var line = $"item.{PropertyName(column)} = row.{_GetField}<{type}>({name});";
+                var line = $"item.{PropertyName(column)} = row.{GetField}<{type}>({name});";
 
                 sent1.AppendLine(line);
             }
@@ -229,43 +188,7 @@ namespace sqlcon
             }
         }
 
-        private void Method_CreateTable(Class clss)
-        {
-            Method method = new Method("CreateTable")
-            {
-                Modifier = Modifier.Public | Modifier.Static,
-                Type = new TypeInfo { Type = typeof(DataTable) }
-            };
-            clss.Add(method);
-            Statement sent = method.Statement;
-            sent.AppendLine("DataTable dt = new DataTable();");
-            foreach (DataColumn column in dt.Columns)
-            {
-                TypeInfo ty = new TypeInfo(dict[column].Type);
-                var name = COLUMN(column);
-
-                string text = string.Empty;
-                CodeBlock codeBlock = new CodeBlock();
-                if (column.Unique)
-                    codeBlock.AppendLine($"{nameof(column.Unique)} = true,");
-                if (!column.AllowDBNull)
-                    codeBlock.AppendLine($"{nameof(column.AllowDBNull)} = false,");
-                if (column.MaxLength > 0)
-                    codeBlock.AppendLine($"{nameof(column.MaxLength)} = {column.MaxLength},");
-                if (column.AutoIncrement)
-                    codeBlock.AppendLine($"{nameof(column.AutoIncrement)} = true,");
-                if (codeBlock.Count > 0)
-                {
-                    codeBlock = codeBlock.WrapByBeginEnd();
-                    codeBlock.InsertLine();
-                    text = codeBlock.ToString();
-                }
-
-                sent.AppendLine($"dt.Columns.Add(new DataColumn({name}, typeof({ty})){text});");
-            }
-            sent.AppendLine();
-            sent.AppendLine("return dt;");
-        }
+      
 
         private void Method_ToDataTable1(Class clss)
         {

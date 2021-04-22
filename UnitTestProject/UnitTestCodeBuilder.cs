@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Data;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sys.CodeBuilder;
@@ -26,24 +27,37 @@ namespace UnitTestProject
         public void TestNewInstance()
         {
             Statement sent = new Statement();
-            sent.ASSIGN("x", typeof(string[]), new Expression[] { "a", "b", "c" });
+            sent.ASSIGN("x", new Expression(typeof(string[]), new Expression[] { new Value("a"), new Value("b"), new Value("c") }));
             string code = sent.ToString();
-            Debug.Assert(code == "x = new string[]\r\n{\r\n\ta,\r\n\tb,\r\n\tc,\r\n};");
+            Debug.Assert(code == "x = new string[] { \"a\", \"b\", \"c\" };");
 
             sent = new Statement();
-            sent.ASSIGN("x", typeof(List<string>), new Expression[] { "a", "b", "c" });
+            sent.ASSIGN("x", new Expression(typeof(List<string>), new Expression[] { new Value("a"), new Value("b"), new Value("c") }));
             code = sent.ToString();
-            Debug.Assert(code == "x = new List<string>\r\n{\r\n\ta,\r\n\tb,\r\n\tc,\r\n};");
+            Debug.Assert(code == "x = new List<string> { \"a\", \"b\", \"c\" };");
 
             sent = new Statement();
-            sent.ASSIGN("x", typeof(List<string>), new Expression[] { });
+            sent.ASSIGN("x", new Expression(typeof(List<string>), new Arguments()));
             code = sent.ToString();
             Debug.Assert(code == "x = new List<string>();");
 
             sent = new Statement();
-            sent.ASSIGN("x", typeof(List<int>), new Arguments(new Argument(1), new Argument(2)), new Expression[] { 3, 4, 5 });
+            sent.ASSIGN("x", new Expression(typeof(List<int>), new Arguments(new Argument(1), new Argument(2)), new Expression[] { 3, 4, 5 }));
             code = sent.ToString();
-            Debug.Assert(code == "x = new List<int>(1, 2)\r\n{\r\n\t3,\r\n\t4,\r\n\t5,\r\n};");
+            Debug.Assert(code == "x = new List<int>(1, 2) { 3, 4, 5 };");
+
+            sent = new Statement();
+            var _string = new TypeInfo(typeof(string));
+            var _args = new Arguments(new Argument("EmployeeID"), new Argument(_string));
+            var _expr = new Expression[]
+            {
+               new Expression("Unique", true),
+               new Expression("AllowDBNull", true),
+               new Expression("MaxLength", 24),
+            };
+            sent.ASSIGN("x", new Expression(typeof(DataColumn), _args, _expr));
+            code = sent.ToString();
+            Debug.Assert(code == "x = new DataColumn(EmployeeID, typeof(string)) { Unique = true, AllowDBNull = true, MaxLength = 24 };");
         }
     }
 }

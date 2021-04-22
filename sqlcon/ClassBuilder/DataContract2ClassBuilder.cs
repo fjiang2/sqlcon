@@ -11,19 +11,13 @@ using Sys.Data;
 namespace sqlcon
 {
 
-    class DataContract2ClassBuilder : TheClassBuilder
+    class DataContract2ClassBuilder : DataTableClassBuilder
     {
-        private TableName tname;
-        private DataTable dt;
 
-        private IDictionary<DataColumn, TypeInfo> dict { get; }
 
         public DataContract2ClassBuilder(ApplicationCommand cmd, TableName tname, DataTable dt, bool allowDbNull)
-            : base(cmd)
+            : base(cmd, tname, dt, allowDbNull)
         {
-            this.tname = tname;
-            this.dt = dt;
-            this.dict = CreateMapOfTypeInfo(dt, allowDbNull);
 
             builder.AddUsing("System");
             builder.AddUsing("System.Collections.Generic");
@@ -34,42 +28,18 @@ namespace sqlcon
             AddOptionalUsing();
         }
 
-        public static IDictionary<DataColumn, TypeInfo> CreateMapOfTypeInfo(DataTable dt, bool allowDbNull)
-        {
-            Dictionary<DataColumn, TypeInfo> dict = new Dictionary<DataColumn, TypeInfo>();
-
-            foreach (DataColumn column in dt.Columns)
-            {
-                TypeInfo ty = new TypeInfo { Type = column.DataType };
-
-                if (allowDbNull)
-                {
-                    if (column.AllowDBNull)
-                    {
-                        ty.Nullable = true;
-                    }
-                    else
-                    {
-                        foreach (DataRow row in dt.Rows)
-                        {
-                            if (row[column] == DBNull.Value)
-                                ty.Nullable = true;
-                            break;
-                        }
-                    }
-                }
-
-                dict.Add(column, ty);
-            }
-
-            return dict;
-        }
+      
 
 
         protected override void CreateClass()
         {
-
-            var clss = new Class(ClassName, new TypeInfo { Type = typeof(IDataContractRow) }, new TypeInfo { UserType = $"IEquatable<{ClassName}>" })
+            TypeInfo[] _base = new TypeInfo[]
+            {
+                new TypeInfo { Type = typeof(IDataContractRow) },
+                new TypeInfo { Type = typeof(IEntityRow) },
+                new TypeInfo { UserType = $"IEquatable<{ClassName}>" }
+            };
+            var clss = new Class(ClassName, _base)
             {
                 Modifier = Modifier.Public | Modifier.Partial
             };
@@ -81,6 +51,8 @@ namespace sqlcon
                 clss.Add(new Property(dict[column], PropertyName(column)) { Modifier = Modifier.Public });
             }
 
+            Default_Constructor(clss);
+
             if (ContainsMethod("FillObject"))
                 Method_FillObject(clss);
             if (ContainsMethod("UpdateRow"))
@@ -89,10 +61,12 @@ namespace sqlcon
                 Method_CopyTo(clss);
             if (ContainsMethod("Equals"))
                 Method_Equals(clss);
-            if (ContainsMethod("NewObject"))
-                Method_NewObject(clss);
             if (ContainsMethod("CreateTable"))
                 Method_CreateTable(clss);
+            if (ContainsMethod("ToDictionary"))
+                Method_ToDictionary(clss);
+            if (ContainsMethod("FromDictionary"))
+                Constructor_FromDictionary(clss);
             //Method_CRUD(dt, clss);
             if (ContainsMethod("ToString"))
                 Method_ToString(clss);
@@ -108,6 +82,15 @@ namespace sqlcon
                 clss.Add(field);
             }
 
+        }
+        private void Default_Constructor(Class clss)
+        {
+            Constructor constructor = new Constructor(clss.Name)
+            {
+                Modifier= Modifier.Public,
+            };
+
+            clss.Add(constructor);
         }
 
         private void Method_FillObject(Class clss)
@@ -192,27 +175,24 @@ namespace sqlcon
             sent.Append(";");
         }
 
-        private void Method_NewObject(Class clss)
+        private void Method_ToDictionary(Class clss)
         {
-            Method mtdNewObject = new Method("NewObject")
+            Method method = new Method("ToDictionary")
             {
-                Modifier = Modifier.Public | Modifier.Static,
-                Type = new TypeInfo { UserType = ClassName },
-                Params = new Parameters().Add(typeof(DataRow), "row"),
-                IsExtensionMethod = false
+                Modifier = Modifier.Public,
+                Type = new TypeInfo { Type = typeof(IDictionary<string, object>) },
             };
-            clss.Add(mtdNewObject);
-            Statement sent = mtdNewObject.Statement;
-            sent.AppendLine($"return new {ClassName}");
+            clss.Add(method);
+            Statement sent = method.Statement;
+            sent.AppendLine("return new Dictionary<string,object>() ");
             sent.Begin();
-
             int count = dt.Columns.Count;
             int i = 0;
             foreach (DataColumn column in dt.Columns)
             {
-                var type = dict[column];
-                var NAME = COLUMN(column);
-                var line = $"{PropertyName(column)} = row.Field<{type}>({NAME})";
+                Type ty = dict[column].Type;
+                var name = COLUMN(column);
+                var line = $"[{name}] = this.{PropertyName(column)}";
                 if (++i < count)
                     line += ",";
 
@@ -221,25 +201,22 @@ namespace sqlcon
             sent.End(";");
         }
 
-        private void Method_CreateTable(Class clss)
+        private void Constructor_FromDictionary(Class clss)
         {
-            Method method = new Method("CreateTable")
+            Constructor method = new Constructor(clss.Name)
             {
-                Modifier = Modifier.Public | Modifier.Static,
-                Type = new TypeInfo { Type = typeof(DataTable) }
+                Modifier = Modifier.Public,
+                Params = new Parameters().Add(typeof(IDictionary<string, object>), "dict"),
             };
             clss.Add(method);
-
             Statement sent = method.Statement;
-            sent.AppendLine("DataTable dt = new DataTable();");
             foreach (DataColumn column in dt.Columns)
             {
-                Type ty = dict[column].Type;
-                var NAME = COLUMN(column);
-                sent.AppendLine($"dt.Columns.Add(new DataColumn({NAME}, typeof({ty})));");
+                var type = dict[column];
+                var name = COLUMN(column);
+                var line = $"this.{PropertyName(column)} = ({type})dict[{name}];";
+                sent.AppendLine(line);
             }
-            sent.AppendLine();
-            sent.AppendLine("return dt;");
         }
 
         private void Method_ToString(Class clss)

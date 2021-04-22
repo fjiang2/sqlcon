@@ -55,6 +55,7 @@
     <Compile Include="Account\IAccount.cs" />
     <Compile Include="CodeBuilder\Alignment.cs" />
     <Compile Include="CodeBuilder\Argument.cs" />
+    <Compile Include="CodeBuilder\Identifier.cs" />
     <Compile Include="CodeBuilder\Struct.cs" />
     <Compile Include="CodeBuilder\Parameter.cs" />
     <Compile Include="CodeBuilder\Parameters.cs" />
@@ -89,6 +90,7 @@
     <Compile Include="CodeBuilder\UniqueNameMaker.cs" />
     <Compile Include="CodeBuilder\UtilsMethod.cs" />
     <Compile Include="CodeBuilder\Value.cs" />
+    <Compile Include="CodeBuilder\ValueOutputFormat.cs" />
     <Compile Include="Configuration\ConfigurationPath.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationEnvironment.cs" />
@@ -106,6 +108,8 @@
     <Compile Include="Data.Resource\ResxFile.cs" />
     <Compile Include="Data.Resource\entry.cs" />
     <Compile Include="Data.Resource\XlfFile.cs" />
+    <Compile Include="Data\Linq\EntityExtension.cs" />
+    <Compile Include="Data\DataContract\IEntityRow.cs" />
     <Compile Include="Data\Metadata\TableSchemaManager.cs" />
     <Compile Include="Data\DataTableSchemaName.cs" />
     <Compile Include="Data\Connection\Name\SchemaName.cs" />
