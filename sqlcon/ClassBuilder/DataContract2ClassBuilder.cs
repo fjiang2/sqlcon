@@ -28,14 +28,14 @@ namespace sqlcon
             AddOptionalUsing();
         }
 
-      
+
 
 
         protected override void CreateClass()
         {
             TypeInfo[] _base = new TypeInfo[]
             {
-                new TypeInfo { Type = typeof(IDataContractRow) },
+                //new TypeInfo { Type = typeof(IDataContractRow) },
                 new TypeInfo { Type = typeof(IEntityRow) },
                 new TypeInfo { UserType = $"IEquatable<{ClassName}>" }
             };
@@ -51,10 +51,13 @@ namespace sqlcon
                 clss.Add(new Property(dict[column], PropertyName(column)) { Modifier = Modifier.Public });
             }
 
-            Default_Constructor(clss);
+            Constructor_Default(clss);
 
             if (ContainsMethod("FillObject"))
+            {
+                Constructor_DataRow(clss);
                 Method_FillObject(clss);
+            }
             if (ContainsMethod("UpdateRow"))
                 Method_UpdateRow(clss);
             if (ContainsMethod("CopyTo"))
@@ -83,14 +86,27 @@ namespace sqlcon
             }
 
         }
-        private void Default_Constructor(Class clss)
+        private void Constructor_Default(Class clss)
         {
             Constructor constructor = new Constructor(clss.Name)
             {
-                Modifier= Modifier.Public,
+                Modifier = Modifier.Public,
             };
 
             clss.Add(constructor);
+        }
+
+        private void Constructor_DataRow(Class clss)
+        {
+            Constructor constructor = new Constructor(clss.Name)
+            {
+                Modifier = Modifier.Public,
+                Params = new Parameters().Add(typeof(DataRow), "row")
+            };
+
+            clss.Add(constructor);
+            var sent = constructor.Statement;
+            sent.AppendLine("FillObject(row);");
         }
 
         private void Method_FillObject(Class clss)
@@ -109,7 +125,7 @@ namespace sqlcon
                 var NAME = COLUMN(column);
                 var name = PropertyName(column);
 
-                var line = $"this.{name} = row.Field<{type}>({NAME});";
+                var line = $"this.{name} = row.{GetField}<{type}>({NAME});";
                 sent.AppendLine(line);
             }
         }
