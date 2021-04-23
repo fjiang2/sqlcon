@@ -28,7 +28,7 @@ namespace sqlcon
             AddOptionalUsing();
         }
 
-      
+
 
 
         protected override void CreateClass()
@@ -52,10 +52,12 @@ namespace sqlcon
             }
 
             Constructor_Default(clss);
-            Constructor_DataRow(clss);
 
             if (ContainsMethod("FillObject"))
+            {
+                Constructor_DataRow(clss);
                 Method_FillObject(clss);
+            }
             if (ContainsMethod("UpdateRow"))
                 Method_UpdateRow(clss);
             if (ContainsMethod("CopyTo"))
@@ -88,7 +90,7 @@ namespace sqlcon
         {
             Constructor constructor = new Constructor(clss.Name)
             {
-                Modifier= Modifier.Public,
+                Modifier = Modifier.Public,
             };
 
             clss.Add(constructor);
@@ -101,18 +103,10 @@ namespace sqlcon
                 Modifier = Modifier.Public,
                 Params = new Parameters().Add(typeof(DataRow), "row")
             };
+
             clss.Add(constructor);
             var sent = constructor.Statement;
-
-            foreach (DataColumn column in dt.Columns)
-            {
-                var type = dict[column];
-                var NAME = COLUMN(column);
-                var name = PropertyName(column);
-
-                var line = $"this.{name} = row.{GetField}<{type}>({NAME});";
-                sent.AppendLine(line);
-            }
+            sent.AppendLine("FillObject(row);");
         }
 
         private void Method_FillObject(Class clss)

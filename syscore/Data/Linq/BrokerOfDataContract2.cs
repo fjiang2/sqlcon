@@ -8,6 +8,7 @@ using System.Data;
 
 namespace Sys.Data.Linq
 {
+
     class BrokerOfDataContract2<TEntity> : IDataContractBroker<TEntity>
     {
         private readonly Type type;
