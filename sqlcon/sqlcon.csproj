@@ -216,6 +216,10 @@
       <Project>{58332852-369d-4045-93c2-5cfe9cfb2313}</Project>
       <Name>syscore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\sysdata\sysdata.csproj">
+      <Project>{c1c8f356-1aa9-4aa4-9121-48e588219b65}</Project>
+      <Name>sysdata</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="ReleaseNotes.txt">

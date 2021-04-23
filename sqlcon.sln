@@ -16,6 +16,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject", "UnitTest
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlshop", "sqlshop\sqlshop.csproj", "{6422E5EF-28EF-493A-AED7-02E8A3B4DAA1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sysdata", "sysdata\sysdata.csproj", "{C1C8F356-1AA9-4AA4-9121-48E588219B65}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "codegen", "codegen\codegen.csproj", "{6FDC9776-E27C-4E0E-A494-964BEE34E8F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +42,14 @@ Global
 		{6422E5EF-28EF-493A-AED7-02E8A3B4DAA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6422E5EF-28EF-493A-AED7-02E8A3B4DAA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6422E5EF-28EF-493A-AED7-02E8A3B4DAA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1C8F356-1AA9-4AA4-9121-48E588219B65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1C8F356-1AA9-4AA4-9121-48E588219B65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1C8F356-1AA9-4AA4-9121-48E588219B65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1C8F356-1AA9-4AA4-9121-48E588219B65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FDC9776-E27C-4E0E-A494-964BEE34E8F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FDC9776-E27C-4E0E-A494-964BEE34E8F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FDC9776-E27C-4E0E-A494-964BEE34E8F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FDC9776-E27C-4E0E-A494-964BEE34E8F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

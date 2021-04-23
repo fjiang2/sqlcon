@@ -29,6 +29,8 @@ namespace Sys.Data.IO
             get { return exists(); }
         }
 
+        public virtual string FileName { get; }
+
         public string Name
         {
             get

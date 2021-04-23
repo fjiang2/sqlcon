@@ -23,7 +23,7 @@ namespace Sys.Data
         {
             try
             {
-                string assemblyFile = (fileLink as DiskFileLink).FileName;
+                string assemblyFile = fileLink.FileName;
                 if (assemblyFile == null)
                     throw new Exception($"assemly must be local file, {fileLink}");
                 if (!File.Exists(assemblyFile))
