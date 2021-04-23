@@ -723,10 +723,10 @@ namespace sqlcon
             }
 
 
-            if (cmd.options.Has("+c"))
+            if (cmd.Options.Has("+c"))
             {
                 TableName tname = (TableName)pt.Item;
-                string expr = cmd.options.GetValue("+c");
+                string expr = cmd.Options.GetValue("+c");
                 string[] items = expr.Split(new string[] { "=", "+" }, StringSplitOptions.RemoveEmptyEntries);
                 if (items.Length != 2 && items.Length != 3)
                 {
@@ -751,19 +751,19 @@ namespace sqlcon
                 return;
             }
 
-            if (cmd.options.Has("-c"))
+            if (cmd.Options.Has("-c"))
             {
                 TableName tname = (TableName)pt.Item;
-                string column = cmd.options.GetValue("-c");
+                string column = cmd.Options.GetValue("-c");
                 string SQL = $"ALTER TABLE [{tname.Name}] DROP COLUMN {column}";
                 ExecuteNonQuery(tname.Provider, SQL);
                 return;
             }
 
-            if (cmd.options.Has("+f"))
+            if (cmd.Options.Has("+f"))
             {
                 TableName fkName = (TableName)pt.Item;
-                string expr = cmd.options.GetValue("+f");
+                string expr = cmd.Options.GetValue("+f");
                 string[] items = expr.Split('=');
 
                 if (items.Length != 2)
@@ -823,19 +823,19 @@ namespace sqlcon
                 return;
             }
 
-            if (cmd.options.Has("+p"))
+            if (cmd.Options.Has("+p"))
             {
                 TableName tname = (TableName)pt.Item;
-                string expr = cmd.options.GetValue("+p");
+                string expr = cmd.Options.GetValue("+p");
                 string SQL = $"ALTER TABLE [{tname.Name}] ADD PRIMARY KEY(expr)";
                 ExecuteNonQuery(tname.Provider, SQL);
                 return;
             }
 
-            if (cmd.options.Has("+i"))
+            if (cmd.Options.Has("+i"))
             {
                 TableName tname = (TableName)pt.Item;
-                string column = cmd.options.GetValue("+i");
+                string column = cmd.Options.GetValue("+i");
                 string SQL = @"
 ALTER TABLE {0} ADD {1} INT IDENTITY(1, 1)
 ALTER TABLE {0} DROP COLUMN {2}
