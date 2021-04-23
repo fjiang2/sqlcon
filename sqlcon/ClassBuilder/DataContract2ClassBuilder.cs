@@ -51,7 +51,8 @@ namespace sqlcon
                 clss.Add(new Property(dict[column], PropertyName(column)) { Modifier = Modifier.Public });
             }
 
-            Default_Constructor(clss);
+            Constructor_Default(clss);
+            Constructor_DataRow(clss);
 
             if (ContainsMethod("FillObject"))
                 Method_FillObject(clss);
@@ -83,7 +84,7 @@ namespace sqlcon
             }
 
         }
-        private void Default_Constructor(Class clss)
+        private void Constructor_Default(Class clss)
         {
             Constructor constructor = new Constructor(clss.Name)
             {
@@ -91,6 +92,27 @@ namespace sqlcon
             };
 
             clss.Add(constructor);
+        }
+
+        private void Constructor_DataRow(Class clss)
+        {
+            Constructor constructor = new Constructor(clss.Name)
+            {
+                Modifier = Modifier.Public,
+                Params = new Parameters().Add(typeof(DataRow), "row")
+            };
+            clss.Add(constructor);
+            var sent = constructor.Statement;
+
+            foreach (DataColumn column in dt.Columns)
+            {
+                var type = dict[column];
+                var NAME = COLUMN(column);
+                var name = PropertyName(column);
+
+                var line = $"this.{name} = row.{GetField}<{type}>({NAME});";
+                sent.AppendLine(line);
+            }
         }
 
         private void Method_FillObject(Class clss)
@@ -109,7 +131,7 @@ namespace sqlcon
                 var NAME = COLUMN(column);
                 var name = PropertyName(column);
 
-                var line = $"this.{name} = row.Field<{type}>({NAME});";
+                var line = $"this.{name} = row.{GetField}<{type}>({NAME});";
                 sent.AppendLine(line);
             }
         }

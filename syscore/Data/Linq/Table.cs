@@ -10,7 +10,7 @@ namespace Sys.Data.Linq
 
     public sealed partial class Table<TEntity> : ITable
     {
-        private readonly IDataContract<TEntity> broker;
+        private readonly IDataContractBroker<TEntity> broker;
         private readonly string formalName;
         private readonly ITableSchema schema;
 
@@ -20,7 +20,7 @@ namespace Sys.Data.Linq
         internal Table(DataContext context)
         {
             this.Context = context;
-            this.broker = new DataContract1<TEntity>();
+            this.broker = new BrokerOfDataContract1<TEntity>();
             this.schema = broker.Schema;
             this.formalName = schema.FormalTableName();
 

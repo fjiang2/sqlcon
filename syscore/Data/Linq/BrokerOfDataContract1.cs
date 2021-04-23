@@ -9,7 +9,7 @@ using Tie;
 
 namespace Sys.Data.Linq
 {
-    class DataContract1<TEntity> : IDataContract<TEntity>
+    class BrokerOfDataContract1<TEntity> : IDataContractBroker<TEntity>
     {
         private const string EXTENSION = "Extension";
 
@@ -18,7 +18,7 @@ namespace Sys.Data.Linq
         private readonly MethodInfo functionToDictionary;
         public ITableSchema Schema { get; }
 
-        public DataContract1()
+        public BrokerOfDataContract1()
         {
             this.type = typeof(TEntity);
             this.extension = HostType.GetType(type.FullName + EXTENSION);
@@ -54,12 +54,6 @@ namespace Sys.Data.Linq
         {
             return Invoke<IDictionary<string, object>>(functionToDictionary, entity);
         }
-
-        //public TEntity FromDictionary(IDictionary<string, object> dict)
-        //{
-        //    object obj = Invoke(nameof(FromDictionary), new object[] { dict });
-        //    return (TEntity)obj;
-        //}
 
         public List<TEntity> ToList(DataTable dt)
         {

@@ -8,12 +8,12 @@ using System.Data;
 
 namespace Sys.Data.Linq
 {
-    class DataContract2<TEntity> : IDataContract<TEntity> where TEntity : IEntityRow, new()
+    class BrokerOfDataContract2<TEntity> : IDataContractBroker<TEntity>
     {
         private readonly Type type;
         public ITableSchema Schema { get; }
 
-        public DataContract2()
+        public BrokerOfDataContract2()
         {
             this.type = typeof(TEntity);
             this.Schema = type.GetTableSchemaFromType();
@@ -26,25 +26,14 @@ namespace Sys.Data.Linq
 
         public IDictionary<string, object> ToDictionary(TEntity entity)
         {
-            return entity.ToDictionary();
+            return (entity as IEntityRow).ToDictionary();
         }
 
-        //public TEntity FromDictionary(IDictionary<string, object> dict)
-        //{
-        //    var obj = new TEntity();
-        //    obj.FromDictionary(dict);
-        //    return obj;
-        //}
 
         public List<TEntity> ToList(DataTable dt)
         {
             return System.Data.DataTableExtensions.AsEnumerable(dt)
-            .Select(row =>
-            {
-                var obj = new TEntity();
-                obj.FillObject(row);
-                return obj;
-            })
+            .Select(row => (TEntity)Activator.CreateInstance(type, new object[] { row }))
             .ToList();
         }
 
