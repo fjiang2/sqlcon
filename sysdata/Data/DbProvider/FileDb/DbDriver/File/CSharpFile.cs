@@ -24,7 +24,7 @@ namespace Sys.Data
             try
             {
                 string code = fileLink.ReadAllText();
-                Assembly assembly = Compile(fileLink.Name, code);
+                Assembly assembly = null; // Compile(fileLink.Name, code);
                 this.data = TypeExtension.CreateDataSet(assembly, type => type.IsClass);
 
                 var schema = new DbSchemaBuilder(dbSchema);
@@ -53,19 +53,7 @@ namespace Sys.Data
             return dt2.Rows.Count;
         }
 
-        private static Assembly Compile(string assemblyName, string cs)
-        {
-            var csc = new Compiler.CSharpCompiler();
-            csc.Compile(assemblyName, cs);
-
-            if (csc.HasError)
-            {
-                throw new Exception(csc.GetError());
-            }
-
-            return csc.GetAssembly();
-        }
-
+     
        
     }
 }

@@ -15,7 +15,7 @@ namespace sqlcon
         [STAThread]
         static void Main(string[] args)
         {
-            Console.Title = "sqlcon";
+            //Console.Title = "sqlcon";
             Console.WriteLine($"SQL Console [Version {Helper.ApplicationVerison}]");
             Console.WriteLine($"Copyright (c) 2014-{DateTime.Today.Year} Datconn. All rights reserved.");
             Console.WriteLine();
