@@ -9,11 +9,11 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("sqlcon")]
 [assembly: AssemblyDescription("SQL Server Console")]
 [assembly: AssemblyConfiguration("datconn")]
-[assembly: AssemblyCompany("Datum Connect")]
+//[assembly: AssemblyCompany("Datum Connect")]
 [assembly: AssemblyProduct("sqlcon")]
-[assembly: AssemblyCopyright("Copyright ©  DATCONN 2012-2021")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
+//[assembly: AssemblyCopyright("Copyright ©  DATCONN 2012-2021")]
+//[assembly: AssemblyTrademark("")]
+//[assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -33,7 +33,7 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.4.1.0")]
-[assembly: AssemblyFileVersion("2.4.1.0")]
+//[assembly: AssemblyVersion("2.4.1.0")]
+//[assembly: AssemblyFileVersion("2.4.1.0")]
 
 #endif

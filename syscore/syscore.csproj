@@ -42,29 +42,26 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Deployment" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Account\ActiveAccount.cs" />
-    <Compile Include="Account\IAccount.cs" />
+    <Compile Include="..\Version\Version.cs">
+      <Link>Properties\Version.cs</Link>
+    </Compile>
     <Compile Include="Configuration\ConfigurationPath.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationEnvironment.cs" />
     <Compile Include="Configuration\ConnectionString.cs" />
     <Compile Include="Console\Command\ICommand.cs" />
-    <Compile Include="Compiler\CSharpCompiler.cs" />
     <Compile Include="Console\Command\OptionItem.cs" />
-    <Compile Include="Const.cs" />
     <Compile Include="DataStructure\DataLake\DataLake.cs" />
     <Compile Include="DataStructure\Range.cs" />
     <Compile Include="DataStructure\RangeSet.cs" />
-    <Compile Include="DataStructure\SequentialList.cs" />
+    <Compile Include="DataStructure\Collections\SequentialList.cs" />
     <Compile Include="DataStructure\DataPool.cs" />
     <Compile Include="DataStructure\ident.cs" />
     <Compile Include="DataStructure\Tree\INTreeNode.cs" />
@@ -80,7 +77,7 @@
     <Compile Include="EventArgs\MessageEventArgs.cs" />
     <Compile Include="Extension\Iteratable.cs" />
     <Compile Include="IO\FileName.cs" />
-    <Compile Include="Sys\Collections\DifferenceList.cs" />
+    <Compile Include="DataStructure\Collections\DifferenceList.cs" />
     <Compile Include="Sys\Wildcard\IWildcard.cs" />
     <Compile Include="Extension\JsonExtension.cs" />
     <Compile Include="Sys\Wildcard\Matchable.cs" />
