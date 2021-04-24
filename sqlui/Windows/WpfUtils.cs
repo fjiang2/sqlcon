@@ -34,7 +34,7 @@ namespace sqlcon.Windows
         public static BitmapImage NewBitmapImage(string image)
         {
             //make sure: build action on image to Resource
-            string pack = "pack://application:,,,/sqlcon;component/Windows/images";
+            string pack = "pack://application:,,,/sqlui;component/Windows/images";
             return new BitmapImage(new Uri($"{pack}/{image}", UriKind.Absolute));
         }
 

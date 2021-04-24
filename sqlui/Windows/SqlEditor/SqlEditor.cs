@@ -19,11 +19,11 @@ namespace sqlcon.Windows
         internal IConnectionConfiguration cfg;
         private ConnectionProvider provider;
 
-        public SqlEditor(IConnectionConfiguration cfg, ConnectionProvider provider, string currentPath, FileLink link)
+        public SqlEditor(IConnectionConfiguration cfg, IPathManager mgr, ConnectionProvider provider, string currentPath, FileLink link)
         {
             this.cfg = cfg;
 
-            InitializeComponent(cfg);
+            InitializeComponent(cfg, mgr);
             scriptTabControl.SelectionChanged += ScriptTabControl_SelectionChanged;
             this.provider = provider;
 

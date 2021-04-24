@@ -151,6 +151,7 @@
     <Compile Include="Data\Extension\TypeExtension.cs" />
     <Compile Include="Data\IDataPath.cs" />
     <Compile Include="Data\ILockable.cs" />
+    <Compile Include="Data\IPathManager.cs" />
     <Compile Include="Data\Linq\BrokerOfDataContract.cs" />
     <Compile Include="Data\Linq\BrokerOfDataContract1.cs" />
     <Compile Include="Data\Linq\BrokerOfDataContract2.cs" />
@@ -282,6 +283,7 @@
     <Compile Include="Extension\Extension.cs" />
     <Compile Include="Extension\JsonStyle.cs" />
     <Compile Include="Extension\ManagerExtension.cs" />
+    <Compile Include="IConnectionConfiguration.cs" />
     <Compile Include="Log\ILogable.cs" />
     <Compile Include="Log\ILogee.cs" />
     <Compile Include="Log\Log.cs" />

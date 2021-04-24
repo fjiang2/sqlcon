@@ -110,10 +110,8 @@
     <Compile Include="Configuration\Config.cs" />
     <Compile Include="Configuration\ConfigDefaultValue.cs" />
     <Compile Include="Configuration\ConfigKey.cs" />
-    <Compile Include="Configuration\Config`1.cs" />
     <Compile Include="Configuration\ConnectionConfiguration.cs" />
     <Compile Include="Configuration\IApplicationConfiguration.cs" />
-    <Compile Include="Configuration\IConnectionConfiguration.cs" />
     <Compile Include="Configuration\WorkingDirectory.cs" />
     <Compile Include="Data\CsvFile.cs" />
     <Compile Include="Data\DuplicatedTable.cs" />
@@ -127,20 +125,6 @@
     <Compile Include="Shell\Loader.cs" />
     <Compile Include="Shell\ShellHelp.cs" />
     <Compile Include="Shell\ShellHistory.cs" />
-    <Compile Include="Windows\SqlEditor\DbDatabaseNodeUI.cs" />
-    <Compile Include="Windows\SqlEditor\DbColumnNodeUI.cs" />
-    <Compile Include="Windows\SqlEditor\DbTableNodeUI.cs" />
-    <Compile Include="Windows\SqlEditor\DbServerNodeUI.cs" />
-    <Compile Include="Windows\SqlEditor\DbTreeNodeUI.cs" />
-    <Compile Include="Windows\SqlEditor\ScriptResultControl.cs" />
-    <Compile Include="Windows\SqlEditor\ScriptResultPane.cs" />
-    <Compile Include="Windows\SqlEditor\Themes.cs" />
-    <Compile Include="Windows\SqlEditor\SqlCommands.cs" />
-    <Compile Include="Windows\SqlEditor\SqlEditor.UI.cs" />
-    <Compile Include="Windows\SqlEditor\DbTreeUI.cs" />
-    <Compile Include="Windows\SqlEditor\SqlEditor.cs" />
-    <Compile Include="Windows\SqlEditor\TableResultPane.cs" />
-    <Compile Include="Windows\TableEditor.cs" />
     <Compile Include="Input\KeyValueTable.cs" />
     <Compile Include="Output\ProgressBar.cs" />
     <Compile Include="Path\PathBothSide.cs" />
@@ -170,26 +154,11 @@
     <Compile Include="Shell\ShellContext.cs" />
     <Compile Include="Shell\Shell.cs" />
     <Compile Include="Data\Tools.cs" />
-    <Compile Include="Windows\WpfExtension.cs" />
-    <Compile Include="Windows\WpfUtils.cs" />
     <Compile Include="ZipFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Output\ConsoleGrid.cs" />
     <None Include="sqlcon_TemporaryKey.pfx" />
-    <Resource Include="Windows\images\Home_16x16.png" />
-    <Resource Include="Windows\images\Close_16x16.png" />
-    <Resource Include="Windows\images\Table_16x16.png" />
-    <Resource Include="Windows\images\SelectTable_16x16.png" />
-    <Resource Include="Windows\images\database.png" />
-    <Resource Include="Windows\images\server.png" />
-    <Resource Include="Windows\images\server_error.png" />
-    <Resource Include="Windows\images\key.png" />
-    <Resource Include="Windows\images\AlignHorizontalTop_16x16.png" />
-    <Resource Include="Windows\images\New_16x16.png" />
-    <Resource Include="Windows\images\Next_16x16.png" />
-    <Resource Include="Windows\images\Open_16x16.png" />
-    <Resource Include="Windows\images\Save_16x16.png" />
     <None Include="app.config" />
     <None Include="Properties\app.manifest" />
     <Content Include="user.ini">
@@ -200,6 +169,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\sqlui\sqlui.csproj">
+      <Project>{301f923c-64bf-459c-92c5-368242a1a535}</Project>
+      <Name>sqlui</Name>
+    </ProjectReference>
     <ProjectReference Include="..\syscode\syscode.csproj">
       <Project>{036bf20a-7f80-41b4-8c99-85f6901e20f9}</Project>
       <Name>syscode</Name>

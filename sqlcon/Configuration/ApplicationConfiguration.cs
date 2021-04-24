@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Sys;
+using Sys.Data;
 using Sys.Stdio;
 
 namespace sqlcon

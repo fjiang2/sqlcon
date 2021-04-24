@@ -10,9 +10,15 @@ using Sys.Stdio;
 
 namespace sqlcon
 {
-    partial class PathManager
+    partial class PathManager : IPathManager
     {
         internal TreeNode<IDataPath> current;
+
+        public TreeNode<IDataPath> CurrentNode
+        {
+            get => current;
+            set => current = value;
+        }
 
         public IDataPath Current
         {

@@ -156,7 +156,7 @@ namespace sqlcon.Windows
                 }
                 catch (SqlException ex)
                 {
-                    DisplayMessage(ex.Message());
+                    DisplayMessage(Message(ex));
                 }
                 catch (Exception ex)
                 {
@@ -174,7 +174,7 @@ namespace sqlcon.Windows
                 }
                 catch (SqlException ex)
                 {
-                    DisplayMessage(ex.Message());
+                    DisplayMessage(Message(ex));
                 }
                 catch (Exception ex)
                 {
@@ -184,6 +184,19 @@ namespace sqlcon.Windows
 
             if (TabControl.HasItems)
                 (TabControl.Items[0] as TabItem).Focus();
+        }
+
+        private static string Message(SqlException ex)
+        {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < ex.Errors.Count; i++)
+            {
+                var err = ex.Errors[i];
+                builder.AppendLine($"Msg {err.Number}, Level {err.Class}, State {err.State}, Line {err.LineNumber}");
+                builder.AppendLine(err.Message);
+            }
+
+            return builder.ToString();
         }
 
         private void DisplayMessage(string message)

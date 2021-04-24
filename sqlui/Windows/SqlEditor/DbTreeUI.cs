@@ -15,7 +15,7 @@ namespace sqlcon.Windows
 {
     public class DbTreeUI : TreeView
     {
-        private PathManager mgr;
+        private IPathManager mgr;
         public event EventHandler<EventArgs<TreeNode<IDataPath>>> PathChanged;
 
         public DbTreeUI()
@@ -61,9 +61,9 @@ namespace sqlcon.Windows
         }
 
 
-        internal void CreateTree(IConnectionConfiguration cfg)
+        internal void CreateTree(IConnectionConfiguration cfg, IPathManager mgr)
         {
-            this.mgr = new PathManager(cfg);
+            this.mgr = mgr;
             createTree(cfg, this);
         }
 
@@ -100,7 +100,7 @@ namespace sqlcon.Windows
             TreeNode<IDataPath> node = mgr.Navigate(pathName);
             if (node != null)
             {
-                mgr.current = node;
+                mgr.CurrentNode = node;
                 PathChanged?.Invoke(this, new EventArgs<TreeNode<IDataPath>>(node));
             }
 

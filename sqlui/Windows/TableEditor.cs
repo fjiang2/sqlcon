@@ -12,7 +12,7 @@ using Sys.Stdio;
 
 namespace sqlcon.Windows
 {
-    class TableEditor : Window
+    public class TableEditor : Window
     {
         private Grid grid = new Grid();
         private DataGrid dataGrid;

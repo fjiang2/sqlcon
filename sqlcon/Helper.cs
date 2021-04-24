@@ -93,17 +93,6 @@ namespace sqlcon
         }
 
  
-        public static string Message(this SqlException ex)
-        {
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < ex.Errors.Count; i++)
-            {
-                var err = ex.Errors[i];
-                builder.AppendLine($"Msg {err.Number}, Level {err.Class}, State {err.State}, Line {err.LineNumber}");
-                builder.AppendLine(err.Message);
-            }
-
-            return builder.ToString();
-        }
+    
     }
 }

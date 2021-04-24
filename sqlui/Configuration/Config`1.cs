@@ -3,20 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-#if WINDOWS
 using System.Windows.Media;
-#endif
 
 using Sys;
 using Sys.Stdio;
 
 namespace sqlcon
 {
-    public static partial class Config
+    static partial class Config
     {
-        private static IApplicationConfiguration cfg = Program.Configuration;
+        public static Configuration cfg { get; set; }
 
-#if WINDOWS
         public static Brush GetBrush(this string colorString, Color defaultColor)
         {
             if (colorString != null)
@@ -72,7 +69,6 @@ namespace sqlcon
 
             return defaultColor;
         }
-#endif
 
     }
 }

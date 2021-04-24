@@ -24,7 +24,7 @@ namespace sqlcon.Windows
         private DbTreeUI treeView;
         private ScriptResultControl scriptTabControl;
 
-        private void InitializeComponent(IConnectionConfiguration cfg)
+        private void InitializeComponent(IConnectionConfiguration cfg, IPathManager mgr)
         {
             this.Width = 1280;
             this.Height = 768;
@@ -118,7 +118,7 @@ namespace sqlcon.Windows
             grid1.Children.Add(textFilter);
             grid1.Children.Add(treeView);
 
-            treeView.CreateTree(cfg);
+            treeView.CreateTree(cfg, mgr);
             treeView.PathChanged += TreeView_PathChanged;
 
             #endregion
