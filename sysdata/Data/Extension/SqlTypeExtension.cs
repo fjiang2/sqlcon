@@ -1,5 +1,4 @@
-﻿using Sys.CodeBuilder;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -82,15 +81,6 @@ namespace Sys.Data
             return ty;
         }
 
-        public static TypeInfo GetTypeInfo(this IColumn column)
-        {
-            TypeInfo ty = new TypeInfo
-            {
-                Type = column.CType.ToType(),
-                Nullable = column.Nullable,
-            };
-
-            return ty;
-        }
+    
     }
 }

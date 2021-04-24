@@ -38,7 +38,7 @@ namespace Sys.Data
             this.columnNames = columns;
         }
 
-        internal IdentityKeys(ColumnCollection columns)
+        public IdentityKeys(ColumnCollection columns)
         {
             this.columnNames = columns.Where(column => column.IsIdentity).Select(column => column.ColumnName).ToArray();
         }

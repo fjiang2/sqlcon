@@ -62,7 +62,7 @@ namespace Sys.Data
 
         }
 
-        internal void UpdateForeign(IForeignKeys foreign)
+        public void UpdateForeign(IForeignKeys foreign)
         {
             foreach (ForeignKey key in foreign.Keys)
             {

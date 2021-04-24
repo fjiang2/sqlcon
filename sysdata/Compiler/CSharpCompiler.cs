@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Sys.Compiler
 {
-    public class CSharpCompiler
+    class CSharpCompiler
     {
         private CompilerResults results;
 

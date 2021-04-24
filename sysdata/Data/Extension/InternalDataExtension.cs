@@ -107,15 +107,7 @@ namespace Sys.Data
         #endregion
 
 
-        public static Level Level(this Type dpoType)
-        {
-            TableAttribute[] A = dpoType.GetAttributes<TableAttribute>();
-            if (A.Length > 0)
-                return A[0].Level;
-
-            throw new MessageException("Table Level is not defined");
-        }
-
+      
 
 
         public static bool Oversize(this IColumn column, object value)
@@ -140,23 +132,7 @@ namespace Sys.Data
         }
 
 
-        /// <summary>
-        /// Adjuested Length
-        /// </summary>
-        public static int AdjuestedLength(this IColumn column)
-        {
-            if (column.Length == -1)
-                return -1;
-
-            switch (column.CType)
-            {
-                case CType.NChar:
-                case CType.NVarChar:
-                    return column.Length / 2;
-            }
-
-            return column.Length;
-        }
+        
 
 
 

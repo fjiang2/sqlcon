@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace Sys.Data
 {
-    static class CTypeExtension
+    public static class CTypeExtension
     {
 
         public static CType ToCType(this Type type)

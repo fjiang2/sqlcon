@@ -22,10 +22,7 @@ using System.Data;
 
 namespace Sys.Data
 {
-
-
-
-    class ForeignKeys : IForeignKeys
+    public class ForeignKeys : IForeignKeys
     {
         private IForeignKey[] keys;
 
@@ -62,7 +59,7 @@ namespace Sys.Data
     }
 
 
-    class ForeignKey : IForeignKey
+    public class ForeignKey : IForeignKey
     {
         public TableName TableName { get; set; }
 
@@ -99,7 +96,7 @@ namespace Sys.Data
 
 
 
-        internal static string GetAttribute(IForeignKey key, Type pkTableType)
+        public static string GetAttribute(IForeignKey key, Type pkTableType)
         {
             return GetAttribute(key, pkTableType.FullName);
         }

@@ -36,7 +36,7 @@ namespace Sys.Data
             this.columnNames = columns;
         }
 
-        internal ComputedColumns(ColumnCollection columns)
+        public ComputedColumns(ColumnCollection columns)
         {
             this.columnNames = columns.Where(column => column.IsComputed).Select(column => column.ColumnName).ToArray();
         }

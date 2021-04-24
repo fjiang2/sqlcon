@@ -53,26 +53,6 @@
     <Compile Include="Compare\TableSchemaCompare.cs" />
     <Compile Include="Compiler\CSharpCompiler.cs" />
     <Compile Include="Const.cs" />
-    <Compile Include="Data.Manager\DpoGenerate\ClassName.cs" />
-    <Compile Include="Data.Manager\DpoGenerate\ClassTableName.cs" />
-    <Compile Include="Data.Manager\DpoGenerate\DataTableDpoClass.cs" />
-    <Compile Include="Data.Manager\DpoGenerate\DpoClass.cs" />
-    <Compile Include="Data.Manager\DpoGenerate\DpoField.cs" />
-    <Compile Include="Data.Manager\DpoGenerate\DpoGenerator.cs" />
-    <Compile Include="Data.Manager\DpoGenerate\DpoOption.cs" />
-    <Compile Include="Data.Manager\DpoGenerate\PropertyDefinition.cs" />
-    <Compile Include="Data.Manager\Extension.cs" />
-    <Compile Include="Data.Manager\Manager.cs" />
-    <Compile Include="Data.Manager\ManagerExtension.cs" />
-    <Compile Include="Data.Manager\Package\BasePackage.cs" />
-    <Compile Include="Data.Manager\Package\IPacking.cs" />
-    <Compile Include="Data.Manager\Package\Packing.cs" />
-    <Compile Include="Data.Manager\Package\Unpacking.cs" />
-    <Compile Include="Data.Manager\Setting.cs" />
-    <Compile Include="Data.Manager\SpGenerate\SpDatabase.cs" />
-    <Compile Include="Data.Manager\SpGenerate\SpParam.cs" />
-    <Compile Include="Data.Manager\SpGenerate\SpParamDpo.cs" />
-    <Compile Include="Data.Manager\SpGenerate\SpProc.cs" />
     <Compile Include="Data.Resource\entry.cs" />
     <Compile Include="Data.Resource\Import\ResourceEntry.cs" />
     <Compile Include="Data.Resource\Import\ResourceFileReader.cs" />
@@ -299,7 +279,9 @@
     <Compile Include="Data\UniqueTable.cs" />
     <Compile Include="Extension\DataLakeExtension.cs" />
     <Compile Include="Extension\DataTableExtension.cs" />
+    <Compile Include="Extension\Extension.cs" />
     <Compile Include="Extension\JsonStyle.cs" />
+    <Compile Include="Extension\ManagerExtension.cs" />
     <Compile Include="Log\ILogable.cs" />
     <Compile Include="Log\ILogee.cs" />
     <Compile Include="Log\Log.cs" />
@@ -312,10 +294,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\syscode\syscode.csproj">
-      <Project>{036bf20a-7f80-41b4-8c99-85f6901e20f9}</Project>
-      <Name>syscode</Name>
-    </ProjectReference>
     <ProjectReference Include="..\syscore\syscore.csproj">
       <Project>{58332852-369d-4045-93c2-5cfe9cfb2313}</Project>
       <Name>syscore</Name>
@@ -326,5 +304,6 @@
       <Version>2.0.8</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

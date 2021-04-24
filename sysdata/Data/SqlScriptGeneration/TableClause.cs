@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Sys.Data
 {
-    class TableClause
+    public class TableClause
     {
         private ITableSchema schema;
         private TableName tableName;
@@ -255,7 +255,7 @@ namespace Sys.Data
 
 
 
-        internal static string GenerateCREATE_TABLE(ITableSchema table)
+        public static string GenerateCREATE_TABLE(ITableSchema table)
         {
             string fields = string.Join(",\r\n", table.Columns.Select(column => "\t" + column.GetSQLField()));
             return CREATE_TABLE(fields, table.PrimaryKeys);

@@ -223,6 +223,10 @@
       <Project>{58332852-369d-4045-93c2-5cfe9cfb2313}</Project>
       <Name>syscore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\sysdata.code\sysdata.code.csproj">
+      <Project>{a8a98bf7-e895-4e8e-8e67-a1d30485ac7f}</Project>
+      <Name>sysdata.code</Name>
+    </ProjectReference>
     <ProjectReference Include="..\sysdata\sysdata.csproj">
       <Project>{2066797e-01b0-4f66-ade1-2731a0851794}</Project>
       <Name>sysdata</Name>
