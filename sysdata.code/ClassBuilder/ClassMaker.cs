@@ -10,7 +10,7 @@ using Sys.Stdio;
 
 namespace sqlcon
 {
-    class ClassMaker
+    public class ClassMaker
     {
         protected const string LP = "{";
         protected const string RP = "}";

@@ -13,7 +13,7 @@ using Sys.Stdio;
 namespace sqlcon
 {
 
-    class DataClassBuilder : ClassMaker
+    public class DataClassBuilder : ClassMaker
     {
         private DataTable dt;
 

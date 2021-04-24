@@ -12,7 +12,7 @@ using Sys.Stdio;
 namespace sqlcon
 {
 
-    class EntityClassBuilder : TheClassBuilder
+    public class EntityClassBuilder : TheClassBuilder
     {
         private TableName tname;
         public bool IsAssocication { get; private set; }

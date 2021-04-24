@@ -12,7 +12,7 @@ using System.Data.Common;
 
 namespace sqlcon
 {
-    abstract class TheClassBuilder : ClassMaker
+    public abstract class TheClassBuilder : ClassMaker
     {
         protected const string EXTENSION = "Extension";
         protected const string ASSOCIATION = "Association";

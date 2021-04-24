@@ -13,7 +13,7 @@ using System.Data.Common;
 
 namespace sqlcon
 {
-    abstract class DataTableClassBuilder : TheClassBuilder
+    public abstract class DataTableClassBuilder : TheClassBuilder
     {
         protected TableName tname;
         protected DataTable dt;

@@ -10,7 +10,7 @@ using Sys.Data;
 
 namespace sqlcon
 {
-    class DataContract1ClassBuilder : DataTableClassBuilder
+    public class DataContract1ClassBuilder : DataTableClassBuilder
     {
         private const string _ToDataTable = "ToDataTable";
 

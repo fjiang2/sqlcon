@@ -3,7 +3,7 @@ using Sys.Stdio;
 
 namespace sqlcon
 {
-    interface IApplicationCommand : ICommand
+    public interface IApplicationCommand : ICommand
     {
 
         string InputPath();

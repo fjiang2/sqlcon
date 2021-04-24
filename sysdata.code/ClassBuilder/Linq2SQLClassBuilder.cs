@@ -12,7 +12,7 @@ using Sys.Data.Manager;
 
 namespace sqlcon
 {
-    class Linq2SQLClassBuilder : TheClassBuilder
+    public class Linq2SQLClassBuilder : TheClassBuilder
     {
         private TableName tname;
 

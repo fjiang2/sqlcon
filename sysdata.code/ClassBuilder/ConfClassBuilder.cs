@@ -10,7 +10,7 @@ using Sys.Stdio;
 namespace sqlcon
 {
 
-    class ConfClassBuilder : ClassMaker
+    public class ConfClassBuilder : ClassMaker
     {
         [Flags]
         enum ClassType
@@ -34,7 +34,7 @@ namespace sqlcon
 
         private DataTable dt;
 
-        public ConfClassBuilder(ApplicationCommand cmd, DataTable dt)
+        public ConfClassBuilder(IApplicationCommand cmd, DataTable dt)
             : base(cmd)
         {
             this.cmd = cmd;

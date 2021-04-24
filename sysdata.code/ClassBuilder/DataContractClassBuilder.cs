@@ -12,7 +12,7 @@ using Sys.Data.Manager;
 namespace sqlcon
 {
 
-    class DataContractClassBuilder : DataTableClassBuilder
+    public class DataContractClassBuilder : DataTableClassBuilder
     {
 
         public DataContractClassBuilder(IApplicationCommand cmd, TableName tname, DataTable dt, bool allowDbNull)

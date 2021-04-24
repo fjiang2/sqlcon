@@ -11,7 +11,7 @@ using Sys.Data;
 namespace sqlcon
 {
 
-    class DataContract2ClassBuilder : DataTableClassBuilder
+    public class DataContract2ClassBuilder : DataTableClassBuilder
     {
 
 

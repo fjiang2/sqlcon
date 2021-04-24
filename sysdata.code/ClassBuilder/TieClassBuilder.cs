@@ -10,7 +10,7 @@ using Sys.Stdio;
 
 namespace sqlcon
 {
-    class TieClassBuilder : TheClassBuilder
+    public class TieClassBuilder : TheClassBuilder
     {
 
         public TieClassBuilder(IApplicationCommand cmd)
