@@ -109,7 +109,7 @@ namespace sqlcon
 
         protected void PrintOutput(string text, string name, string ext)
         {
-            string path = cmd.OutputFile($"{name}.cs");
+            string path = OutputFile($"{name}.cs");
             if (path == null)
             {
                 cout.WriteLine(text);
@@ -131,6 +131,49 @@ namespace sqlcon
                 {
                     cout.WriteLine(ex.Message);
                 }
+            }
+        }
+
+        private string OutputFile(string defaultOutputFile, bool createDirectoryIfNotExists = true)
+        {
+            string outputFile = cmd.OutputPath();
+            if (!string.IsNullOrEmpty(outputFile))
+            {
+                try
+                {
+                    if (Directory.Exists(outputFile))
+                    {
+                        string directory = outputFile;
+                        if (Path.IsPathRooted(defaultOutputFile))
+                            return Path.Combine(directory, Path.GetFileName(defaultOutputFile));
+                        else
+                            return Path.Combine(directory, defaultOutputFile);
+                    }
+                    else
+                    {
+                        string directory = Path.GetDirectoryName(outputFile);
+                        if (directory != string.Empty && !Directory.Exists(directory))
+                        {
+                            if (createDirectoryIfNotExists)
+                                Directory.CreateDirectory(directory);
+                        }
+
+                        return outputFile;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    cerr.WriteLine($"invalid file or directory \"{outputFile}\", {ex.Message}");
+                }
+            }
+
+            if (Path.IsPathRooted(defaultOutputFile))
+            {
+                return defaultOutputFile;
+            }
+            else
+            {
+                return Path.Combine(Directory.GetCurrentDirectory(), defaultOutputFile);
             }
         }
 
