@@ -17,7 +17,7 @@ namespace sqlcon
     {
         private DataTable dt;
 
-        public DataClassBuilder(ApplicationCommand cmd, DataTable dt)
+        public DataClassBuilder(IApplicationCommand cmd, DataTable dt)
             : base(cmd)
         {
             this.cmd = cmd;

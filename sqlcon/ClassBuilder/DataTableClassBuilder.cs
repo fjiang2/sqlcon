@@ -19,7 +19,7 @@ namespace sqlcon
         protected DataTable dt;
         protected IDictionary<DataColumn, TypeInfo> dict { get; }
 
-        public DataTableClassBuilder(ApplicationCommand cmd, TableName tname, DataTable dt, bool allowDbNull)
+        public DataTableClassBuilder(IApplicationCommand cmd, TableName tname, DataTable dt, bool allowDbNull)
             : base(cmd)
         {
             this.tname = tname;

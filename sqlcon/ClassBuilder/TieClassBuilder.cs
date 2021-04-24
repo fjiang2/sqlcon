@@ -13,7 +13,7 @@ namespace sqlcon
     class TieClassBuilder : TheClassBuilder
     {
 
-        public TieClassBuilder(ApplicationCommand cmd)
+        public TieClassBuilder(IApplicationCommand cmd)
             : base(cmd)
         {
 

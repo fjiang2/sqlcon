@@ -14,7 +14,7 @@ namespace sqlcon
     {
         private const string _ToDataTable = "ToDataTable";
 
-        public DataContract1ClassBuilder(ApplicationCommand cmd, TableName tname, DataTable dt, bool allowDbNull)
+        public DataContract1ClassBuilder(IApplicationCommand cmd, TableName tname, DataTable dt, bool allowDbNull)
             : base(cmd, tname, dt, allowDbNull)
         {
             this.tname = tname;
@@ -54,7 +54,7 @@ namespace sqlcon
         {
             Class clss = new Class(ClassName + ASSOCIATION) { Modifier = Modifier.Public };
 
-            bool hasFK = cmd.HasForeignKey;
+            bool hasFK = cmd.Has("fk");
             bool hasAssoc = cmd.Has("assoc");
             if (hasAssoc)
                 hasFK = true;

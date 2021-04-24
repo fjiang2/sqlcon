@@ -132,6 +132,7 @@
     <Compile Include="Data\TableSchemaRefinement.cs" />
     <Compile Include="FlowControl.cs" />
     <Compile Include="Data\DataExtension.cs" />
+    <Compile Include="Input\IApplicationCommand.cs" />
     <Compile Include="Output\OutputDataTable.cs" />
     <Compile Include="Path\CommandPath.cs" />
     <Compile Include="Path\CommandState.cs" />

@@ -15,7 +15,7 @@ namespace sqlcon
     {
 
 
-        public DataContract2ClassBuilder(ApplicationCommand cmd, TableName tname, DataTable dt, bool allowDbNull)
+        public DataContract2ClassBuilder(IApplicationCommand cmd, TableName tname, DataTable dt, bool allowDbNull)
             : base(cmd, tname, dt, allowDbNull)
         {
 

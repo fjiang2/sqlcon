@@ -16,7 +16,7 @@ namespace sqlcon
     {
         private TableName tname;
 
-        public Linq2SQLClassBuilder(ApplicationCommand cmd, TableName tname)
+        public Linq2SQLClassBuilder(IApplicationCommand cmd, TableName tname)
             : base(cmd)
         {
             this.tname = tname;

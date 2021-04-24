@@ -26,7 +26,7 @@ namespace sqlcon
             }
         }
 
-        public static string OutputFile(this ApplicationCommand cmd, string defaultOutputFile, bool createDirectoryIfNotExists = true)
+        public static string OutputFile(this IApplicationCommand cmd, string defaultOutputFile, bool createDirectoryIfNotExists = true)
         {
             string outputFile = cmd.OutputPath();
             if (!string.IsNullOrEmpty(outputFile))

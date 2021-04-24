@@ -17,7 +17,7 @@ namespace sqlcon
         private TableName tname;
         public bool IsAssocication { get; private set; }
 
-        public EntityClassBuilder(ApplicationCommand cmd, TableName tname)
+        public EntityClassBuilder(IApplicationCommand cmd, TableName tname)
             : base(cmd)
         {
             this.tname = tname;

@@ -15,7 +15,7 @@ namespace sqlcon
     class DataContractClassBuilder : DataTableClassBuilder
     {
 
-        public DataContractClassBuilder(ApplicationCommand cmd, TableName tname, DataTable dt, bool allowDbNull)
+        public DataContractClassBuilder(IApplicationCommand cmd, TableName tname, DataTable dt, bool allowDbNull)
             : base(cmd, tname, dt, allowDbNull)
         {
 
