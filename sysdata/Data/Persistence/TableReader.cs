@@ -32,18 +32,23 @@ namespace Sys.Data
     {
         internal SqlCmd Command { get; }
 
-        private string sql;
         private TableName tableName;
         private Lazy<DataTable> table;
+        private Locator locator;
 
         public bool CaseSensitive { get; set; } = false;
+        public int Top { get; set; }
 
-        internal TableReader(TableName tableName, string sql)
+
+        private TableReader(TableName tableName, Locator locator, int top)
         {
             this.table = new Lazy<DataTable>(() => LoadData());
-            this.sql = sql;
             this.tableName = tableName;
-            this.Command = new SqlCmd(tableName.Provider, sql);
+            this.Top = top;
+            this.locator = locator;
+
+            var sql = new SqlBuilder(tableName.Provider).SELECT().TOP(top).COLUMNS().FROM(tableName).WHERE(locator);
+            this.Command = new SqlCmd(sql);
         }
 
 
@@ -52,12 +57,12 @@ namespace Sys.Data
         /// </summary>
         /// <param name="tableName"></param>
         public TableReader(TableName tableName)
-            : this(tableName, $"SELECT * FROM {tableName}")
+            : this(tableName, new Locator(), top: 0)
         {
         }
 
         public TableReader(TableName tableName, int top)
-            : this(tableName, top > 0 ? $"SELECT TOP {top} * FROM {tableName}" : $"SELECT * FROM {tableName}")
+            : this(tableName, new Locator(), top)
         {
         }
 
@@ -67,15 +72,19 @@ namespace Sys.Data
         /// <param name="tableName"></param>
         /// <param name="where"></param>
         public TableReader(TableName tableName, SqlExpr where)
-            : this(tableName, new SqlBuilder().SELECT().COLUMNS().FROM(tableName).WHERE(where).Clause)
+            : this(tableName, new Locator(where), top: 0)
         {
         }
 
         public TableReader(TableName tableName, Locator locator)
-            : this(tableName, locator.Path.Inject())
+            : this(tableName, locator, top: 0)
         {
         }
 
+
+        /// <summary>
+        /// Count of selected rows
+        /// </summary>
         public int Count
         {
             get
@@ -83,12 +92,19 @@ namespace Sys.Data
                 if (table.IsValueCreated)
                     return Table.Rows.Count;
 
-                return new SqlCmd("").FillDataTable().Rows.Count;
+                var sql = new SqlBuilder(tableName.Provider).SELECT().COLUMNS("COUNT(*)").FROM(tableName).WHERE(locator);
+
+                object obj = new SqlCmd(sql).ExecuteScalar();
+                int count = Convert.ToInt32(obj);
+                if (Top < count)
+                    return Top;
+                else
+                    return count;
             }
         }
 
         /// <summary>
-        /// The count of entire table
+        /// Count of all rows in table
         /// </summary>
         public long MaxCount
         {
@@ -101,8 +117,7 @@ namespace Sys.Data
                 }
                 else
                 {
-                    var items = this.sql.ToUpper().Split(new string[] { "SELECT", "FROM" }, StringSplitOptions.RemoveEmptyEntries);
-                    query = sql.Replace(items[0], " COUNT(*) ");
+                    query = new SqlBuilder().SELECT().COLUMNS("COUNT(*)").FROM(tableName).ToString();
                 }
 
                 object obj = new SqlCmd(tableName.Provider, query).ExecuteScalar();
@@ -156,7 +171,7 @@ namespace Sys.Data
         /// <returns></returns>
         public override string ToString()
         {
-            return this.sql;
+            return this.Command.ToString();
         }
 
     }

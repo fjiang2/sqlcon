@@ -29,6 +29,11 @@ namespace Sys.Data
         private string where;
         bool unique = true;
 
+        public Locator()
+        {
+            this.where = string.Empty;
+        }
+
         /// <summary>
         /// WHERE [column1]=@column1 AND [column2]=@column2 AND ... 
         /// </summary>
@@ -105,7 +110,8 @@ namespace Sys.Data
             internal set { this.unique = value; }
         }
 
-      
+        public bool IsEmpty => string.IsNullOrEmpty(where);
+
         public string Where => this.where;
 
         public string Path

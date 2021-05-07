@@ -219,7 +219,7 @@ namespace sqlcon
                         WHERE = $" WHERE {locator}";
                     }
 
-                    long cnt = tname.GetTableRowCount(locator);
+                    long cnt = new TableReader(tname, locator).Count;
                     count = Tools.ForceLongToInteger(cnt);
                     using (var progress = new ProgressBar { Count = count })
                     {
@@ -246,7 +246,7 @@ namespace sqlcon
                             if (cts.IsCancellationRequested)
                                 return;
 
-                            long cnt = tn.GetTableRowCount();
+                            long cnt = new TableReader(tn).Count;
                             if (cnt > cfg.MaxRows)
                             {
                                 if (!cin.YesOrNo($"Are you sure to export {cnt} rows on {tn.ShortName} (y/n)?"))

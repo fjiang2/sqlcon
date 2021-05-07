@@ -330,7 +330,10 @@ namespace Sys.Data
 
         public SqlBuilder WHERE(Locator locator)
         {
-            return Append($"WHERE {locator.Where} ");
+            if (!locator.IsEmpty)
+                return Append($"WHERE {locator.Where} ");
+
+            return this;
         }
 
         public SqlBuilder WHERE(string exp)
