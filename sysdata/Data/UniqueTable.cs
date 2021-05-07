@@ -167,7 +167,7 @@ namespace Sys.Data
                 }
             }
 
-            var builder = new SqlBuilder().INSERT(TableName, columns.ToArray()).VALUES(values.ToArray());
+            var builder = new SqlBuilder().INSERT_INTO(TableName, columns.ToArray()).VALUES(values.ToArray());
             new SqlCmd(builder).ExecuteNonQuery();
 
             builder = new SqlBuilder().SELECT().COLUMNS(SqlExpr.PHYSLOC).FROM(TableName).WHERE(where.AND());

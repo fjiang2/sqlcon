@@ -59,11 +59,11 @@ namespace UnitTestProject
             string sql = @"SELECT Categories.[CategoryName], Products.[ProductName], Products.[QuantityPerUnit], Products.[UnitsInStock], Products.[Discontinued] 
 FROM Categories INNER JOIN Products ON Categories.[CategoryID] = Products.[CategoryID] 
 WHERE Products.[Discontinued] <> 1 ";
-            
+
             string query = new SqlBuilder()
                 .SELECT()
                 .COLUMNS(
-                    "CategoryName".ColumnName(Categories), 
+                    "CategoryName".ColumnName(Categories),
                     "ProductName".ColumnName(Products),
                     "QuantityPerUnit".ColumnName(Products),
                     "UnitsInStock".ColumnName(Products),
@@ -74,6 +74,19 @@ WHERE Products.[Discontinued] <> 1 ";
                 .INNER().JOIN(Products).ON("CategoryID".ColumnName(Categories) == "CategoryID".ColumnName(Products))
                 .AppendLine()
                 .WHERE("Discontinued".ColumnName(Products) != 1)
+                .ToString();
+
+            Debug.Assert(sql == query.Substring(0, sql.Length));
+        }
+
+        [TestMethod]
+        public void UPDATE_TestMethod()
+        {
+            string sql = "UPDATE Products SET [ProductName] = 'Apple', [UnitPrice] = 20 WHERE [ProductId] BETWEEN 10 AND 30";
+            string query = new SqlBuilder()
+                .UPDATE(Products)
+                .SET("ProductName".ColumnName() == "Apple", "UnitPrice".ColumnName() == 20)
+                .WHERE(ProductId.BETWEEN(10, 30))
                 .ToString();
 
             Debug.Assert(sql == query.Substring(0, sql.Length));

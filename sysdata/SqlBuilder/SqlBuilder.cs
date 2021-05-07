@@ -199,23 +199,18 @@ namespace Sys.Data
         {
             AppendSpace("SET");
             string s = string.Join<SqlExpr>(", ", assignments);
-            return AppendLine(s);
+            return AppendSpace(s);
         }
 
 
-        public SqlBuilder SET(string assignments)
+        public SqlBuilder SET(string assignments) => AppendSpace("SET").AppendSpace(assignments);
+
+        public SqlBuilder INSERT_INTO<T>(params string[] columns)
         {
-            return AppendSpace("SET")
-               .Append(assignments)
-               .AppendLine(" ");
+            return INSERT_INTO(typeof(T).TableName(), columns);
         }
 
-        public SqlBuilder INSERT<T>(params string[] columns)
-        {
-            return INSERT(typeof(T).TableName(), columns);
-        }
-
-        public SqlBuilder INSERT(SqlTableName tableName, params string[] columns)
+        public SqlBuilder INSERT_INTO(SqlTableName tableName, params string[] columns)
         {
             Append($"INSERT INTO {tableName}");
 
@@ -249,7 +244,7 @@ namespace Sys.Data
         {
             AppendSpace($"WHERE {exp}");
             this.Merge(exp);
-            return AppendLine();
+            return this;
         }
 
         public SqlBuilder WHERE(Locator locator)
@@ -283,20 +278,9 @@ namespace Sys.Data
 
         public SqlBuilder OUTTER() => AppendSpace("OUTTER");
 
-        public SqlBuilder JOIN<T>(string alias = null)
-        {
-            return JOIN(typeof(T).TableName(), alias);
-        }
+        public SqlBuilder JOIN<T>(string alias = null) => JOIN(typeof(T).TableName(), alias);
 
-        public SqlBuilder JOIN(SqlTableName tableName, string alias = null)
-        {
-            AppendSpace($"JOIN {tableName}");
-
-            if (alias != null)
-                AppendSpace($"{alias}");
-
-            return this;
-        }
+        public SqlBuilder JOIN(SqlTableName tableName, string alias = null) => AppendSpace($"JOIN").TABLE_NAME(tableName, alias);
 
         public SqlBuilder ON(SqlExpr exp)
         {
