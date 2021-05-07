@@ -1527,7 +1527,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                         tableReader = new TableReader(tname1);
                     }
 
-                    long cnt = tableReader.Count;
+                    long cnt = tableReader.MaxCount;
                     int count = Tools.ForceLongToInteger(cnt);
 
                     cout.Write($"copying {tname1.Name} ");

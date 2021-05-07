@@ -30,18 +30,20 @@ namespace Sys.Data
     /// </summary>
     public class TableReader
     {
-        internal SqlCmd cmd;
+        internal SqlCmd Command { get; }
 
         private string sql;
         private TableName tableName;
-        private DataTable table;
+        private Lazy<DataTable> table;
+
         public bool CaseSensitive { get; set; } = false;
 
         internal TableReader(TableName tableName, string sql)
         {
+            this.table = new Lazy<DataTable>(() => LoadData());
             this.sql = sql;
             this.tableName = tableName;
-            this.cmd = new SqlCmd(tableName.Provider, sql);
+            this.Command = new SqlCmd(tableName.Provider, sql);
         }
 
 
@@ -74,7 +76,21 @@ namespace Sys.Data
         {
         }
 
-        public long Count
+        public int Count
+        {
+            get
+            {
+                if (table.IsValueCreated)
+                    return Table.Rows.Count;
+
+                return new SqlCmd("").FillDataTable().Rows.Count;
+            }
+        }
+
+        /// <summary>
+        /// The count of entire table
+        /// </summary>
+        public long MaxCount
         {
             get
             {
@@ -97,22 +113,11 @@ namespace Sys.Data
         /// <summary>
         /// return data table retrieved from data base server
         /// </summary>
-        public DataTable Table
-        {
-            get
-            {
-                if (table == null)
-                {
-                    this.table = LoadData();
-                }
-
-                return this.table;
-            }
-        }
+        public DataTable Table => table.Value;
 
         private DataTable LoadData()
         {
-            DataTable dt = cmd.FillDataTable();
+            DataTable dt = Command.FillDataTable();
             dt.CaseSensitive = CaseSensitive;
             var schema = new TableSchema(tableName);
             string[] keys = schema.PrimaryKeys.Keys;

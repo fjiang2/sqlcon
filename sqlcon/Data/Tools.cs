@@ -216,7 +216,7 @@ ORDER BY c.name, c.column_id
             else
                 tableReader = new TableReader(tname);
 
-            return tableReader.Count;
+            return tableReader.MaxCount;
         }
 
 
