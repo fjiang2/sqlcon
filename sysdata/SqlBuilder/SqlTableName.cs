@@ -21,10 +21,12 @@ namespace Sys.Data
     public class SqlTableName
     {
         private string tableName;
-
+        public ConnectionProvider Provider { get; }
+        
         public SqlTableName(TableName tableName)
         {
             this.tableName = tableName.FullName;
+            this.Provider = tableName.Provider;
         }
 
         public SqlTableName(string tableName)
