@@ -26,7 +26,7 @@ namespace sqlcon
             }
         }
 
-        public static string OutputFile(this ApplicationCommand cmd, string defaultOutputFile, bool createDirectoryIfNotExists = true)
+        public static string OutputFile(this IApplicationCommand cmd, string defaultOutputFile, bool createDirectoryIfNotExists = true)
         {
             string outputFile = cmd.OutputPath();
             if (!string.IsNullOrEmpty(outputFile))
@@ -93,17 +93,6 @@ namespace sqlcon
         }
 
  
-        public static string Message(this SqlException ex)
-        {
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < ex.Errors.Count; i++)
-            {
-                var err = ex.Errors[i];
-                builder.AppendLine($"Msg {err.Number}, Level {err.Class}, State {err.State}, Line {err.LineNumber}");
-                builder.AppendLine(err.Message);
-            }
-
-            return builder.ToString();
-        }
+    
     }
 }

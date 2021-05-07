@@ -33,8 +33,6 @@ namespace UnitTestProject
             ConnectionProviderManager.RegisterDefaultProvider(connectionString);
         }
 
-        private TestContext testContextInstance;
-
 
 
         #region Additional test attributes

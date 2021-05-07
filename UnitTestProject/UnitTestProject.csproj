@@ -91,9 +91,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\syscode\syscode.csproj">
+      <Project>{036bf20a-7f80-41b4-8c99-85f6901e20f9}</Project>
+      <Name>syscode</Name>
+    </ProjectReference>
     <ProjectReference Include="..\syscore\syscore.csproj">
       <Project>{58332852-369d-4045-93c2-5cfe9cfb2313}</Project>
       <Name>syscore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\sysdata\sysdata.csproj">
+      <Project>{2066797e-01b0-4f66-ade1-2731a0851794}</Project>
+      <Name>sysdata</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

@@ -67,6 +67,9 @@ namespace sqlcon
                 return;
             }
 
+            Config.Init(Configuration);
+            Entrance.Init(Configuration);
+
 #if DEBUG
             var site = new Main(Configuration);
             site.Run(args);

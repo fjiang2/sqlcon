@@ -38,6 +38,7 @@ namespace Sys.Data.IO
                 return Path.GetFileNameWithoutExtension(path);
             }
         }
+        public virtual string FileName { get; }
 
         public bool IsLocalLink
         {
