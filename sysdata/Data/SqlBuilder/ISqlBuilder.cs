@@ -23,7 +23,7 @@ namespace Sys.Data
 {
     public interface ISqlBuilder
     {
-        string Clause { get; }
+        string Query { get; }
         ConnectionProvider Provider { get; }
     }
 }

@@ -304,7 +304,7 @@ namespace Sys.Data
         {
             this
                     .Next(" IN (")
-                    .Next(select.Clause)
+                    .Next(select.Query)
                     .Next(")");
 
             this.Merge(select);
