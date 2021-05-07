@@ -182,7 +182,7 @@ namespace Sys.Data
             else
             {
                 var L = columns.Select(column => column.ToString());
-                return COLUMNS(string.Join(",", L));
+                return COLUMNS(string.Join(", ", L));
             }
         }
 
@@ -384,7 +384,7 @@ namespace Sys.Data
             return JOIN(tableName.FullName, alias);
         }
 
-        private SqlBuilder JOIN(string tableName, string alias)
+        public SqlBuilder JOIN(string tableName, string alias = null)
         {
             AppendSpace($"JOIN {tableName}");
 
