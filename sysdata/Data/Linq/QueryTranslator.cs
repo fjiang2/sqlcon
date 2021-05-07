@@ -37,7 +37,7 @@ namespace Sys.Data.Linq
 
         protected override Expression VisitMethodCall(MethodCallExpression expr)
         {
-            if (expr.Method.DeclaringType != typeof(Queryable))
+            if (expr.Method.DeclaringType != typeof(Queryable) && expr.Method.DeclaringType != typeof(Enumerable))
                 throw new NotSupportedException(string.Format("The method '{0}' is not supported", expr.Method.Name));
 
             if (expr.Method.Name == "Where")
