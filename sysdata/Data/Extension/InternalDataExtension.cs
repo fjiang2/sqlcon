@@ -222,16 +222,7 @@ namespace Sys.Data
         #endregion
 
 
-        /// <summary>
-        /// Delete records
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="where"></param>
-        public static void Delete<T>(this SqlExpr where) where T : class, IDPObject, new()
-        {
-            TableName tableName = typeof(T).TableName();
-            tableName.Provider.ExecuteScalar($"DELETE FROM {tableName} WHERE {where}");
-        }
+       
 
     }
 }

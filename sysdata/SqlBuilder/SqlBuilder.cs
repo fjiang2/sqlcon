@@ -82,36 +82,14 @@ namespace Sys.Data
         }
 
         #region Table Name
-        private SqlBuilder TABLE_NAME(string tableName, string alias)
+        private SqlBuilder TABLE_NAME(SqlTableName tableName, string alias)
         {
-            AppendSpace(tableName);
+            AppendSpace(tableName.ToString());
             if (!string.IsNullOrEmpty(alias))
                 AppendSpace(alias);
 
             return this;
         }
-
-        public SqlBuilder TABLE_NAME(TableName tableName, string alias = null)
-        {
-            return TABLE_NAME(tableName.FullName, alias);
-        }
-
-
-        public SqlBuilder TABLE_NAME(DPObject dpo, string alias = null)
-        {
-            return TABLE_NAME(dpo.TableName, alias);
-        }
-
-        public SqlBuilder TABLE_NAME(Type dpoType, string alias = null)
-        {
-            return TABLE_NAME(dpoType.TableName(), alias);
-        }
-
-        public SqlBuilder TABLE<T>(string alias = null)
-        {
-            return TABLE_NAME(typeof(T).TableName(), alias);
-        }
-
 
 
         #endregion
@@ -186,81 +164,27 @@ namespace Sys.Data
             }
         }
 
+        #endregion
 
-        public SqlBuilder INTO(string tableName)
+        public SqlBuilder INTO(SqlTableName tableName)
         {
             return Append($"INTO {tableName}");
         }
-
-        public SqlBuilder INTO(TableName tableName)
-        {
-            return Append($"INTO {tableName.FullName}");
-        }
-
-        #endregion
-
-
-        #region FROM clause
-
-        public SqlBuilder FROM(DPObject dpo, string alias = null)
-        {
-            return FROM(dpo.TableName, alias);
-        }
-
-        public SqlBuilder FROM(Type dpoType, string alias = null)
-        {
-            return FROM(dpoType.TableName(), alias);
-        }
-
 
         public SqlBuilder FROM<T>(string alias = null)
         {
             return FROM(typeof(T).TableName(), alias);
         }
 
+        public SqlBuilder FROM(SqlTableName from, string alias = null) => AppendSpace($"FROM").TABLE_NAME(from, alias);
 
-        public SqlBuilder FROM(TableName tableName, string alias = null)
-        {
-            this.provider = tableName.Provider;
-            return FROM(tableName.FullName, alias);
-        }
-
-        public SqlBuilder FROM(string from, string alias = null)
-        {
-            AppendSpace($"FROM {from}");
-            if (alias != null)
-                return AppendSpace($"{alias}");
-
-            return this;
-        }
-
-        #endregion
-
-
-
-        public SqlBuilder UPDATE(DPObject dpo, string alias = null)
-        {
-            return UPDATE(dpo.TableName, alias);
-        }
 
         public SqlBuilder UPDATE<T>(string alias = null)
         {
             return UPDATE(typeof(T).TableName(), alias);
         }
 
-        public SqlBuilder UPDATE(Type dpoType, string alias = null)
-        {
-            return UPDATE(dpoType.TableName(), alias);
-        }
-
-        public SqlBuilder UPDATE(TableName tableName, string alias = null)
-        {
-            this.provider = tableName.Provider;
-            return UPDATE(tableName.FullName, alias);
-        }
-
-
-        public SqlBuilder UPDATE(string tableName, string alias = null)
+        public SqlBuilder UPDATE(SqlTableName tableName, string alias = null)
         {
             return AppendSpace($"UPDATE").TABLE_NAME(tableName, alias);
         }
@@ -270,8 +194,6 @@ namespace Sys.Data
         {
             return Append("SET ").AppendLine(string.Join(", ", assignments));
         }
-
-
 
         public SqlBuilder SET(params SqlExpr[] assignments)
         {
@@ -293,10 +215,9 @@ namespace Sys.Data
             return INSERT(typeof(T).TableName(), columns);
         }
 
-        public SqlBuilder INSERT(TableName tableName, params string[] columns)
+        public SqlBuilder INSERT(SqlTableName tableName, params string[] columns)
         {
-            this.provider = tableName.Provider;
-            Append($"INSERT INTO {tableName.FullName}");
+            Append($"INSERT INTO {tableName}");
 
             if (columns.Length > 0)
                 Append($"({ConcatColumns(columns)}) ");
@@ -311,17 +232,16 @@ namespace Sys.Data
             return AppendLine($"VALUES ({ConcatValues(values)})");
         }
 
-        public SqlBuilder DELETE(TableName tableName)
-        {
-            this.provider = tableName.Provider;
-
-            return AppendLine($"DELETE FROM {tableName.FullName}");
-        }
-
         public SqlBuilder DELETE<T>()
         {
             return DELETE(typeof(T).TableName());
         }
+
+        public SqlBuilder DELETE(SqlTableName tableName)
+        {
+            return AppendLine($"DELETE FROM {tableName}");
+        }
+
 
         #region WHERE clause
 
@@ -363,28 +283,12 @@ namespace Sys.Data
 
         public SqlBuilder OUTTER() => AppendSpace("OUTTER");
 
-
-        public SqlBuilder JOIN(DPObject dpo, string alias = null)
-        {
-            return JOIN(dpo.TableName, alias);
-        }
-
         public SqlBuilder JOIN<T>(string alias = null)
         {
             return JOIN(typeof(T).TableName(), alias);
         }
 
-        public SqlBuilder JOIN(Type dpoType, string alias = null)
-        {
-            return JOIN(dpoType.TableName(), alias);
-        }
-
-        public SqlBuilder JOIN(TableName tableName, string alias = null)
-        {
-            return JOIN(tableName.FullName, alias);
-        }
-
-        public SqlBuilder JOIN(string tableName, string alias = null)
+        public SqlBuilder JOIN(SqlTableName tableName, string alias = null)
         {
             AppendSpace($"JOIN {tableName}");
 
@@ -522,5 +426,4 @@ namespace Sys.Data
         public SqlCmd SqlCmd => new SqlCmd(this);
 
     }
-
 }
