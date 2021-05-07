@@ -43,10 +43,10 @@ namespace sqlcon
 
             var builder = new SqlBuilder()
                 .SELECT()
-                .Append($"COUNT(*) AS [{COUNT_COLUMN_NAME}], ")
+                .AppendSpace($"COUNT(*) AS [{COUNT_COLUMN_NAME}],")
                 .COLUMNS(_columns)
                 .FROM(tname)
-                .GROUP_BY(_columns).Append("HAVING COUNT(*)>1 ")
+                .GROUP_BY(_columns).AppendSpace("HAVING COUNT(*)>1")
                 .ORDER_BY(_columns);
 
             group = builder.SqlCmd.FillDataTable();

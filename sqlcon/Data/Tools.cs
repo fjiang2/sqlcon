@@ -208,18 +208,6 @@ ORDER BY c.name, c.column_id
             return table;
         }
 
-        public static long GetTableRowCount(this TableName tname, Locator locator = null)
-        {
-            TableReader tableReader;
-            if (locator != null)
-                tableReader = new TableReader(tname, locator);
-            else
-                tableReader = new TableReader(tname);
-
-            return tableReader.Count;
-        }
-
-
         public static int ForceLongToInteger(long cnt)
         {
             int count = 0;

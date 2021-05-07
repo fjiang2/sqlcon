@@ -44,10 +44,10 @@ namespace Sys.Data
         /// <summary>
         /// read records by filter
         /// </summary>
-        /// <param name="where"></param>
-        public TableReader(SqlExpr where)
+        /// <param name="locator"></param>
+        public TableReader(Locator locator)
         {
-            this.reader = new TableReader(TableName, new SqlBuilder().SELECT().COLUMNS().FROM(TableName).WHERE(where).Clause);
+            this.reader = new TableReader(TableName, locator);
         }
 
         private TableName TableName

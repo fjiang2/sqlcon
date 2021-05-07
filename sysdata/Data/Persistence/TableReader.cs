@@ -30,18 +30,18 @@ namespace Sys.Data
     /// </summary>
     public class TableReader
     {
-        internal SqlCmd cmd;
-
-        private string sql;
         private TableName tableName;
-        private DataTable table;
-        public bool CaseSensitive { get; set; } = false;
+        private Lazy<DataTable> table;
+        private Locator locator;
 
-        internal TableReader(TableName tableName, string sql)
+        public bool CaseSensitive { get; set; } = false;
+        public int Top { get; set; }
+
+        public TableReader(TableName tableName, Locator locator)
         {
-            this.sql = sql;
+            this.table = new Lazy<DataTable>(() => LoadData());
             this.tableName = tableName;
-            this.cmd = new SqlCmd(tableName.Provider, sql);
+            this.locator = locator;
         }
 
 
@@ -50,69 +50,70 @@ namespace Sys.Data
         /// </summary>
         /// <param name="tableName"></param>
         public TableReader(TableName tableName)
-            : this(tableName, $"SELECT * FROM {tableName}")
+            : this(tableName, new Locator())
         {
         }
 
-        public TableReader(TableName tableName, int top)
-            : this(tableName, top > 0 ? $"SELECT TOP {top} * FROM {tableName}" : $"SELECT * FROM {tableName}")
+        internal DbCmd Command
         {
+            get
+            {
+                var sql = new SqlBuilder(tableName.Provider).SELECT().TOP(Top).COLUMNS().FROM(tableName).WHERE(locator);
+                return new SqlCmd(sql);
+            }
         }
 
         /// <summary>
-        /// read records by filter
+        /// Count of selected rows
         /// </summary>
-        /// <param name="tableName"></param>
-        /// <param name="where"></param>
-        public TableReader(TableName tableName, SqlExpr where)
-            : this(tableName, new SqlBuilder().SELECT().COLUMNS().FROM(tableName).WHERE(where).Clause)
-        {
-        }
-
-        public TableReader(TableName tableName, Locator locator)
-            : this(tableName, locator.Path.Inject())
-        {
-        }
-
         public long Count
         {
             get
             {
-                string query;
+                if (table.IsValueCreated)
+                    return Table.Rows.Count;
+
+                var sql = new SqlBuilder(tableName.Provider).SELECT().COLUMNS(SqlExpr.COUNT).FROM(tableName).WHERE(locator);
+
+                object obj = new SqlCmd(sql).ExecuteScalar();
+                long count = Convert.ToInt64(obj);
+                if (Top > 0 && Top < count)
+                    return Top;
+                else
+                    return count;
+            }
+        }
+
+        /// <summary>
+        /// Count of all rows in table
+        /// </summary>
+        public long MaxCount
+        {
+            get
+            {
+                SqlBuilder query;
                 if (tableName.Provider.Type == ConnectionProviderType.SqlServer)
                 {
-                    query = $"SELECT CONVERT(bigint, rows) FROM sysindexes WHERE id = OBJECT_ID('{tableName.ShortName}') AND indid < 2";
+                    query = new SqlBuilder().SELECT().COLUMNS("CONVERT(bigint, rows)").FROM("sysindexes").WHERE($"id = OBJECT_ID('{tableName.ShortName}') AND indid < 2");
                 }
                 else
                 {
-                    var items = this.sql.ToUpper().Split(new string[] { "SELECT", "FROM" }, StringSplitOptions.RemoveEmptyEntries);
-                    query = sql.Replace(items[0], " COUNT(*) ");
+                    query = new SqlBuilder().SELECT().COLUMNS("COUNT(*)").FROM(tableName);
                 }
 
-                object obj = new SqlCmd(tableName.Provider, query).ExecuteScalar();
-                return (long)obj;
+                object obj = new SqlCmd(tableName.Provider, query.ToString()).ExecuteScalar();
+                return Convert.ToInt64(obj);
             }
         }
 
         /// <summary>
         /// return data table retrieved from data base server
         /// </summary>
-        public DataTable Table
-        {
-            get
-            {
-                if (table == null)
-                {
-                    this.table = LoadData();
-                }
-
-                return this.table;
-            }
-        }
+        public DataTable Table => table.Value;
 
         private DataTable LoadData()
         {
-            DataTable dt = cmd.FillDataTable();
+            DataTable dt = Command.FillDataTable();
             dt.CaseSensitive = CaseSensitive;
             var schema = new TableSchema(tableName);
             string[] keys = schema.PrimaryKeys.Keys;
@@ -151,7 +152,7 @@ namespace Sys.Data
         /// <returns></returns>
         public override string ToString()
         {
-            return this.sql;
+            return this.Command.ToString();
         }
 
     }

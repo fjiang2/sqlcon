@@ -39,10 +39,7 @@ namespace Sys.Data
         public int Generate(StreamWriter writer, IProgress<int> progress)
         {
             TableName tableName = schema.TableName;
-            string sql = string.Format("SELECT * FROM {0}", tableName);
-            if (Where != null)
-                sql = string.Format("SELECT * FROM {0} WHERE {1}", tableName, Where);
-
+            string sql = new SqlBuilder().SELECT().COLUMNS().FROM(tableName).WHERE(Where).ToString();
             SqlCmd cmd = new SqlCmd(tableName.Provider, sql);
 
             count = 0;
