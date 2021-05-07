@@ -177,7 +177,13 @@ namespace Sys.Data
 
         public SqlBuilder COLUMNS(params SqlExpr[] columns)
         {
-            return COLUMNS(columns.Select(column => column.ToString()));
+            if (columns.Count() == 0)
+                return COLUMNS("*");
+            else
+            {
+                var L = columns.Select(column => column.ToString());
+                return COLUMNS(string.Join(",", L));
+            }
         }
 
 
@@ -424,10 +430,7 @@ namespace Sys.Data
 
 
         public SqlBuilder UNION() => AppendSpace("UNION");
-
-
         public SqlBuilder DESC() => AppendSpace("DESC");
-
 
         private int tab = 0;
         private SqlBuilder TAB(int n)

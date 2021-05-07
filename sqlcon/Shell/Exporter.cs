@@ -212,20 +212,17 @@ namespace sqlcon
                 {
                     //cout.WriteLine($"start to generate {tname} script to file: \"{SqlFileName}\"");
                     Locator locator = new Locator();
-                    string WHERE = "";
                     if (node != null)
-                    {
                         locator = mgr.GetCombinedLocator(node);
-                        WHERE = $" WHERE {locator}";
-                    }
 
-                    long cnt = new TableReader(tname, locator).Count;
+                    var reader = new TableReader(tname, locator);
+                    long cnt = reader.Count;
                     count = Tools.ForceLongToInteger(cnt);
                     using (var progress = new ProgressBar { Count = count })
                     {
                         count = Compare.GenerateRows(type, writer, new TableSchema(tname), locator, option, progress);
                     }
-                    cout.WriteLine($"{type} clauses (SELECT * FROM {tname}{WHERE}) generated to \"{SqlFileName}\", Done on rows({cnt})");
+                    cout.WriteLine($"{type} clauses ({reader}) generated to \"{SqlFileName}\", Done on rows({cnt})");
                 }
             }
             else if (dname != null)

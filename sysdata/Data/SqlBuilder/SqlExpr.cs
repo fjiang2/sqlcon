@@ -24,7 +24,7 @@ namespace Sys.Data
 {
     public sealed class SqlExpr : SqlBuilderInfo
     {
-        public static readonly SqlExpr COUNT = new SqlExpr().Next("COUNT(*)");
+        public static readonly SqlExpr COUNT = new SqlExpr().Append("COUNT(*)");
 
         internal const string PHYSLOC = "%%physloc%%";
         internal const string ROWID = "%%RowId%%";
@@ -35,59 +35,67 @@ namespace Sys.Data
         {
         }
 
-
-
-        private SqlExpr NextValue(object value)
+        private SqlExpr AppendValue(object value)
         {
             script.Append(new SqlValue(value));
             return this;
         }
 
-        private SqlExpr Next(object x)
+        private SqlExpr Append(object x)
         {
             script.Append(x);
             return this;
         }
 
+        private SqlExpr Append(string x)
+        {
+            script.Append(x);
+            return this;
+        }
+
+        private SqlExpr AppendSpace(string x) => Append(x).AppendSpace();
+        private SqlExpr WrapSpace(string x) => AppendSpace().Append(x).AppendSpace();
+        private SqlExpr AppendSpace() => Append(" ");
+
+
         internal static SqlExpr Assign(string name, object value)
         {
-            return ColumnName(name, null).Next(" = ").NextValue(value);
+            return ColumnName(name, null).WrapSpace("=").AppendValue(value);
         }
 
         internal static SqlExpr Equal(string name, object value)
         {
             if (value == null || value == DBNull.Value)
-                return ColumnName(name, null).Next(" IS NULL");
+                return ColumnName(name, null).WrapSpace("IS NULL");
             else
-                return ColumnName(name, null).Next(" = ").NextValue(value);
+                return ColumnName(name, null).WrapSpace("=").AppendValue(value);
         }
 
         internal static SqlExpr ColumnName(string name, string alias)
         {
             SqlExpr exp = new SqlExpr();
             if (alias != null)
-                exp.Next(alias)
-                    .Next(".");
+                exp.Append(alias)
+                    .Append(".");
 
-            exp.Next("[" + name + "]");
+            exp.Append("[" + name + "]");
 
             return exp;
         }
 
-        internal static SqlExpr AllColumnNames(string alias)
+        internal static SqlExpr AllColumnNames(string dbo)
         {
             SqlExpr exp = new SqlExpr();
-            if (alias != null)
-                exp.Next(alias)
-                    .Next(".");
+            if (dbo != null)
+                exp.Append(dbo).Append(".");
 
-            exp.Next("*");
+            exp.Append("*");
             return exp;
         }
 
         internal static SqlExpr ParameterName(string name)
         {
-            SqlExpr exp = new SqlExpr().Next(name.SqlParameterName());
+            SqlExpr exp = new SqlExpr().Append(name.SqlParameterName());
             exp.AddParam(name, null);
             return exp;
         }
@@ -95,9 +103,9 @@ namespace Sys.Data
         internal static SqlExpr AddParameter(string columnName, string parameterName)
         {
             SqlExpr exp = new SqlExpr()
-                .Next("[" + columnName + "]")
-                .Next("=")
-                .Next(parameterName.SqlParameterName());
+                .Append("[" + columnName + "]")
+                .Append("=")
+                .Append(parameterName.SqlParameterName());
 
             exp.AddParam(parameterName, columnName);
 
@@ -107,13 +115,13 @@ namespace Sys.Data
         internal static SqlExpr Join(SqlExpr[] expl)
         {
             SqlExpr exp = new SqlExpr()
-                .Next(string.Join<SqlExpr>(",", expl));
+                .Append(string.Join<SqlExpr>(",", expl));
             return exp;
         }
 
         internal static SqlExpr Write(string any)
         {
-            return new SqlExpr().Next(any);
+            return new SqlExpr().Append(any);
         }
 
 #if USE
@@ -189,85 +197,85 @@ namespace Sys.Data
         #region implicit section
         public static implicit operator SqlExpr(ident ident)
         {
-            return new SqlExpr().Next(ident);
+            return new SqlExpr().Append(ident);
         }
 
 
         public static implicit operator SqlExpr(string value)
         {
-            return new SqlExpr().NextValue(value);    // s= 'string'
+            return new SqlExpr().AppendValue(value);    // s= 'string'
         }
 
         public static implicit operator SqlExpr(bool value)
         {
-            return new SqlExpr().NextValue(value);    // b=1 or b=0
+            return new SqlExpr().AppendValue(value);    // b=1 or b=0
         }
 
 
         public static implicit operator SqlExpr(char value)
         {
-            return new SqlExpr().NextValue(value);    // ch= 'c'
+            return new SqlExpr().AppendValue(value);    // ch= 'c'
         }
 
         public static implicit operator SqlExpr(byte value)
         {
-            return new SqlExpr().NextValue(value);
+            return new SqlExpr().AppendValue(value);
         }
 
         public static implicit operator SqlExpr(sbyte value)
         {
-            return new SqlExpr().NextValue(value);
+            return new SqlExpr().AppendValue(value);
         }
 
 
         public static implicit operator SqlExpr(int value)
         {
-            return new SqlExpr().NextValue(value);
+            return new SqlExpr().AppendValue(value);
         }
 
         public static implicit operator SqlExpr(short value)
         {
-            return new SqlExpr().NextValue(value);
+            return new SqlExpr().AppendValue(value);
         }
 
         public static implicit operator SqlExpr(ushort value)
         {
-            return new SqlExpr().NextValue(value);
+            return new SqlExpr().AppendValue(value);
         }
 
         public static implicit operator SqlExpr(uint value)
         {
-            return new SqlExpr().NextValue(value);
+            return new SqlExpr().AppendValue(value);
         }
 
         public static implicit operator SqlExpr(long value)
         {
-            return new SqlExpr().NextValue(value);
+            return new SqlExpr().AppendValue(value);
         }
 
         public static implicit operator SqlExpr(ulong value)
         {
-            return new SqlExpr().NextValue(value);
+            return new SqlExpr().AppendValue(value);
         }
 
         public static implicit operator SqlExpr(float value)
         {
-            return new SqlExpr().NextValue(value);
+            return new SqlExpr().AppendValue(value);
         }
 
         public static implicit operator SqlExpr(DateTime value)
         {
-            return new SqlExpr().NextValue(value);    //dt = '10/20/2012'
+            return new SqlExpr().AppendValue(value);    //dt = '10/20/2012'
         }
 
         public static implicit operator SqlExpr(DBNull value)
         {
-            return new SqlExpr().NextValue(value);    // NULL
+            return new SqlExpr().AppendValue(value);    // NULL
         }
 
         public static implicit operator SqlExpr(Enum value)
         {
-            return new SqlExpr().NextValue(Convert.ToInt32(value));    // NULL
+            return new SqlExpr().AppendValue(Convert.ToInt32(value));    // NULL
         }
 
         #endregion
@@ -285,83 +293,36 @@ namespace Sys.Data
 
         public SqlExpr AS(SqlExpr alias)
         {
-            this.Next(" AS ").Next(alias);
+            this.WrapSpace("AS").Append(alias);
             return this;
         }
 
 
-        public SqlExpr this[SqlExpr exp]
-        {
-            get
-            {
-                this.Next("[").Next(exp).Next("]");
-                return this;
-            }
-        }
-
+        public SqlExpr this[SqlExpr exp] => this.Append("[").Append(exp).Append("]");
 
         public SqlExpr IN(SqlBuilder select)
         {
-            this
-                    .Next(" IN (")
-                    .Next(select.Query)
-                    .Next(")");
-
+            this.WrapSpace($"IN ({select.Query})");
             this.Merge(select);
             return this;
         }
 
         public SqlExpr IN(params SqlExpr[] collection)
         {
-            return IN(collection);
+            string values = string.Join(",", collection.Select(x => x.ToString()));
+            return this.WrapSpace($"IN ({values})");
         }
 
-        public SqlExpr NOT
-        {
-            get
-            {
-                this.Next(" NOT");
-                return this;
-            }
-        }
+        public SqlExpr IN<T>(IEnumerable<T> collection) => this.WrapSpace($"IN ({string.Join<T>(",", collection)})");
 
-        public SqlExpr NULL
-        {
-            get
-            {
-                this.Next(" NULL");
-                return this;
-            }
-        }
+        public SqlExpr BETWEEN(SqlExpr exp1, SqlExpr exp2) => this.WrapSpace($"BETWEEN {exp1} AND {exp2}");
 
-        public SqlExpr IS
-        {
-            get
-            {
-                this.Next(" IS");
-                return this;
-            }
-        }
+        public SqlExpr IS() => this.WrapSpace("IS");
+        public SqlExpr IS_NULL() => this.WrapSpace("IS NULL");
+        public SqlExpr IS_NOT_NULL() => this.WrapSpace("IS NOT NULL");
+        public SqlExpr NOT() => this.WrapSpace("NOT");
+        public SqlExpr NULL() => this.WrapSpace("NULL");
 
-        public SqlExpr IN<T>(IEnumerable<T> collection)
-        {
-            this.Next(" IN (")
-                .Next(string.Join<T>(",", collection))
-                .Next(")");
-
-            return this;
-        }
-
-
-        public SqlExpr BETWEEN(SqlExpr exp1, SqlExpr exp2)
-        {
-            this.Next(" BETWEEN ")
-                .Next(exp1)
-                .Next(" AND ")
-                .Next(exp2);
-
-            return this;
-        }
 
         #region +-*/, compare, logical operation
 
@@ -381,7 +342,7 @@ namespace Sys.Data
         internal static SqlExpr OPR(SqlExpr exp1, string opr, SqlExpr exp2)
         {
             SqlExpr exp = new SqlExpr()
-                .Next(string.Format("{0} {1} {2}", ExpToString(exp1), opr, ExpToString(exp2)));
+                .Append(string.Format("{0} {1} {2}", ExpToString(exp1), opr, ExpToString(exp2)));
 
             exp.Merge(exp1).Merge(exp2);
 
@@ -393,22 +354,22 @@ namespace Sys.Data
         internal static SqlExpr OPR(SqlExpr exp1, string opr, SqlExpr[] exps)
         {
             SqlExpr exp = new SqlExpr();
-            exp.Next("(")
-               .Next(string.Format("{0}", ExpToString(exp1)));
+            exp.Append("(")
+               .Append(string.Format("{0}", ExpToString(exp1)));
 
             foreach (SqlExpr exp2 in exps)
             {
-                exp.Next(string.Format(" {0} {1}", opr, ExpToString(exp2)));
+                exp.Append(string.Format(" {0} {1}", opr, ExpToString(exp2)));
             }
 
             exp.compound = true;
-            return exp.Next(")");
+            return exp.Append(")");
         }
 
-        internal static SqlExpr OPR(string opr, SqlExpr exp1)
+        private static SqlExpr OPR(string opr, SqlExpr exp1)
         {
             SqlExpr exp = new SqlExpr()
-                .Next(string.Format("{0} {1}", opr, ExpToString(exp1)));
+                .Append(string.Format("{0} {1}", opr, ExpToString(exp1)));
 
             exp.Merge(exp1);
             return exp;
@@ -454,7 +415,7 @@ namespace Sys.Data
         {
             if ((object)exp2 == null || exp2.ToString() == "NULL")
             {
-                SqlExpr exp = new SqlExpr().Next(exp1).Next(" IS NULL");
+                SqlExpr exp = new SqlExpr().Append(exp1).Append(" IS NULL");
                 exp.Merge(exp1);
                 return exp;
             }
@@ -467,7 +428,7 @@ namespace Sys.Data
         {
             if ((object)exp2 == null || exp2.ToString() == "NULL")
             {
-                SqlExpr exp = new SqlExpr().Next(exp1).Next(" IS NOT NULL");
+                SqlExpr exp = new SqlExpr().Append(exp1).Append(" IS NOT NULL");
                 exp.Merge(exp1);
                 return exp;
             }
@@ -498,17 +459,17 @@ namespace Sys.Data
 
         public static SqlExpr operator &(SqlExpr exp1, SqlExpr exp2)
         {
-            return OPR(exp1, "&", exp2);
+            return OPR(exp1, "AND", exp2);
         }
 
         public static SqlExpr operator |(SqlExpr exp1, SqlExpr exp2)
         {
-            return OPR(exp1, "|", exp2);
+            return OPR(exp1, "OR", exp2);
         }
 
         public static SqlExpr operator ~(SqlExpr exp)
         {
-            return OPR("~", exp);
+            return OPR("NOT", exp);
         }
 
         #endregion
@@ -519,16 +480,16 @@ namespace Sys.Data
         internal static SqlExpr Func(string func, params SqlExpr[] expl)
         {
             SqlExpr exp = new SqlExpr()
-                .Next(func)
-                .Next("(")
-                .Next(string.Join<SqlExpr>(",", expl))
-                .Next(")");
+                .Append(func)
+                .Append("(")
+                .Append(string.Join<SqlExpr>(",", expl))
+                .Append(")");
 
             //exp.Merge(exp1);
             return exp;
         }
 
-        
+
         #endregion
 
 

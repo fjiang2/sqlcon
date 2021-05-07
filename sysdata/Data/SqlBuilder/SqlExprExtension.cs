@@ -93,11 +93,6 @@ namespace Sys.Data
             return SqlExpr.AddParameter(columnName, columnName);
         }
 
-        public static SqlExpr AddParameter(this string columnName, SqlExpr value)
-        {
-            return SqlExpr.AddParameter(columnName, columnName);
-        }
-
         /// <summary>
         /// Add SQL parameter
         /// e.g. NodeDpo._ID.AddParameter(TaskDpo._ParentID) -> "[ID]=@ParentID"
@@ -116,6 +111,7 @@ namespace Sys.Data
         {
             return SqlExpr.OPR(exp1, "AND", exp2);
         }
+
         public static SqlExpr AND(this IEnumerable<SqlExpr> expl)
         {
             if(expl.Count() >1)
@@ -138,11 +134,6 @@ namespace Sys.Data
                 return expl.First();
         }
 
-
-        public static SqlExpr NOT(this SqlExpr exp)
-        {
-            return SqlExpr.OPR("NOT", exp);
-        }
 
         public static SqlExpr LEN(this SqlExpr expr)
         {
@@ -173,12 +164,6 @@ namespace Sys.Data
         public static SqlExpr COUNT(this SqlExpr expr)
         {
             return SqlExpr.Func("COUNT", expr);
-        }
-
-
-        public static SqlExpr ISNULL(this SqlExpr expr)
-        {
-            return SqlExpr.Func("ISNULL", expr);
         }
 
         public static SqlExpr GETDATE()
