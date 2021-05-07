@@ -39,7 +39,7 @@ namespace sqlcon.Windows
         public TableResultPane(ScriptResultControl parent, TableName tname, int top)
         {
             this.Tabs = parent;
-            var dt = new TableReader(tname, top).Table;
+            var dt = new TableReader(tname) { Top = top }.Table;
 
             InitializeComponent(dt);
 

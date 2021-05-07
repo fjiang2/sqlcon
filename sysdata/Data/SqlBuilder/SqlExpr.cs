@@ -24,6 +24,8 @@ namespace Sys.Data
 {
     public sealed class SqlExpr : SqlBuilderInfo
     {
+        public static readonly SqlExpr COUNT = new SqlExpr().Next("COUNT(*)");
+
         internal const string PHYSLOC = "%%physloc%%";
         internal const string ROWID = "%%RowId%%";
 
@@ -526,6 +528,7 @@ namespace Sys.Data
             return exp;
         }
 
+        
         #endregion
 
 

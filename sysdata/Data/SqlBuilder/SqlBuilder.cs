@@ -217,7 +217,7 @@ namespace Sys.Data
             return FROM(tableName.FullName, alias);
         }
 
-        private SqlBuilder FROM(string from, string alias)
+        public SqlBuilder FROM(string from, string alias = null)
         {
             Append($"FROM {from} ");
             if (alias != null)
@@ -330,10 +330,10 @@ namespace Sys.Data
 
         public SqlBuilder WHERE(Locator locator)
         {
-            if (!locator.IsEmpty)
-                return Append($"WHERE {locator.Where} ");
+            if (locator == null || locator.IsEmpty)
+                return this;
 
-            return this;
+            return Append($"WHERE {locator.Where} ");
         }
 
         public SqlBuilder WHERE(string exp)

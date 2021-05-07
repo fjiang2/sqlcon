@@ -30,8 +30,6 @@ namespace Sys.Data
     /// </summary>
     public class TableReader
     {
-        internal SqlCmd Command { get; }
-
         private TableName tableName;
         private Lazy<DataTable> table;
         private Locator locator;
@@ -39,16 +37,11 @@ namespace Sys.Data
         public bool CaseSensitive { get; set; } = false;
         public int Top { get; set; }
 
-
-        private TableReader(TableName tableName, Locator locator, int top)
+        public TableReader(TableName tableName, Locator locator)
         {
             this.table = new Lazy<DataTable>(() => LoadData());
             this.tableName = tableName;
-            this.Top = top;
             this.locator = locator;
-
-            var sql = new SqlBuilder(tableName.Provider).SELECT().TOP(top).COLUMNS().FROM(tableName).WHERE(locator);
-            this.Command = new SqlCmd(sql);
         }
 
 
@@ -57,46 +50,34 @@ namespace Sys.Data
         /// </summary>
         /// <param name="tableName"></param>
         public TableReader(TableName tableName)
-            : this(tableName, new Locator(), top: 0)
+            : this(tableName, new Locator())
         {
         }
 
-        public TableReader(TableName tableName, int top)
-            : this(tableName, new Locator(), top)
+        internal DbCmd Command
         {
+            get
+            {
+                var sql = new SqlBuilder(tableName.Provider).SELECT().TOP(Top).COLUMNS().FROM(tableName).WHERE(locator);
+                return new SqlCmd(sql);
+            }
         }
-
-        /// <summary>
-        /// read records by filter
-        /// </summary>
-        /// <param name="tableName"></param>
-        /// <param name="where"></param>
-        public TableReader(TableName tableName, SqlExpr where)
-            : this(tableName, new Locator(where), top: 0)
-        {
-        }
-
-        public TableReader(TableName tableName, Locator locator)
-            : this(tableName, locator, top: 0)
-        {
-        }
-
 
         /// <summary>
         /// Count of selected rows
         /// </summary>
-        public int Count
+        public long Count
         {
             get
             {
                 if (table.IsValueCreated)
                     return Table.Rows.Count;
 
-                var sql = new SqlBuilder(tableName.Provider).SELECT().COLUMNS("COUNT(*)").FROM(tableName).WHERE(locator);
+                var sql = new SqlBuilder(tableName.Provider).SELECT().COLUMNS(SqlExpr.COUNT).FROM(tableName).WHERE(locator);
 
                 object obj = new SqlCmd(sql).ExecuteScalar();
-                int count = Convert.ToInt32(obj);
-                if (Top < count)
+                long count = Convert.ToInt64(obj);
+                if (Top > 0 && Top < count)
                     return Top;
                 else
                     return count;
@@ -110,18 +91,18 @@ namespace Sys.Data
         {
             get
             {
-                string query;
+                SqlBuilder query;
                 if (tableName.Provider.Type == ConnectionProviderType.SqlServer)
                 {
-                    query = $"SELECT CONVERT(bigint, rows) FROM sysindexes WHERE id = OBJECT_ID('{tableName.ShortName}') AND indid < 2";
+                    query = new SqlBuilder().SELECT().COLUMNS("CONVERT(bigint, rows)").FROM("sysindexes").WHERE($"id = OBJECT_ID('{tableName.ShortName}') AND indid < 2");
                 }
                 else
                 {
-                    query = new SqlBuilder().SELECT().COLUMNS("COUNT(*)").FROM(tableName).ToString();
+                    query = new SqlBuilder().SELECT().COLUMNS("COUNT(*)").FROM(tableName);
                 }
 
-                object obj = new SqlCmd(tableName.Provider, query).ExecuteScalar();
-                return (long)obj;
+                object obj = new SqlCmd(tableName.Provider, query.ToString()).ExecuteScalar();
+                return Convert.ToInt64(obj);
             }
         }
 

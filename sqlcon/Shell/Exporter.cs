@@ -211,7 +211,7 @@ namespace sqlcon
                 using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
                 {
                     //cout.WriteLine($"start to generate {tname} script to file: \"{SqlFileName}\"");
-                    Locator locator = null;
+                    Locator locator = new Locator();
                     string WHERE = "";
                     if (node != null)
                     {
