@@ -10,7 +10,7 @@ using Sys.Data;
 using Sys.Data.Manager;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace Sys.Data.Code
 {
 
     public class DataClassBuilder : ClassMaker

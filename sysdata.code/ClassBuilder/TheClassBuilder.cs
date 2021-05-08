@@ -8,9 +8,9 @@ using Sys.Data;
 using Sys.CodeBuilder;
 using Sys.Data.Manager;
 using Sys.Data.Linq;
-using System.Data.Common;
+using Sys.Stdio;
 
-namespace sqlcon
+namespace Sys.Data.Code
 {
     public abstract class TheClassBuilder : ClassMaker
     {

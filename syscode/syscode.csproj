@@ -7,7 +7,7 @@
     <ProjectGuid>{036BF20A-7F80-41B4-8C99-85F6901E20F9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>syscode</RootNamespace>
+    <RootNamespace>Sys.CodeBuilder</RootNamespace>
     <AssemblyName>syscode</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

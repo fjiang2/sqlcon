@@ -56,6 +56,7 @@
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationEnvironment.cs" />
     <Compile Include="Configuration\ConnectionString.cs" />
+    <Compile Include="Console\Command\IApplicationCommand.cs" />
     <Compile Include="Console\Command\ICommand.cs" />
     <Compile Include="Console\Command\OptionItem.cs" />
     <Compile Include="DataStructure\DataLake\DataLake.cs" />
