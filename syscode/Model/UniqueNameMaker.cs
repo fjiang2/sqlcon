@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
-    public class UniqueNameMaker
+    class UniqueNameMaker
     {
         private Dictionary<string, int> names = new Dictionary<string, int>();
 

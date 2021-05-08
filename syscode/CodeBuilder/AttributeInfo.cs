@@ -56,7 +56,7 @@ namespace Sys.CodeBuilder
                     {
                         foreach (var propertyInfo in arg.GetType().GetProperties())
                         {
-                            var val = Extension.ToCodeString(propertyInfo.GetValue(arg));
+                            var val = Primitive.ToCodeString(propertyInfo.GetValue(arg));
                             list.Add($"{propertyInfo.Name} = {val}");
                         }
                     }

@@ -6,9 +6,42 @@ using System.IO;
 
 namespace Sys.CodeBuilder
 {
-    static class Extension
+    public static class Primitive
     {
-        public static string ToCodeString(this object obj)
+        public static string ToPrimitive(object obj)
+        {
+            //make double value likes integer, e.g. ToPrimitive(25.0) returns "25, ToPrimitive(25.3) returns "25.3"
+            switch (obj)
+            {
+                case double value:
+                    return value.ToString();
+
+                case CodeString value:
+                    return value.ToString();
+
+                case Guid value:
+                    return $"new Guid(\"{value}\")";
+
+                case DateTime time:
+                    return $"new DateTime({time.Year}, {time.Month}, {time.Day}, {time.Hour}, {time.Minute}, {time.Second})";
+
+                case DateTimeOffset time:
+                    return $"new DateTimeOffset({time.Year}, {time.Month}, {time.Day}, {time.Hour}, {time.Minute}, {time.Second}, {time.Offset})";
+
+                case byte[] value:
+                    {
+                        var hex = value
+                            .Select(b => $"0x{b:X}")
+                            .Aggregate((b1, b2) => $"{b1},{b2}");
+                        return "new byte[] {" + hex + "}";
+                        //return "new byte[] {0x" + BitConverter.ToString((byte[])value).Replace("-", ",0x") + "}";
+                    }
+            }
+
+            return ToCodeString(obj);
+        }
+
+        internal static string ToCodeString(this object obj)
         {
             StringWriter o = new StringWriter();
 
@@ -65,13 +98,7 @@ namespace Sys.CodeBuilder
                     o.Write(EnumBitFlags(value));
                     break;
 
-                case DateTime time:
-                    o.Write($"new DateTime({time.Year}, {time.Month}, {time.Day}, {time.Hour}, {time.Minute}, {time.Second})");
-                    break;
-
-                case DateTimeOffset time:
-                    o.Write($"new DateTimeOffset({time.Year}, {time.Month}, {time.Day}, {time.Hour}, {time.Minute}, {time.Second}, {time.Offset})");
-                    break;
+      
 
                 default:
                     o.Write(obj);

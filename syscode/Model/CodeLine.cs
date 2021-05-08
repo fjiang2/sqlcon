@@ -39,13 +39,13 @@ namespace Sys.CodeBuilder
 
 
         public int tab { get; set; }
-        public string line { get; set; }
+        public string Line { get; set; }
 
 
         public override string ToString()
         {
             var t = Tab(tab);
-            return $"{t}{line}";
+            return $"{t}{Line}";
         }
     }
 }

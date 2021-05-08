@@ -120,7 +120,7 @@ namespace Sys.CodeBuilder
                 line = lines.Last();
 
             if (line != null)
-                line.line += str;
+                line.Line += str;
             else
                 AppendLine(str);
 
@@ -137,7 +137,7 @@ namespace Sys.CodeBuilder
 
         public void InsertLine(string str, int index = 0)
         {
-            var line = new CodeLine { tab = curruent, line = str };
+            var line = new CodeLine { tab = curruent, Line = str };
             lines.Insert(index, line);
         }
 
@@ -163,10 +163,10 @@ namespace Sys.CodeBuilder
             {
                 var items = str.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var item in items)
-                    lines.Add(new CodeLine { tab = curruent, line = item });
+                    lines.Add(new CodeLine { tab = curruent, Line = item });
             }
             else
-                lines.Add(new CodeLine { tab = curruent, line = str });
+                lines.Add(new CodeLine { tab = curruent, Line = str });
 
             return this;
         }

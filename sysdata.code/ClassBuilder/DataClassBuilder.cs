@@ -195,7 +195,7 @@ namespace Sys.Data.Code
             TypeInfo type = new TypeInfo { UserType = $"{cname}" };
             foreach (DataRow row in dt.Rows)
             {
-                string key = Value.ToPrimitive(row[0]);
+                string key = Primitive.ToPrimitive(row[0]);
 
                 if (dt.Columns.Count != 2)
                 {

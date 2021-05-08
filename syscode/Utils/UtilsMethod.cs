@@ -14,7 +14,6 @@
 //                                                                                                  //
 //                                                                                                  //
 //--------------------------------------------------------------------------------------------------//
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -340,29 +339,5 @@ namespace Sys.CodeBuilder
 
             return method;
         }
-    }
-
-    [Flags]
-    public enum UtilsThisMethod
-    {
-        Undefined = 0x00,
-        Copy = 0x01,
-        Clone = 0x02,
-        Compare = 0x04,
-        ToString = 0x08,
-        Equals = 0x10,
-        GetHashCode = 0x20,
-        Map = 0x40,
-        ToDictionary = 0x80,
-    }
-
-    [Flags]
-    public enum UtilsStaticMethod
-    {
-        Undefined = 0x00,
-        CopyTo = 0x01,
-        CloneFrom = 0x02,
-        CompareTo = 0x04,
-        ToSimpleString = 0x08
     }
 }
