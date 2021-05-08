@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Tie;
 
 namespace Sys.CodeBuilder
 {
@@ -57,7 +56,7 @@ namespace Sys.CodeBuilder
                     {
                         foreach (var propertyInfo in arg.GetType().GetProperties())
                         {
-                            var val = VAL.Boxing(propertyInfo.GetValue(arg));
+                            var val = Extension.ToCodeString(propertyInfo.GetValue(arg));
                             list.Add($"{propertyInfo.Name} = {val}");
                         }
                     }
