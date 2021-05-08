@@ -61,7 +61,7 @@ namespace Sys.Data
 
         public int GenerateByDbTable(DataTable dt, TextWriter writer)
         {
-            string[] columns = dt.Columns.ToEnumerable<DataColumn, string>(col => col.ColumnName).ToArray();
+            string[] columns = dt.Columns.Cast<DataColumn>().Select(col => col.ColumnName).ToArray();
             object[] values = new object[columns.Length];
 
             foreach (DataRow row in dt.Rows)
