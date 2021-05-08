@@ -169,11 +169,6 @@ namespace Sys.Data
 
         #endregion
 
-        public SqlBuilder INTO(SqlTableName tableName)
-        {
-            return Append($"INTO {tableName}");
-        }
-
         public SqlBuilder FROM<T>(string alias = null)
         {
             return FROM(typeof(T).TableName(), alias);
@@ -203,7 +198,7 @@ namespace Sys.Data
 
         public SqlBuilder INSERT_INTO(SqlTableName tableName, params string[] columns)
         {
-            Append($"INSERT INTO {tableName}");
+            AppendSpace($"INSERT INTO").TABLE_NAME(tableName, null);
 
             if (columns.Length > 0)
                 AppendSpace($"({JoinColumns(columns)})");
@@ -229,7 +224,7 @@ namespace Sys.Data
 
         public SqlBuilder DELETE(SqlTableName tableName)
         {
-            return AppendLine($"DELETE FROM {tableName}");
+            return AppendSpace($"DELETE FROM").TABLE_NAME(tableName, null);
         }
 
 
@@ -257,7 +252,7 @@ namespace Sys.Data
 
         public SqlBuilder WHERE(byte[] loc)
         {
-            return AppendLine($"WHERE {SqlExpr.PHYSLOC} = {new SqlValue(loc)}");
+            return WHERE($"{SqlExpr.PHYSLOC} = {new SqlValue(loc)}");
         }
 
         #endregion
