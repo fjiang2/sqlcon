@@ -68,5 +68,40 @@ namespace Sys.Data
 
             return dt;
         }
+
+        public static object SystemDefaultValue(this Type dataType)
+        {
+            if (!dataType.IsValueType)
+                return System.DBNull.Value;
+
+            switch (dataType.Name)
+            {
+                case "Int16":
+                    return System.Convert.ToInt16(0);
+
+                case "Int32":
+                    return 0;
+
+                case "String":
+                    return "";
+
+                case "Boolean":
+                    return false;
+
+                case "Double":
+                    return 0.0;
+
+                case "Decimal":
+                    return new Decimal(0.0);
+
+                case "DateTime":
+                    return System.DateTime.MinValue;
+
+            }
+
+            throw new MessageException("Type {0} is not supported", dataType);
+
+        }
+
     }
 }

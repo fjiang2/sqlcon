@@ -14,61 +14,14 @@
 //                                                                                                  //
 //                                                                                                  //
 //--------------------------------------------------------------------------------------------------//
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Data;
 
 namespace Sys.Data
 {
-    public static class DataExtension
+    public class DataLine
     {
-
-  
-
-        /// <summary>
-        /// Adjuested Length
-        /// </summary>
-        public static int AdjuestedLength(this IColumn column)
-        {
-            if (column.Length == -1)
-                return -1;
-
-            switch (column.CType)
-            {
-                case CType.NChar:
-                case CType.NVarChar:
-                    return column.Length / 2;
-            }
-
-            return column.Length;
-        }
-
-
-
-
-        public static TableName TableName(this Type dpoType)
-        {
-            TableAttribute[] A = dpoType.GetAttributes<TableAttribute>();
-            if (A.Length > 0)
-                return A[0].TableName;
-            else
-                return null;
-        }
-
-
-
-        public static DPList<T> ToDPList<T>(this TableReader<T> reader) where T : class, IDPObject, new()
-        {
-            return new DPList<T>(reader);
-        }
-
-        public static DPCollection<T> ToDPCollection<T>(this DPList<T> list) where T : class, IDPObject, new()
-        {
-            return new DPCollection<T>(list.Table);
-        }
-
+        public int Line { get; set; }
+        public DataRow Row { get; set; }
     }
 
 }

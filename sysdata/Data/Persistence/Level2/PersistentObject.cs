@@ -694,7 +694,7 @@ namespace Sys.Data
                 object value = null;
 
                 if (propertyInfo.PropertyType.IsValueType)
-                    value = DefaultRowValue.SystemDefaultValue(propertyInfo.PropertyType);
+                    value = propertyInfo.PropertyType.SystemDefaultValue();
 
                 propertyInfo.SetValue(this, value, null);
             }

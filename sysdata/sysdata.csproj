@@ -85,6 +85,8 @@
     <Compile Include="Data\Connection\Name\SchemaName.cs" />
     <Compile Include="Data\Connection\Name\ServerName.cs" />
     <Compile Include="Data\Connection\Name\TableName.cs" />
+    <Compile Include="Extension\DataEnumerable.cs" />
+    <Compile Include="Model\DataLine.cs" />
     <Compile Include="Model\CType.cs" />
     <Compile Include="Data\DataContract\DataContractTable.cs" />
     <Compile Include="Data\DataContract\IDataContractRow.cs" />
@@ -137,7 +139,6 @@
     <Compile Include="Data\DbProvider\SqlDb\SqlDbProvider.cs" />
     <Compile Include="Data\DbProvider\SqlDb\SqlDbSchemaProvider.cs" />
     <Compile Include="Data\DbProvider\SqlDb\SqlDbServer.cs" />
-    <Compile Include="Data\DefaultRowValue.cs" />
     <Compile Include="Data\Extension\ConnectionProviderExtension.cs" />
     <Compile Include="Extension\VALExtension.cs" />
     <Compile Include="Data\Extension\CTypeExtension.cs" />
@@ -281,7 +282,7 @@
     <Compile Include="Data\UniqueTable.cs" />
     <Compile Include="Extension\DataLakeExtension.cs" />
     <Compile Include="Extension\DataTableExtension.cs" />
-    <Compile Include="Extension\Extension.cs" />
+    <Compile Include="Extension\DataRowExtension.cs" />
     <Compile Include="Model\JsonStyle.cs" />
     <Compile Include="Extension\ManagerExtension.cs" />
     <Compile Include="IConnectionConfiguration.cs" />

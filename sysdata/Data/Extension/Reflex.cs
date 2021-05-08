@@ -151,7 +151,7 @@ namespace Sys.Data
                     else if (defaultValueUsed)
                     {
                         Type dataType = dataRow.Table.Columns[a.ColumnName].DataType;
-                        value = DefaultRowValue.SystemDefaultValue(dataType);
+                        value = dataType.SystemDefaultValue();
                     }
                     else
                         value = null;
