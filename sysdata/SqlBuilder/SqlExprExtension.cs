@@ -46,9 +46,9 @@ namespace Sys.Data
             return SqlExpr.ColumnName(name, null);
         }
 
-        public static SqlExpr ColumnName(this string name, string alias)
+        public static SqlExpr ColumnName(this string name, string dbo)
         {
-            return SqlExpr.ColumnName(name, alias);
+            return SqlExpr.ColumnName(name, dbo);
         }
 
         public static SqlExpr ColumnName(this string[] names)

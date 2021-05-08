@@ -83,6 +83,7 @@
     <Compile Include="l2s\Territory.cs" />
     <Compile Include="SqlLexerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlBuilderUnitTest.cs" />
     <Compile Include="UnitTestCodeBuilder.cs" />
     <Compile Include="UnitTestDataContext.cs" />
   </ItemGroup>

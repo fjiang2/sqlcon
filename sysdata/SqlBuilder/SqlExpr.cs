@@ -71,11 +71,11 @@ namespace Sys.Data
                 return ColumnName(name, null).WrapSpace("=").AppendValue(value);
         }
 
-        internal static SqlExpr ColumnName(string name, string alias)
+        internal static SqlExpr ColumnName(string name, string dbo)
         {
             SqlExpr exp = new SqlExpr();
-            if (alias != null)
-                exp.Append(alias)
+            if (dbo != null)
+                exp.Append(dbo)
                     .Append(".");
 
             exp.Append("[" + name + "]");
@@ -309,11 +309,11 @@ namespace Sys.Data
 
         public SqlExpr IN(params SqlExpr[] collection)
         {
-            string values = string.Join(",", collection.Select(x => x.ToString()));
+            string values = string.Join(", ", collection.Select(x => x.ToString()));
             return this.WrapSpace($"IN ({values})");
         }
 
-        public SqlExpr IN<T>(IEnumerable<T> collection) => this.WrapSpace($"IN ({string.Join<T>(",", collection)})");
+        public SqlExpr IN<T>(IEnumerable<T> collection) => this.WrapSpace($"IN ({string.Join<T>(", ", collection)})");
 
         public SqlExpr BETWEEN(SqlExpr exp1, SqlExpr exp2) => this.WrapSpace($"BETWEEN {exp1} AND {exp2}");
 

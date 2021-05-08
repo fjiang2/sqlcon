@@ -82,36 +82,17 @@ namespace Sys.Data
         }
 
         #region Table Name
-        private SqlBuilder TABLE_NAME(string tableName, string alias)
+        private SqlBuilder TABLE_NAME(SqlTableName tableName, string alias)
         {
-            AppendSpace(tableName);
+            AppendSpace(tableName.ToString());
             if (!string.IsNullOrEmpty(alias))
                 AppendSpace(alias);
 
+            if (tableName.Provider != null)
+                this.provider = tableName.Provider;
+
             return this;
         }
-
-        public SqlBuilder TABLE_NAME(TableName tableName, string alias = null)
-        {
-            return TABLE_NAME(tableName.FullName, alias);
-        }
-
-
-        public SqlBuilder TABLE_NAME(DPObject dpo, string alias = null)
-        {
-            return TABLE_NAME(dpo.TableName, alias);
-        }
-
-        public SqlBuilder TABLE_NAME(Type dpoType, string alias = null)
-        {
-            return TABLE_NAME(dpoType.TableName(), alias);
-        }
-
-        public SqlBuilder TABLE<T>(string alias = null)
-        {
-            return TABLE_NAME(typeof(T).TableName(), alias);
-        }
-
 
 
         #endregion
@@ -182,125 +163,50 @@ namespace Sys.Data
             else
             {
                 var L = columns.Select(column => column.ToString());
-                return COLUMNS(string.Join(",", L));
+                return COLUMNS(string.Join(", ", L));
             }
-        }
-
-
-        public SqlBuilder INTO(string tableName)
-        {
-            return Append($"INTO {tableName}");
-        }
-
-        public SqlBuilder INTO(TableName tableName)
-        {
-            return Append($"INTO {tableName.FullName}");
         }
 
         #endregion
 
-
-        #region FROM clause
-
-        public SqlBuilder FROM(DPObject dpo, string alias = null)
+        public SqlBuilder INTO(SqlTableName tableName)
         {
-            return FROM(dpo.TableName, alias);
+            return Append($"INTO {tableName}");
         }
-
-        public SqlBuilder FROM(Type dpoType, string alias = null)
-        {
-            return FROM(dpoType.TableName(), alias);
-        }
-
 
         public SqlBuilder FROM<T>(string alias = null)
         {
             return FROM(typeof(T).TableName(), alias);
         }
 
+        public SqlBuilder FROM(SqlTableName from, string alias = null) => AppendSpace($"FROM").TABLE_NAME(from, alias);
 
-        public SqlBuilder FROM(TableName tableName, string alias = null)
-        {
-            this.provider = tableName.Provider;
-            return FROM(tableName.FullName, alias);
-        }
-
-        public SqlBuilder FROM(string from, string alias = null)
-        {
-            AppendSpace($"FROM {from}");
-            if (alias != null)
-                return AppendSpace($"{alias}");
-
-            return this;
-        }
-
-        #endregion
-
-
-
-        public SqlBuilder UPDATE(DPObject dpo, string alias = null)
-        {
-            return UPDATE(dpo.TableName, alias);
-        }
 
         public SqlBuilder UPDATE<T>(string alias = null)
         {
             return UPDATE(typeof(T).TableName(), alias);
         }
 
-        public SqlBuilder UPDATE(Type dpoType, string alias = null)
-        {
-            return UPDATE(dpoType.TableName(), alias);
-        }
-
-        public SqlBuilder UPDATE(TableName tableName, string alias = null)
-        {
-            this.provider = tableName.Provider;
-            return UPDATE(tableName.FullName, alias);
-        }
-
-
-        public SqlBuilder UPDATE(string tableName, string alias = null)
+        public SqlBuilder UPDATE(SqlTableName tableName, string alias = null)
         {
             return AppendSpace($"UPDATE").TABLE_NAME(tableName, alias);
         }
 
+        public SqlBuilder SET(params SqlExpr[] assignments) => SET(string.Join<SqlExpr>(", ", assignments));
 
-        public SqlBuilder SET(params string[] assignments)
+        public SqlBuilder SET(string assignments) => AppendSpace("SET").AppendSpace(assignments);
+
+        public SqlBuilder INSERT_INTO<T>(params string[] columns)
         {
-            return Append("SET ").AppendLine(string.Join(", ", assignments));
+            return INSERT_INTO(typeof(T).TableName(), columns);
         }
 
-
-
-        public SqlBuilder SET(params SqlExpr[] assignments)
+        public SqlBuilder INSERT_INTO(SqlTableName tableName, params string[] columns)
         {
-            AppendSpace("SET");
-            string s = string.Join<SqlExpr>(", ", assignments);
-            return AppendLine(s);
-        }
-
-
-        public SqlBuilder SET(string assignments)
-        {
-            return AppendSpace("SET")
-               .Append(assignments)
-               .AppendLine(" ");
-        }
-
-        public SqlBuilder INSERT<T>(params string[] columns)
-        {
-            return INSERT(typeof(T).TableName(), columns);
-        }
-
-        public SqlBuilder INSERT(TableName tableName, params string[] columns)
-        {
-            this.provider = tableName.Provider;
-            Append($"INSERT INTO {tableName.FullName}");
+            Append($"INSERT INTO {tableName}");
 
             if (columns.Length > 0)
-                Append($"({ConcatColumns(columns)}) ");
-
+                AppendSpace($"({JoinColumns(columns)})");
 
             return this;
         }
@@ -308,14 +214,12 @@ namespace Sys.Data
 
         public SqlBuilder VALUES(params object[] values)
         {
-            return AppendLine($"VALUES ({ConcatValues(values)})");
+            return AppendLine($"VALUES ({JoinValues(values)})");
         }
 
-        public SqlBuilder DELETE(TableName tableName)
+        private static string JoinValues(object[] values)
         {
-            this.provider = tableName.Provider;
-
-            return AppendLine($"DELETE FROM {tableName.FullName}");
+            return string.Join(",", values.Select(x => new SqlValue(x).ToString()));
         }
 
         public SqlBuilder DELETE<T>()
@@ -323,13 +227,19 @@ namespace Sys.Data
             return DELETE(typeof(T).TableName());
         }
 
+        public SqlBuilder DELETE(SqlTableName tableName)
+        {
+            return AppendLine($"DELETE FROM {tableName}");
+        }
+
+
         #region WHERE clause
 
         public SqlBuilder WHERE(SqlExpr exp)
         {
             AppendSpace($"WHERE {exp}");
             this.Merge(exp);
-            return AppendLine();
+            return this;
         }
 
         public SqlBuilder WHERE(Locator locator)
@@ -363,36 +273,9 @@ namespace Sys.Data
 
         public SqlBuilder OUTTER() => AppendSpace("OUTTER");
 
+        public SqlBuilder JOIN<T>(string alias = null) => JOIN(typeof(T).TableName(), alias);
 
-        public SqlBuilder JOIN(DPObject dpo, string alias = null)
-        {
-            return JOIN(dpo.TableName, alias);
-        }
-
-        public SqlBuilder JOIN<T>(string alias = null)
-        {
-            return JOIN(typeof(T).TableName(), alias);
-        }
-
-        public SqlBuilder JOIN(Type dpoType, string alias = null)
-        {
-            return JOIN(dpoType.TableName(), alias);
-        }
-
-        public SqlBuilder JOIN(TableName tableName, string alias = null)
-        {
-            return JOIN(tableName.FullName, alias);
-        }
-
-        private SqlBuilder JOIN(string tableName, string alias)
-        {
-            AppendSpace($"JOIN {tableName}");
-
-            if (alias != null)
-                AppendSpace($"{alias}");
-
-            return this;
-        }
+        public SqlBuilder JOIN(SqlTableName tableName, string alias = null) => AppendSpace("JOIN").TABLE_NAME(tableName, alias);
 
         public SqlBuilder ON(SqlExpr exp)
         {
@@ -408,7 +291,7 @@ namespace Sys.Data
         #region GROUP BY / HAVING clause
         public SqlBuilder GROUP_BY(params string[] columns)
         {
-            return AppendSpace($"GROUP BY {ConcatColumns(columns)}");
+            return AppendSpace($"GROUP BY {JoinColumns(columns)}");
         }
 
         public SqlBuilder HAVING(SqlExpr expr)
@@ -425,42 +308,17 @@ namespace Sys.Data
             if (columns == null || columns.Length == 0)
                 return this;
 
-            return AppendLine($"ORDER BY {ConcatColumns(columns)} ");
+            return AppendLine($"ORDER BY {JoinColumns(columns)} ");
         }
 
 
         public SqlBuilder UNION() => AppendSpace("UNION");
         public SqlBuilder DESC() => AppendSpace("DESC");
 
-        private int tab = 0;
-        private SqlBuilder TAB(int n)
-        {
-            tab += n;
-            return Append(Enumerable.Repeat("\t", tab).Aggregate((x, y) => x + y));
-        }
-
-        private SqlBuilder PAR(string exp)
-        {
-            return Append($"({exp})");
-        }
-
-
-        #region Concatenate
-
-
-
-        private static string ConcatColumns(IEnumerable<string> columns)
+        private static string JoinColumns(IEnumerable<string> columns)
         {
             return string.Join(",", columns.Select(x => $"[{x}]"));
         }
-
-
-        private static string ConcatValues(object[] values)
-        {
-            return string.Join(",", values.Select(x => new SqlValue(x).ToString()));
-        }
-
-        #endregion
 
         /// <summary>
         /// concatenate 2 clauses in TWO lines
@@ -522,5 +380,4 @@ namespace Sys.Data
         public SqlCmd SqlCmd => new SqlCmd(this);
 
     }
-
 }
