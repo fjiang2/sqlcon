@@ -1,4 +1,4 @@
-﻿namespace sqlcon
+﻿namespace Sys.Data.Code
 {
     enum DataClassType
     {

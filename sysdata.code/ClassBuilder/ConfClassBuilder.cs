@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace Sys.Data.Code
 {
 
     public class ConfClassBuilder : ClassMaker

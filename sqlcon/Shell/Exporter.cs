@@ -11,6 +11,7 @@ using Sys.Data.Comparison;
 using Sys.Data.Manager;
 using Sys.Data.Resource;
 using Sys.Stdio;
+using Sys.Data.Code;
 
 namespace sqlcon
 {

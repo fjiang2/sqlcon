@@ -7,7 +7,7 @@
     <ProjectGuid>{036BF20A-7F80-41B4-8C99-85F6901E20F9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>syscode</RootNamespace>
+    <RootNamespace>Sys.CodeBuilder</RootNamespace>
     <AssemblyName>syscode</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -83,13 +83,9 @@
     <Compile Include="CodeBuilder\UtilsMethod.cs" />
     <Compile Include="CodeBuilder\Value.cs" />
     <Compile Include="CodeBuilder\ValueOutputFormat.cs" />
+    <Compile Include="Extension.cs" />
     <Compile Include="Iteratable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Tie">
-      <Version>2.0.8</Version>
-    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

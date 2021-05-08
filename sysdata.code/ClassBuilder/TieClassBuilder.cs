@@ -8,7 +8,7 @@ using Sys.CodeBuilder;
 using Tie;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace Sys.Data.Code
 {
     public class TieClassBuilder : TheClassBuilder
     {

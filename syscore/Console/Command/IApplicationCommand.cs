@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Sys.Stdio;
 
-namespace sqlcon
+namespace Sys.Stdio
 {
     public interface IApplicationCommand : ICommand
     {

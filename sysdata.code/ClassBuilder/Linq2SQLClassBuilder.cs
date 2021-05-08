@@ -8,9 +8,9 @@ using Sys;
 using Sys.CodeBuilder;
 using Sys.Data;
 using Sys.Data.Manager;
+using Sys.Stdio;
 
-
-namespace sqlcon
+namespace Sys.Data.Code
 {
     public class Linq2SQLClassBuilder : TheClassBuilder
     {

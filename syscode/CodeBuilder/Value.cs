@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Tie;
 
 namespace Sys.CodeBuilder
 {
@@ -66,7 +65,7 @@ namespace Sys.CodeBuilder
                 //return "new byte[] {0x" + BitConverter.ToString((byte[])value).Replace("-", ",0x") + "}";
             }
 
-            return VAL.Boxing(value).ToString();
+            return Extension.ToCodeString(value);
         }
 
         private Value NewValue(object value)
