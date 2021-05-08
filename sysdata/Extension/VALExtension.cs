@@ -23,7 +23,7 @@ using System.Reflection;
 
 namespace Sys.Data
 {
-    public static class Conversion
+    static class VALExtension
     {
         public static VAL ToVAL(this DataRow dataRow)
         {

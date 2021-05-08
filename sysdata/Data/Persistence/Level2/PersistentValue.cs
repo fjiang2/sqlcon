@@ -48,12 +48,12 @@ namespace Sys.Data
 
         protected PersistentValue(VAL val)
         {
-            Conversion.VAL2Class(val, this);
+            VALExtension.VAL2Class(val, this);
         }
 
         public void SetVAL(VAL val)
         {
-            Conversion.VAL2Class(val, this);
+            VALExtension.VAL2Class(val, this);
         }
      
         public Memory Memory { get { return this.memory; }}
@@ -108,7 +108,7 @@ namespace Sys.Data
 
         public virtual VAL GetVAL()
         {
-            return Conversion.Class2VAL(this);
+            return VALExtension.Class2VAL(this);
         }
 
         public override string ToString()

@@ -18,6 +18,7 @@ namespace sqlcon
         private int[] W;
         private Action<string> writeLine;
         public int MaxColumnWidth { get; set; } = -1;
+        public bool Escape { get; set; } = true;
 
         public OutputDataLine(Action<string> writeLine, int numberOfColumns)
         {
@@ -132,13 +133,16 @@ namespace sqlcon
             string result = cell.ToString().Trim();
 
             //when cell includes a big string with letter [\n]
-            if (result.Length > 200)
-            {
+            if (Escape)
+                result = result
+                    .Replace("\r\n", "\\r\\n")
+                    .Replace("\n", "\\n")
+                    .Replace("\t", "\\t");
+            else
                 result = result
                     .Replace("\r\n", " ")
                     .Replace("\n", " ")
                     .Replace("\t", " ");
-            }
 
             return result;
         }
