@@ -55,6 +55,15 @@ namespace Sys.CodeBuilder
             }
         }
 
+        public override bool Equals(object obj)
+        {
+            return expr.Equals((obj as Expression)?.expr);
+        }
+
+        public override int GetHashCode()
+        {
+            return expr.GetHashCode();
+        }
 
         public static Expression ANDAND(params Expression[] exp)
         {
@@ -184,12 +193,14 @@ namespace Sys.CodeBuilder
             return new Expression(value);
         }
 
-        //public static Expression operator >(Expression exp1, Expression exp2) => new Expression($"{exp1} > {exp2}");
-        //public static Expression operator >=(Expression exp1, Expression exp2) => new Expression($"{exp1} >= {exp2}");
-        //public static Expression operator <(Expression exp1, Expression exp2) => new Expression($"{exp1} < {exp2}");
-        //public static Expression operator <=(Expression exp1, Expression exp2) => new Expression($"{exp1} <= {exp2}");
-        //public static Expression operator ==(Expression exp1, Expression exp2) => new Expression($"{exp1} == {exp2}");
-        //public static Expression operator !=(Expression exp1, Expression exp2) => new Expression($"{exp1} != {exp2}");
+        public static Expression operator !(Expression exp) => new Expression($"!{exp}");
+
+        public static Expression operator >(Expression exp1, Expression exp2) => new Expression($"{exp1} > {exp2}");
+        public static Expression operator >=(Expression exp1, Expression exp2) => new Expression($"{exp1} >= {exp2}");
+        public static Expression operator <(Expression exp1, Expression exp2) => new Expression($"{exp1} < {exp2}");
+        public static Expression operator <=(Expression exp1, Expression exp2) => new Expression($"{exp1} <= {exp2}");
+        public static Expression operator ==(Expression exp1, Expression exp2) => new Expression($"{exp1} == {exp2}");
+        public static Expression operator !=(Expression exp1, Expression exp2) => new Expression($"{exp1} != {exp2}");
 
     }
 }

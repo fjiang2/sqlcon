@@ -94,16 +94,27 @@ namespace UnitTestProject
         [TestMethod]
         public void TestOperator()
         {
-            var _implict = new Operator(
+            var _operator = new Operator(
                 new TypeInfo(typeof(Expression)), 
                 Operation.GE,
                 new Parameter(new TypeInfo(typeof(Expression)), "expr1"),
                 new Parameter(new TypeInfo(typeof(Expression)), "expr2")
                 );
 
-            _implict.Statement.RETURN("new Expression($\"{exp1} > {exp2}\")");
-            string code = _implict.ToString();
+            _operator.Statement.RETURN("new Expression($\"{exp1} > {exp2}\")");
+            string code = _operator.ToString();
             Debug.Assert(code == "public static Expression operator >=(Expression expr1, Expression expr2)\r\n{\r\n\treturn new Expression($\"{exp1} > {exp2}\");\r\n}");
+
+            _operator = new Operator(
+               new TypeInfo(typeof(Expression)),
+               Operation.NOT,
+               new Parameter(new TypeInfo(typeof(Expression)), "expr")
+               );
+
+            _operator.Statement.RETURN("new Expression($\"!{expr}\")");
+            code = _operator.ToString();
+            Debug.Assert(code == "public static Expression operator !(Expression expr)\r\n{\r\n\treturn new Expression($\"!{expr}\");\r\n}");
+
         }
 
     }

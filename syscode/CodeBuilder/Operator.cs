@@ -25,6 +25,14 @@ namespace Sys.CodeBuilder
     /// </summary>
     public class Operator : Member, IBuildable
     {
+
+        /// <summary>
+        /// Binary Operator
+        /// </summary>
+        /// <param name="returnType"></param>
+        /// <param name="operation"></param>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
         public Operator(TypeInfo returnType, Operation operation, Parameter p1, Parameter p2)
             : base("operator " + ToCodeString(operation))
         {
@@ -32,6 +40,20 @@ namespace Sys.CodeBuilder
             base.Type = returnType;
             Params.Add(p1);
             Params.Add(p2);
+        }
+
+        /// <summary>
+        /// Unary operator
+        /// </summary>
+        /// <param name="returnType"></param>
+        /// <param name="operation"></param>
+        /// <param name="p"></param>
+        public Operator(TypeInfo returnType, Operation operation, Parameter p)
+            : base("operator " + ToCodeString(operation))
+        {
+            base.Modifier = Modifier.Public | Modifier.Static;
+            base.Type = returnType;
+            Params.Add(p);
         }
 
         protected override string signature => $"{Signature}({Params})";
@@ -52,6 +74,8 @@ namespace Sys.CodeBuilder
                 case Operation.NE: return "!=";
                 case Operation.EQ: return "==";
 
+                case Operation.NOT: return "!";
+
                 default:
                     return string.Empty;
             }
@@ -61,6 +85,7 @@ namespace Sys.CodeBuilder
     public enum Operation
     {
         Plus, Minus, Multiple, Divide,
-        GT, GE, LT, LE, NE, EQ
+        GT, GE, LT, LE, NE, EQ,
+        NOT
     }
 }
