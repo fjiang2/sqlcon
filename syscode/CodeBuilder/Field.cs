@@ -66,7 +66,7 @@ namespace Sys.CodeBuilder
             {
                 block.AppendLine();
                 block.Append($"{Signature} = ");
-                value.BuildCode(block);
+                block.Append(value);
                 block.Append(";");
             }
             else

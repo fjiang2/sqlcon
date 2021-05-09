@@ -6,64 +6,45 @@ using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
-    public class Expression
+    public class Expression : Buildable
     {
-        private string expr;
+        private object expr;
+
+        private Expression(object expr)
+        {
+            this.expr = expr.ToString();
+        }
 
         public Expression(string expr)
         {
             this.expr = expr;
         }
 
-        public Expression(object expr)
+        public Expression(Value value)
         {
-            this.expr = expr.ToString();
+            this.expr = value;
         }
 
-        public Expression(Identifier property, Expression expr)
+        public Expression(Identifier variable, Expression expr)
         {
-            this.expr = $"{property} = {expr}";
+            this.expr = $"{variable} = {expr}";
         }
 
-        public Expression(TypeInfo type, IEnumerable<Expression> expressions)
-            : this(type, null, expressions)
+        protected override void BuildBlock(CodeBlock block)
         {
-        }
+            base.BuildBlock(block);
 
-        public Expression(TypeInfo type, Arguments args)
-            : this(type, args, null)
-        {
-        }
-
-        public Expression(TypeInfo type, Arguments args, IEnumerable<Expression> expressions)
-        {
-            CodeBlock codeBlock = new CodeBlock();
-            if (expressions == null || expressions.Count() == 0)
+            switch (expr)
             {
-                if (args != null)
-                    codeBlock.Append($"new {type}({args})");
-                else
-                    codeBlock.Append($"new {type}()");
+                case string value:
+                    block.Append(value);
+                    break;
 
-                expr = codeBlock.ToString();
-                return;
+                case Value value:
+                    block.Add(value);
+                    break;
             }
-
-            if (args != null)
-                codeBlock.Append($"new {type}({args})");
-            else
-                codeBlock.Append($"new {type}");
-
-            codeBlock.Append(" { ");
-            expressions.ForEach(
-                assign => codeBlock.Append($"{assign}"),
-                assign => codeBlock.Append(", ")
-            );
-            codeBlock.Append(" }");
-
-            expr = codeBlock.ToString();
         }
-
 
 
         public static Expression ANDAND(params Expression[] exp)
@@ -81,10 +62,10 @@ namespace Sys.CodeBuilder
             return new Expression($"!{expr}");
         }
 
-        public static explicit operator string(Expression expr)
-        {
-            return expr.expr;
-        }
+        //public static explicit operator string(Expression expr)
+        //{
+        //    return expr.expr;
+        //}
 
 
         public static implicit operator Expression(Identifier ident)
@@ -96,6 +77,11 @@ namespace Sys.CodeBuilder
         public static implicit operator Expression(string value)
         {
             return new Expression(value);
+        }
+
+        public static implicit operator Expression(CodeString value)
+        {
+            return new Expression(value.ToString());
         }
 
         public static implicit operator Expression(Value value)
@@ -181,9 +167,10 @@ namespace Sys.CodeBuilder
             return new Expression($"typeof({value})");
         }
 
-        public override string ToString()
+        public static implicit operator Expression(New value)
         {
-            return expr;
+            return new Expression(value);
         }
+
     }
 }

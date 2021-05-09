@@ -199,16 +199,16 @@ namespace Sys.Data.Code
 
                 if (dt.Columns.Count != 2)
                 {
-                    var V = Value.NewPropertyObject(type);
+                    var instance = new New(type) { Format = ValueOutputFormat.MultipleLine };
                     for (int i = 0; i < columns.Length; i++)
                     {
                         object obj = row[i];
                         if (codeColumns.ContainsKey(columns[i]))
                             obj = new CodeString(obj.ToString());
 
-                        V.AddProperty(columns[i], new Value(obj));
+                        instance.AddProperty(columns[i], new Value(obj));
                     }
-                    L.Add(new KeyValuePair<object, object>(key, V));
+                    L.Add(new KeyValuePair<object, object>(key, instance));
                 }
                 else
                 {
@@ -261,16 +261,16 @@ namespace Sys.Data.Code
             TypeInfo type = new TypeInfo { UserType = $"{cname}" };
             foreach (DataRow row in dt.Rows)
             {
-                var V = Value.NewPropertyObject(type);
+                var instance = new New(type) { Format = ValueOutputFormat.MultipleLine };
                 for (int i = 0; i < columns.Length; i++)
                 {
                     object obj = row[i];
                     if (codeColumns.ContainsKey(columns[i]))
                         obj = new CodeString(obj.ToString());
 
-                    V.AddProperty(columns[i], new Value(obj));
+                    instance.AddProperty(columns[i], new Value(obj));
                 }
-                L.Add(V);
+                L.Add(instance);
             }
 
             TypeInfo typeinfo = new TypeInfo { UserType = $"{cname}[]" };

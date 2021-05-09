@@ -65,10 +65,10 @@ namespace Sys.Data.Code
             get
             {
                 string _GetField = "Field";
-                
+
                 if (base.MethodName != null)
                     _GetField = base.MethodName;
-                
+
                 return _GetField;
             }
         }
@@ -99,21 +99,21 @@ namespace Sys.Data.Code
                 TypeInfo ty = new TypeInfo(dict[column].Type);
                 var name = COLUMN(column);
 
-                List<Expression> expr = new List<Expression>();
+                List<Expression> expressions = new List<Expression>();
                 if (hasColumnProperty)
                 {
                     if (column.Unique)
-                        expr.Add(new Expression(nameof(column.Unique), true));
+                        expressions.Add(new Expression(nameof(column.Unique), true));
                     if (!column.AllowDBNull)
-                        expr.Add(new Expression(nameof(column.AllowDBNull), false));
+                        expressions.Add(new Expression(nameof(column.AllowDBNull), false));
                     if (column.MaxLength > 0)
-                        expr.Add(new Expression(nameof(column.MaxLength), column.MaxLength));
+                        expressions.Add(new Expression(nameof(column.MaxLength), column.MaxLength));
                     if (column.AutoIncrement)
-                        expr.Add(new Expression(nameof(column.AutoIncrement), true));
+                        expressions.Add(new Expression(nameof(column.AutoIncrement), true));
                 }
 
                 var _args = new Arguments(new Argument(new Expression(name)), new Argument(ty));
-                var _column = new Expression(typeof(DataColumn), _args, expr);
+                var _column = new New(typeof(DataColumn), _args, expressions);
 
                 sent.AppendLine($"dt.Columns.Add({_column});");
             }
@@ -227,17 +227,17 @@ namespace Sys.Data.Code
             var schema = TableSchemaCache.GetSchema(tname);
             var pkeys = schema.ByForeignKeys.Keys.OrderBy(k => k.FK_Table);
 
-            List<Value> L = new List<Value>();
+            List<Expression> L = new List<Expression>();
             foreach (IForeignKey pkey in pkeys)
             {
                 string entity = ident.Identifier(pkey.FK_Table);
                 TypeInfo type = new TypeInfo { UserType = $"{CONSTRAINT}<{entity}>" };
-                var V = Value.NewPropertyObject(type);
-                V.AddProperty(nameof(IConstraint.ThisKey), ToColumn2(pkey.PK_Column));
-                V.AddProperty(nameof(IConstraint.OtherKey), ToColumn(pkey.FK_Table, pkey.FK_Column));
+                var instance = new New(type) { Format = ValueOutputFormat.MultipleLine };
+                instance.AddProperty(nameof(IConstraint.ThisKey), ToColumn2(pkey.PK_Column));
+                instance.AddProperty(nameof(IConstraint.OtherKey), ToColumn(pkey.FK_Table, pkey.FK_Column));
                 if (IsOneToMany(tname, pkey))
-                    V.AddProperty(nameof(IConstraint.OneToMany), new Value(true));
-                L.Add(V);
+                    instance.AddProperty(nameof(IConstraint.OneToMany), new Value(true));
+                L.Add(instance);
             }
 
             var fkeys = schema.ForeignKeys.Keys.OrderBy(k => k.FK_Table);
@@ -245,17 +245,17 @@ namespace Sys.Data.Code
             {
                 string entity = ident.Identifier(fkey.PK_Table);
                 TypeInfo type = new TypeInfo { UserType = $"{CONSTRAINT}<{entity}>" };
-                var V = Value.NewPropertyObject(type);
-                V.AddProperty(nameof(IConstraint.Name), new Value(fkey.Constraint_Name));
-                V.AddProperty(nameof(IConstraint.ThisKey), ToColumn2(fkey.FK_Column));
-                V.AddProperty(nameof(IConstraint.OtherKey), ToColumn(fkey.PK_Table, fkey.PK_Column));
-                V.AddProperty(nameof(IConstraint.IsForeignKey), new Value(true));
-                L.Add(V);
+                var instance = new New(type) { Format = ValueOutputFormat.MultipleLine };
+                instance.AddProperty(nameof(IConstraint.Name), new Value(fkey.Constraint_Name));
+                instance.AddProperty(nameof(IConstraint.ThisKey), ToColumn2(fkey.FK_Column));
+                instance.AddProperty(nameof(IConstraint.OtherKey), ToColumn(fkey.PK_Table, fkey.PK_Column));
+                instance.AddProperty(nameof(IConstraint.IsForeignKey), new Value(true));
+                L.Add(instance);
             }
 
             TypeInfo typeinfo = new TypeInfo { UserType = $"{nameof(IConstraint)}[]" };
 
-            Field field = new Field(typeinfo, $"{CONSTRAINT}s", new Value(L.ToArray()) { Type = typeinfo })
+            Field field = new Field(typeinfo, $"{CONSTRAINT}s", new New(typeinfo, L) { Format = ValueOutputFormat.MultipleLine })
             {
                 Modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
             };

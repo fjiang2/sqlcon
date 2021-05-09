@@ -44,6 +44,7 @@
     <Compile Include="..\Version\Version.cs">
       <Link>Properties\Version.cs</Link>
     </Compile>
+    <Compile Include="CodeBuilder\New.cs" />
     <Compile Include="Enum\Alignment.cs" />
     <Compile Include="CodeBuilder\Argument.cs" />
     <Compile Include="CodeBuilder\Arguments.cs" />

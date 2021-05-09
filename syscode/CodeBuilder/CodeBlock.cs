@@ -67,9 +67,24 @@ namespace Sys.CodeBuilder
             }
         }
 
+        public void Append(CodeBlock block, int indent = 0)
+        {
+            Append(block.lines[0].Line);
+            foreach (var line in block.lines.Skip(1))
+            {
+                line.tab += indent;
+                lines.Add(line);
+            }
+        }
+
         public void Add(IBuildable block)
         {
-            Add(block.GetBlock(), 0);
+            Add(block.GetBlock(), curruent);
+        }
+
+        public void Append(IBuildable block)
+        {
+            Append(block.GetBlock(), curruent);
         }
 
         public void AddWithBeginEnd(CodeBlock block)

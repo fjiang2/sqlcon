@@ -25,11 +25,29 @@ namespace Sys.CodeBuilder
     public class PropertyInfo
     {
         public TypeInfo PropertyType { get; set; }
-        public string PropertyName { get; set; }
+        public Identifier PropertyName { get; set; }
+        public Value Value { get; set; }
+
+        public PropertyInfo()
+        {
+        }
+
+        public PropertyInfo(Identifier propertyName)
+        {
+            this.PropertyName = propertyName;
+        }
+        public PropertyInfo(Identifier propertyName, Value value)
+        {
+            this.PropertyName = propertyName;
+            this.Value = value;
+        }
 
         public override string ToString()
         {
-            return PropertyName;
+            if (Value == null)
+                return PropertyName.ToString();
+            else
+                return $"{PropertyName} = {Value}";
         }
     }
 }

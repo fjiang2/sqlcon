@@ -26,22 +26,14 @@ namespace Sys.CodeBuilder
     public class Value : Buildable
     {
         public TypeInfo Type { get; set; } = TypeInfo.Anonymous;
+        public ValueOutputFormat Format { get; set; } = ValueOutputFormat.MultipleLine;
 
         private object value;
-        private ValueOutputFormat format { get; set; } = ValueOutputFormat.MultipleLine;
 
         public Value(object value)
         {
             this.value = value;
         }
-
-
-        public static Value NewPropertyObject(TypeInfo type)
-        {
-            return new Value(new Dictionary<string, Value>()) { Type = type };
-        }
-
-
 
         private Value NewValue(object value)
         {
@@ -51,49 +43,39 @@ namespace Sys.CodeBuilder
                 return val;
             }
             else
-                return new Value(value) { format = format };
+                return new Value(value) { Format = Format };
         }
 
-        private Dictionary<string, Value> objectValue => value as Dictionary<string, Value>;
-
-        public void AddProperty(string propertyName, Value value)
+        protected override void BuildBlock(CodeBlock block)
         {
-            if (objectValue == null)
-                throw new Exception("object property is initialized, use new Value()");
+            base.BuildBlock(block);
 
-            if (objectValue.ContainsKey(propertyName))
-                throw new Exception($"duplicated property name:{propertyName}");
+            switch (value)
+            {
+                case Value x:
+                    x.BuildBlock(block);
+                    break;
 
-            objectValue.Add(propertyName, value);
-        }
+                case New instance:
+                    block.Add(instance);
+                    break;
 
-        internal void BuildCode(CodeBlock block)
-        {
-            if (value is Value)
-            {
-                (value as Value).BuildCode(block);
-            }
-            else if (value is Array)                        // new Foo[] { new Foo {...}, new Foo {...}, ...}
-            {
-                var A = value as Array;
-                if (Type == TypeInfo.Anonymous)
-                    Type = new TypeInfo { Type = A.GetType() };
+                case Array A:
+                    if (Type == TypeInfo.Anonymous)
+                        Type = new TypeInfo { Type = A.GetType() };
+                    block.Append($"new {Type}");
+                    WriteArrayValue(block, A, 10);
+                    break;
 
-                block.Append($"new {Type}");
-                WriteArrayValue(block, A, 10);
+                case Dictionary<object, object> dict:
+                    block.Append($"new {Type}");
+                    WriteDictionary(block, dict);
+                    break;
+
+                default:
+                    block.Append(Primitive.ToPrimitive(value));
+                    break;
             }
-            else if (value is Dictionary<string, Value>)    // new Foo { A = 1, B = true }
-            {
-                block.Append($"new {Type}");
-                WriteDictionary(block, value as Dictionary<string, Value>);
-            }
-            else if (value is Dictionary<object, object>)   // new Dictionary<T1,T2> { [t1] = new T2 {...}, ... }
-            {
-                block.Append($"new {Type}");
-                WriteDictionary(block, value as Dictionary<object, object>);
-            }
-            else
-                block.Append(Primitive.ToPrimitive(value));
         }
 
         private void WriteArrayValue(CodeBlock block, Array A, int columnNumber)
@@ -104,21 +86,21 @@ namespace Sys.CodeBuilder
             {
                 if (A.Length < 30)
                 {
-                    format = ValueOutputFormat.SingleLine;
+                    Format = ValueOutputFormat.SingleLine;
                 }
                 else if (A.Length < 100)
                 {
-                    format = ValueOutputFormat.Wrap;
+                    Format = ValueOutputFormat.Wrap;
                     columnNumber = 10;
                 }
                 else
                 {
-                    format = ValueOutputFormat.Wrap;
+                    Format = ValueOutputFormat.Wrap;
                     columnNumber = 20;
                 }
             }
 
-            switch (format)
+            switch (Format)
             {
 
                 case ValueOutputFormat.SingleLine:
@@ -126,7 +108,7 @@ namespace Sys.CodeBuilder
                     A.OfType<object>().ForEach(
                          x =>
                          {
-                             NewValue(x).BuildCode(block);
+                             NewValue(x).BuildBlock(block);
                          },
                          _ => block.Append(",")
                          );
@@ -147,7 +129,7 @@ namespace Sys.CodeBuilder
                             block.AppendLine();
 
                         Value item = NewValue(A.GetValue(i));
-                        item.BuildCode(block);
+                        item.BuildBlock(block);
 
                         if (i != A.Length - 1)
                             block.Append(",");
@@ -166,9 +148,9 @@ namespace Sys.CodeBuilder
                             block.AppendLine();
                         }
 
-                        block.AppendLine();
+                        //block.AppendLine();
                         Value item = NewValue(A.GetValue(i));
-                        item.BuildCode(block);
+                        item.BuildBlock(block);
 
                         if (i != A.Length - 1)
                             block.Append(",");
@@ -183,7 +165,7 @@ namespace Sys.CodeBuilder
         private void WriteDictionary(CodeBlock block, Dictionary<object, object> A)
         {
 
-            switch (format)
+            switch (Format)
             {
                 case ValueOutputFormat.SingleLine:
                     block.Append("{");
@@ -191,7 +173,7 @@ namespace Sys.CodeBuilder
                          kvp =>
                          {
                              block.Append($"[{kvp.Key}] = ");
-                             NewValue(kvp.Value).BuildCode(block);
+                             NewValue(kvp.Value).BuildBlock(block);
                          },
                          _ => block.Append(",")
                          );
@@ -207,7 +189,7 @@ namespace Sys.CodeBuilder
                             {
                                 block.AppendLine();
                                 block.Append($"[{kvp.Key}] = ");
-                                NewValue(kvp.Value).BuildCode(block);
+                                NewValue(kvp.Value).BuildBlock(block);
                             },
                         _ => block.Append(",")
                         );
@@ -217,45 +199,10 @@ namespace Sys.CodeBuilder
             }
         }
 
-        private void WriteDictionary(CodeBlock block, Dictionary<string, Value> A)
+
+        public static implicit operator Value(New value)
         {
-            switch (format)
-            {
-                case ValueOutputFormat.SingleLine:
-                    block.Append("{");
-                    A.ForEach(
-                         kvp =>
-                         {
-                             block.Append($"{kvp.Key} = ");
-                             kvp.Value.BuildCode(block);
-                         },
-                         _ => block.Append(",")
-                         );
-
-                    block.Append("}");
-                    break;
-
-                default:
-                    block.Begin();
-
-                    A.ForEach(
-                          kvp =>
-                          {
-                              block.AppendLine();
-                              block.Append($"{kvp.Key} = ");
-                              kvp.Value.BuildCode(block);
-                          },
-                           _ => block.Append(",")
-                        );
-
-                    block.End();
-                    break;
-            }
-        }
-
-        public override string ToString()
-        {
-            return Primitive.ToPrimitive(value);
+            return new Value(value);
         }
     }
 
