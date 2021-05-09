@@ -131,14 +131,14 @@ namespace Sys.Data.Manager
             sent.AppendLine($"System.IO.MemoryStream stream = new System.IO.MemoryStream({fieldName});")
                 .AppendLine("return System.Drawing.Image.FromStream(stream);");
 
-            prop.Gets.IF($"{fieldName} != null", sent)
+            prop.Gets.If($"{fieldName} != null", sent)
                 .AppendLine("return null;");
 
             sent = new Statement();
             sent.AppendLine("System.IO.MemoryStream stream = new System.IO.MemoryStream();")
                 .AppendLine("value.Save(stream, System.Drawing.Imaging.ImageFormat.Jpeg);")
                 .AppendLine($"{fieldName} = stream.ToArray();");
-            prop.Sets.IF("value != null", sent);
+            prop.Sets.If("value != null", sent);
 
             dpoClass.clss.Add(prop);
         }

@@ -92,7 +92,7 @@ namespace Sys.Data.Code
             clss.Add(method);
 
             bool hasColumnProperty = cmd.Has("data-column-property");
-            Statement sent = method.Statement;
+            Statement sent = method.Body;
             sent.AppendLine("DataTable dt = new DataTable();");
             foreach (DataColumn column in dt.Columns)
             {
@@ -132,7 +132,7 @@ namespace Sys.Data.Code
                 IsExtensionMethod = false
             };
             clss.Add(method);
-            Statement sent = method.Statement;
+            Statement sent = method.Body;
             sent.AppendLine($"return new {ClassName}");
             sent.Begin();
 

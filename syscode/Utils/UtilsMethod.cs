@@ -55,7 +55,7 @@ namespace Sys.CodeBuilder
 
             mtd.Params.Add(className, "obj");
 
-            var sent = mtd.Statement;
+            var sent = mtd.Body;
 
             foreach (var variable in variables)
             {
@@ -75,7 +75,7 @@ namespace Sys.CodeBuilder
             mtd.Params.Add(className, "from");
             mtd.Params.Add(className, "to");
 
-            var sent = mtd.Statement;
+            var sent = mtd.Body;
 
             foreach (var variable in variables)
             {
@@ -93,7 +93,7 @@ namespace Sys.CodeBuilder
                 Modifier = Modifier.Public,
             };
 
-            var sent = mtd.Statement;
+            var sent = mtd.Body;
 
             sent.AppendFormat("var obj = new {0}();", className);
             sent.AppendLine();
@@ -104,7 +104,7 @@ namespace Sys.CodeBuilder
             }
 
             sent.AppendLine();
-            sent.RETURN("obj");
+            sent.Return("obj");
 
             return mtd;
         }
@@ -118,7 +118,7 @@ namespace Sys.CodeBuilder
             };
 
             mtd.Params.Add(className, "from");
-            var sent = mtd.Statement;
+            var sent = mtd.Body;
 
             sent.AppendFormat("var obj = new {0}();", className);
             sent.AppendLine();
@@ -129,7 +129,7 @@ namespace Sys.CodeBuilder
             }
 
             sent.AppendLine();
-            sent.RETURN("obj");
+            sent.Return("obj");
 
             return mtd;
         }
@@ -143,7 +143,7 @@ namespace Sys.CodeBuilder
 
             mtd.Params.Add<object>("obj");
 
-            var sent = mtd.Statement;
+            var sent = mtd.Body;
             sent.AppendFormat("var x = ({0})obj;", className);
             sent.AppendLine();
 
@@ -165,7 +165,7 @@ namespace Sys.CodeBuilder
                 Modifier = Modifier.Public | Modifier.Override,
             };
 
-            var sent = mtd.Statement;
+            var sent = mtd.Body;
             sent.AppendLine("return 0;");
             return mtd;
         }
@@ -179,7 +179,7 @@ namespace Sys.CodeBuilder
 
             mtd.Params.Add(className, "obj");
 
-            var sent = mtd.Statement;
+            var sent = mtd.Body;
 
             sent.AppendLine("return ");
 
@@ -204,7 +204,7 @@ namespace Sys.CodeBuilder
             mtd.Params.Add(className, "a");
             mtd.Params.Add(className, "b");
 
-            var sent = mtd.Statement;
+            var sent = mtd.Body;
 
             sent.AppendLine("return ");
 
@@ -227,7 +227,7 @@ namespace Sys.CodeBuilder
 
             mtd.Params.Add(className, "obj");
 
-            var sent = mtd.Statement;
+            var sent = mtd.Body;
 
 
             StringBuilder builder = new StringBuilder("\"{{");
@@ -255,7 +255,7 @@ namespace Sys.CodeBuilder
                 Modifier = Modifier.Public | Modifier.Override,
             };
 
-            var sent = mtd.Statement;
+            var sent = mtd.Body;
 
 
             StringBuilder builder = new StringBuilder("\"{{");
@@ -283,7 +283,7 @@ namespace Sys.CodeBuilder
                 Modifier = Modifier.Public | Modifier.Override,
             };
 
-            var sent = mtd.Statement;
+            var sent = mtd.Body;
 
 
             sent.Append("return ");
@@ -304,7 +304,7 @@ namespace Sys.CodeBuilder
                 Modifier = Modifier.Public,
                 Type = new TypeInfo { Type = typeof(IDictionary<string, object>) },
             };
-            var sent = method.Statement;
+            var sent = method.Body;
             sent.AppendLine("return new Dictionary<string,object>() ");
             sent.Begin();
 
@@ -327,7 +327,7 @@ namespace Sys.CodeBuilder
                 Params = new Parameters(new Parameter[] { new Parameter(type, "dictionary") }),
             };
 
-            var sent = method.Statement;
+            var sent = method.Body;
             foreach (var variable in variables)
             {
                 TypeInfo typeInfo = variable.PropertyType;

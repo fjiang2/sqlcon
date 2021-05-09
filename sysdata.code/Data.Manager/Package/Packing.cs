@@ -120,17 +120,17 @@ namespace Sys.Data.Manager
                             ;
 
 
-                        pack.Statement.AppendFormat("dpo.{0} = @{1}", fieldInfo.Name, s);
+                        pack.Body.AppendFormat("dpo.{0} = @{1}", fieldInfo.Name, s);
                     }
                     else
                     {
-                        pack.Statement.AppendFormat("dpo.{0} = {1}", fieldInfo.Name, s);
+                        pack.Body.AppendFormat("dpo.{0} = {1}", fieldInfo.Name, s);
                     }
                 }
             }
 
-            pack.Statement.AppendLine("list.Add(dpo)");
-            pack.Statement.AppendLine();
+            pack.Body.AppendLine("list.Add(dpo)");
+            pack.Body.AppendLine();
         }
 
 
@@ -145,7 +145,7 @@ namespace Sys.Data.Manager
 
         public bool Pack()
         {
-            pack.Statement.AppendFormat("var dpo = new {0}()", dpoType.Name);
+            pack.Body.AppendFormat("var dpo = new {0}()", dpoType.Name);
 
             PersistentObject dpo = (PersistentObject)Activator.CreateInstance(this.dpoType);
             DataTable dt = new TableReader(dpo.TableName).Table;
@@ -168,7 +168,7 @@ namespace Sys.Data.Manager
             {
                 PackRecord(dataRow);
                 if (i < dt.Rows.Count - 1)
-                    pack.Statement.AppendFormat("dpo = new {0}()", dpoType.Name);
+                    pack.Body.AppendFormat("dpo = new {0}()", dpoType.Name);
 
                 i++;
             }

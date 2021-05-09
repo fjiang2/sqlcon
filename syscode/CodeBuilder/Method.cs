@@ -62,7 +62,7 @@ namespace Sys.CodeBuilder
                 if (NextLine)
                     block.AppendLine();
 
-                block.Append($"=> {Statement}");
+                block.Append($"=> {Body}");
 
                 return;
             }

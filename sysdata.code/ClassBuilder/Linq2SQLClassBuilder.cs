@@ -166,7 +166,7 @@ namespace Sys.Data.Code
             {
                 //1:n mapping
                 pname = clss.MakeUniqueName(Plural.Pluralize(fk_cname));
-                constructor.Statement.AppendLine($"this._{pname} = new EntitySet<{fk_cname}>();");
+                constructor.Body.AppendLine($"this._{pname} = new EntitySet<{fk_cname}>();");
 
                 ty = new TypeInfo { UserType = $"EntitySet<{fk_cname}>" };
                 field = new Field(ty, $"_{pname}") { Modifier = Modifier.Private };

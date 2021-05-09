@@ -27,11 +27,6 @@ namespace Sys.CodeBuilder
         {
         }
 
-        public Statement(string sent)
-        {
-            AppendLine(sent);
-        }
-
         public static explicit operator string(Statement sent)
         {
             return sent.ToString();
@@ -44,20 +39,20 @@ namespace Sys.CodeBuilder
             return statement;
         }
 
-        public Statement ASSIGN(string variable, Expression exp)
+        public Statement Assign(string variable, Expression exp)
         {
             AppendLine($"{variable} = {exp};");
             return this;
         }
 
-        public Statement IF(Expression exp, Statement sent)
+        public Statement If(Expression exp, Statement sent)
         {
             AppendLine($"if ({exp})");
             AddWithBeginEnd(sent);
             return this;
         }
 
-        public Statement IF(Expression exp, Statement sent1, Statement sent2)
+        public Statement If(Expression exp, Statement sent1, Statement sent2)
         {
             AppendLine($"if ({exp})");
             AddWithBeginEnd(sent1);
@@ -66,35 +61,35 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        public Statement FOR(Expression exp1, Expression exp2, Expression exp3, Statement sent)
+        public Statement For(Expression exp1, Expression exp2, Expression exp3, Statement sent)
         {
             AppendLine($"for ({exp1}; {exp2}; {exp3})");
             AddWithBeginEnd(sent);
             return this;
         }
 
-        public Statement FOR(Expression exp, Statement sent)
+        public Statement For(Expression exp, Statement sent)
         {
             AppendLine($"for ({exp})");
             AddWithBeginEnd(sent);
             return this;
         }
 
-        public Statement FOREACH(Expression exp1, Expression exp2, Statement sent)
+        public Statement Foreach(Expression exp1, Expression exp2, Statement sent)
         {
             AppendLine($"foreach ({exp1} in {exp2})");
             AddWithBeginEnd(sent);
             return this;
         }
 
-        public Statement WHILE(Expression exp, Statement sent)
+        public Statement While(Expression exp, Statement sent)
         {
             AppendLine($"while ({exp})");
             AddWithBeginEnd(sent);
             return this;
         }
 
-        public Statement DOWHILE(Statement sent, Expression exp)
+        public Statement DoWhile(Statement sent, Expression exp)
         {
             AppendLine($"do");
             AddWithBeginEnd(sent);
@@ -102,22 +97,23 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        public Statement SWITCH(Expression exp, Statement sent)
+        public Statement Swith(Expression exp, params Statement[] sents)
         {
             AppendLine($"switch ({exp})");
             Begin();
-            Add(sent);
+            foreach (var sent in sents)
+                Add(sent);
             End();
             return this;
         }
 
-        public Statement CASE(Expression exp)
+        public Statement Case(Expression exp)
         {
             AppendLine($"case {exp}:");
             return this;
         }
 
-        public Statement CASE(Expression exp, Statement sent)
+        public Statement Case(Expression exp, Statement sent)
         {
             AppendLine($"case {exp}:");
             Indent();
@@ -127,7 +123,7 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        public Statement DEFAULT(Statement sent)
+        public Statement Default(Statement sent)
         {
             AppendLine("default:");
             Indent();
@@ -137,25 +133,25 @@ namespace Sys.CodeBuilder
             return this;
         }
 
-        public Statement RETURN(Expression exp)
+        public Statement Return(Expression exp)
         {
             AppendLine($"return {exp};");
             return this;
         }
 
-        public Statement RETURN()
+        public Statement Return()
         {
             AppendLine($"return;");
             return this;
         }
 
-        public Statement BREAK()
+        public Statement Break()
         {
             AppendLine("break;");
             return this;
         }
 
-        public Statement CONTINUE()
+        public Statement Continue()
         {
             AppendLine("continue;");
             return this;

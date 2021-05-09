@@ -24,7 +24,7 @@ namespace Sys.CodeBuilder
 {
     public abstract class Member : Declare
     {
-        public Statement Statement { get; } = new Statement();
+        public Statement Body { get; } = new Statement();
         public Parameters Params { get; set; } = new Parameters();
 
 
@@ -40,7 +40,7 @@ namespace Sys.CodeBuilder
             base.BuildBlock(block);
 
             block.AppendLine(signature);
-            block.AddWithBeginEnd(Statement);
+            block.AddWithBeginEnd(Body);
         }
     }
 }

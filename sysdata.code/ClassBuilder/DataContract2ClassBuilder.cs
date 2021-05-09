@@ -106,7 +106,7 @@ namespace Sys.Data.Code
             };
 
             clss.Add(constructor);
-            var sent = constructor.Statement;
+            var sent = constructor.Body;
             sent.AppendLine("FillObject(row);");
         }
 
@@ -118,7 +118,7 @@ namespace Sys.Data.Code
                 Params = new Parameters().Add(typeof(DataRow), "row")
             };
             clss.Add(mtdFillObject);
-            var sent = mtdFillObject.Statement;
+            var sent = mtdFillObject.Body;
 
             foreach (DataColumn column in dt.Columns)
             {
@@ -139,7 +139,7 @@ namespace Sys.Data.Code
                 Params = new Parameters().Add(typeof(DataRow), "row")
             };
             clss.Add(mtdUpdateRow);
-            var sent = mtdUpdateRow.Statement;
+            var sent = mtdUpdateRow.Body;
             foreach (DataColumn column in dt.Columns)
             {
                 var type = dict[column];
@@ -159,7 +159,7 @@ namespace Sys.Data.Code
                 Params = new Parameters().Add(ClassName, "obj")
             };
             clss.Add(mtdCopyTo);
-            var sent = mtdCopyTo.Statement;
+            var sent = mtdCopyTo.Body;
 
             foreach (DataColumn column in dt.Columns)
             {
@@ -181,7 +181,7 @@ namespace Sys.Data.Code
                 Params = new Parameters().Add(ClassName, "obj")
             };
             clss.Add(mtdEquals);
-            Statement sent = mtdEquals.Statement;
+            Statement sent = mtdEquals.Body;
             sent.AppendLine("return ");
             IEnumerable<string> variables = dict.Keys.Select(column => PropertyName(column));
             variables.ForEach(
@@ -200,7 +200,7 @@ namespace Sys.Data.Code
                 Type = new TypeInfo { Type = typeof(IDictionary<string, object>) },
             };
             clss.Add(method);
-            Statement sent = method.Statement;
+            Statement sent = method.Body;
             sent.AppendLine("return new Dictionary<string,object>() ");
             sent.Begin();
             int count = dt.Columns.Count;
@@ -226,7 +226,7 @@ namespace Sys.Data.Code
                 Params = new Parameters().Add(typeof(IDictionary<string, object>), "dict"),
             };
             clss.Add(method);
-            Statement sent = method.Statement;
+            Statement sent = method.Body;
             foreach (DataColumn column in dt.Columns)
             {
                 var type = dict[column];
@@ -243,7 +243,7 @@ namespace Sys.Data.Code
                 Modifier = Modifier.Public | Modifier.Override
             };
             clss.Add(method);
-            Statement sent = method.Statement;
+            Statement sent = method.Body;
 
             IEnumerable<string> variables = dict.Keys.Select(column => PropertyName(column));
             StringBuilder sb = new StringBuilder("\"{{");
@@ -288,7 +288,7 @@ namespace Sys.Data.Code
                 Modifier = Modifier.Public,
                 Type = new TypeInfo(typeof(string)),
             };
-            method.Statement.AppendLine("return $\"" + gen.Insert() + "\";");
+            method.Body.AppendLine("return $\"" + gen.Insert() + "\";");
             clss.Add(method);
 
             method = new Method("Update")
@@ -296,7 +296,7 @@ namespace Sys.Data.Code
                 Modifier = Modifier.Public,
                 Type = new TypeInfo(typeof(string)),
             };
-            method.Statement.AppendLine("return $\"" + gen.Update() + "\";");
+            method.Body.AppendLine("return $\"" + gen.Update() + "\";");
             clss.Add(method);
 
             method = new Method("InsertOrUpdate")
@@ -304,7 +304,7 @@ namespace Sys.Data.Code
                 Modifier = Modifier.Public,
                 Type = new TypeInfo(typeof(string)),
             };
-            method.Statement.AppendLine("return $\"" + gen.InsertOrUpdate() + "\";");
+            method.Body.AppendLine("return $\"" + gen.InsertOrUpdate() + "\";");
             clss.Add(method);
 
             method = new Method("Delete")
@@ -312,7 +312,7 @@ namespace Sys.Data.Code
                 Modifier = Modifier.Public,
                 Type = new TypeInfo(typeof(string)),
             };
-            method.Statement.AppendLine("return $\"" + gen.Delete() + "\";");
+            method.Body.AppendLine("return $\"" + gen.Delete() + "\";");
             clss.Add(method);
         }
     }

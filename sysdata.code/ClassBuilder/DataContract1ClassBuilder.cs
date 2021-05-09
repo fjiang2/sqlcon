@@ -142,7 +142,7 @@ namespace Sys.Data.Code
                 IsExtensionMethod = true
             };
             clss.Add(method);
-            sent = method.Statement;
+            sent = method.Body;
             sent.AppendLine("return dt.AsEnumerable()");
             sent.AppendLine(".Select(row => NewObject(row))");
             sent.AppendLine(".ToList();");
@@ -158,7 +158,7 @@ namespace Sys.Data.Code
                 IsExtensionMethod = true
             };
             clss.Add(method);
-            var sent1 = method.Statement;
+            var sent1 = method.Body;
             foreach (DataColumn column in dt.Columns)
             {
                 var type = dict[column];
@@ -178,7 +178,7 @@ namespace Sys.Data.Code
                 IsExtensionMethod = true
             };
             clss.Add(method);
-            var sent = method.Statement;
+            var sent = method.Body;
 
             foreach (DataColumn column in dt.Columns)
             {
@@ -199,7 +199,7 @@ namespace Sys.Data.Code
                 IsExtensionMethod = true
             };
             clss.Add(method);
-            Statement sent = method.Statement;
+            Statement sent = method.Body;
             sent.AppendLine("foreach (var item in items)");
             sent.Begin();
             sent.AppendLine("var row = dt.NewRow();");
@@ -219,11 +219,11 @@ namespace Sys.Data.Code
                 IsExtensionMethod = true
             };
             clss.Add(method);
-            Statement sent = method.Statement;
+            Statement sent = method.Body;
             sent.AppendLine("var dt = CreateTable();");
             sent.AppendLine("ToDataTable(items, dt);");
             sent.AppendLine("return dt;");
-            sent = method.Statement;
+            sent = method.Body;
         }
 
         private void Method_ToDictionary(Class clss)
@@ -236,7 +236,7 @@ namespace Sys.Data.Code
                 IsExtensionMethod = true
             };
             clss.Add(method);
-            Statement sent = method.Statement;
+            Statement sent = method.Body;
             sent.AppendLine("return new Dictionary<string,object>() ");
             sent.Begin();
             int count = dt.Columns.Count;
@@ -264,7 +264,7 @@ namespace Sys.Data.Code
                 IsExtensionMethod = true
             };
             clss.Add(method);
-            Statement sent = method.Statement;
+            Statement sent = method.Body;
             sent.AppendLine($"return new {ClassName}");
             sent.Begin();
             int count = dt.Columns.Count;
@@ -292,8 +292,8 @@ namespace Sys.Data.Code
                 Params = new Parameters().Add(ClassName, "entity"),
                 IsExtensionMethod = true
             };
-            Statement sent = method.Statement;
-            sent.RETURN("entity.AsEnumerable().GetAssociation().FirstOrDefault()");
+            Statement sent = method.Body;
+            sent.Return("entity.AsEnumerable().GetAssociation().FirstOrDefault()");
             clss.Insert(index++, method);
 
 
@@ -306,7 +306,7 @@ namespace Sys.Data.Code
             };
             clss.Insert(index++, method);
 
-            sent = method.Statement;
+            sent = method.Body;
             sent.AppendLine("var reader = entities.Expand();");
             sent.AppendLine();
             sent.AppendLine($"var associations = new List<{associationClassName}>();");

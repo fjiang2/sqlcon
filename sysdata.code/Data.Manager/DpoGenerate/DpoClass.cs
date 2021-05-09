@@ -209,9 +209,9 @@ namespace Sys.Data.Manager
             }
             sent2.End();
 
-            cons.Statement.Add(sent1);
-            cons.Statement.AppendLine("this.Load();");
-            cons.Statement.IF("!this.Exists", sent2);
+            cons.Body.Add(sent1);
+            cons.Body.AppendLine("this.Load();");
+            cons.Body.If("!this.Exists", sent2);
 
 
         }
@@ -235,8 +235,8 @@ namespace Sys.Data.Manager
             {
                 var fieldDef = dict_column_field[column.ColumnName];
                 string fieldName = fieldDef.PropertyName;
-                fill.Statement.AppendFormat("this.{0} = GetField<{1}>(row, _{0});", fieldName, fieldDef.Type);
-                collect.Statement.AppendFormat("SetField(row, _{0}, this.{0});", fieldName);
+                fill.Body.AppendFormat("this.{0} = GetField<{1}>(row, _{0});", fieldName, fieldDef.Type);
+                collect.Body.AppendFormat("SetField(row, _{0}, this.{0});", fieldName);
             }
 
             clss.Add(fill);
