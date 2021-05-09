@@ -39,15 +39,27 @@ namespace Sys.CodeBuilder
                 this.expressions.AddRange(expressions);
         }
 
+        /// <summary>
+        /// Add into dictionary<,>
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public New AddKeyValue(Expression key, Expression value)
         {
             var expr = new Expression($"[{key}] = {value}");
             return Add(expr);
         }
 
-        public New AddProperty(Identifier propertyName, Value value)
+        /// <summary>
+        /// Add into properties
+        /// </summary>
+        /// <param name="propertyName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public New AddProperty(Identifier propertyName, Expression value)
         {
-            var expr = new Expression($"{propertyName} = {value}");
+            var expr = new Expression(propertyName, value);
             return Add(expr);
         }
 

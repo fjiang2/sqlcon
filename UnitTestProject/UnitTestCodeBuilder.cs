@@ -59,6 +59,11 @@ namespace UnitTestProject
             code = sent.ToString();
             Debug.Assert(code == "x = new DataColumn(EmployeeID, typeof(string)) { Unique = true, AllowDBNull = true, MaxLength = 24 };");
 
+            sent = new Statement();
+            sent.ASSIGN("x", new New(typeof(DataColumn), _args).AddProperty("Unique", true).AddProperty("AllowDBNull", true).AddProperty("MaxLength", 24));
+            code = sent.ToString();
+            Debug.Assert(code == "x = new DataColumn(EmployeeID, typeof(string)) { Unique = true, AllowDBNull = true, MaxLength = 24 };");
+
 
             sent = new Statement();
             sent.ASSIGN("x", new New(typeof(Dictionary<string, object>)).AddKeyValue(new Value("a"),1).AddKeyValue(new Value("b"),3));
