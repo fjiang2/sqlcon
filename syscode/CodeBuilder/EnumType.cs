@@ -1,6 +1,6 @@
 ﻿//--------------------------------------------------------------------------------------------------//
 //                                                                                                  //
-//        DPO(Data Persistent Object)                                                               //
+//        syscode(C# Code Builder)                                                                  //
 //                                                                                                  //
 //          Copyright(c) Datum Connect Inc.                                                         //
 //                                                                                                  //
@@ -21,6 +21,14 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
+    /// <summary>
+    /// Create enum type, such as
+    /// class Color
+    /// {
+    ///     Red = 1,
+    ///     Green = 2,
+    /// }
+    /// </summary>
     public class EnumType : Prototype, IBuildable
     {
         public List<Feature> Features { get; } = new List<Feature>();

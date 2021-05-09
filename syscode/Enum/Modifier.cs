@@ -1,6 +1,6 @@
 ﻿//--------------------------------------------------------------------------------------------------//
 //                                                                                                  //
-//        DPO(Data Persistent Object)                                                               //
+//        syscode(C# Code Builder)                                                                  //
 //                                                                                                  //
 //          Copyright(c) Datum Connect Inc.                                                         //
 //                                                                                                  //
@@ -14,6 +14,7 @@
 //                                                                                                  //
 //                                                                                                  //
 //--------------------------------------------------------------------------------------------------//
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

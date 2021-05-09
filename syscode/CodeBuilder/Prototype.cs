@@ -1,6 +1,6 @@
 ﻿//--------------------------------------------------------------------------------------------------//
 //                                                                                                  //
-//        DPO(Data Persistent Object)                                                               //
+//        syscode(C# Code Builder)                                                                  //
 //                                                                                                  //
 //          Copyright(c) Datum Connect Inc.                                                         //
 //                                                                                                  //
@@ -23,6 +23,10 @@ using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
+    /// <summary>
+    /// Prototype is minimum unit ot create a source code file
+    /// such as class/struct/enum files
+    /// </summary>
     public class Prototype : Declare
     {
         public string Prefix { get; set; }
