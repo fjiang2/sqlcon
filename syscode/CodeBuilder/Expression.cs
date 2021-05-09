@@ -12,17 +12,16 @@ namespace Sys.CodeBuilder
 
         private Expression(object expr)
         {
-            this.expr = expr.ToString();
-        }
-
-        public Expression(string expr)
-        {
             this.expr = expr;
         }
 
-        public Expression(Value value)
+        /// <summary>
+        /// Argument expr is code. Use new Value(string) to create a string
+        /// </summary>
+        /// <param name="expr"></param>
+        public Expression(string expr)
         {
-            this.expr = value;
+            this.expr = expr;
         }
 
         public Expression(Identifier variable, Expression expr)
@@ -42,6 +41,10 @@ namespace Sys.CodeBuilder
 
                 case Value value:
                     block.Add(value);
+                    break;
+
+                default:
+                    block.Append(expr.ToString());
                     break;
             }
         }
@@ -73,10 +76,13 @@ namespace Sys.CodeBuilder
             return new Expression(ident.ToString());
         }
 
-
-        public static implicit operator Expression(string value)
+        /// <summary>
+        /// Here expr is code. Use new Value(string) to create a string
+        /// </summary>
+        /// <param name="expr"></param>
+        public static implicit operator Expression(string expr)
         {
-            return new Expression(value);
+            return new Expression(expr);
         }
 
         public static implicit operator Expression(CodeString value)

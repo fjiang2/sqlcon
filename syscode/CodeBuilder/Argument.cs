@@ -29,7 +29,7 @@ namespace Sys.CodeBuilder
 
         public static implicit operator Argument(string argument)
         {
-            return new Argument(new Expression(argument));
+            return new Argument(argument);
         }
 
         public override string ToString()
