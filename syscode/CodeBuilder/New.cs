@@ -80,7 +80,7 @@ namespace Sys.CodeBuilder
                     expressions.ForEach(
                          expr =>
                          {
-                             block.Append($"{expr}");
+                             block.Append(expr);
                          },
                          _ => block.Append(", ")
                          );
@@ -104,9 +104,5 @@ namespace Sys.CodeBuilder
             }
         }
 
-        public override string ToString()
-        {
-            return base.ToString();
-        }
     }
 }

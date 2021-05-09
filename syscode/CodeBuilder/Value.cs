@@ -50,30 +50,32 @@ namespace Sys.CodeBuilder
         {
             base.BuildBlock(block);
 
-            if (value is Value)
+            switch (value)
             {
-                (value as Value).BuildBlock(block);
-            }
-            else if (value is New)
-            {
-                block.Add(value as New);
-            }
-            else if (value is Array)                        // new Foo[] { new Foo {...}, new Foo {...}, ...}
-            {
-                var A = value as Array;
-                if (Type == TypeInfo.Anonymous)
-                    Type = new TypeInfo { Type = A.GetType() };
+                case Value x:
+                    x.BuildBlock(block);
+                    break;
 
-                block.Append($"new {Type}");
-                WriteArrayValue(block, A, 10);
+                case New instance:
+                    block.Add(instance);
+                    break;
+
+                case Array A:
+                    if (Type == TypeInfo.Anonymous)
+                        Type = new TypeInfo { Type = A.GetType() };
+                    block.Append($"new {Type}");
+                    WriteArrayValue(block, A, 10);
+                    break;
+
+                case Dictionary<object, object> dict:
+                    block.Append($"new {Type}");
+                    WriteDictionary(block, dict);
+                    break;
+
+                default:
+                    block.Append(Primitive.ToPrimitive(value));
+                    break;
             }
-            else if (value is Dictionary<object, object>)   // new Dictionary<T1,T2> { [t1] = new T2 {...}, ... }
-            {
-                block.Append($"new {Type}");
-                WriteDictionary(block, value as Dictionary<object, object>);
-            }
-            else
-                block.Append(Primitive.ToPrimitive(value));
         }
 
         private void WriteArrayValue(CodeBlock block, Array A, int columnNumber)
@@ -146,7 +148,7 @@ namespace Sys.CodeBuilder
                             block.AppendLine();
                         }
 
-                        block.AppendLine();
+                        //block.AppendLine();
                         Value item = NewValue(A.GetValue(i));
                         item.BuildBlock(block);
 
@@ -202,11 +204,6 @@ namespace Sys.CodeBuilder
         {
             return new Value(value);
         }
-
-        //public static implicit operator Value(Expression value)
-        //{
-        //    return new Value(value);
-        //}
     }
 
 }
