@@ -99,21 +99,21 @@ namespace Sys.Data.Code
                 TypeInfo ty = new TypeInfo(dict[column].Type);
                 var name = COLUMN(column);
 
-                List<Expression> expr = new List<Expression>();
+                List<PropertyInfo> properties = new List<PropertyInfo>();
                 if (hasColumnProperty)
                 {
                     if (column.Unique)
-                        expr.Add(new Expression(nameof(column.Unique), true));
+                        properties.Add(new PropertyInfo(nameof(column.Unique), true));
                     if (!column.AllowDBNull)
-                        expr.Add(new Expression(nameof(column.AllowDBNull), false));
+                        properties.Add(new PropertyInfo(nameof(column.AllowDBNull), false));
                     if (column.MaxLength > 0)
-                        expr.Add(new Expression(nameof(column.MaxLength), column.MaxLength));
+                        properties.Add(new PropertyInfo(nameof(column.MaxLength), column.MaxLength));
                     if (column.AutoIncrement)
-                        expr.Add(new Expression(nameof(column.AutoIncrement), true));
+                        properties.Add(new PropertyInfo(nameof(column.AutoIncrement), true));
                 }
 
                 var _args = new Arguments(new Argument(new Expression(name)), new Argument(ty));
-                var _column = new Expression(typeof(DataColumn), _args, expr);
+                var _column = new New(typeof(DataColumn), _args, properties);
 
                 sent.AppendLine($"dt.Columns.Add({_column});");
             }

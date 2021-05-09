@@ -261,12 +261,6 @@ namespace Sys.CodeBuilder
             return Primitive.ToPrimitive(value);
         }
 
-        public static implicit operator Value(Identifier ident)
-        {
-            return new Value(ident.ToString());
-        }
-
-
         public static implicit operator Value(string value)
         {
             return new Value(value);
@@ -274,7 +268,7 @@ namespace Sys.CodeBuilder
 
         public static implicit operator Value(bool value)
         {
-            return new Value(value ? "true" : "false");
+            return new Value(value ? new CodeString("true") : new CodeString("false"));
         }
 
 

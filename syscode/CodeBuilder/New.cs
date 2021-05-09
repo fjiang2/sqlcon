@@ -24,6 +24,7 @@ namespace Sys.CodeBuilder
             this.type = type;
             this.args = args;
         }
+
         public New(TypeInfo type, Arguments args, IEnumerable<PropertyInfo> properties)
         {
             this.type = type;

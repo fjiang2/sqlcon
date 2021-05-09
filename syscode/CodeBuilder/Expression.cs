@@ -20,52 +20,7 @@ namespace Sys.CodeBuilder
             this.expr = expr.ToString();
         }
 
-        public Expression(Identifier property, Expression expr)
-        {
-            this.expr = $"{property} = {expr}";
-        }
-
-        public Expression(TypeInfo type, IEnumerable<Expression> expressions)
-            : this(type, null, expressions)
-        {
-        }
-
-        public Expression(TypeInfo type, Arguments args)
-            : this(type, args, null)
-        {
-        }
-
-        public Expression(TypeInfo type, Arguments args, IEnumerable<Expression> expressions)
-        {
-            CodeBlock codeBlock = new CodeBlock();
-            if (expressions == null || expressions.Count() == 0)
-            {
-                if (args != null)
-                    codeBlock.Append($"new {type}({args})");
-                else
-                    codeBlock.Append($"new {type}()");
-
-                expr = codeBlock.ToString();
-                return;
-            }
-
-            if (args != null)
-                codeBlock.Append($"new {type}({args})");
-            else
-                codeBlock.Append($"new {type}");
-
-            codeBlock.Append(" { ");
-            expressions.ForEach(
-                assign => codeBlock.Append($"{assign}"),
-                assign => codeBlock.Append(", ")
-            );
-            codeBlock.Append(" }");
-
-            expr = codeBlock.ToString();
-        }
-
-
-
+  
         public static Expression ANDAND(params Expression[] exp)
         {
             return new Expression(string.Join(" && ", (IEnumerable<Expression>)exp));
@@ -179,6 +134,11 @@ namespace Sys.CodeBuilder
         public static implicit operator Expression(TypeInfo value)
         {
             return new Expression($"typeof({value})");
+        }
+
+        public static implicit operator Expression(New value)
+        {
+            return new Expression(value);
         }
 
         public override string ToString()
