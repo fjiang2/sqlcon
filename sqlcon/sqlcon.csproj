@@ -173,10 +173,6 @@
       <Project>{301f923c-64bf-459c-92c5-368242a1a535}</Project>
       <Name>sqlui</Name>
     </ProjectReference>
-    <ProjectReference Include="..\syscode\syscode.csproj">
-      <Project>{036bf20a-7f80-41b4-8c99-85f6901e20f9}</Project>
-      <Name>syscode</Name>
-    </ProjectReference>
     <ProjectReference Include="..\syscore\syscore.csproj">
       <Project>{58332852-369d-4045-93c2-5cfe9cfb2313}</Project>
       <Name>syscore</Name>

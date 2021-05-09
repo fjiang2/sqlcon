@@ -85,8 +85,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\syscode\syscode.csproj">
-      <Project>{036bf20a-7f80-41b4-8c99-85f6901e20f9}</Project>
+    <ProjectReference Include="..\..\code-gen\syscode\syscode.csproj">
+      <Project>{7c0a619e-4adf-450d-9da9-943ae2a35fcf}</Project>
       <Name>syscode</Name>
     </ProjectReference>
     <ProjectReference Include="..\syscore\syscore.csproj">
