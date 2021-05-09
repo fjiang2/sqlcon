@@ -184,12 +184,12 @@ namespace Sys.CodeBuilder
             return new Expression(value);
         }
 
-        public static Expression operator >(Expression exp1, Expression exp2) => new Expression($"{exp1} > {exp2}");
-        public static Expression operator >=(Expression exp1, Expression exp2) => new Expression($"{exp1} >= {exp2}");
-        public static Expression operator <(Expression exp1, Expression exp2) => new Expression($"{exp1} < {exp2}");
-        public static Expression operator <=(Expression exp1, Expression exp2) => new Expression($"{exp1} <= {exp2}");
-        public static Expression operator ==(Expression exp1, Expression exp2) => new Expression($"{exp1} == {exp2}");
-        public static Expression operator !=(Expression exp1, Expression exp2) => new Expression($"{exp1} != {exp2}");
+        //public static Expression operator >(Expression exp1, Expression exp2) => new Expression($"{exp1} > {exp2}");
+        //public static Expression operator >=(Expression exp1, Expression exp2) => new Expression($"{exp1} >= {exp2}");
+        //public static Expression operator <(Expression exp1, Expression exp2) => new Expression($"{exp1} < {exp2}");
+        //public static Expression operator <=(Expression exp1, Expression exp2) => new Expression($"{exp1} <= {exp2}");
+        //public static Expression operator ==(Expression exp1, Expression exp2) => new Expression($"{exp1} == {exp2}");
+        //public static Expression operator !=(Expression exp1, Expression exp2) => new Expression($"{exp1} != {exp2}");
 
     }
 }

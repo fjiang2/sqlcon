@@ -45,6 +45,7 @@
       <Link>Properties\Version.cs</Link>
     </Compile>
     <Compile Include="CodeBuilder\New.cs" />
+    <Compile Include="CodeBuilder\Operator.cs" />
     <Compile Include="Enum\Alignment.cs" />
     <Compile Include="CodeBuilder\Argument.cs" />
     <Compile Include="CodeBuilder\Arguments.cs" />
@@ -71,7 +72,7 @@
     <Compile Include="CodeBuilder\Method.cs" />
     <Compile Include="Enum\Modifier.cs" />
     <Compile Include="CodeBuilder\ModifierString.cs" />
-    <Compile Include="CodeBuilder\Operator.cs" />
+    <Compile Include="CodeBuilder\ImplicitOperator.cs" />
     <Compile Include="CodeBuilder\Parameter.cs" />
     <Compile Include="CodeBuilder\Parameters.cs" />
     <Compile Include="CodeBuilder\Property.cs" />

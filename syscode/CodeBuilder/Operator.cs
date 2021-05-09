@@ -14,49 +14,53 @@
 //                                                                                                  //
 //                                                                                                  //
 //--------------------------------------------------------------------------------------------------//
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Sys.CodeBuilder
 {
     /// <summary>
-    ///  public static implicit operator Expression(int value)
-    ///  {
-    ///       return new Expression(value);
-    ///  }
+    /// public static Expression operator >(Expression exp1, Expression exp2)
+    /// {
+    ///    return new Expression($"{exp1} > {exp2}");
+    /// }
     /// </summary>
-    public class ImplicitOperator : Member, IBuildable
+    public class Operator : Member, IBuildable
     {
-        public ImplicitOperator(TypeInfo operation, Parameter parameter)
-            : base("operator " + operation)
+        public Operator(TypeInfo returnType, Operation operation, Parameter p1, Parameter p2)
+            : base("operator " + ToCodeString(operation))
         {
-            base.Modifier = Modifier.Public | Modifier.Static | Modifier.Implicit;
-            base.Type = null;
-            Params.Add(parameter);
+            base.Modifier = Modifier.Public | Modifier.Static;
+            base.Type = returnType;
+            Params.Add(p1);
+            Params.Add(p2);
         }
 
         protected override string signature => $"{Signature}({Params})";
+
+        private static string ToCodeString(Operation opr)
+        {
+            switch (opr)
+            {
+                case Operation.Plus: return "+";
+                case Operation.Minus: return "-";
+                case Operation.Multiple: return "*";
+                case Operation.Divide: return "/";
+
+                case Operation.GT: return ">";
+                case Operation.GE: return ">=";
+                case Operation.LT: return "<";
+                case Operation.LE: return "<=";
+                case Operation.NE: return "!=";
+                case Operation.EQ: return "==";
+
+                default:
+                    return string.Empty;
+            }
+        }
     }
 
-
-    /// <summary>
-    ///  public static explicit operator string(Expression expr)
-    ///  {
-    ///    return expr.expr;
-    ///  }
-    /// </summary>
-    public class ExplicitOperator : Member, IBuildable
+    public enum Operation
     {
-        public ExplicitOperator(TypeInfo operation, Parameter parameter)
-            : base("operator " + operation)
-        {
-            base.Modifier = Modifier.Public | Modifier.Static | Modifier.Explicit;
-            base.Type = null;
-            Params.Add(parameter);
-        }
-
-        protected override string signature => $"{Signature}({Params})";
+        Plus, Minus, Multiple, Divide,
+        GT, GE, LT, LE, NE, EQ
     }
 }
