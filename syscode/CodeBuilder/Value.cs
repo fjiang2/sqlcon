@@ -49,17 +49,14 @@ namespace Sys.CodeBuilder
         protected override void BuildBlock(CodeBlock block)
         {
             base.BuildBlock(block);
-        }
 
-        internal void BuildCode(CodeBlock block)
-        {
             if (value is Value)
             {
-                (value as Value).BuildCode(block);
+                (value as Value).BuildBlock(block);
             }
             else if (value is New)
             {
-                block.Add((value as New).GetBlock(), indent: 1);
+                block.Add(value as New);
             }
             else if (value is Array)                        // new Foo[] { new Foo {...}, new Foo {...}, ...}
             {
@@ -109,7 +106,7 @@ namespace Sys.CodeBuilder
                     A.OfType<object>().ForEach(
                          x =>
                          {
-                             NewValue(x).BuildCode(block);
+                             NewValue(x).BuildBlock(block);
                          },
                          _ => block.Append(",")
                          );
@@ -130,7 +127,7 @@ namespace Sys.CodeBuilder
                             block.AppendLine();
 
                         Value item = NewValue(A.GetValue(i));
-                        item.BuildCode(block);
+                        item.BuildBlock(block);
 
                         if (i != A.Length - 1)
                             block.Append(",");
@@ -151,7 +148,7 @@ namespace Sys.CodeBuilder
 
                         block.AppendLine();
                         Value item = NewValue(A.GetValue(i));
-                        item.BuildCode(block);
+                        item.BuildBlock(block);
 
                         if (i != A.Length - 1)
                             block.Append(",");
@@ -174,7 +171,7 @@ namespace Sys.CodeBuilder
                          kvp =>
                          {
                              block.Append($"[{kvp.Key}] = ");
-                             NewValue(kvp.Value).BuildCode(block);
+                             NewValue(kvp.Value).BuildBlock(block);
                          },
                          _ => block.Append(",")
                          );
@@ -190,7 +187,7 @@ namespace Sys.CodeBuilder
                             {
                                 block.AppendLine();
                                 block.Append($"[{kvp.Key}] = ");
-                                NewValue(kvp.Value).BuildCode(block);
+                                NewValue(kvp.Value).BuildBlock(block);
                             },
                         _ => block.Append(",")
                         );
@@ -200,11 +197,6 @@ namespace Sys.CodeBuilder
             }
         }
 
-
-        public override string ToString()
-        {
-            return Primitive.ToPrimitive(value);
-        }
 
         public static implicit operator Value(New value)
         {

@@ -8,16 +8,21 @@ namespace Sys.CodeBuilder
 {
     public class Expression : Buildable
     {
-        private string expr;
+        private object expr;
+
+        private Expression(object expr)
+        {
+            this.expr = expr.ToString();
+        }
 
         public Expression(string expr)
         {
             this.expr = expr;
         }
 
-        public Expression(object expr)
+        public Expression(Value value)
         {
-            this.expr = expr.ToString();
+            this.expr = value;
         }
 
         public Expression(Identifier propertyName, Value value)
@@ -45,6 +50,24 @@ namespace Sys.CodeBuilder
             this.expr = new New(type, args, expressions).ToString();
         }
 
+
+        protected override void BuildBlock(CodeBlock block)
+        {
+            base.BuildBlock(block);
+
+            switch (expr)
+            {
+                case string value:
+                    block.Append(value);
+                    break;
+
+                case Value value:
+                    block.Add(value);
+                    break;
+            }
+        }
+
+
         public static Expression ANDAND(params Expression[] exp)
         {
             return new Expression(string.Join(" && ", (IEnumerable<Expression>)exp));
@@ -60,10 +83,10 @@ namespace Sys.CodeBuilder
             return new Expression($"!{expr}");
         }
 
-        public static explicit operator string(Expression expr)
-        {
-            return expr.expr;
-        }
+        //public static explicit operator string(Expression expr)
+        //{
+        //    return expr.expr;
+        //}
 
 
         public static implicit operator Expression(Identifier ident)
@@ -165,9 +188,5 @@ namespace Sys.CodeBuilder
             return new Expression(value);
         }
 
-        public override string ToString()
-        {
-            return expr;
-        }
     }
 }

@@ -15,21 +15,26 @@ namespace Sys.CodeBuilder
         public ValueOutputFormat Format { get; set; } = ValueOutputFormat.SingleLine;
 
         public New(TypeInfo type)
-          : this(type, null)
+          : this(type, null, null)
         {
         }
 
         public New(TypeInfo type, Arguments args)
+            : this(type, args, null)
         {
-            this.type = type;
-            this.args = args;
         }
+
+        public New(TypeInfo type, IEnumerable<Expression> expressions)
+            : this(type, null, expressions)
+        {
+        }
+
 
         public New(TypeInfo type, Arguments args, IEnumerable<Expression> expressions)
         {
             this.type = type;
             this.args = args;
-            
+
             if (expressions != null)
                 this.expressions.AddRange(expressions);
         }
@@ -89,7 +94,7 @@ namespace Sys.CodeBuilder
                           expr =>
                           {
                               block.AppendLine();
-                              block.Append($"{expr}");
+                              block.Append(expr);
                           },
                            _ => block.Append(",")
                         );
@@ -97,6 +102,11 @@ namespace Sys.CodeBuilder
                     block.End();
                     break;
             }
+        }
+
+        public override string ToString()
+        {
+            return base.ToString();
         }
     }
 }

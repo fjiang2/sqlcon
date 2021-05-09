@@ -65,10 +65,10 @@ namespace Sys.Data.Code
             get
             {
                 string _GetField = "Field";
-                
+
                 if (base.MethodName != null)
                     _GetField = base.MethodName;
-                
+
                 return _GetField;
             }
         }
@@ -227,7 +227,7 @@ namespace Sys.Data.Code
             var schema = TableSchemaCache.GetSchema(tname);
             var pkeys = schema.ByForeignKeys.Keys.OrderBy(k => k.FK_Table);
 
-            List<Value> L = new List<Value>();
+            List<Expression> L = new List<Expression>();
             foreach (IForeignKey pkey in pkeys)
             {
                 string entity = ident.Identifier(pkey.FK_Table);
@@ -255,7 +255,7 @@ namespace Sys.Data.Code
 
             TypeInfo typeinfo = new TypeInfo { UserType = $"{nameof(IConstraint)}[]" };
 
-            Field field = new Field(typeinfo, $"{CONSTRAINT}s", new Value(L.ToArray()) { Type = typeinfo })
+            Field field = new Field(typeinfo, $"{CONSTRAINT}s", new New(typeinfo, L) { Format = ValueOutputFormat.MultipleLine })
             {
                 Modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
             };
