@@ -25,14 +25,9 @@ namespace Sys.CodeBuilder
             this.expr = value;
         }
 
-        public Expression(Identifier propertyName, Value value)
+        public Expression(Identifier variable, Expression expr)
         {
-            this.expr = $"{propertyName} = {value}";
-        }
-
-        public Expression(Identifier property, Expression expr)
-        {
-            this.expr = $"{property} = {expr}";
+            this.expr = $"{variable} = {expr}";
         }
 
         protected override void BuildBlock(CodeBlock block)
@@ -82,6 +77,11 @@ namespace Sys.CodeBuilder
         public static implicit operator Expression(string value)
         {
             return new Expression(value);
+        }
+
+        public static implicit operator Expression(CodeString value)
+        {
+            return new Expression(value.ToString());
         }
 
         public static implicit operator Expression(Value value)

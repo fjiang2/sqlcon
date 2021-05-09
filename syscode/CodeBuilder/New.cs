@@ -39,16 +39,22 @@ namespace Sys.CodeBuilder
                 this.expressions.AddRange(expressions);
         }
 
-
-        public void AddProperty(Identifier propertyName, Value value)
+        public New AddKeyValue(Expression key, Expression value)
         {
-            var property = new Expression(propertyName, value);
-            AddProperty(property);
+            var expr = new Expression($"[{key}] = {value}");
+            return Add(expr);
         }
 
-        public void AddProperty(Expression property)
+        public New AddProperty(Identifier propertyName, Value value)
         {
-            expressions.Add(property);
+            var expr = new Expression($"{propertyName} = {value}");
+            return Add(expr);
+        }
+
+        public New Add(Expression expr)
+        {
+            expressions.Add(expr);
+            return this;
         }
 
         protected override void BuildBlock(CodeBlock block)
