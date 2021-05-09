@@ -26,9 +26,9 @@ namespace Sys.CodeBuilder
     public class Value : Buildable
     {
         public TypeInfo Type { get; set; } = TypeInfo.Anonymous;
+        public ValueOutputFormat Format { get; set; } = ValueOutputFormat.MultipleLine;
 
         private object value;
-        private ValueOutputFormat format { get; set; } = ValueOutputFormat.MultipleLine;
 
         public Value(object value)
         {
@@ -38,7 +38,10 @@ namespace Sys.CodeBuilder
 
         public static Value NewPropertyObject(TypeInfo type)
         {
-            return new Value(new Dictionary<string, Value>()) { Type = type };
+            return new Value(new Dictionary<string, Value>())
+            {
+                Type = type
+            };
         }
 
 
@@ -51,7 +54,7 @@ namespace Sys.CodeBuilder
                 return val;
             }
             else
-                return new Value(value) { format = format };
+                return new Value(value) { Format = Format };
         }
 
         private Dictionary<string, Value> objectValue => value as Dictionary<string, Value>;
@@ -104,21 +107,21 @@ namespace Sys.CodeBuilder
             {
                 if (A.Length < 30)
                 {
-                    format = ValueOutputFormat.SingleLine;
+                    Format = ValueOutputFormat.SingleLine;
                 }
                 else if (A.Length < 100)
                 {
-                    format = ValueOutputFormat.Wrap;
+                    Format = ValueOutputFormat.Wrap;
                     columnNumber = 10;
                 }
                 else
                 {
-                    format = ValueOutputFormat.Wrap;
+                    Format = ValueOutputFormat.Wrap;
                     columnNumber = 20;
                 }
             }
 
-            switch (format)
+            switch (Format)
             {
 
                 case ValueOutputFormat.SingleLine:
@@ -183,7 +186,7 @@ namespace Sys.CodeBuilder
         private void WriteDictionary(CodeBlock block, Dictionary<object, object> A)
         {
 
-            switch (format)
+            switch (Format)
             {
                 case ValueOutputFormat.SingleLine:
                     block.Append("{");
@@ -219,7 +222,7 @@ namespace Sys.CodeBuilder
 
         private void WriteDictionary(CodeBlock block, Dictionary<string, Value> A)
         {
-            switch (format)
+            switch (Format)
             {
                 case ValueOutputFormat.SingleLine:
                     block.Append("{");
@@ -256,6 +259,100 @@ namespace Sys.CodeBuilder
         public override string ToString()
         {
             return Primitive.ToPrimitive(value);
+        }
+
+        public static implicit operator Value(Identifier ident)
+        {
+            return new Value(ident.ToString());
+        }
+
+
+        public static implicit operator Value(string value)
+        {
+            return new Value(value);
+        }
+
+        public static implicit operator Value(bool value)
+        {
+            return new Value(value ? "true" : "false");
+        }
+
+
+        public static implicit operator Value(char value)
+        {
+            return new Value($"'{value}'");
+        }
+
+        public static implicit operator Value(byte value)
+        {
+            return new Value(value);
+        }
+
+        public static implicit operator Value(sbyte value)
+        {
+            return new Value(value);
+        }
+
+
+        public static implicit operator Value(int value)
+        {
+            return new Value(value);
+        }
+
+        public static implicit operator Value(short value)
+        {
+            return new Value(value);
+        }
+
+        public static implicit operator Value(ushort value)
+        {
+            return new Value(value);
+        }
+
+        public static implicit operator Value(uint value)
+        {
+            return new Value(value);
+        }
+
+        public static implicit operator Value(long value)
+        {
+            return new Value(value);
+        }
+
+        public static implicit operator Value(ulong value)
+        {
+            return new Value(value);
+        }
+
+        public static implicit operator Value(float value)
+        {
+            return new Value(value);
+        }
+
+        public static implicit operator Value(DateTime value)
+        {
+            return new Value(value);
+        }
+
+        public static implicit operator Value(DBNull value)
+        {
+            return new Value("DBNull");
+        }
+
+        public static implicit operator Value(Enum value)
+        {
+            string type = value.GetType().Name;
+            return new Value($"{type}.{value}");
+        }
+
+        public static implicit operator Value(TypeInfo value)
+        {
+            return new Value($"typeof({value})");
+        }
+
+        public static implicit operator Value(New value)
+        {
+            return new Value(value);
         }
     }
 

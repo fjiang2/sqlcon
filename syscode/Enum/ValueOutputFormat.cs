@@ -17,7 +17,7 @@
 
 namespace Sys.CodeBuilder
 {
-    enum ValueOutputFormat
+    public enum ValueOutputFormat
     {
         SingleLine,
         MultipleLine,

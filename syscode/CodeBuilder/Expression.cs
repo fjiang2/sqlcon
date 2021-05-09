@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Sys.CodeBuilder
 {
-    public class Expression
+    public class Expression : Buildable
     {
         private string expr;
 
