@@ -8,7 +8,7 @@ namespace Sys.CodeBuilder
 {
     public class Identifier
     {
-        public readonly string name;
+        private readonly string name;
 
         public Identifier(string name)
         {

@@ -21,19 +21,19 @@ using System.Text;
 
 namespace Sys.CodeBuilder
 {
-    public class Operator : Member, IBuildable
+    public class ImplicitOperator : Member, IBuildable
     {
 
-        public Operator(TypeInfo returnType, string operation)
+        public ImplicitOperator(TypeInfo returnType, string operation)
             : base("operator " + operation)
         {
             base.Modifier = Modifier.Public | Modifier.Static;
             base.Type = returnType;
         }
 
-        public static Operator Implicit(TypeInfo operation, Parameter parameter)
+        public static ImplicitOperator Implicit(TypeInfo operation, Parameter parameter)
         {
-            Operator opr = new Operator(null, operation.ToString())
+            ImplicitOperator opr = new ImplicitOperator(null, operation.ToString())
             {
                 Modifier = Modifier.Public | Modifier.Static | Modifier.Implicit,
             };
@@ -42,9 +42,9 @@ namespace Sys.CodeBuilder
             return opr;
         }
 
-        public static Operator Explicit(TypeInfo operation, Parameter parameter)
+        public static ImplicitOperator Explicit(TypeInfo operation, Parameter parameter)
         {
-            Operator opr = new Operator(null, operation.ToString())
+            ImplicitOperator opr = new ImplicitOperator(null, operation.ToString())
             {
                 Modifier = Modifier.Public | Modifier.Static | Modifier.Explicit,
             };

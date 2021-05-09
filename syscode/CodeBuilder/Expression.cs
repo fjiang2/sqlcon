@@ -29,6 +29,12 @@ namespace Sys.CodeBuilder
             this.expr = $"{variable} = {expr}";
         }
 
+        public Expression this[Expression index]
+        {
+            get => new Expression($"{this}[{index}]");
+            set => this.expr = $"{this}[{index}]";
+        }
+
         protected override void BuildBlock(CodeBlock block)
         {
             base.BuildBlock(block);
@@ -177,6 +183,13 @@ namespace Sys.CodeBuilder
         {
             return new Expression(value);
         }
+
+        public static Expression operator >(Expression exp1, Expression exp2) => new Expression($"{exp1} > {exp2}");
+        public static Expression operator >=(Expression exp1, Expression exp2) => new Expression($"{exp1} >= {exp2}");
+        public static Expression operator <(Expression exp1, Expression exp2) => new Expression($"{exp1} < {exp2}");
+        public static Expression operator <=(Expression exp1, Expression exp2) => new Expression($"{exp1} <= {exp2}");
+        public static Expression operator ==(Expression exp1, Expression exp2) => new Expression($"{exp1} == {exp2}");
+        public static Expression operator !=(Expression exp1, Expression exp2) => new Expression($"{exp1} != {exp2}");
 
     }
 }
