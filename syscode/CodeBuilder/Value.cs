@@ -35,17 +35,6 @@ namespace Sys.CodeBuilder
             this.value = value;
         }
 
-
-        public static Value NewPropertyObject(TypeInfo type)
-        {
-            return new Value(new Dictionary<string, Value>())
-            {
-                Type = type
-            };
-        }
-
-
-
         private Value NewValue(object value)
         {
             if (value is Value)
@@ -57,17 +46,9 @@ namespace Sys.CodeBuilder
                 return new Value(value) { Format = Format };
         }
 
-        private Dictionary<string, Value> objectValue => value as Dictionary<string, Value>;
-
-        public void AddProperty(string propertyName, Value value)
+        protected override void BuildBlock(CodeBlock block)
         {
-            if (objectValue == null)
-                throw new Exception("object property is initialized, use new Value()");
-
-            if (objectValue.ContainsKey(propertyName))
-                throw new Exception($"duplicated property name:{propertyName}");
-
-            objectValue.Add(propertyName, value);
+            base.BuildBlock(block);
         }
 
         internal void BuildCode(CodeBlock block)
@@ -75,6 +56,10 @@ namespace Sys.CodeBuilder
             if (value is Value)
             {
                 (value as Value).BuildCode(block);
+            }
+            else if (value is New)
+            {
+                block.Add((value as New).GetBlock(), indent: 1);
             }
             else if (value is Array)                        // new Foo[] { new Foo {...}, new Foo {...}, ...}
             {
@@ -84,11 +69,6 @@ namespace Sys.CodeBuilder
 
                 block.Append($"new {Type}");
                 WriteArrayValue(block, A, 10);
-            }
-            else if (value is Dictionary<string, Value>)    // new Foo { A = 1, B = true }
-            {
-                block.Append($"new {Type}");
-                WriteDictionary(block, value as Dictionary<string, Value>);
             }
             else if (value is Dictionary<object, object>)   // new Dictionary<T1,T2> { [t1] = new T2 {...}, ... }
             {
@@ -220,134 +200,21 @@ namespace Sys.CodeBuilder
             }
         }
 
-        private void WriteDictionary(CodeBlock block, Dictionary<string, Value> A)
-        {
-            switch (Format)
-            {
-                case ValueOutputFormat.SingleLine:
-                    block.Append("{");
-                    A.ForEach(
-                         kvp =>
-                         {
-                             block.Append($"{kvp.Key} = ");
-                             kvp.Value.BuildCode(block);
-                         },
-                         _ => block.Append(",")
-                         );
-
-                    block.Append("}");
-                    break;
-
-                default:
-                    block.Begin();
-
-                    A.ForEach(
-                          kvp =>
-                          {
-                              block.AppendLine();
-                              block.Append($"{kvp.Key} = ");
-                              kvp.Value.BuildCode(block);
-                          },
-                           _ => block.Append(",")
-                        );
-
-                    block.End();
-                    break;
-            }
-        }
 
         public override string ToString()
         {
             return Primitive.ToPrimitive(value);
         }
 
-        public static implicit operator Value(string value)
-        {
-            return new Value(value);
-        }
-
-        public static implicit operator Value(bool value)
-        {
-            return new Value(value ? new CodeString("true") : new CodeString("false"));
-        }
-
-
-        public static implicit operator Value(char value)
-        {
-            return new Value($"'{value}'");
-        }
-
-        public static implicit operator Value(byte value)
-        {
-            return new Value(value);
-        }
-
-        public static implicit operator Value(sbyte value)
-        {
-            return new Value(value);
-        }
-
-
-        public static implicit operator Value(int value)
-        {
-            return new Value(value);
-        }
-
-        public static implicit operator Value(short value)
-        {
-            return new Value(value);
-        }
-
-        public static implicit operator Value(ushort value)
-        {
-            return new Value(value);
-        }
-
-        public static implicit operator Value(uint value)
-        {
-            return new Value(value);
-        }
-
-        public static implicit operator Value(long value)
-        {
-            return new Value(value);
-        }
-
-        public static implicit operator Value(ulong value)
-        {
-            return new Value(value);
-        }
-
-        public static implicit operator Value(float value)
-        {
-            return new Value(value);
-        }
-
-        public static implicit operator Value(DateTime value)
-        {
-            return new Value(value);
-        }
-
-        public static implicit operator Value(DBNull value)
-        {
-            return new Value("DBNull");
-        }
-
-        public static implicit operator Value(Enum value)
-        {
-            string type = value.GetType().Name;
-            return new Value($"{type}.{value}");
-        }
-
-        public static implicit operator Value(TypeInfo value)
-        {
-            return new Value($"typeof({value})");
-        }
-
         public static implicit operator Value(New value)
         {
             return new Value(value);
         }
+
+        //public static implicit operator Value(Expression value)
+        //{
+        //    return new Value(value);
+        //}
     }
 
 }

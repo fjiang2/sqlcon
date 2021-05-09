@@ -20,7 +20,31 @@ namespace Sys.CodeBuilder
             this.expr = expr.ToString();
         }
 
-  
+        public Expression(Identifier propertyName, Value value)
+        {
+            this.expr = $"{propertyName} = {value}";
+        }
+
+        public Expression(Identifier property, Expression expr)
+        {
+            this.expr = $"{property} = {expr}";
+        }
+
+        public Expression(TypeInfo type, IEnumerable<Expression> expressions)
+            : this(type, null, expressions)
+        {
+        }
+
+        public Expression(TypeInfo type, Arguments args)
+            : this(type, args, null)
+        {
+        }
+
+        public Expression(TypeInfo type, Arguments args, IEnumerable<Expression> expressions)
+        {
+            this.expr = new New(type, args, expressions).ToString();
+        }
+
         public static Expression ANDAND(params Expression[] exp)
         {
             return new Expression(string.Join(" && ", (IEnumerable<Expression>)exp));

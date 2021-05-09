@@ -10,7 +10,7 @@ namespace Sys.CodeBuilder
     {
         private TypeInfo type;
         private Arguments args;
-        private List<PropertyInfo> properties { get; } = new List<PropertyInfo>();
+        private List<Expression> expressions { get; } = new List<Expression>();
 
         public ValueOutputFormat Format { get; set; } = ValueOutputFormat.SingleLine;
 
@@ -25,31 +25,30 @@ namespace Sys.CodeBuilder
             this.args = args;
         }
 
-        public New(TypeInfo type, Arguments args, IEnumerable<PropertyInfo> properties)
+        public New(TypeInfo type, Arguments args, IEnumerable<Expression> expressions)
         {
             this.type = type;
             this.args = args;
-            this.properties.AddRange(properties);
+            
+            if (expressions != null)
+                this.expressions.AddRange(expressions);
         }
 
 
         public void AddProperty(Identifier propertyName, Value value)
         {
-            var property = new PropertyInfo(propertyName, value);
+            var property = new Expression(propertyName, value);
             AddProperty(property);
         }
 
-        public void AddProperty(PropertyInfo property)
+        public void AddProperty(Expression property)
         {
-            if (properties.Find(x => x.PropertyName == property.PropertyName) != null)
-                throw new Exception($"duplicated property name:{property.PropertyName}");
-
-            properties.Add(property);
+            expressions.Add(property);
         }
 
         protected override void BuildBlock(CodeBlock block)
         {
-            if (properties == null || properties.Count() == 0)
+            if (expressions == null || expressions.Count() == 0)
             {
                 if (args != null)
                     block.Append($"new {type}({args})");
@@ -73,10 +72,10 @@ namespace Sys.CodeBuilder
             {
                 case ValueOutputFormat.SingleLine:
                     block.Append(" { ");
-                    properties.ForEach(
-                         property =>
+                    expressions.ForEach(
+                         expr =>
                          {
-                             block.Append($"{property.PropertyName} = {property.Value}");
+                             block.Append($"{expr}");
                          },
                          _ => block.Append(", ")
                          );
@@ -86,11 +85,11 @@ namespace Sys.CodeBuilder
 
                 default:
                     block.Begin();
-                    properties.ForEach(
-                          property =>
+                    expressions.ForEach(
+                          expr =>
                           {
                               block.AppendLine();
-                              block.Append($"{property.PropertyName} =  = {property.Value}");
+                              block.Append($"{expr}");
                           },
                            _ => block.Append(",")
                         );
