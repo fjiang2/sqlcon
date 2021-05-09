@@ -44,6 +44,7 @@
     <Compile Include="..\Version\Version.cs">
       <Link>Properties\Version.cs</Link>
     </Compile>
+    <Compile Include="CodeBuilder\ExplicitOperator.cs" />
     <Compile Include="CodeBuilder\New.cs" />
     <Compile Include="CodeBuilder\Operator.cs" />
     <Compile Include="Enum\Alignment.cs" />

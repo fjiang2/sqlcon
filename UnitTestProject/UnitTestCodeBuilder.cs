@@ -75,7 +75,7 @@ namespace UnitTestProject
         [TestMethod]
         public void TestImplictOperator()
         {
-            var _implict = new ImplicitOperator(new TypeInfo(typeof(Expression)), new Parameter(new TypeInfo(typeof(int)), "value"));
+            var _implict = Operator.Implicit(new TypeInfo(typeof(Expression)), new Parameter(new TypeInfo(typeof(int)), "value"));
             _implict.Statement.RETURN("new Expression(value)");
             string code = _implict.ToString();
             Debug.Assert(code == "public static implicit operator Expression(int value)\r\n{\r\n\treturn new Expression(value);\r\n}");
@@ -84,9 +84,9 @@ namespace UnitTestProject
         [TestMethod]
         public void TestExplictOperator()
         {
-            var _implict = new ExplicitOperator(new TypeInfo(typeof(string)), new Parameter(new TypeInfo(typeof(Expression)), "expr"));
-            _implict.Statement.RETURN("expr.ToString()");
-            string code = _implict.ToString();
+            var _explict = Operator.Explicit(new TypeInfo(typeof(string)), new Parameter(new TypeInfo(typeof(Expression)), "expr"));
+            _explict.Statement.RETURN("expr.ToString()");
+            string code = _explict.ToString();
             Debug.Assert(code == "public static explicit operator string(Expression expr)\r\n{\r\n\treturn expr.ToString();\r\n}");
         }
 

@@ -56,6 +56,16 @@ namespace Sys.CodeBuilder
             Params.Add(p);
         }
 
+        public static Member Implicit(TypeInfo operation, Parameter parameter)
+        {
+            return new ImplicitOperator(operation, parameter);
+        }
+
+        public static Member Explicit(TypeInfo operation, Parameter parameter)
+        {
+            return new ExplicitOperator(operation, parameter);
+        }
+
         protected override string signature => $"{Signature}({Params})";
 
         private static string ToCodeString(Operation opr)

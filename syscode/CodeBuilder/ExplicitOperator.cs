@@ -14,25 +14,21 @@
 //                                                                                                  //
 //                                                                                                  //
 //--------------------------------------------------------------------------------------------------//
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Sys.CodeBuilder
 {
     /// <summary>
-    ///  public static implicit operator Expression(int value)
+    ///  public static explicit operator string(Expression expr)
     ///  {
-    ///       return new Expression(value);
+    ///    return expr.expr;
     ///  }
     /// </summary>
-    class ImplicitOperator : Member, IBuildable
+    class ExplicitOperator : Member, IBuildable
     {
-        public ImplicitOperator(TypeInfo operation, Parameter parameter)
+        public ExplicitOperator(TypeInfo operation, Parameter parameter)
             : base("operator " + operation)
         {
-            base.Modifier = Modifier.Public | Modifier.Static | Modifier.Implicit;
+            base.Modifier = Modifier.Public | Modifier.Static | Modifier.Explicit;
             base.Type = null;
             Params.Add(parameter);
         }
