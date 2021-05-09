@@ -14,47 +14,88 @@
 //                                                                                                  //
 //                                                                                                  //
 //--------------------------------------------------------------------------------------------------//
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Sys.CodeBuilder
 {
+    /// <summary>
+    /// public static Expression operator >(Expression exp1, Expression exp2)
+    /// {
+    ///    return new Expression($"{exp1} > {exp2}");
+    /// }
+    /// </summary>
     public class Operator : Member, IBuildable
     {
 
-        public Operator(TypeInfo returnType, string operation)
-            : base("operator " + operation)
+        /// <summary>
+        /// Binary Operator
+        /// </summary>
+        /// <param name="returnType"></param>
+        /// <param name="operation"></param>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        public Operator(TypeInfo returnType, Operation operation, Parameter p1, Parameter p2)
+            : base("operator " + ToCodeString(operation))
         {
             base.Modifier = Modifier.Public | Modifier.Static;
             base.Type = returnType;
+            Params.Add(p1);
+            Params.Add(p2);
         }
 
-        public static Operator Implicit(TypeInfo operation, Parameter parameter)
+        /// <summary>
+        /// Unary operator
+        /// </summary>
+        /// <param name="returnType"></param>
+        /// <param name="operation"></param>
+        /// <param name="p"></param>
+        public Operator(TypeInfo returnType, Operation operation, Parameter p)
+            : base("operator " + ToCodeString(operation))
         {
-            Operator opr = new Operator(null, operation.ToString())
-            {
-                Modifier = Modifier.Public | Modifier.Static | Modifier.Implicit,
-            };
-            opr.Params.Add(parameter);
-
-            return opr;
+            base.Modifier = Modifier.Public | Modifier.Static;
+            base.Type = returnType;
+            Params.Add(p);
         }
 
-        public static Operator Explicit(TypeInfo operation, Parameter parameter)
+        public static Member Implicit(TypeInfo operation, Parameter parameter)
         {
-            Operator opr = new Operator(null, operation.ToString())
-            {
-                Modifier = Modifier.Public | Modifier.Static | Modifier.Explicit,
-            };
-            opr.Params.Add(parameter);
-
-            return opr;
+            return new ImplicitOperator(operation, parameter);
         }
 
+        public static Member Explicit(TypeInfo operation, Parameter parameter)
+        {
+            return new ExplicitOperator(operation, parameter);
+        }
 
         protected override string signature => $"{Signature}({Params})";
 
+        private static string ToCodeString(Operation opr)
+        {
+            switch (opr)
+            {
+                case Operation.Plus: return "+";
+                case Operation.Minus: return "-";
+                case Operation.Multiple: return "*";
+                case Operation.Divide: return "/";
+
+                case Operation.GT: return ">";
+                case Operation.GE: return ">=";
+                case Operation.LT: return "<";
+                case Operation.LE: return "<=";
+                case Operation.NE: return "!=";
+                case Operation.EQ: return "==";
+
+                case Operation.NOT: return "!";
+
+                default:
+                    return string.Empty;
+            }
+        }
+    }
+
+    public enum Operation
+    {
+        Plus, Minus, Multiple, Divide,
+        GT, GE, LT, LE, NE, EQ,
+        NOT
     }
 }

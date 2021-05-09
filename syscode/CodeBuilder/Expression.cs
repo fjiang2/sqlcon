@@ -12,22 +12,27 @@ namespace Sys.CodeBuilder
 
         private Expression(object expr)
         {
-            this.expr = expr.ToString();
+            this.expr = expr;
         }
 
+        /// <summary>
+        /// Argument expr is code. Use new Value(string) to create a string
+        /// </summary>
+        /// <param name="expr"></param>
         public Expression(string expr)
         {
             this.expr = expr;
         }
 
-        public Expression(Value value)
-        {
-            this.expr = value;
-        }
-
         public Expression(Identifier variable, Expression expr)
         {
             this.expr = $"{variable} = {expr}";
+        }
+
+        public Expression this[Expression index]
+        {
+            get => new Expression($"{this}[{index}]");
+            set => this.expr = $"{this}[{index}]";
         }
 
         protected override void BuildBlock(CodeBlock block)
@@ -43,9 +48,22 @@ namespace Sys.CodeBuilder
                 case Value value:
                     block.Add(value);
                     break;
+
+                default:
+                    block.Append(expr.ToString());
+                    break;
             }
         }
 
+        public override bool Equals(object obj)
+        {
+            return expr.Equals((obj as Expression)?.expr);
+        }
+
+        public override int GetHashCode()
+        {
+            return expr.GetHashCode();
+        }
 
         public static Expression ANDAND(params Expression[] exp)
         {
@@ -73,10 +91,13 @@ namespace Sys.CodeBuilder
             return new Expression(ident.ToString());
         }
 
-
-        public static implicit operator Expression(string value)
+        /// <summary>
+        /// Here expr is code. Use new Value(string) to create a string
+        /// </summary>
+        /// <param name="expr"></param>
+        public static implicit operator Expression(string expr)
         {
-            return new Expression(value);
+            return new Expression(expr);
         }
 
         public static implicit operator Expression(CodeString value)
@@ -171,6 +192,15 @@ namespace Sys.CodeBuilder
         {
             return new Expression(value);
         }
+
+        public static Expression operator !(Expression exp) => new Expression($"!{exp}");
+
+        public static Expression operator >(Expression exp1, Expression exp2) => new Expression($"{exp1} > {exp2}");
+        public static Expression operator >=(Expression exp1, Expression exp2) => new Expression($"{exp1} >= {exp2}");
+        public static Expression operator <(Expression exp1, Expression exp2) => new Expression($"{exp1} < {exp2}");
+        public static Expression operator <=(Expression exp1, Expression exp2) => new Expression($"{exp1} <= {exp2}");
+        public static Expression operator ==(Expression exp1, Expression exp2) => new Expression($"{exp1} == {exp2}");
+        public static Expression operator !=(Expression exp1, Expression exp2) => new Expression($"{exp1} != {exp2}");
 
     }
 }

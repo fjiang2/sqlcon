@@ -112,7 +112,7 @@ namespace Sys.Data.Code
                         expressions.Add(new Expression(nameof(column.AutoIncrement), true));
                 }
 
-                var _args = new Arguments(new Argument(new Expression(name)), new Argument(ty));
+                var _args = new Arguments(new Argument(name), new Argument(ty));
                 var _column = new New(typeof(DataColumn), _args, expressions);
 
                 sent.AppendLine($"dt.Columns.Add({_column});");
@@ -210,18 +210,18 @@ namespace Sys.Data.Code
         protected static Field CreateConstraintField(TableName tname)
         {
             const string CONSTRAINT = nameof(Constraint);
-            Value ToColumn(string table, string column)
+            CodeString ToColumn(string table, string column)
             {
                 table = ident.Identifier(table);
                 column = COLUMN(column);
                 column = $"{table}{EXTENSION}.{column}";
-                return new Value(new CodeString(column));
+                return new CodeString(column);
             }
 
-            Value ToColumn2(string column)
+            CodeString ToColumn2(string column)
             {
                 column = COLUMN(column);
-                return new Value(new CodeString(column));
+                return new CodeString(column);
             }
 
             var schema = TableSchemaCache.GetSchema(tname);
@@ -236,7 +236,7 @@ namespace Sys.Data.Code
                 instance.AddProperty(nameof(IConstraint.ThisKey), ToColumn2(pkey.PK_Column));
                 instance.AddProperty(nameof(IConstraint.OtherKey), ToColumn(pkey.FK_Table, pkey.FK_Column));
                 if (IsOneToMany(tname, pkey))
-                    instance.AddProperty(nameof(IConstraint.OneToMany), new Value(true));
+                    instance.AddProperty(nameof(IConstraint.OneToMany), true);
                 L.Add(instance);
             }
 
@@ -249,7 +249,7 @@ namespace Sys.Data.Code
                 instance.AddProperty(nameof(IConstraint.Name), new Value(fkey.Constraint_Name));
                 instance.AddProperty(nameof(IConstraint.ThisKey), ToColumn2(fkey.FK_Column));
                 instance.AddProperty(nameof(IConstraint.OtherKey), ToColumn(fkey.PK_Table, fkey.PK_Column));
-                instance.AddProperty(nameof(IConstraint.IsForeignKey), new Value(true));
+                instance.AddProperty(nameof(IConstraint.IsForeignKey), true);
                 L.Add(instance);
             }
 

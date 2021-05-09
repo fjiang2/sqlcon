@@ -34,16 +34,36 @@ namespace Sys.CodeBuilder
         {
             this.value = value;
         }
+        
+        public Value(New value)
+        {
+            this.value = value;
+        }
+
+        public Value(string value)
+        {
+            this.value = value;
+        }
+
+        public Value(Array value)
+        {
+            this.value = value;
+        }
+
+        public Value(Dictionary<object, object> value)
+        {
+            this.value = value;
+        }
 
         private Value NewValue(object value)
         {
             if (value is Value)
+                return (Value)value;
+
+            return new Value(value)
             {
-                Value val = (Value)value;
-                return val;
-            }
-            else
-                return new Value(value) { Format = Format };
+                Format = Format
+            };
         }
 
         protected override void BuildBlock(CodeBlock block)
@@ -162,14 +182,14 @@ namespace Sys.CodeBuilder
             }
         }
 
-        private void WriteDictionary(CodeBlock block, Dictionary<object, object> A)
+        private void WriteDictionary(CodeBlock block, Dictionary<object, object> dict)
         {
 
             switch (Format)
             {
                 case ValueOutputFormat.SingleLine:
                     block.Append("{");
-                    A.ForEach(
+                    dict.ForEach(
                          kvp =>
                          {
                              block.Append($"[{kvp.Key}] = ");
@@ -184,7 +204,7 @@ namespace Sys.CodeBuilder
                 default:
                     block.Begin();
 
-                    A.ForEach(
+                    dict.ForEach(
                         kvp =>
                             {
                                 block.AppendLine();

@@ -28,6 +28,7 @@ namespace Sys.CodeBuilder
                 case DateTimeOffset time:
                     return $"new DateTimeOffset({time.Year}, {time.Month}, {time.Day}, {time.Hour}, {time.Minute}, {time.Second}, {time.Offset})";
 
+                
                 case byte[] value:
                     {
                         var hex = value
@@ -98,7 +99,8 @@ namespace Sys.CodeBuilder
                     o.Write(EnumBitFlags(value));
                     break;
 
-      
+                case byte b:
+                    return $"0x{b:X}";
 
                 default:
                     o.Write(obj);

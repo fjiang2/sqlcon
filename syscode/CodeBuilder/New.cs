@@ -86,10 +86,10 @@ namespace Sys.CodeBuilder
             else
                 block.Append($"new {type}");
 
-            WriteProperties(block);
+            OutputExpressions(block);
         }
 
-        private void WriteProperties(CodeBlock block)
+        private void OutputExpressions(CodeBlock block)
         {
             switch (Format)
             {
@@ -121,6 +121,6 @@ namespace Sys.CodeBuilder
                     break;
             }
         }
-
+      
     }
 }

@@ -66,11 +66,57 @@ namespace UnitTestProject
 
 
             sent = new Statement();
-            sent.ASSIGN("x", new New(typeof(Dictionary<string, object>)).AddKeyValue(new Value("a"),1).AddKeyValue(new Value("b"),3));
+            sent.ASSIGN("x", new New(typeof(Dictionary<string, object>)).AddKeyValue(new Value("a"), 1).AddKeyValue(new Value("b"), 3));
             code = sent.ToString();
             Debug.Assert(code == "x = new Dictionary<string, object> { [\"a\"] = 1, [\"b\"] = 3 };");
 
         }
+
+        [TestMethod]
+        public void TestImplictOperator()
+        {
+            var _implict = Operator.Implicit(new TypeInfo(typeof(Expression)), new Parameter(new TypeInfo(typeof(int)), "value"));
+            _implict.Statement.RETURN("new Expression(value)");
+            string code = _implict.ToString();
+            Debug.Assert(code == "public static implicit operator Expression(int value)\r\n{\r\n\treturn new Expression(value);\r\n}");
+        }
+
+        [TestMethod]
+        public void TestExplictOperator()
+        {
+            var _explict = Operator.Explicit(new TypeInfo(typeof(string)), new Parameter(new TypeInfo(typeof(Expression)), "expr"));
+            _explict.Statement.RETURN("expr.ToString()");
+            string code = _explict.ToString();
+            Debug.Assert(code == "public static explicit operator string(Expression expr)\r\n{\r\n\treturn expr.ToString();\r\n}");
+        }
+
+
+        [TestMethod]
+        public void TestOperator()
+        {
+            var _operator = new Operator(
+                new TypeInfo(typeof(Expression)), 
+                Operation.GE,
+                new Parameter(new TypeInfo(typeof(Expression)), "expr1"),
+                new Parameter(new TypeInfo(typeof(Expression)), "expr2")
+                );
+
+            _operator.Statement.RETURN("new Expression($\"{exp1} > {exp2}\")");
+            string code = _operator.ToString();
+            Debug.Assert(code == "public static Expression operator >=(Expression expr1, Expression expr2)\r\n{\r\n\treturn new Expression($\"{exp1} > {exp2}\");\r\n}");
+
+            _operator = new Operator(
+               new TypeInfo(typeof(Expression)),
+               Operation.NOT,
+               new Parameter(new TypeInfo(typeof(Expression)), "expr")
+               );
+
+            _operator.Statement.RETURN("new Expression($\"!{expr}\")");
+            code = _operator.ToString();
+            Debug.Assert(code == "public static Expression operator !(Expression expr)\r\n{\r\n\treturn new Expression($\"!{expr}\");\r\n}");
+
+        }
+
     }
 }
 
