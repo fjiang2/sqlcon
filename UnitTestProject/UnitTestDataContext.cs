@@ -498,11 +498,11 @@ namespace UnitTestProject
         }
 
         [TestMethod]
-        public void TestContains()
+        public void TestContains1()
         {
             using (var db = new DataContext(connectionString))
             {
-                var L = new int[] { 10, 30, 40 }.AsQueryable(); 
+                var L = new int[] { 10, 30, 40 }.AsQueryable();
                 var table = db.GetTable<Products>();
                 table.SelectOnSubmit(row => L.Contains(row.ProductID));
 
@@ -510,6 +510,35 @@ namespace UnitTestProject
                 Debug.Assert(SQL == "SELECT * FROM [Products] WHERE ProductID IN (10,30,40)");
             }
         }
+
+        [TestMethod]
+        public void TestContains2()
+        {
+            using (var db = new DataContext(connectionString))
+            {
+                var L = new int[] { 10 };
+                var table = db.GetTable<Products>();
+                table.SelectOnSubmit(row => L.Contains(row.ProductID));
+
+                string SQL = db.GetQueryScript();
+                Debug.Assert(SQL == "SELECT * FROM [Products] WHERE ProductID IN (10)");
+            }
+        }
+
+        [TestMethod]
+        public void TestContains3()
+        {
+            using (var db = new DataContext(connectionString))
+            {
+                var L = new int[] { };
+                var table = db.GetTable<Products>();
+                table.SelectOnSubmit(row => L.Contains(row.ProductID));
+
+                string SQL = db.GetQueryScript();
+                Debug.Assert(SQL == "SELECT * FROM [Products] WHERE ProductID IN ()");
+            }
+        }
+
 
         [TestMethod]
         public void Test2TableContains()

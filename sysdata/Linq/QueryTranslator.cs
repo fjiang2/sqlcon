@@ -202,7 +202,7 @@ namespace Sys.Data.Linq
                     return $"'{value.ToString().Replace("'", "''")}'";
 
                 case TypeCode.DateTime:
-                    return "'{value}'";
+                    return $"'{value}'";
 
                 case TypeCode.Object:
                     return new SqlValue(value).ToString("N");
