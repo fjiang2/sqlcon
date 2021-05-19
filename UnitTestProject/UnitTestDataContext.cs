@@ -552,6 +552,18 @@ namespace UnitTestProject
                 Debug.Assert(text == "[1,2,24,34,35,38,39,43,67,70,75,76]");
             }
         }
+
+        [TestMethod]
+        public void Test2DeleteManyRows()
+        {
+            using (var db = new DataContext(connectionString))
+            {
+                var products = db.GetTable<Products>();
+                products.DeleteOnSubmit(row => row.CategoryID == 1 && row.ProductName == "Apple");
+                string SQL = db.GetNonQueryScript();
+                Debug.Assert(SQL == "DELETE FROM [Products] WHERE ((CategoryID = 1) AND (ProductName = 'Apple'))");
+            }
+        }
     }
 }
 

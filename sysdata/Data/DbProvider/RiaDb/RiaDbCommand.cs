@@ -23,7 +23,7 @@ namespace Sys.Data
 
         private RemoteInvoke agent;
 
-            public RiaDbCommand(string cmdText, RiaDbConnection connection)
+        public RiaDbCommand(string cmdText, RiaDbConnection connection)
         {
             this.CommandText = cmdText;
             this.CommandType = CommandType.Text;
@@ -36,7 +36,7 @@ namespace Sys.Data
         {
         }
 
-        
+
         public override int ExecuteNonQuery()
         {
             string code = $"var cmd=new SqlCmd('{CommandText}'); result= cmd.ExecuteNonQuery();";

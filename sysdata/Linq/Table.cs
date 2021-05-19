@@ -43,6 +43,22 @@ namespace Sys.Data.Linq
         public void UpdateOnSubmit(IEnumerable<TEntity> entities) => OperateOnSubmitRange(RowOperation.Update, entities);
         public void InsertOrUpdateOnSubmit(IEnumerable<TEntity> entities) => OperateOnSubmitRange(RowOperation.InsertOrUpdate, entities);
         public void DeleteOnSubmit(IEnumerable<TEntity> entities) => OperateOnSubmitRange(RowOperation.Delete, entities);
+
+        public void DeleteOnSubmit(Expression<Func<TEntity, bool>> where)
+        {
+            var translator = new QueryTranslator();
+            string _where = translator.Translate(where);
+            string delete;
+
+            if (!string.IsNullOrEmpty(_where))
+                delete = $"DELETE FROM {formalName} WHERE {_where}";
+            else
+                delete = $"DELETE FROM {formalName}";
+
+            Context.CodeBlock.AppendLine<TEntity>(delete);
+        }
+
+
         public void PartialUpdateOnSubmit(IEnumerable<object> entities, bool throwException = false)
         {
             foreach (var entity in entities)
@@ -89,18 +105,11 @@ namespace Sys.Data.Linq
             if (sql == null)
                 return;
 
-            Context.CodeBlock.AppendLine<TEntity>(sql);
-
-            var evt = new RowEvent
-            {
-                TypeName = typeof(TEntity).Name,
-                Operation = operation,
-                Row = gen.ToDictionary(),
-            };
-
-            Context.RowEvents.Add(evt);
+            Append(sql, operation, gen.ToDictionary());
             gen.Clear();
         }
+
+       
 
         /// <summary>
         /// Update partial columns of entity, values of primary key requried
@@ -156,17 +165,7 @@ namespace Sys.Data.Linq
                 }
             }
 
-            Context.CodeBlock.AppendLine<TEntity>(gen.Update());
-
-            var evt = new RowEvent
-            {
-                TypeName = typeof(TEntity).Name,
-                Operation = RowOperation.PartialUpdate,
-                Row = gen.ToDictionary(),
-            };
-
-            Context.RowEvents.Add(evt);
-
+            Append(gen.Update(), RowOperation.PartialUpdate, gen.ToDictionary());
             gen.Clear();
         }
 
@@ -196,19 +195,23 @@ namespace Sys.Data.Linq
 
             SqlTemplate template = new SqlTemplate(formalName);
             string update = template.Update(gen.Join(","), _where);
-            Context.CodeBlock.AppendLine<TEntity>(update);
+
+            Append(update, RowOperation.PartialUpdate, gen.ToDictionary());
+            gen.Clear();
+        }
+
+        private void Append(string sql, RowOperation operation, IDictionary<string, object> row)
+        {
+            Context.CodeBlock.AppendLine<TEntity>(sql);
 
             var evt = new RowEvent
             {
                 TypeName = typeof(TEntity).Name,
-                Operation = RowOperation.PartialUpdate,
-                Row = gen.ToDictionary(),
+                Operation = operation,
+                Row = row,
             };
 
             Context.RowEvents.Add(evt);
-
-            gen.Clear();
-            return;
         }
 
         public override string ToString()
