@@ -127,6 +127,11 @@ namespace Sys.Data.Linq
         public static int Delete<TEntity>(this IEnumerable<TEntity> entities) where TEntity : class
             => Submit<TEntity>(table => table.DeleteOnSubmit(entities));
 
+        public static int Delete<TEntity>(string where = null) where TEntity : class
+        {
+            return Submit<TEntity>(table => table.DeleteOnSubmit(where));
+        }
+
         public static int Delete<TEntity>(this Expression<Func<TEntity, bool>> where) where TEntity : class
         {
             return Submit<TEntity>(table => table.DeleteOnSubmit(where));

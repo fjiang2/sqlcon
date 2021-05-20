@@ -48,16 +48,19 @@ namespace Sys.Data.Linq
         {
             var translator = new QueryTranslator();
             string _where = translator.Translate(where);
-            string delete;
-
-            if (!string.IsNullOrEmpty(_where))
-                delete = $"DELETE FROM {formalName} WHERE {_where}";
-            else
-                delete = $"DELETE FROM {formalName}";
-
-            Context.CodeBlock.AppendLine<TEntity>(delete);
+            DeleteOnSubmit(_where);
         }
 
+        public void DeleteOnSubmit(string where = null)
+        {
+            string SQL;
+            if (!string.IsNullOrEmpty(where))
+                SQL = $"DELETE FROM {formalName} WHERE {where}";
+            else
+                SQL = $"DELETE FROM {formalName}";
+
+            Context.CodeBlock.AppendLine<TEntity>(SQL);
+        }
 
         public void PartialUpdateOnSubmit(IEnumerable<object> entities, bool throwException = false)
         {
