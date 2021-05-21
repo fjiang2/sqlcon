@@ -75,7 +75,7 @@ namespace Sys.Data.Code
             PrintOutput(builder, ClassName);
         }
 
-     
+
 
         private string[] optionMethods = null;
         public bool ContainsMethod(string methodName)
@@ -97,7 +97,10 @@ namespace Sys.Data.Code
 
         public string PropertyName(DataColumn column)
         {
-            return column.ColumnName.ToFieldName("C");
+            string propertyName = column.ColumnName.ToFieldName("C");
+            if (propertyName == ClassName)
+                propertyName = propertyName + "1";
+            return propertyName;
         }
     }
 }
