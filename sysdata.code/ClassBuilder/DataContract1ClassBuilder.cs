@@ -85,24 +85,40 @@ namespace Sys.Data.Code
 
             if (ContainsMethod("NewObject"))
             {
-                Method_ToCollection(clss);
                 Method_NewObject(clss);
             }
+            
             if (ContainsMethod("FillObject"))
+            {
+                Method_ToCollection(clss);
                 Method_FillObject(clss);
+            }
+
             if (ContainsMethod("UpdateRow"))
+            {
                 Method_UpdateRow(clss);
+            }
+
             if (ContainsMethod("CreateTable"))
+            {
                 Method_CreateTable(clss);
+            }
+            
             if (ContainsMethod("ToDataTable"))
             {
                 Method_ToDataTable1(clss);
                 Method_ToDataTable2(clss);
             }
+
             if (ContainsMethod("ToDictionary"))
+            {
                 Method_ToDictionary(clss);
+            }
+            
             if (ContainsMethod("FromDictionary"))
+            {
                 Method_FromDictionary(clss);
+            }
 
             UtilsStaticMethod option = UtilsStaticMethod.Undefined;
             if (ContainsMethod("CopyTo"))
@@ -144,7 +160,12 @@ namespace Sys.Data.Code
             clss.Add(method);
             sent = method.Body;
             sent.AppendLine("return dt.AsEnumerable()");
-            sent.AppendLine(".Select(row => NewObject(row))");
+            sent.AppendLine(".Select(row =>");
+            sent.Begin();
+            sent.AppendLine($"var obj = new {ClassName}();");
+            sent.AppendLine("FillObject(obj, row);");
+            sent.AppendLine("return obj;");
+            sent.End(")");
             sent.AppendLine(".ToList();");
         }
 
