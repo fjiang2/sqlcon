@@ -15,7 +15,7 @@ namespace Sys
         private const string USER_CFG_TEMPLATE = "user.ini";
         private const string USER_CFG = "user.cfg";
 
-        public static string CompanyName { get; set; } = GetAttribute<AssemblyConfigurationAttribute>().Configuration;
+        public static string CompanyName { get; set; } = GetAttribute<AssemblyCompanyAttribute>().Company;
         public static string ProductName { get; private set; } = GetAttribute<AssemblyProductAttribute>().Product;
         public static string MyDocuments => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + ProductName;
 

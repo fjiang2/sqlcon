@@ -14,8 +14,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{770A34
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject", "UnitTestProject\UnitTestProject.csproj", "{C21F5B5B-4301-43D3-A53C-195A1D860BE7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlshop", "sqlshop\sqlshop.csproj", "{6422E5EF-28EF-493A-AED7-02E8A3B4DAA1}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sysdata", "sysdata\sysdata.csproj", "{2066797E-01B0-4F66-ADE1-2731A0851794}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sysdata.code", "sysdata.code\sysdata.code.csproj", "{A8A98BF7-E895-4E8E-8E67-A1D30485AC7F}"
@@ -42,10 +40,6 @@ Global
 		{C21F5B5B-4301-43D3-A53C-195A1D860BE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C21F5B5B-4301-43D3-A53C-195A1D860BE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C21F5B5B-4301-43D3-A53C-195A1D860BE7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6422E5EF-28EF-493A-AED7-02E8A3B4DAA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6422E5EF-28EF-493A-AED7-02E8A3B4DAA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6422E5EF-28EF-493A-AED7-02E8A3B4DAA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6422E5EF-28EF-493A-AED7-02E8A3B4DAA1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2066797E-01B0-4F66-ADE1-2731A0851794}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2066797E-01B0-4F66-ADE1-2731A0851794}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2066797E-01B0-4F66-ADE1-2731A0851794}.Release|Any CPU.ActiveCfg = Release|Any CPU
