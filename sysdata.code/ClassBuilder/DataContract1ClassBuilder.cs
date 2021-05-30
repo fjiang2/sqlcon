@@ -83,14 +83,15 @@ namespace Sys.Data.Code
             CreateTableSchemaFields(tname, dt, clss);
             index1 = clss.Index;
 
-            if (ContainsMethod("NewObject"))
-            {
-                Method_NewObject(clss);
-            }
-            
+           
             if (ContainsMethod("FillObject"))
             {
                 Method_ToCollection(clss);
+
+                //deprecated code
+                //if (ContainsMethod("NewObject"))
+                //    Method_NewObject(clss);
+
                 Method_FillObject(clss);
             }
 
@@ -98,6 +99,7 @@ namespace Sys.Data.Code
             {
                 Method_UpdateRow(clss);
             }
+
 
             if (ContainsMethod("CreateTable"))
             {
@@ -107,7 +109,9 @@ namespace Sys.Data.Code
             if (ContainsMethod("ToDataTable"))
             {
                 Method_ToDataTable1(clss);
-                Method_ToDataTable2(clss);
+                
+                //deprecated code
+                //Method_ToDataTable2(clss);
             }
 
             if (ContainsMethod("ToDictionary"))
@@ -169,7 +173,22 @@ namespace Sys.Data.Code
             sent.AppendLine(".ToList();");
         }
 
-      
+        private void Method_NewObject(Class clss)
+        {
+            Method method = new Method("NewObject")
+            {
+                Modifier = Modifier.Public | Modifier.Static,
+                Type = new TypeInfo { UserType = ClassName },
+                Params = new Parameters().Add(typeof(DataRow), "row"),
+                IsExtensionMethod = false
+            };
+            clss.Add(method);
+            var sent = method.Body;
+            sent.AppendLine($"var obj = new {ClassName}();");
+            sent.AppendLine("FillObject(obj, row);");
+            sent.AppendLine("return obj;");
+        }
+
         private void Method_FillObject(Class clss)
         {
             Method method = new Method("FillObject")
