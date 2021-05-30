@@ -1,105 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A8A98BF7-E895-4E8E-8E67-A1D30485AC7F}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Sys.Data.Code</RootNamespace>
-    <AssemblyName>sysdata.code</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Tie, Version=2.0.8.0, Culture=neutral, PublicKeyToken=783687458c7c579a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Tie.2.0.8\lib\net45\Tie.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Tie" Version="2.0.8" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="..\Version\Version.cs">
-      <Link>Properties\Version.cs</Link>
-    </Compile>
-    <Compile Include="ClassBuilder\ClassMaker.cs" />
-    <Compile Include="ClassBuilder\ConfClassBuilder.cs" />
-    <Compile Include="ClassBuilder\ConfigScript.cs" />
-    <Compile Include="ClassBuilder\DataClassBuilder.cs" />
-    <Compile Include="ClassBuilder\DataClassType.cs" />
-    <Compile Include="ClassBuilder\DataContract1ClassBuilder.cs" />
-    <Compile Include="ClassBuilder\DataContract2ClassBuilder.cs" />
-    <Compile Include="ClassBuilder\DataContractClassBuilder.cs" />
-    <Compile Include="ClassBuilder\DataTableClassBuilder.cs" />
-    <Compile Include="ClassBuilder\EntityClassBuilder.cs" />
-    <Compile Include="ClassBuilder\Json2CSharp.cs" />
-    <Compile Include="ClassBuilder\Linq2SQLClassBuilder.cs" />
-    <Compile Include="ClassBuilder\Plural.cs" />
-    <Compile Include="ClassBuilder\TheClassBuilder.cs" />
-    <Compile Include="ClassBuilder\TieClassBuilder.cs" />
-    <Compile Include="Data.Manager\DpoGenerate\ClassTableName.cs" />
-    <Compile Include="Data.Manager\DpoGenerate\DataTableDpoClass.cs" />
-    <Compile Include="Data.Manager\Manager.cs" />
-    <Compile Include="Data.Manager\Package\BasePackage.cs" />
-    <Compile Include="Data.Manager\Package\IPacking.cs" />
-    <Compile Include="Data.Manager\Package\Packing.cs" />
-    <Compile Include="Data.Manager\Package\Unpacking.cs" />
-    <Compile Include="Data.Manager\Setting.cs" />
-    <Compile Include="Data.Manager\SpGenerate\SpDatabase.cs" />
-    <Compile Include="Data.Manager\SpGenerate\SpParam.cs" />
-    <Compile Include="Data.Manager\SpGenerate\SpParamDpo.cs" />
-    <Compile Include="Data.Manager\SpGenerate\SpProc.cs" />
-    <Compile Include="Data.Manager\DpoGenerate\ClassName.cs" />
-    <Compile Include="Data.Manager\DpoGenerate\DpoClass.cs" />
-    <Compile Include="Data.Manager\DpoGenerate\DpoField.cs" />
-    <Compile Include="Data.Manager\DpoGenerate\DpoGenerator.cs" />
-    <Compile Include="Data.Manager\DpoGenerate\DpoOption.cs" />
-    <Compile Include="Data.Manager\DpoGenerate\PropertyDefinition.cs" />
-    <Compile Include="Extension\DataCodeExtension.cs" />
-    <Compile Include="Extension\Extension.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <ProjectReference Include="..\..\code-gen\syscode\syscode.csproj" />
+    <ProjectReference Include="..\syscore\syscore.csproj" />
+    <ProjectReference Include="..\sysdata\sysdata.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\code-gen\syscode\syscode.csproj">
-      <Project>{7c0a619e-4adf-450d-9da9-943ae2a35fcf}</Project>
-      <Name>syscode</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\syscore\syscore.csproj">
-      <Project>{58332852-369d-4045-93c2-5cfe9cfb2313}</Project>
-      <Name>syscore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\sysdata\sysdata.csproj">
-      <Project>{2066797e-01b0-4f66-ade1-2731a0851794}</Project>
-      <Name>sysdata</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>
