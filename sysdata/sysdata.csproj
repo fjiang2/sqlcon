@@ -1,18 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <Version>3.0.0</Version>
+    <Company>Datconn</Company>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="System.CodeDom" Version="5.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
     <PackageReference Include="Tie" Version="2.0.8" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\syscore\syscore.csproj" />
   </ItemGroup>
-
 </Project>
