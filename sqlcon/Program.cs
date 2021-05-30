@@ -68,7 +68,9 @@ namespace sqlcon
             }
 
             Config.Init(Configuration);
+#if WINDOWS
             Entrance.Init(Configuration);
+#endif
 
 #if DEBUG
             var site = new Main(Configuration);

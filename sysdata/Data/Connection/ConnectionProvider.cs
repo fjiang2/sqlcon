@@ -59,8 +59,6 @@ namespace Sys.Data
         {
             if (Type == ConnectionProviderType.SqlServer)
                 this.ConnectionBuilder = new SqlConnectionStringBuilder(connectionString);
-            else if (Type == ConnectionProviderType.OleDbServer)
-                this.ConnectionBuilder = new OleDbConnectionStringBuilder(connectionString);
             else
             {
                 this.ConnectionBuilder = new DbConnectionStringBuilder();
@@ -283,14 +281,6 @@ namespace Sys.Data
 
                 case PROVIDER_REMOTE_INVOKE_AGENT:                   //Remote Invoke Agent
                     pvd = new RiaDbConnectionProvider(serverName, connectionString);
-                    break;
-
-                case "Microsoft.ACE.OLEDB.12.0": //Excel 2010
-                case "Microsoft.Jet.OLEDB.4.0":  //Excel 2007 or Access
-                case "MySqlProv":                //MySql
-                case "MSDAORA":                  //Oracle
-                case PROVIDER_SQL_OLE_DB:
-                    pvd = new OleDbConnectionProvider(serverName, connectionString);
                     break;
 
                 case PROVIDER_SQL_DB:                   //Sql Server

@@ -13,50 +13,12 @@ namespace Sys.Data
     {
         #region ToSqlDbType / ToType
 
-    
+
 
         public static SqlDbType ToSqlDbType(this CType type)
         {
             return (SqlDbType)((int)type);
         }
-
-
-        public static OleDbType ToOleDbType(this Type type)
-        {
-            if (type == typeof(Boolean))
-                return OleDbType.Boolean;
-
-            else if (type == typeof(Byte))
-                return OleDbType.TinyInt;
-
-            else if (type == typeof(Int16))
-                return OleDbType.SmallInt;
-
-            else if (type == typeof(Int32))
-                return OleDbType.Integer;
-
-            else if (type == typeof(Int64))
-                return OleDbType.BigInt;
-
-            else if (type == typeof(Double))
-                return OleDbType.Double;
-
-            else if (type == typeof(Decimal))
-                return OleDbType.Decimal;
-
-            else if (type == typeof(String))
-                return OleDbType.WChar;
-
-            else if (type == typeof(DateTime))
-                return OleDbType.Date;
-
-            else if (type == typeof(Byte[]))
-                return OleDbType.Binary;
-
-
-            throw new MessageException("Type {0} cannot be converted into SqlDbType", type.FullName);
-        }
-
 
 
         public static string GetCSharpType(this CType type, bool nullable)
