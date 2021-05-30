@@ -10,20 +10,15 @@ using Sys.Data;
 
 namespace sqlcon
 {
-    class DataContract1ClassBuilder : TheClassBuilder
+    class DataContract1ClassBuilder : DataTableClassBuilder
     {
         private const string _ToDataTable = "ToDataTable";
 
-        private TableName tname;
-        private DataTable dt;
-        private IDictionary<DataColumn, TypeInfo> dict { get; }
-
         public DataContract1ClassBuilder(ApplicationCommand cmd, TableName tname, DataTable dt, bool allowDbNull)
-            : base(cmd)
+            : base(cmd, tname, dt, allowDbNull)
         {
             this.tname = tname;
             this.dt = dt;
-            this.dict = DataContract2ClassBuilder.CreateMapOfTypeInfo(dt, allowDbNull);
 
             builder.AddUsing("System");
             builder.AddUsing("System.Collections.Generic");
@@ -88,13 +83,13 @@ namespace sqlcon
             CreateTableSchemaFields(tname, dt, clss);
             index1 = clss.Index;
 
-            if (ContainsMethod("NewObject"))
+            if (ContainsMethod("FillObject"))
             {
                 Method_ToCollection(clss);
-                Method_NewObject(clss);
-            }
-            if (ContainsMethod("FillObject"))
                 Method_FillObject(clss);
+                //if (ContainsMethod("NewObject"))
+                //    Method_NewObject(clss);
+            }
             if (ContainsMethod("UpdateRow"))
                 Method_UpdateRow(clss);
             if (ContainsMethod("CreateTable"))
@@ -102,7 +97,7 @@ namespace sqlcon
             if (ContainsMethod("ToDataTable"))
             {
                 Method_ToDataTable1(clss);
-                Method_ToDataTable2(clss);
+                //Method_ToDataTable2(clss);
             }
             if (ContainsMethod("ToDictionary"))
                 Method_ToDictionary(clss);
@@ -149,49 +144,18 @@ namespace sqlcon
             clss.Add(method);
             sent = method.Statement;
             sent.AppendLine("return dt.AsEnumerable()");
-            sent.AppendLine(".Select(row => NewObject(row))");
+            sent.AppendLine(".Select(row =>");
+            sent.Begin();
+            sent.AppendLine($"var obj = new {ClassName}();");
+            sent.AppendLine("FillObject(obj, row);");
+            sent.AppendLine("return obj;");
+            sent.End(")");
             sent.AppendLine(".ToList();");
         }
 
-        private void Method_NewObject(Class clss)
-        {
-            Method method = new Method("NewObject")
-            {
-                Modifier = Modifier.Public | Modifier.Static,
-                Type = new TypeInfo { UserType = ClassName },
-                Params = new Parameters().Add(typeof(DataRow), "row"),
-                IsExtensionMethod = false
-            };
-            clss.Add(method);
-            Statement sent = method.Statement;
-            sent.AppendLine($"return new {ClassName}");
-            sent.Begin();
-
-            int count = dt.Columns.Count;
-            int i = 0;
-            string _GetField = "Field";
-            if (base.MethodName != null)
-                _GetField = base.MethodName;
-
-            foreach (DataColumn column in dt.Columns)
-            {
-                var type = dict[column];
-                var name = COLUMN(column);
-                var line = $"{PropertyName(column)} = row.{_GetField}<{type}>({name})";
-                if (++i < count)
-                    line += ",";
-
-                sent.AppendLine(line);
-            }
-            sent.End(";");
-        }
 
         private void Method_FillObject(Class clss)
         {
-            string _GetField = "Field";
-            if (base.MethodName != null)
-                _GetField = base.MethodName;
-
             Method method = new Method("FillObject")
             {
                 Modifier = Modifier.Public | Modifier.Static,
@@ -204,7 +168,7 @@ namespace sqlcon
             {
                 var type = dict[column];
                 var name = COLUMN(column);
-                var line = $"item.{PropertyName(column)} = row.{_GetField}<{type}>({name});";
+                var line = $"item.{PropertyName(column)} = row.{GetField}<{type}>({name});";
 
                 sent1.AppendLine(line);
             }
@@ -229,25 +193,7 @@ namespace sqlcon
             }
         }
 
-        private void Method_CreateTable(Class clss)
-        {
-            Method method = new Method("CreateTable")
-            {
-                Modifier = Modifier.Public | Modifier.Static,
-                Type = new TypeInfo { Type = typeof(DataTable) }
-            };
-            clss.Add(method);
-            Statement sent = method.Statement;
-            sent.AppendLine("DataTable dt = new DataTable();");
-            foreach (DataColumn column in dt.Columns)
-            {
-                Type ty = dict[column].Type;
-                var name = COLUMN(column);
-                sent.AppendLine($"dt.Columns.Add(new DataColumn({name}, typeof({ty})));");
-            }
-            sent.AppendLine();
-            sent.AppendLine("return dt;");
-        }
+      
 
         private void Method_ToDataTable1(Class clss)
         {

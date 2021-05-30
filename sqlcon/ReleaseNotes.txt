@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+4/11/2021 v2.4.2.0
+	Bug Fixes:
+	1. Change PropertyName to PropertyName1 when PropertyName==ClassName in dc1
+
 4/11/2021 v2.4.1.0
 	Improvements/Enhancements:
 	1. Command "dir" can display stored procedures and functions.

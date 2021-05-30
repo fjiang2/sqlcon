@@ -12,19 +12,12 @@ using Sys.Data.Manager;
 namespace sqlcon
 {
 
-    class DataContractClassBuilder : TheClassBuilder
+    class DataContractClassBuilder : DataTableClassBuilder
     {
-        private TableName tname;
-        private DataTable dt;
-
-        private IDictionary<DataColumn, TypeInfo> dict { get; }
 
         public DataContractClassBuilder(ApplicationCommand cmd, TableName tname, DataTable dt, bool allowDbNull)
-            : base(cmd)
+            : base(cmd, tname, dt, allowDbNull)
         {
-            this.tname = tname;
-            this.dt = dt;
-            this.dict = DataContract2ClassBuilder.CreateMapOfTypeInfo(dt, allowDbNull);
 
 
             builder.AddUsing("System");

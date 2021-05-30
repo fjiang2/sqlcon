@@ -17,6 +17,9 @@ namespace Sys.Data.Linq
 
         public List<string> Translate(Expression expression)
         {
+            if (expression == null)
+                return null;
+
             this.Visit(expression);
             return this.properties;
         }
@@ -36,7 +39,7 @@ namespace Sys.Data.Linq
             throw new NotSupportedException(string.Format("The member '{0}' is not supported", expr.Member.Name));
         }
 
-       
+
 
     }
 }

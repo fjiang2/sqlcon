@@ -8,17 +8,17 @@ using Tie;
 
 namespace Sys.Stdio
 {
-    public class Command
+    public class Command : ICommand
     {
         public bool badcommand { get; private set; }
         protected List<string> paths = new List<string>();
-        
+
         /// <summary>
         /// Action is the command in command line
         /// e.g. command> cd ..
         /// Action is cd
         /// </summary>
-        public string Action;
+        public string Action { get; private set; }
 
         /// <summary>
         /// 
@@ -26,9 +26,9 @@ namespace Sys.Stdio
         public string args { get; private set; }
         public string arg1 { get; private set; }
         public string arg2 { get; private set; }
-        public string[] arguments { get; private set; }
+        public string[] Arguments { get; private set; }
 
-        public Options options { get; } = new Options();
+        public Options Options { get; } = new Options();
 
         //private string line;
 
@@ -55,11 +55,12 @@ namespace Sys.Stdio
             }
 
 
-            int k = parseAction(_line, out Action);
+            int k = parseAction(_line, out string action);
+            this.Action = action;
             this.args = _line.Substring(k);
 
             this.badcommand = !parseArgument(this.args, out string[] L);
-            this.arguments = L;
+            this.Arguments = L;
 
             if (L.Length > 0 && !L[0].StartsWith("/"))
                 this.arg1 = L[0];
@@ -73,12 +74,12 @@ namespace Sys.Stdio
                 if (a.StartsWith("/"))
                 {
                     if (!CustomerizeOption(a))
-                        options.Add(a);
+                        Options.Add(a);
 
                 }
                 else if (a.StartsWith("+") || a.StartsWith("-"))
                 {
-                    options.Add(a);
+                    Options.Add(a);
                 }
                 else
                 {
@@ -94,12 +95,12 @@ namespace Sys.Stdio
 
         public bool Has(string name)
         {
-            return options.HasOnly('/', name);
+            return Options.HasOnly('/', name);
         }
 
         public string GetValue(string name)
         {
-            return options.GetValue('/', name);
+            return Options.GetValue('/', name);
         }
 
         public PathName Path1

@@ -99,6 +99,13 @@ namespace sqlcon
                 DataColumn col = dt.Columns[column.ColumnName];
                 col.AllowDBNull = column.Nullable;
                 col.AutoIncrement = column.IsIdentity;
+                
+                //because string supports Unicode
+                if (column.CType == CType.NVarChar || column.CType == CType.NChar)
+                {
+                    if (column.Length > 0)
+                        col.MaxLength = column.Length / 2;
+                }
             }
 
             if (dt.Rows.Count > 0)
@@ -319,7 +326,7 @@ namespace sqlcon
 
 
                         cout.WriteLine("start to generate {0}", tname);
-                        var dt = new SqlBuilder().SELECT.TOP(cmd.Top).COLUMNS().FROM(tname).SqlCmd.FillDataTable();
+                        var dt = new SqlBuilder().SELECT().TOP(cmd.Top).COLUMNS().FROM(tname).SqlCmd.FillDataTable();
                         var file = xmlDbFile.WriteData(tname, dt);
                         cout.WriteLine("completed {0} => {1}", tname.ShortName, file);
                     }
@@ -412,7 +419,7 @@ namespace sqlcon
                 if (file == null)
                     file = fullName(tname);
 
-                var dt = new SqlBuilder().SELECT.COLUMNS(cmd.Columns).FROM(tname).SqlCmd.FillDataTable();
+                var dt = new SqlBuilder().SELECT().COLUMNS(cmd.Columns).FROM(tname).SqlCmd.FillDataTable();
                 using (var writer = file.CreateStreamWriter(cmd.Append))
                 {
                     CsvFile.Write(dt, writer, true);
@@ -930,8 +937,9 @@ namespace sqlcon
             cout.WriteLine("      [/code-style]: orginal|pascal|camel");
             cout.WriteLine("   /dc      : generate C# data contract class");
             cout.WriteLine("   /dc1     : generate C# data contract class and extension class");
-            cout.WriteLine("      /fk   : create foreign key constraint");
-            cout.WriteLine("      /assoc: create association classes");
+            cout.WriteLine("      [/fk] : create foreign key constraint");
+            cout.WriteLine("      [/assoc]: create association classes");
+            cout.WriteLine("      [/data-column-property]: create data column property: AllowDbNull,MaxLength,Unique in CreateTable()");
             cout.WriteLine("      [/methods:NewObject,FillObject,UpdateRow,CreateTable,ToDataTable,ToDictionary,FromDictionary,CopyTo,CompareTo,ToSimpleString]");
             cout.WriteLine("   /dc2     : generate C# data contract class and extension class");
             cout.WriteLine("      option of data contract /[dc|dc1|dc2] :");
@@ -964,7 +972,7 @@ namespace sqlcon
             cout.WriteLine("          f : generate class of hierarchial field");
             cout.WriteLine("          m : generate class of hierarchial method");
             cout.WriteLine("          t : generate data contract classes");
-            cout.WriteLine("          j : geneerat data classes from JSON");
+            cout.WriteLine("          j : generate data classes from JSON");
             cout.WriteLine("      [/method:name] GetValue method name, default is \"GetValue<>\"");
             cout.WriteLine("      [/key:column] column key, required");
             cout.WriteLine("      [/default:column] column default value, required");

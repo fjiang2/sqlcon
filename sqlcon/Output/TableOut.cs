@@ -130,12 +130,12 @@ namespace sqlcon
             if (cmd.wildcard != null)
             {
                 Locator where = LikeExpr(cmd.wildcard, cmd.Columns);
-                builder = new SqlBuilder().SELECT.ROWID(cmd.HasRowId).COLUMNS().FROM(tname).WHERE(where);
+                builder = new SqlBuilder().SELECT().ROWID(cmd.HasRowId).COLUMNS().FROM(tname).WHERE(where);
             }
             else if (cmd.where != null)
             {
                 var locator = new Locator(cmd.where);
-                builder = new SqlBuilder().SELECT.TOP(top).ROWID(cmd.HasRowId).COLUMNS(columns).FROM(tname).WHERE(locator);
+                builder = new SqlBuilder().SELECT().TOP(top).ROWID(cmd.HasRowId).COLUMNS(columns).FROM(tname).WHERE(locator);
             }
             else if (cmd.Has("dup"))
             {
@@ -158,7 +158,7 @@ namespace sqlcon
                 return true;
             }
             else
-                builder = new SqlBuilder().SELECT.TOP(top).ROWID(cmd.HasRowId).COLUMNS(columns).FROM(tname);
+                builder = new SqlBuilder().SELECT().TOP(top).ROWID(cmd.HasRowId).COLUMNS(columns).FROM(tname);
 
             return Display(cmd, builder, tname, top);
         }
@@ -169,7 +169,7 @@ namespace sqlcon
             SqlBuilder builder;
             if (cmd.wildcard == null)
             {
-                builder = new SqlBuilder().SELECT.TOP(cmd.Top).COLUMNS(columns).FROM(tname);
+                builder = new SqlBuilder().SELECT().TOP(cmd.Top).COLUMNS(columns).FROM(tname);
                 if (locator != null)
                     builder.WHERE(locator);
             }
@@ -179,7 +179,7 @@ namespace sqlcon
                 if (locator != null)
                     where = locator.And(where);
 
-                builder = new SqlBuilder().SELECT.COLUMNS(columns).FROM(tname).WHERE(where);
+                builder = new SqlBuilder().SELECT().COLUMNS(columns).FROM(tname).WHERE(where);
             }
 
             return Display(cmd, builder, tname, cmd.Top);

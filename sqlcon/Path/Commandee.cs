@@ -723,10 +723,10 @@ namespace sqlcon
             }
 
 
-            if (cmd.options.Has("+c"))
+            if (cmd.Options.Has("+c"))
             {
                 TableName tname = (TableName)pt.Item;
-                string expr = cmd.options.GetValue("+c");
+                string expr = cmd.Options.GetValue("+c");
                 string[] items = expr.Split(new string[] { "=", "+" }, StringSplitOptions.RemoveEmptyEntries);
                 if (items.Length != 2 && items.Length != 3)
                 {
@@ -751,19 +751,19 @@ namespace sqlcon
                 return;
             }
 
-            if (cmd.options.Has("-c"))
+            if (cmd.Options.Has("-c"))
             {
                 TableName tname = (TableName)pt.Item;
-                string column = cmd.options.GetValue("-c");
+                string column = cmd.Options.GetValue("-c");
                 string SQL = $"ALTER TABLE [{tname.Name}] DROP COLUMN {column}";
                 ExecuteNonQuery(tname.Provider, SQL);
                 return;
             }
 
-            if (cmd.options.Has("+f"))
+            if (cmd.Options.Has("+f"))
             {
                 TableName fkName = (TableName)pt.Item;
-                string expr = cmd.options.GetValue("+f");
+                string expr = cmd.Options.GetValue("+f");
                 string[] items = expr.Split('=');
 
                 if (items.Length != 2)
@@ -823,19 +823,19 @@ namespace sqlcon
                 return;
             }
 
-            if (cmd.options.Has("+p"))
+            if (cmd.Options.Has("+p"))
             {
                 TableName tname = (TableName)pt.Item;
-                string expr = cmd.options.GetValue("+p");
+                string expr = cmd.Options.GetValue("+p");
                 string SQL = $"ALTER TABLE [{tname.Name}] ADD PRIMARY KEY(expr)";
                 ExecuteNonQuery(tname.Provider, SQL);
                 return;
             }
 
-            if (cmd.options.Has("+i"))
+            if (cmd.Options.Has("+i"))
             {
                 TableName tname = (TableName)pt.Item;
-                string column = cmd.options.GetValue("+i");
+                string column = cmd.Options.GetValue("+i");
                 string SQL = @"
 ALTER TABLE {0} ADD {1} INT IDENTITY(1, 1)
 ALTER TABLE {0} DROP COLUMN {2}
@@ -979,7 +979,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             }
 
             Locator locator = new Locator(setting.KeyName.ColumnName() == key);
-            SqlBuilder builder = new SqlBuilder().SELECT.COLUMNS(setting.ValueName.ColumnName()).FROM(tname).WHERE(locator);
+            SqlBuilder builder = new SqlBuilder().SELECT().COLUMNS(setting.ValueName.ColumnName()).FROM(tname).WHERE(locator);
             var L = new SqlCmd(builder).FillDataColumn<string>(0);
             if (L.Count() == 0)
             {
@@ -1884,7 +1884,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 string colKey = cmd.GetValue("key") ?? "Key";
                 string colValue = cmd.GetValue("value") ?? "Value";
 
-                SqlBuilder builder = new SqlBuilder().SELECT.COLUMNS(new string[] { colKey, colValue }).FROM(tname);
+                SqlBuilder builder = new SqlBuilder().SELECT().COLUMNS(new string[] { colKey, colValue }).FROM(tname);
                 var L = new SqlCmd(builder).ToList(row => new { Key = row.GetField<string>(colKey), Value = row.GetField<string>(colValue) });
 
                 Memory DS = new Memory();

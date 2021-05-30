@@ -20,6 +20,8 @@ namespace Sys.Data.Linq
         public event EventHandler<RowEventArgs> RowChanging;
         public event EventHandler<RowEventArgs> RowChanged;
 
+        public EntityClassType ClassType { get; set; } = EntityClassType.ExtensionClass;
+
         public DataContext()
         {
             this.sqlCommand = query => new SqlCmd(query);

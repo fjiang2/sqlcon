@@ -23,12 +23,6 @@ using Tie;
 
 namespace Sys.CodeBuilder
 {
-    enum ValueOutputFormat
-    {
-        SingleLine,
-        MultipleLine,
-        Wrap
-    }
 
     public class Value : Buildable
     {

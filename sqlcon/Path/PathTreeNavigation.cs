@@ -210,7 +210,7 @@ namespace sqlcon
                 locator.Name = $"filter{pt.Nodes.Count + 1}";
             }
 
-            var builder = new SqlBuilder().SELECT.TOP(1).COLUMNS().FROM(tname).WHERE(locator);
+            var builder = new SqlBuilder().SELECT().TOP(1).COLUMNS().FROM(tname).WHERE(locator);
             if (builder.Invalid())
             {
                 cerr.WriteLine($"invalid path: {cmd.arg1}");

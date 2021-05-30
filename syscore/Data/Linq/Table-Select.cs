@@ -41,23 +41,25 @@ namespace Sys.Data.Linq
 
         public List<TEntity> ToList(DataTable dt)
         {
-            object obj = Invoke($"To{type.Name}Collection", new object[] { dt });
-            return (List<TEntity>)obj;
+            return broker.ToList(dt);
         }
-
 
         private string SelectFromWhere(string where)
         {
-            string SQL;
+            return SelectFromWhere(where, null);
+        }
 
-            if (where != null)
-            {
-                SQL = $"SELECT * FROM {formalName} WHERE {where}";
-            }
+        internal string SelectFromWhere(string where, IEnumerable<string> columns)
+        {
+            string SQL;
+            string _columns = "*";
+            if (columns != null && columns.Count() == 0)
+                _columns = string.Join(",", columns);
+
+            if (!string.IsNullOrEmpty(where))
+                SQL = $"SELECT {_columns} FROM {formalName} WHERE {where}";
             else
-            {
-                SQL = $"SELECT * FROM {formalName}";
-            }
+                SQL = $"SELECT {_columns} FROM {formalName}";
 
             return SQL;
         }

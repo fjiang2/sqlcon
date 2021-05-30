@@ -1,35 +1,40 @@
 ﻿using System;
+using System.Linq;
+using Tie;
 
 namespace Sys.Data
 {
     class SqlTokenizer
     {
-        private string[] tokens;
+        private token[] tokens;
         private int index = 0;
 
         public SqlTokenizer(string sql)
         {
-            this.tokens = sql.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            this.tokens = Script.Tokenize(sql).ToArray();
         }
 
-        public string GetNextToken()
-        {
-            if (index >= tokens.Length)
-                return null;
 
-            string tok = tokens[index];
+        public bool EndOfToken => index >= tokens.Length;
+        public token GetNextToken()
+        {
+            var tok = tokens[index];
             index++;
             return tok;
         }
 
         public bool ExpectInt32(out int result)
         {
-            string token = GetNextToken();
             result = 0;
-            if (token == null)
+
+            if (EndOfToken)
                 return false;
 
-            if (int.TryParse(token, out int value))
+            var token = GetNextToken();
+            if (token.ty != tokty.number)
+                return false;
+
+            if (int.TryParse(token.tok, out int value))
             {
                 result = value;
                 return true;

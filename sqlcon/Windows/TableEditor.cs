@@ -107,7 +107,13 @@ namespace sqlcon.Windows
             try
             {
                 if (row.RowState != DataRowState.Detached)
-                    udt.UpdateCell(row, column, e.ProposedValue);
+                {
+                    object value = e.ProposedValue;
+                    if (value.Equals("NULL") && column.AllowDBNull)
+                        value = DBNull.Value;
+
+                    udt.UpdateCell(row, column, value);
+                }
             }
             catch (Exception ex)
             {

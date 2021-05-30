@@ -88,7 +88,7 @@ namespace Sys.Data
         /// <param name="where"></param>
         public void UpdateObject(SqlExpr where)
         {
-            DataRow row = new SqlCmd(this.TableName.Provider, new SqlBuilder().SELECT.COLUMNS().FROM(TableName).WHERE(where).Clause).FillDataRow();
+            DataRow row = new SqlCmd(this.TableName.Provider, new SqlBuilder().SELECT().COLUMNS().FROM(TableName).WHERE(where).Clause).FillDataRow();
             this.exists = row != null;
             
             if(exists)
