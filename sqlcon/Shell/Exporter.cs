@@ -11,7 +11,6 @@ using Sys.Data.Comparison;
 using Sys.Data.Manager;
 using Sys.Data.Resource;
 using Sys.Stdio;
-using Sys.Data.Code;
 
 namespace sqlcon
 {
@@ -212,18 +211,21 @@ namespace sqlcon
                 using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
                 {
                     //cout.WriteLine($"start to generate {tname} script to file: \"{SqlFileName}\"");
-                    Locator locator = new Locator();
+                    Locator locator = null;
+                    string WHERE = "";
                     if (node != null)
+                    {
                         locator = mgr.GetCombinedLocator(node);
+                        WHERE = $" WHERE {locator}";
+                    }
 
-                    var reader = new TableReader(tname, locator);
-                    long cnt = reader.Count;
+                    long cnt = tname.GetTableRowCount(locator);
                     count = Tools.ForceLongToInteger(cnt);
                     using (var progress = new ProgressBar { Count = count })
                     {
                         count = Compare.GenerateRows(type, writer, new TableSchema(tname), locator, option, progress);
                     }
-                    cout.WriteLine($"{type} clauses ({reader}) generated to \"{SqlFileName}\", Done on rows({cnt})");
+                    cout.WriteLine($"{type} clauses (SELECT * FROM {tname}{WHERE}) generated to \"{SqlFileName}\", Done on rows({cnt})");
                 }
             }
             else if (dname != null)
@@ -244,7 +246,7 @@ namespace sqlcon
                             if (cts.IsCancellationRequested)
                                 return;
 
-                            long cnt = new TableReader(tn).Count;
+                            long cnt = tn.GetTableRowCount();
                             if (cnt > cfg.MaxRows)
                             {
                                 if (!cin.YesOrNo($"Are you sure to export {cnt} rows on {tn.ShortName} (y/n)?"))

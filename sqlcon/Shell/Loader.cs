@@ -68,7 +68,7 @@ namespace sqlcon
                     if (values == null)
                         return count;
 
-                    var builder = new SqlBuilder().INSERT_INTO(tname, columns).VALUES(values);
+                    var builder = new SqlBuilder().INSERT(tname, columns).VALUES(values);
                     try
                     {
                         new SqlCmd(builder).ExecuteNonQuery();

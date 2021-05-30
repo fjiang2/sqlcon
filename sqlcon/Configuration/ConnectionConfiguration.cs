@@ -34,6 +34,21 @@ namespace sqlcon
             }
         }
 
+        private static string PeelOleDb(string connectionString)
+        {
+            if (connectionString.ToLower().IndexOf("sqloledb") >= 0)
+            {
+                var x1 = new OleDbConnectionStringBuilder(connectionString);
+                var x2 = new SqlConnectionStringBuilder();
+                x2.DataSource = x1.DataSource;
+                x2.InitialCatalog = (string)x1["Initial Catalog"];
+                x2.UserID = (string)x1["User Id"];
+                x2.Password = (string)x1["Password"];
+                return x2.ConnectionString;
+            }
+
+            return connectionString;
+        }
 
         private List<ConnectionProvider> providers = null;
         public List<ConnectionProvider> Providers
@@ -64,7 +79,7 @@ namespace sqlcon
                 }
 
                 string serverName = pair[0].Str;
-                string connectionString = pair[1].Str;
+                string connectionString = PeelOleDb(pair[1].Str);
                 try
                 {
                     ConnectionProvider provider = ConnectionProviderManager.Register(serverName, connectionString);

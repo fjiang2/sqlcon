@@ -9,7 +9,7 @@ namespace Sys
 {
     public static class Iteratable
     {
-        public static void ForEach<TSource>(this IEnumerable<TSource> items, Action<TSource> action, Action<TSource> delimiter)
+        public static void ForEach<T>(this IEnumerable<T> items, Action<T> action, Action<T> delimiter)
         {
             bool first = true;
 
@@ -23,7 +23,7 @@ namespace Sys
             }
         }
 
-        public static void ForEach<TSource>(this IEnumerable<TSource> items, Action<TSource> action)
+        public static void ForEach<T>(this IEnumerable<T> items, Action<T> action)
         {
             foreach (var item in items)
             {
@@ -31,7 +31,7 @@ namespace Sys
             }
         }
 
-        public static string Concatenate<TSource>(this IEnumerable<TSource> items, Func<TSource, string> doit, string delimiter)
+        public static string Concatenate<T>(this IEnumerable<T> items, Func<T, string> doit, string delimiter)
         {
             StringBuilder builder = new StringBuilder();
             items.ForEach(
@@ -45,16 +45,16 @@ namespace Sys
 
         /// <summary>
         /// </summary>
-        /// <typeparam name="TResult"></typeparam>
+        /// <typeparam name="T"></typeparam>
         /// <param name="text"></param>
         /// <param name="convert">convert substring to typeof(T)</param>
         /// <param name="separator"></param>
         /// <returns></returns>
-        public static IEnumerable<TResult> Split<TResult>(this string text, Func<string, TResult> convert, string separator)
+        public static IEnumerable<T> Split<T>(this string text, Func<string, T> convert, string separator)
         {
             string[] items = text.Split(new string[] { separator }, StringSplitOptions.RemoveEmptyEntries);
 
-            List<TResult> list = new List<TResult>();
+            List<T> list = new List<T>();
 
             foreach (var item in items)
             {
@@ -64,10 +64,17 @@ namespace Sys
             return list;
         }
 
-        public static IEnumerable<TResult> Split<TResult>(this string text, Func<string, TResult> convert)
+        public static IEnumerable<T> Split<T>(this string text, Func<string, T> convert)
         {
             return Split(text, convert, ",");
         }
 
+        public static IEnumerable<T2> ToEnumerable<T1, T2>(this IEnumerable collection, Func<T1, T2> func)
+        {
+            foreach (T1 item in collection)
+            {
+                yield return func(item);
+            }
+        }
     }
 }

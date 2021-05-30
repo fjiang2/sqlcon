@@ -1,10 +1,5 @@
 ﻿sqlcon release notes
 
-5/30/2021 v3.0.0.0
-	Improvements/Enhancements:
-	1. Upgraded to .Net 5.0
-   
-
 4/11/2021 v2.4.1.0
 	Improvements/Enhancements:
 	1. Command "dir" can display stored procedures and functions.

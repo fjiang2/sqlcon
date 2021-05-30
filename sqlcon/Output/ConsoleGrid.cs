@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Data.Common;
 using Sys.Stdio;
-using Sys.Data;
 
 namespace sqlcon
 {
@@ -14,11 +13,45 @@ namespace sqlcon
     {
         public static void ToConsole<T>(this IEnumerable<T> source, bool vertical = false)
         {
-            DataTable dt = source.ToDataTable();
+            DataTable dt = ToDataTable(source);
             new OutputDataTable(dt, cout.TrimWriteLine, vertical).Output();
         }
 
-      
+        private static DataTable ToDataTable<T>(IEnumerable<T> source)
+        {
+            var properties = typeof(T).GetProperties();
+            string[] headers = properties.Select(p => p.Name).ToArray();
+            DataTable dt = new DataTable();
+            foreach (var header in headers)
+                dt.Columns.Add(new DataColumn(header, typeof(string)));
+
+            Func<T, object[]> selector = row =>
+            {
+                var values = new object[headers.Length];
+                int i = 0;
+
+                foreach (var propertyInfo in properties)
+                {
+                    values[i++] = propertyInfo.GetValue(row);
+                }
+
+                return values;
+            };
+
+            foreach (T row in source)
+            {
+                object[] values = selector(row);
+                var newRow = dt.NewRow();
+                int k = 0;
+                foreach (var item in values)
+                {
+                    newRow[k++] = item;
+                }
+                dt.Rows.Add(newRow);
+            }
+
+            return dt;
+        }
 
         public static void ToConsole(this DbDataReader reader, int maxRow = 0)
         {

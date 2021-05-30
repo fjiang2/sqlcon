@@ -3,7 +3,6 @@
     public interface ICommand
     {
         string Action { get; }
-        string arg1 { get; }
         bool? GetBoolean(string name);
         bool GetBoolean(string name, bool defaultValue);
         double? GetDouble(string name);
@@ -12,7 +11,6 @@
         int? GetInt32(string name);
         int GetInt32(string name, int defaultValue);
         string GetValue(string name);
-        string[] GetStringArray(string name);
         bool Has(string name);
     }
 }

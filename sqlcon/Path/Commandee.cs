@@ -10,10 +10,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-
 using Sys.Stdio;
 using Sys.Data.Resource;
-using Sys.Data.Code;
 using Tie;
 
 namespace sqlcon
@@ -1646,7 +1644,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 #if WINDOWS
             try
             {
-                var editor = new Windows.SqlEditor(connection, new PathManager(connection), theSide.Provider, mgr.ToString(), fileLink);
+                var editor = new Windows.SqlEditor(connection, theSide.Provider, mgr.ToString(), fileLink);
                 editor.ShowDialog();
             }
             catch (Exception ex)

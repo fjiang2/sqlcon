@@ -199,8 +199,8 @@ namespace sqlcon
                 return text;
             }
 
-            long count1 = new TableReader(tname1).MaxCount;
-            long count2 = new TableReader(tname2).MaxCount;
+            long count1 = new TableReader(tname1).Count;
+            long count2 = new TableReader(tname2).Count;
 
             if (count1 != count2)
             {

@@ -10,7 +10,7 @@ using Sys.Stdio;
 
 namespace sqlcon
 {
-    class ApplicationCommand : Command, IApplicationCommand
+    class ApplicationCommand : Command
     {
 
         public bool Refresh { get; private set; }
@@ -168,7 +168,21 @@ namespace sqlcon
 
         public string[] Excludes => GetStringArray("exclude");
 
-       
+        public string[] GetStringArray(string name)
+        {
+            string value = GetValue(name);
+            try
+            {
+                if (value != null)
+                    return value.Split(',');
+                else
+                    return new string[] { };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"invalid arugment /{name}:{value}, {ex.Message}");
+            }
+        }
 
         /// <summary>
         /// Get dictionary

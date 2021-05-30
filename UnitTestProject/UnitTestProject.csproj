@@ -1,22 +1,110 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.props" Condition="Exists('..\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <IsPackable>false</IsPackable>
-    <Version>3.0.0</Version>
-    <Company>Datconn</Company>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C21F5B5B-4301-43D3-A53C-195A1D860BE7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>UnitTestProject</RootNamespace>
+    <AssemblyName>UnitTestProject</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.1.1" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.1.1" />
-    <PackageReference Include="coverlet.collector" Version="1.3.0" />
-    <PackageReference Include="Tie" Version="2.0.8" />
+    <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\MSTest.TestFramework.1.3.2\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\MSTest.TestFramework.1.3.2\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\code-gen\syscode\syscode.csproj" />
-    <ProjectReference Include="..\syscore\syscore.csproj" />
-    <ProjectReference Include="..\sysdata.code\sysdata.code.csproj" />
-    <ProjectReference Include="..\sysdata\sysdata.csproj" />
+    <Compile Include="dbo\Categories.cs" />
+    <Compile Include="dbo\CustomerCustomerDemo.cs" />
+    <Compile Include="dbo\CustomerDemographics.cs" />
+    <Compile Include="dbo\Customers.cs" />
+    <Compile Include="dbo\Employees.cs" />
+    <Compile Include="dbo\EmployeeTerritories.cs" />
+    <Compile Include="dbo\Orders.cs" />
+    <Compile Include="dbo\Order_Details.cs" />
+    <Compile Include="dbo\Products.cs" />
+    <Compile Include="dbo\Region.cs" />
+    <Compile Include="dbo\Shippers.cs" />
+    <Compile Include="dbo\Suppliers.cs" />
+    <Compile Include="dbo\Territories.cs" />
+    <Compile Include="l2s\Category.cs" />
+    <Compile Include="l2s\Customer.cs" />
+    <Compile Include="l2s\CustomerCustomerDemo.cs" />
+    <Compile Include="l2s\CustomerDemographic.cs" />
+    <Compile Include="l2s\Employee.cs" />
+    <Compile Include="l2s\EmployeeTerritory.cs" />
+    <Compile Include="l2s\Order.cs" />
+    <Compile Include="l2s\Order_Detail.cs" />
+    <Compile Include="l2s\Product.cs" />
+    <Compile Include="l2s\Region.cs" />
+    <Compile Include="l2s\Shipper.cs" />
+    <Compile Include="l2s\Supplier.cs" />
+    <Compile Include="l2s\sysdiagram.cs" />
+    <Compile Include="l2s\Territory.cs" />
+    <Compile Include="SqlLexerTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UnitTestCodeBuilder.cs" />
+    <Compile Include="UnitTestDataContext.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="gen-dbo-northwind.sqc" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\syscore\syscore.csproj">
+      <Project>{58332852-369d-4045-93c2-5cfe9cfb2313}</Project>
+      <Name>syscore</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.props'))" />
+    <Error Condition="!Exists('..\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.targets'))" />
+  </Target>
+  <Import Project="..\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.targets" Condition="Exists('..\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.targets')" />
 </Project>

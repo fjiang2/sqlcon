@@ -103,22 +103,6 @@ namespace Sys.Stdio
             return Options.GetValue('/', name);
         }
 
-        public string[] GetStringArray(string name)
-        {
-            string value = GetValue(name);
-            try
-            {
-                if (value != null)
-                    return value.Split(',');
-                else
-                    return new string[] { };
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"invalid arugment /{name}:{value}, {ex.Message}");
-            }
-        }
-
         public PathName Path1
         {
             get

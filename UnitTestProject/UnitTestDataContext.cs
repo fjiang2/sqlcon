@@ -33,6 +33,8 @@ namespace UnitTestProject
             ConnectionProviderManager.RegisterDefaultProvider(connectionString);
         }
 
+        private TestContext testContextInstance;
+
 
 
         #region Additional test attributes
@@ -498,11 +500,11 @@ namespace UnitTestProject
         }
 
         [TestMethod]
-        public void TestContains1()
+        public void TestContains()
         {
             using (var db = new DataContext(connectionString))
             {
-                var L = new int[] { 10, 30, 40 }.AsQueryable();
+                var L = new int[] { 10, 30, 40 }.AsQueryable(); 
                 var table = db.GetTable<Products>();
                 table.SelectOnSubmit(row => L.Contains(row.ProductID));
 
@@ -510,35 +512,6 @@ namespace UnitTestProject
                 Debug.Assert(SQL == "SELECT * FROM [Products] WHERE ProductID IN (10,30,40)");
             }
         }
-
-        [TestMethod]
-        public void TestContains2()
-        {
-            using (var db = new DataContext(connectionString))
-            {
-                var L = new int[] { 10 };
-                var table = db.GetTable<Products>();
-                table.SelectOnSubmit(row => L.Contains(row.ProductID));
-
-                string SQL = db.GetQueryScript();
-                Debug.Assert(SQL == "SELECT * FROM [Products] WHERE ProductID IN (10)");
-            }
-        }
-
-        [TestMethod]
-        public void TestContains3()
-        {
-            using (var db = new DataContext(connectionString))
-            {
-                var L = new int[] { };
-                var table = db.GetTable<Products>();
-                table.SelectOnSubmit(row => L.Contains(row.ProductID));
-
-                string SQL = db.GetQueryScript();
-                Debug.Assert(SQL == "SELECT * FROM [Products] WHERE ProductID IN ()");
-            }
-        }
-
 
         [TestMethod]
         public void Test2TableContains()
@@ -550,18 +523,6 @@ namespace UnitTestProject
                 string text = products.Select(row => row.ProductID).ToSimpleString();
 
                 Debug.Assert(text == "[1,2,24,34,35,38,39,43,67,70,75,76]");
-            }
-        }
-
-        [TestMethod]
-        public void Test2DeleteManyRows()
-        {
-            using (var db = new DataContext(connectionString))
-            {
-                var products = db.GetTable<Products>();
-                products.DeleteOnSubmit(row => row.CategoryID == 1 && row.ProductName == "Apple");
-                string SQL = db.GetNonQueryScript();
-                Debug.Assert(SQL == "DELETE FROM [Products] WHERE ((CategoryID = 1) AND (ProductName = 'Apple'))");
             }
         }
     }
