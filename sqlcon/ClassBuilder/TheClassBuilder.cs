@@ -97,7 +97,10 @@ namespace sqlcon
 
         public string PropertyName(DataColumn column)
         {
-            return column.ColumnName.ToFieldName("C");
+            string propertyName = column.ColumnName.ToFieldName("C");
+            if (propertyName == ClassName)
+                propertyName = propertyName + "1";
+            return propertyName;
         }
     }
 }

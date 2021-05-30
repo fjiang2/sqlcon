@@ -83,13 +83,13 @@ namespace sqlcon
             CreateTableSchemaFields(tname, dt, clss);
             index1 = clss.Index;
 
-            if (ContainsMethod("NewObject"))
+            if (ContainsMethod("FillObject"))
             {
                 Method_ToCollection(clss);
-                Method_NewObject(clss);
-            }
-            if (ContainsMethod("FillObject"))
                 Method_FillObject(clss);
+                //if (ContainsMethod("NewObject"))
+                //    Method_NewObject(clss);
+            }
             if (ContainsMethod("UpdateRow"))
                 Method_UpdateRow(clss);
             if (ContainsMethod("CreateTable"))
@@ -97,7 +97,7 @@ namespace sqlcon
             if (ContainsMethod("ToDataTable"))
             {
                 Method_ToDataTable1(clss);
-                Method_ToDataTable2(clss);
+                //Method_ToDataTable2(clss);
             }
             if (ContainsMethod("ToDictionary"))
                 Method_ToDictionary(clss);
@@ -144,11 +144,16 @@ namespace sqlcon
             clss.Add(method);
             sent = method.Statement;
             sent.AppendLine("return dt.AsEnumerable()");
-            sent.AppendLine(".Select(row => NewObject(row))");
+            sent.AppendLine(".Select(row =>");
+            sent.Begin();
+            sent.AppendLine($"var obj = new {ClassName}();");
+            sent.AppendLine("FillObject(obj, row);");
+            sent.AppendLine("return obj;");
+            sent.End(")");
             sent.AppendLine(".ToList();");
         }
 
-      
+
         private void Method_FillObject(Class clss)
         {
             Method method = new Method("FillObject")
