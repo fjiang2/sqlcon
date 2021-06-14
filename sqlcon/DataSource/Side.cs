@@ -16,36 +16,37 @@ namespace sqlcon
     class Side : IDataPath
     {
         public DatabaseName DatabaseName { get; private set; }
-        private ConnectionProvider provider;
 
         public Side(ConnectionProvider provider)
         {
-            this.provider = provider;
-            this.DatabaseName = new DatabaseName(provider, Provider.InitialCatalog);
+            this.DatabaseName = new DatabaseName(provider, provider.InitialCatalog);
         }
 
 
-        public Side(ConnectionProvider provider, DatabaseName dname)
+        public Side(DatabaseName dname)
         {
-            this.provider = provider;
             this.DatabaseName = dname;
         }
 
         public void UpdateDatabase(ConnectionProvider provider)
         {
-            this.provider = provider;
             this.DatabaseName = new DatabaseName(provider, Provider.InitialCatalog);
+        }
+
+        public void UpdateDatabase(DatabaseName dname)
+        {
+            this.DatabaseName = dname;
         }
 
         public ConnectionProvider Provider
         {
-            get { return this.provider; }
+            get { return this.DatabaseName.Provider; }
         }
 
 
         public string Path
         {
-            get { return this.provider.Name; }
+            get { return this.Provider.Name; }
         }
 
         public string GenerateScript()

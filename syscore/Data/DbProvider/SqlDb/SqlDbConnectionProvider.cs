@@ -64,7 +64,7 @@ namespace Sys.Data
         {
             string connString = ConnectionString;
             if (connString.ToLower().IndexOf("timeout") == -1)
-                connString += ";Connection Timeout = 3";
+                connString += ";Connection Timeout = 10";
 
             SqlConnection conn = new SqlConnection(connString);
             try
