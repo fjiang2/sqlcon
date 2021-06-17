@@ -2,10 +2,10 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>sqlcon</id>
-    <version>2.2.3.0</version>
+    <version>2.4.3.0</version>
     <title>sqlcon</title>
     <authors>datconn</authors>
-    <licenseUrl>http://tie.codeplex.com/license</licenseUrl>
+    <license type="expression">MIT</license>
     <projectUrl>https://github.com/fjiang2/sqlcon/</projectUrl>
     <iconUrl>http://download-codeplex.sec.s-msft.com/Download?ProjectName=tie&amp;DownloadId=331680&amp;Build=20841</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
@@ -28,6 +28,33 @@
     </description>
     <summary> SQL Console Tools for DevOps</summary>
     <releaseNotes>
+	  6/17/2021 v2.4.3.0
+	    Bug Fixes:
+  	    1. Current database is not switched on calling .sqc script after database is switched by command chdir.
+
+	  4/11/2021 v2.4.2.0
+		Bug Fixes:
+		1. Change PropertyName to PropertyName1 when PropertyName==ClassName in dc1
+
+	  4/11/2021 v2.4.1.0
+		Improvements/Enhancements:
+		1. Command "dir" can display stored procedures and functions.
+		2. Command "type" can display definition of stored procedures and functions.
+
+	  4/3/2021 v2.4.0.0
+		Improvements/Enhancements:
+		1. Import/extract string from C# source code into SQL table for string resource.
+		2. Display progress bar during exporting SQL table data rows into SQL script.
+		3. Export INSERT INTO VALUES without column-name to reduce script size.
+		
+		Bug Fixes:
+		1. Crash when sqlcon doesn't have permssion to create clog file in the disk.
+		2. Fixed bug on Query expression when a instance of class is used on Select Linq Expression.
+
+	  2/12/2021 v2.3.4.0
+		Bug Fixes:
+		1. Cannot copy or xcopy table rows when table schema is not dbo
+
       8/21/2019 v2.2.3.0
       Improvements/Enhancements:
       1. support append to existing file on output. The command option is "/append"
