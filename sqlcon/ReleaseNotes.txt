@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+6/17/2021 v2.4.3.0
+	Bug Fixes:
+	1. Current database is not switched on calling .sqc script after database is switched by command chdir.
+
 4/11/2021 v2.4.2.0
 	Bug Fixes:
 	1. Change PropertyName to PropertyName1 when PropertyName==ClassName in dc1
