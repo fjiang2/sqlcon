@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.OleDb;
 using System.Data.SqlClient;
+using System.Data.SqlServerCe;
 using System.Linq;
 using System.Text;
 using Sys.Networking;
@@ -61,6 +62,8 @@ namespace Sys.Data
                 this.ConnectionBuilder = new SqlConnectionStringBuilder(connectionString);
             else if (Type == ConnectionProviderType.OleDbServer)
                 this.ConnectionBuilder = new OleDbConnectionStringBuilder(connectionString);
+            else if (Type == ConnectionProviderType.SqlServerCe)
+                this.ConnectionBuilder = new SqlCeConnectionStringBuilder(connectionString);
             else
             {
                 this.ConnectionBuilder = new DbConnectionStringBuilder();
@@ -71,8 +74,18 @@ namespace Sys.Data
 
         public string InitialCatalog
         {
-            get { return (string)ConnectionBuilder["Initial Catalog"]; }
-            set { ConnectionBuilder["Initial Catalog"] = value; }
+            get
+            {
+                if (Type == ConnectionProviderType.SqlServerCe)
+                    return SqlCeSchemaProvider.SQLCE_DATABASE_NAME;
+
+                return (string)ConnectionBuilder["Initial Catalog"];
+            }
+            set
+            {
+                if (Type != ConnectionProviderType.SqlServerCe)
+                    ConnectionBuilder["Initial Catalog"] = value;
+            }
         }
 
 
@@ -240,6 +253,7 @@ namespace Sys.Data
         public const string PROVIDER_REMOTE_INVOKE_AGENT = "riadb";
         public const string PROVIDER_SQL_OLE_DB = "sqloledb";
         public const string PROVIDER_SQL_DB = "sqldb";
+        public const string PROVIDER_SQL_CE = "sqlce";
 
 
         public static ConnectionProvider CreateProvider(string serverName, string connectionString)
@@ -295,6 +309,10 @@ namespace Sys.Data
 
                 case PROVIDER_SQL_DB:                   //Sql Server
                     pvd = new SqlDbConnectionProvider(serverName, connectionString);
+                    break;
+
+                case PROVIDER_SQL_CE:                   //Sql Server Compact
+                    pvd = new SqlCeConnectionProvider(serverName, connectionString.Replace("provider=sqlce;", ""));
                     break;
             }
 
