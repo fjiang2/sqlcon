@@ -51,6 +51,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Version\Version.cs">
+      <Link>Version.cs</Link>
+    </Compile>
     <Compile Include="Account\ActiveAccount.cs" />
     <Compile Include="Account\IAccount.cs" />
     <Compile Include="CodeBuilder\Alignment.cs" />
