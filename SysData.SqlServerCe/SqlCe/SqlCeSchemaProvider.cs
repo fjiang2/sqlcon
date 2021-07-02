@@ -180,9 +180,9 @@ SELECT
     {0}
 	C.COLUMN_NAME AS ColumnName,
 	DATA_TYPE AS DataType,
-    CASE WHEN character_maximum_length IS NULL THEN CAST(0 AS smallint) 
-		WHEN character_maximum_length > 4000 THEN CAST(-1 AS smallint) 
-		ELSE CAST(character_maximum_length AS smallint) 
+    CASE WHEN CHARACTER_OCTET_LENGTH IS NULL THEN CAST(0 AS smallint) 
+		WHEN CHARACTER_OCTET_LENGTH > 4000 THEN CAST(-1 AS smallint) 
+		ELSE CAST(CHARACTER_OCTET_LENGTH AS smallint) 
 		END AS Length,
     CASE WHEN is_nullable = 'YES' THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS Nullable,
 	CASE WHEN NUMERIC_PRECISION IS NOT NULL THEN CAST(NUMERIC_PRECISION AS tinyint) ELSE CAST(0 AS tinyint) END AS precision,
