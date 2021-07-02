@@ -5,6 +5,7 @@ using System.IO;
 using Sys;
 using Tie;
 using Sys.Stdio;
+using Sys.Data;
 
 namespace sqlcon
 {
@@ -25,6 +26,11 @@ namespace sqlcon
             Constant.MAX_SRC_COL = 24 * 1024 * 1024;
             Constant.MAX_INSTRUCTION_NUM = 1 * 1024 * 1024;
             var cfg = ConfigurationEnvironment.PrepareConfiguration(false);
+
+
+            //Register database connection providers
+            Sys.Data.SqlServerCe.Main.RegisterConnectionProvider();
+
 
             int i = 0;
             while (i < args.Length)

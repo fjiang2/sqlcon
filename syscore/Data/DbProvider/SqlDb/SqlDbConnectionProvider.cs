@@ -14,7 +14,7 @@ namespace Sys.Data
     {
 
         public SqlDbConnectionProvider(string name, string connectionString)
-            : base(name, ConnectionProviderType.SqlServer, connectionString)
+            : base(name, ConnectionProviderType.SqlServer, new SqlConnectionStringBuilder(connectionString))
         {
         }
 
@@ -91,8 +91,9 @@ namespace Sys.Data
             return new SqlDbSchemaProvider(this);
         }
 
+        public override SchemaName DefaultTableSchemaName => SchemaName.Dbo;
 
-        internal override DbProviderType DpType
+        public override DbProviderType DpType
         {
             get
             {
@@ -100,7 +101,7 @@ namespace Sys.Data
             }
         }
 
-        internal override DbConnection NewDbConnection
+        public override DbConnection NewDbConnection
         {
             get
             {
@@ -108,14 +109,14 @@ namespace Sys.Data
             }
         }
 
-        internal override string CurrentDatabaseName()
+        public override string CurrentDatabaseName()
         {
             return (string)this.ExecuteScalar("SELECT DB_NAME()");
             //var connection = new SqlCmd(provider, string.Empty).DbProvider.DbConnection;
             //return connection.Database.ToString();
         }
 
-        internal override DbProvider CreateDbProvider(string script)
+        public override DbProvider CreateDbProvider(string script)
         {
             return new SqlDbProvider(script, this);
         }

@@ -80,7 +80,7 @@ namespace sqlcon
                     if (cts.IsCancellationRequested)
                         return;
 
-                    TableName tname2 = N2.Where(t => t.ShortName == tname1.ShortName).FirstOrDefault();
+                    TableName tname2 = N2.Where(t => t.Name == tname1.Name).FirstOrDefault();
                     if (tname2 == null)
                     {
                         //when compare tables in the same database, the table name could be different

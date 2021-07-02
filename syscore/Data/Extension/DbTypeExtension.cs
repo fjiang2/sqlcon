@@ -9,7 +9,7 @@ using System.Xml.Linq;
 namespace Sys.Data
 {
 
-    static class DbTypeExtension
+    public static class DbTypeExtension
     {
         #region ToSqlDbType / ToType
 
@@ -21,7 +21,7 @@ namespace Sys.Data
         }
 
 
-        public static OleDbType ToOleDbType(this Type type)
+        internal static OleDbType ToOleDbType(this Type type)
         {
             if (type == typeof(Boolean))
                 return OleDbType.Boolean;
@@ -59,7 +59,7 @@ namespace Sys.Data
 
 
 
-        public static string GetCSharpType(this CType type, bool nullable)
+        internal static string GetCSharpType(this CType type, bool nullable)
         {
             string ty = "";
             switch (type)

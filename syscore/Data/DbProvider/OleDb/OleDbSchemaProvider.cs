@@ -191,19 +191,17 @@ namespace Sys.Data
 
         public override DataTable GetTableSchema(TableName tname)
         {
-            return InformationSchema.SqlTableSchema(tname);
+            throw new NotImplementedException();
         }
 
         public override DataTable GetDatabaseSchema(DatabaseName dname)
         {
-            //return GetServerSchema(dname.ServerName).Tables[dname.Name];
-
-            return InformationSchema.SqlServerSchema(dname.ServerName, new DatabaseName[] { dname }).Tables[dname.Name];
+            throw new NotImplementedException();
         }
 
         public override DataSet GetServerSchema(ServerName sname)
         {
-            return InformationSchema.SqlServerSchema(sname, sname.GetDatabaseNames());
+            throw new NotImplementedException();
         }
 
         public override DependencyInfo[] GetDependencySchema(DatabaseName dname)

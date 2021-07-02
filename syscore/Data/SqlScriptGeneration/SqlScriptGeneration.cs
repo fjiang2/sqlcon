@@ -92,7 +92,8 @@ namespace Sys.Data
             object[] values = new object[columns.Length];
 
             int step = 0;
-            while (reader.HasRows)
+            //this is signle table
+            //while (reader.HasRows)
             {
                 while (reader.Read())
                 {
