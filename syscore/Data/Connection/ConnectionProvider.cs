@@ -181,6 +181,8 @@ namespace Sys.Data
 
         protected abstract DbSchemaProvider GetSchema();
 
+        public abstract SchemaName DefaultTableSchemaName { get; }
+
         public abstract DbProviderType DpType { get; }
 
         public abstract DbConnection NewDbConnection { get; }

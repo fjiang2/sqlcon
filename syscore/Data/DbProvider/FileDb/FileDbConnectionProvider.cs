@@ -60,7 +60,7 @@ namespace Sys.Data
             return new FileDbSchemaProvider(this);
         }
 
-
+        public override SchemaName DefaultTableSchemaName => SchemaName.Dbo;
         public override DbProviderType DpType => DbProviderType.FileDb;
 
         public override DbConnection NewDbConnection

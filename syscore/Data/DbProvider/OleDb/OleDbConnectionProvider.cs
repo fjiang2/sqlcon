@@ -56,6 +56,7 @@ namespace Sys.Data
            return new OleDbSchemaProvider(this);
         }
 
+        public override SchemaName DefaultTableSchemaName => SchemaName.Dbo;
 
         public override DbProviderType DpType
         {

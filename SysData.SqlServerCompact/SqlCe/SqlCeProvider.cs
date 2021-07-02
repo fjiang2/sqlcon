@@ -58,9 +58,9 @@ namespace Sys.Data
         public override DbParameter AddParameter(string parameterName, object value)
         {
             SqlDbType dbType = SqlDbType.NVarChar;
-            if (value is Int32)
+            if (value is int)
                 dbType = SqlDbType.Int;
-            else if (value is Int16)
+            else if (value is short)
                 dbType = SqlDbType.SmallInt;
             else if (value is long)
                 dbType = SqlDbType.BigInt;
@@ -70,13 +70,13 @@ namespace Sys.Data
                 dbType = SqlDbType.DateTime;
             else if (value is DateTimeOffset)
                 dbType = SqlDbType.DateTimeOffset;
-            else if (value is Double)
+            else if (value is double)
                 dbType = SqlDbType.Float;
-            else if (value is Single)
+            else if (value is float)
                 dbType = SqlDbType.Float;
-            else if (value is Decimal)
+            else if (value is decimal)
                 dbType = SqlDbType.Decimal;
-            else if (value is Boolean)
+            else if (value is bool)
                 dbType = SqlDbType.Bit;
             else if (value is string && ((string)value).Length > 4000)
                 dbType = SqlDbType.NText;

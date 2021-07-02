@@ -18,41 +18,7 @@ namespace Sys.Data
         {
         }
 
-        private int version = -1;
-        public override int Version
-        {
-            get
-            {
-                if (version != -1)
-                    return version;
-
-                if (this.Type == ConnectionProviderType.SqlServer)
-                {
-                    SqlCeConnection conn = new SqlCeConnection(ConnectionString);
-                    try
-                    {
-                        conn.Open();
-                        SqlCeCommand cmd = new SqlCeCommand("SELECT @@version", conn);
-                        string text = (string)cmd.ExecuteScalar();
-                        if (text.StartsWith("Microsoft SQL Azure"))
-                            return version = 2016;
-
-                        string[] items = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                        version = int.Parse(items[3]);
-                    }
-                    catch (Exception)
-                    {
-                        version = 0;
-                    }
-                    finally
-                    {
-                        conn.Close();
-                    }
-                }
-
-                return version;
-            }
-        }
+        public override int Version => 4;
 
         public override bool CheckConnection()
         {
@@ -70,43 +36,14 @@ namespace Sys.Data
             }
         }
 
-
-        private bool InvalidSqlClause(string sql)
-        {
-            string connString = ConnectionString;
-            SqlCeConnection conn = new SqlCeConnection(connString);
-            try
-            {
-                conn.Open();
-                SqlCeCommand cmd = new SqlCeCommand(sql, conn);
-                cmd.ExecuteScalar();
-            }
-            catch (Exception)
-            {
-                return true;
-            }
-            finally
-            {
-                conn.Close();
-            }
-
-            return false;
-        }
-
-
         protected override DbSchemaProvider GetSchema()
         {
             return new SqlCeSchemaProvider(this);
         }
 
+        public override SchemaName DefaultTableSchemaName => SchemaName.Empty;
 
-        public override DbProviderType DpType
-        {
-            get
-            {
-                return DbProviderType.SqlCe;
-            }
-        }
+        public override DbProviderType DpType => DbProviderType.SqlCe;
 
         public override DbConnection NewDbConnection
         {

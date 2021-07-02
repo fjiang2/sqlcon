@@ -31,6 +31,7 @@ namespace Sys.Data
             return new SqlDbSchemaProvider(this);
         }
 
+        public override SchemaName DefaultTableSchemaName => SchemaName.Dbo;
 
         public override DbProviderType DpType
         {

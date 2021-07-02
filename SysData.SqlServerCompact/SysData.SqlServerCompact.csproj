@@ -45,7 +45,6 @@
     <Compile Include="SqlCe\SqlCeConnectionProvider.cs" />
     <Compile Include="SqlCe\SqlCeProvider.cs" />
     <Compile Include="SqlCe\SqlCeSchemaProvider.cs" />
-    <Compile Include="SqlCe\SqlCeServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\syscore\syscore.csproj">
