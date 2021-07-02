@@ -79,7 +79,7 @@ SELECT * FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS
             {
                 return table
                     .AsEnumerable()
-                    .Select(row => new TableName(dname, row.Field<string>("SchemaName"), row.Field<string>("TableName")))
+                    .Select(row => new TableName(dname, row["SchemaName"].IsNull(string.Empty), row.Field<string>("TableName")))
                     .ToArray();
             }
 
@@ -93,7 +93,7 @@ SELECT * FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS
 
             if (table != null)
                 return table.AsEnumerable()
-                .Select(row => new TableName(dname, row["SchemaName"].IsNull(string.Empty), (string)row["TableName"]) { Type = TableNameType.View })
+                .Select(row => new TableName(dname, row["SchemaName"].IsNull(string.Empty), row.Field<string>("TableName")) { Type = TableNameType.View })
                 .ToArray();
 
             return new TableName[] { };
