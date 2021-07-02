@@ -216,6 +216,10 @@
       <Project>{58332852-369d-4045-93c2-5cfe9cfb2313}</Project>
       <Name>syscore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SysData.SqlServerCompact\SysData.SqlServerCompact.csproj">
+      <Project>{b78cffc9-5cd5-4c79-a781-5c5dd87a8bc4}</Project>
+      <Name>SysData.SqlServerCompact</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="ReleaseNotes.txt">

@@ -72,7 +72,9 @@ SELECT * FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS
 
         public override TableName[] GetTableNames(DatabaseName dname)
         {
-            var table = dname.FillDataTable($"SELECT TABLE_SCHEMA AS SchemaName, TABLE_NAME as TableName FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='TABLE' ORDER BY TABLE_SCHEMA,TABLE_NAME");
+            var table = new SqlCmd(dname.Provider, $"SELECT TABLE_SCHEMA AS SchemaName, TABLE_NAME as TableName FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='TABLE' ORDER BY TABLE_SCHEMA,TABLE_NAME")
+                .FillDataTable();
+
             if (table != null)
             {
                 return table
@@ -86,7 +88,8 @@ SELECT * FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS
 
         public override TableName[] GetViewNames(DatabaseName dname)
         {
-            var table = dname.FillDataTable($"SELECT TABLE_SCHEMA AS SchemaName, TABLE_NAME as TableName FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'VIEW' ORDER BY TABLE_SCHEMA, TABLE_NAME");
+            var table = new SqlCmd(dname.Provider, $"SELECT TABLE_SCHEMA AS SchemaName, TABLE_NAME as TableName FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'VIEW' ORDER BY TABLE_SCHEMA, TABLE_NAME")
+                .FillDataTable();
 
             if (table != null)
                 return table.AsEnumerable()

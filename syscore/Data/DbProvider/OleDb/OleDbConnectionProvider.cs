@@ -13,12 +13,12 @@ namespace Sys.Data
     {
 
         public OleDbConnectionProvider(string name, ConnectionProviderType type,  string connectionString)
-            : base(name, type, connectionString)
+            : base(name, type, new OleDbConnectionStringBuilder(connectionString))
         {
         }
 
         public OleDbConnectionProvider(string name, string connectionString)
-            : base(name, ConnectionProviderType.OleDbServer, connectionString)
+            : base(name, ConnectionProviderType.OleDbServer, new OleDbConnectionStringBuilder(connectionString))
         {
         }
 
@@ -57,7 +57,7 @@ namespace Sys.Data
         }
 
 
-        internal override DbProviderType DpType
+        public override DbProviderType DpType
         {
             get
             {
@@ -65,7 +65,7 @@ namespace Sys.Data
             }
         }
 
-        internal override DbConnection NewDbConnection
+        public override DbConnection NewDbConnection
         {
             get
             {
@@ -73,12 +73,12 @@ namespace Sys.Data
             }
         }
 
-        internal override string CurrentDatabaseName()
+        public override string CurrentDatabaseName()
         {
             return (string)this.ExecuteScalar("SELECT DB_NAME()");
         }
 
-        internal override DbProvider CreateDbProvider(string script)
+        public override DbProvider CreateDbProvider(string script)
         {
             return new OleDbProvider(script, this);
         }

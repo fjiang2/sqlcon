@@ -18,7 +18,7 @@ namespace Sys.Data
         public FileLink FileLink { get; }
 
         public FileDbConnectionProvider(string name, string connectionString, DbFileType fileType)
-            : base(name, ConnectionProviderType.DbFile, connectionString)
+            : base(name, ConnectionProviderType.DbFile, new SimpleDbConnectionStringBuilder(connectionString))
         {
             this.DbFileType = fileType;
             this.FileLink = FileLink.CreateLink(DataSource, this.UserId, this.Password);
@@ -61,9 +61,9 @@ namespace Sys.Data
         }
 
 
-        internal override DbProviderType DpType => DbProviderType.FileDb;
+        public override DbProviderType DpType => DbProviderType.FileDb;
 
-        internal override DbConnection NewDbConnection
+        public override DbConnection NewDbConnection
         {
             get
             {
@@ -71,12 +71,12 @@ namespace Sys.Data
             }
         }
 
-        internal override string CurrentDatabaseName()
+        public override string CurrentDatabaseName()
         {
             return InitialCatalog;
         }
 
-        internal override DbProvider CreateDbProvider(string script)
+        public override DbProvider CreateDbProvider(string script)
         {
             return new FileDbProvider(script, this);
         }

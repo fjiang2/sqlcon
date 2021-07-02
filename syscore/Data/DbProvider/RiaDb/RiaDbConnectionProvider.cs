@@ -14,7 +14,7 @@ namespace Sys.Data
     {
 
         public RiaDbConnectionProvider(string name, string connectionString)
-            : base(name, ConnectionProviderType.SqlServerRia, connectionString)
+            : base(name, ConnectionProviderType.SqlServerRia, new SimpleDbConnectionStringBuilder(connectionString))
         {
         }
 
@@ -32,7 +32,7 @@ namespace Sys.Data
         }
 
 
-        internal override DbProviderType DpType
+        public override DbProviderType DpType
         {
             get
             {
@@ -40,7 +40,7 @@ namespace Sys.Data
             }
         }
 
-        internal override DbConnection NewDbConnection
+        public override DbConnection NewDbConnection
         {
             get
             {
@@ -48,13 +48,13 @@ namespace Sys.Data
             }
         }
 
-        internal override string CurrentDatabaseName()
+        public override string CurrentDatabaseName()
         {
 
             return InitialCatalog;
         }
 
-        internal override DbProvider CreateDbProvider(string script)
+        public override DbProvider CreateDbProvider(string script)
         {
             return new RiaDbProvider(script, this);
         }

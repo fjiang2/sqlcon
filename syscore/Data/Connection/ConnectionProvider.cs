@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.OleDb;
 using System.Data.SqlClient;
-using System.Data.SqlServerCe;
 using System.Linq;
 using System.Text;
 using Sys.Networking;
@@ -27,7 +26,7 @@ using Tie;
 
 namespace Sys.Data
 {
-    public abstract class ConnectionProvider : IValizable, IComparable<ConnectionProvider>, IComparable
+    public abstract class ConnectionProvider : IComparable<ConnectionProvider>, IComparable
     {
         internal const int DEFAULT_HANDLE = 0;
         internal const int USER_HANDLE_BASE = DEFAULT_HANDLE + 1000;
@@ -35,12 +34,11 @@ namespace Sys.Data
         protected DbConnectionStringBuilder ConnectionBuilder;
         private DatabaseName _defaultDatabaseName = null;
 
-        protected ConnectionProvider(string name, ConnectionProviderType type, string connectionString)
+        protected ConnectionProvider(string name, ConnectionProviderType type, DbConnectionStringBuilder connectionBuilder)
         {
             this.Name = name;
             this.Type = type;
-
-            SetDbConnectionString(connectionString);
+            this.ConnectionBuilder = connectionBuilder;
             _defaultDatabaseName = new DatabaseName(this, InitialCatalog);
         }
 
@@ -50,41 +48,20 @@ namespace Sys.Data
         internal int Handle { get; set; } = DEFAULT_HANDLE;
         public ConnectionProviderType Type { get; private set; }
 
-        internal string ConnectionString
+        public string ConnectionString
         {
             get { return this.ConnectionBuilder.ConnectionString; }
         }
 
-
-        private void SetDbConnectionString(string connectionString)
-        {
-            if (Type == ConnectionProviderType.SqlServer)
-                this.ConnectionBuilder = new SqlConnectionStringBuilder(connectionString);
-            else if (Type == ConnectionProviderType.OleDbServer)
-                this.ConnectionBuilder = new OleDbConnectionStringBuilder(connectionString);
-            else if (Type == ConnectionProviderType.SqlServerCe)
-                this.ConnectionBuilder = new SqlCeConnectionStringBuilder(connectionString);
-            else
-            {
-                this.ConnectionBuilder = new DbConnectionStringBuilder();
-                this.ConnectionBuilder.ConnectionString = connectionString;
-            }
-        }
-
-
-        public string InitialCatalog
+        public virtual string InitialCatalog
         {
             get
             {
-                if (Type == ConnectionProviderType.SqlServerCe)
-                    return SqlCeSchemaProvider.SQLCE_DATABASE_NAME;
-
                 return (string)ConnectionBuilder["Initial Catalog"];
             }
             set
             {
-                if (Type != ConnectionProviderType.SqlServerCe)
-                    ConnectionBuilder["Initial Catalog"] = value;
+                ConnectionBuilder["Initial Catalog"] = value;
             }
         }
 
@@ -158,34 +135,6 @@ namespace Sys.Data
             return provider.Handle;
         }
 
-        public ConnectionProvider(VAL val)
-        {
-            SetVAL(val);
-        }
-
-        public void SetVAL(VAL val)
-        {
-            this.Handle = val["handle"].Intcon;
-            this.Name = val["name"].Str;
-            this.Type = (ConnectionProviderType)val["type"].Intcon;
-            SetDbConnectionString(val["connection"].Str);
-        }
-
-
-        public VAL GetVAL()
-        {
-            VAL val = new VAL();
-            val["handle"] = new VAL(this.Handle);
-            val["name"] = new VAL(this.Name);
-            val["type"] = new VAL((int)this.Type);
-            val["connection"] = new VAL(this.ConnectionString);
-
-            return val;
-        }
-
-
-
-
         private static Dictionary<string, ServerName> _serverNames = new Dictionary<string, ServerName>();
         public ServerName ServerName
         {
@@ -232,29 +181,39 @@ namespace Sys.Data
 
         protected abstract DbSchemaProvider GetSchema();
 
-        internal abstract DbProviderType DpType { get; }
+        public abstract DbProviderType DpType { get; }
 
-        internal abstract DbConnection NewDbConnection { get; }
+        public abstract DbConnection NewDbConnection { get; }
 
-        internal abstract string CurrentDatabaseName();
+        public abstract string CurrentDatabaseName();
 
-        internal abstract DbProvider CreateDbProvider(string script);
+        public abstract DbProvider CreateDbProvider(string script);
 
         public const string PROVIDER_FILE_DB_XML = "file/db/xml";
 
-        public const string PROVIDER_FILE_DATASET_JSON = "file/dataset/json";
-        public const string PROVIDER_FILE_DATASET_XML = "file/dataset/xml";
-        public const string PROVIDER_FILE_DATALAKE_JSON = "file/datalake/json";
-        public const string PROVIDER_FILE_DATALAKE_XML = "file/datalake/xml";
+        private const string PROVIDER_FILE_DATASET_JSON = "file/dataset/json";
+        private const string PROVIDER_FILE_DATASET_XML = "file/dataset/xml";
+        private const string PROVIDER_FILE_DATALAKE_JSON = "file/datalake/json";
+        private const string PROVIDER_FILE_DATALAKE_XML = "file/datalake/xml";
 
-        public const string PROVIDER_FILE_ASSEMBLY = "file/assembly";
-        public const string PROVIDER_FILE_CSHARP = "file/c#";
+        private const string PROVIDER_FILE_ASSEMBLY = "file/assembly";
+        private const string PROVIDER_FILE_CSHARP = "file/c#";
 
-        public const string PROVIDER_REMOTE_INVOKE_AGENT = "riadb";
-        public const string PROVIDER_SQL_OLE_DB = "sqloledb";
-        public const string PROVIDER_SQL_DB = "sqldb";
-        public const string PROVIDER_SQL_CE = "sqlce";
+        private const string PROVIDER_REMOTE_INVOKE_AGENT = "riadb";
+        private const string PROVIDER_SQL_OLE_DB = "sqloledb";
+        private const string PROVIDER_SQL_DB = "sqldb";
 
+
+        private static Dictionary<string, Func<string, string, ConnectionProvider>> providers = new Dictionary<string, Func<string, string, ConnectionProvider>>();
+        public static void Register(string providerName, Func<string, string, ConnectionProvider> provider)
+        {
+            if (providers.ContainsKey(providerName))
+            {
+                providers.Remove(providerName);
+            }
+
+            providers.Add(providerName, provider);
+        }
 
         public static ConnectionProvider CreateProvider(string serverName, string connectionString)
         {
@@ -310,11 +269,15 @@ namespace Sys.Data
                 case PROVIDER_SQL_DB:                   //Sql Server
                     pvd = new SqlDbConnectionProvider(serverName, connectionString);
                     break;
-
-                case PROVIDER_SQL_CE:                   //Sql Server Compact
-                    pvd = new SqlCeConnectionProvider(serverName, connectionString.Replace("provider=sqlce;", ""));
-                    break;
             }
+
+            if (pvd == null)
+            {
+                //pvd = new SqlCeConnectionProvider(serverName, connectionString.Replace("provider=sqlce;", ""));
+                if (providers.ContainsKey(providerName))
+                    return providers[providerName](serverName, connectionString);
+            }
+
 
             return pvd;
         }

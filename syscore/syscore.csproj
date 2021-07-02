@@ -109,10 +109,7 @@
     <Compile Include="Data.Resource\ResxFile.cs" />
     <Compile Include="Data.Resource\entry.cs" />
     <Compile Include="Data.Resource\XlfFile.cs" />
-    <Compile Include="Data\DbProvider\SqlCe\SqlCeConnectionProvider.cs" />
-    <Compile Include="Data\DbProvider\SqlCe\SqlCeProvider.cs" />
-    <Compile Include="Data\DbProvider\SqlCe\SqlCeSchemaProvider.cs" />
-    <Compile Include="Data\DbProvider\SqlCe\SqlCeServer.cs" />
+    <Compile Include="Data\Connection\SimpleDbConnectionStringBuilder.cs" />
     <Compile Include="Data\Linq\BrokerOfDataContract.cs" />
     <Compile Include="Data\Linq\BrokerOfDataContract2.cs" />
     <Compile Include="Data\Linq\BrokerOfDataContract1.cs" />
@@ -433,9 +430,6 @@
     <Compile Include="Sys\StackInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.SqlServer.Compact">
-      <Version>4.0.8876.1</Version>
-    </PackageReference>
     <PackageReference Include="Tie">
       <Version>2.0.8</Version>
     </PackageReference>

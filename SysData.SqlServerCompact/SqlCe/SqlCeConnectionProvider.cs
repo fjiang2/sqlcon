@@ -10,11 +10,11 @@ using System.Data.Common;
 
 namespace Sys.Data
 {
-    class SqlCeConnectionProvider : ConnectionProvider
+    public class SqlCeConnectionProvider : ConnectionProvider
     {
 
         public SqlCeConnectionProvider(string name, string connectionString)
-            : base(name, ConnectionProviderType.SqlServerCe, connectionString)
+            : base(name, ConnectionProviderType.SqlServerCe, new SqlCeConnectionStringBuilder(connectionString))
         {
         }
 
@@ -59,6 +59,18 @@ namespace Sys.Data
             return true;
         }
 
+        public override string InitialCatalog
+        {
+            get
+            {
+                return SqlCeSchemaProvider.SQLCE_DATABASE_NAME;
+            }
+            set
+            {
+            }
+        }
+
+
         private bool InvalidSqlClause(string sql)
         {
             string connString = ConnectionString;
@@ -88,7 +100,7 @@ namespace Sys.Data
         }
 
 
-        internal override DbProviderType DpType
+        public override DbProviderType DpType
         {
             get
             {
@@ -96,7 +108,7 @@ namespace Sys.Data
             }
         }
 
-        internal override DbConnection NewDbConnection
+        public override DbConnection NewDbConnection
         {
             get
             {
@@ -104,12 +116,12 @@ namespace Sys.Data
             }
         }
 
-        internal override string CurrentDatabaseName()
+        public override string CurrentDatabaseName()
         {
             return SqlCeSchemaProvider.SQLCE_DATABASE_NAME;
         }
 
-        internal override DbProvider CreateDbProvider(string script)
+        public override DbProvider CreateDbProvider(string script)
         {
             return new SqlCeProvider(script, this);
         }

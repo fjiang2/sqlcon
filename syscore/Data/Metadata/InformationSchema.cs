@@ -7,7 +7,7 @@ using System.Data;
 
 namespace Sys.Data
 {
-    static class InformationSchema
+    public static class InformationSchema
     {
 
         public static DataSet LoadDatabaseSchema(ServerName sname, IEnumerable<DatabaseName> dnames, Func<DatabaseName, string> sqlOfDatabaseSchema)
@@ -30,7 +30,7 @@ namespace Sys.Data
             return ds;
         }
 
-        public static DataTable XmlTableSchema(TableName tableName, DataTable schema)
+        internal static DataTable XmlTableSchema(TableName tableName, DataTable schema)
         {
             DataTable dt = new DataTable();
             foreach (DataColumn column in schema.Columns)
@@ -56,7 +56,7 @@ namespace Sys.Data
         }
 
 
-        public static TableName[] XmlTableNames(this DatabaseName databaseName, DataTable schema)
+        internal static TableName[] XmlTableNames(this DatabaseName databaseName, DataTable schema)
         {
             var rows = schema.AsEnumerable()
                 .Select(row => new { schema = row.Field<string>("SchemaName"), name = row.Field<string>("TableName") })
