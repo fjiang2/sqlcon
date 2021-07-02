@@ -154,8 +154,8 @@ SELECT
             DependencyInfo[] rows = dt.AsEnumerable().Select(
                 row => new DependencyInfo
                 {
-                    FkTable = new TableName(dname, (string)row["FK_SCHEMA"], (string)row["FK_Table"]),
-                    PkTable = new TableName(dname, (string)row["PK_SCHEMA"], (string)row["PK_Table"]),
+                    FkTable = new TableName(dname, row["FK_SCHEMA"].IsNull<string>(null), (string)row["FK_Table"]),
+                    PkTable = new TableName(dname, row["PK_SCHEMA"].IsNull<string>(null), (string)row["PK_Table"]),
                     PkColumn = (string)row["PK_Column"],
                     FkColumn = (string)row["FK_Column"]
                 })
