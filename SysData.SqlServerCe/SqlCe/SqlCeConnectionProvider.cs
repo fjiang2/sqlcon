@@ -10,7 +10,7 @@ using System.Data.Common;
 
 namespace Sys.Data
 {
-    public class SqlCeConnectionProvider : ConnectionProvider
+    class SqlCeConnectionProvider : ConnectionProvider
     {
 
         public SqlCeConnectionProvider(string name, string connectionString)

@@ -27,9 +27,9 @@ namespace sqlcon
             Constant.MAX_INSTRUCTION_NUM = 1 * 1024 * 1024;
             var cfg = ConfigurationEnvironment.PrepareConfiguration(false);
 
-            
-            //Register database providers
-            ConnectionProvider.Register("sqlce", (serverName, connectionString) => new SqlCeConnectionProvider(serverName, connectionString.Replace("provider=sqlce;", "")) );
+
+            //Register database connection providers
+            Sys.Data.SqlServerCe.Main.RegisterConnectionProvider();
 
 
             int i = 0;
