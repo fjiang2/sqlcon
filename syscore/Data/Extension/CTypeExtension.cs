@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace Sys.Data
 {
-    static class CTypeExtension
+    public static class CTypeExtension
     {
 
         public static CType ToCType(this Type type)
@@ -70,7 +70,7 @@ namespace Sys.Data
         }
 
 
-        public static Type ToType(this CType type)
+        internal static Type ToType(this CType type)
         {
             switch (type)
             {
@@ -150,7 +150,7 @@ namespace Sys.Data
             throw new MessageException("SqlDbType {0} cannot be converted into Type", type);
         }
 
-        public static CType GetCType(this string sqlType)
+        internal static CType GetCType(this string sqlType)
         {
             switch (sqlType.ToLower())
             {
@@ -258,7 +258,7 @@ namespace Sys.Data
         }
 
 
-        public static string GetSqlType(this CType ctype)
+        internal static string GetSqlType(this CType ctype)
         {
             switch (ctype)
             {

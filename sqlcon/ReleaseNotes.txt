@@ -1,5 +1,10 @@
 ﻿sqlcon release notes
 
+7/2/2021 v2.5.0.0
+	Improvements/Enhancements:
+	1. Support SQL Server Compact 4.0. A connection string example:
+	"provider=sqlce;Data Source=c:\data\db.sdf;Max Buffer Size=1024;Persist Security Info=False;"
+
 6/17/2021 v2.4.3.0
 	Bug Fixes:
 	1. Current database is not switched on calling .sqc script after database is switched by command chdir.

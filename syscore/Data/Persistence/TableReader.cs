@@ -90,7 +90,7 @@ namespace Sys.Data
                 }
 
                 object obj = new SqlCmd(tableName.Provider, query).ExecuteScalar();
-                return (long)obj;
+                return Convert.ToInt64(obj);
             }
         }
 
