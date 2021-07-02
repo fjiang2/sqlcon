@@ -55,7 +55,7 @@ SELECT * FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS
             try
             {
                 var tnames = GetTableNames(tname.DatabaseName);
-                return tnames.FirstOrDefault(row => row.Name.ToUpper() == tname.Name.ToUpper() && row.SchemaName.ToUpper() == tname.SchemaName.ToUpper()) != null;
+                return tnames.FirstOrDefault(row => row.Name.ToUpper() == tname.Name.ToUpper() && row.SchemaName?.ToUpper() == tname.SchemaName?.ToUpper()) != null;
 
             }
             catch (Exception)
@@ -93,7 +93,7 @@ SELECT * FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS
 
             if (table != null)
                 return table.AsEnumerable()
-                .Select(row => new TableName(dname, row.Field<string>(0), row.Field<string>(1)) { Type = TableNameType.View })
+                .Select(row => new TableName(dname, row["SchemaName"].IsNull(string.Empty), (string)row["TableName"]) { Type = TableNameType.View })
                 .ToArray();
 
             return new TableName[] { };
@@ -154,8 +154,8 @@ SELECT
             DependencyInfo[] rows = dt.AsEnumerable().Select(
                 row => new DependencyInfo
                 {
-                    FkTable = new TableName(dname, row["FK_SCHEMA"].IsNull<string>(null), (string)row["FK_Table"]),
-                    PkTable = new TableName(dname, row["PK_SCHEMA"].IsNull<string>(null), (string)row["PK_Table"]),
+                    FkTable = new TableName(dname, row["FK_SCHEMA"].IsNull(string.Empty), (string)row["FK_Table"]),
+                    PkTable = new TableName(dname, row["PK_SCHEMA"].IsNull(string.Empty), (string)row["PK_Table"]),
                     PkColumn = (string)row["PK_Column"],
                     FkColumn = (string)row["FK_Column"]
                 })
