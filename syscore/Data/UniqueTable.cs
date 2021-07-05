@@ -9,8 +9,11 @@ namespace Sys.Data
 {
     public class UniqueTable
     {
+        private const string PHYSLOC = "%%physloc%%";
+        private const string ROWID = "%%RowId%%";
+
         public readonly TableName TableName;
-        public static string ROWID = "$RowId";
+        public const string ROWID_HEADER = "$RowId";
 
         private DataTable table;
         private List<byte[]> LOC = new List<byte[]>();
@@ -31,16 +34,15 @@ namespace Sys.Data
 
             foreach (DataColumn column in table.Columns)
             {
-                if (column.ColumnName == SqlExpr.PHYSLOC)
+                if (column.ColumnName == PHYSLOC)
                 {
                     this.hasPhysloc = true;
                     colLoc = column;
                     I1 = i;
                 }
 
-                if (column.ColumnName == SqlExpr.ROWID)
+                if (column.ColumnName == ROWID)
                 {
-                    this.hasPhysloc = true;
                     colRowID = column;
                     I2 = i;
                 }
@@ -51,21 +53,37 @@ namespace Sys.Data
             if (!hasPhysloc)
             {
                 parimaryKeys = tname.GetTableSchema().PrimaryKeys.Keys;
-                return;
             }
+
+            if (I2 == -1)
+                return;
 
             i = 0;
             foreach (DataRow row in table.Rows)
             {
-                LOC.Add((byte[])row[I1]);
-                row[I2] = i++;
+                if (I1 != -1)
+                    LOC.Add((byte[])row[I1]);
+
+                if (I2 != -1)
+                    row[I2] = i++;
             }
 
-            colRowID.ColumnName = ROWID;
+            colRowID.ColumnName = ROWID_HEADER;
+            
+            if (I1 != -1)
+                table.Columns.Remove(colLoc);
 
-            table.Columns.Remove(colLoc);
             table.AcceptChanges();
         }
+
+        public static string ROWID_COLUMN(TableName tname)
+        {
+            if (tname.Provider.DpType == DbProviderType.SqlDb)
+                return $"{PHYSLOC} AS [{PHYSLOC}],0 AS [{ROWID}],";
+
+            return $"0 AS [{ROWID}],";
+        }
+
 
         public bool HasPhysloc
         {
@@ -74,7 +92,7 @@ namespace Sys.Data
 
         public DataTable Table { get { return this.table; } }
 
-       
+
 
         private int RowId(DataRow row)
         {
@@ -115,7 +133,7 @@ namespace Sys.Data
 
         public byte[] PhysLoc(int rowId)
         {
-           
+
             return LOC[rowId];
         }
 
@@ -126,7 +144,7 @@ namespace Sys.Data
 
             byte[] loc = LOC[rowId];
 
-            return new SqlBuilder().UPDATE(TableName).SET(column.Assign(value)).WHERE($"{SqlExpr.PHYSLOC} = {new SqlValue(loc)}");
+            return new SqlBuilder().UPDATE(TableName).SET(column.Assign(value)).WHERE($"{PHYSLOC} = {new SqlValue(loc)}");
         }
 
         public void UpdateCell(DataRow row, DataColumn column, object value)
@@ -181,7 +199,7 @@ namespace Sys.Data
 
             if (colLoc != null)
             {
-                builder = new SqlBuilder().SELECT().COLUMNS(SqlExpr.PHYSLOC).FROM(TableName).WHERE(where.AND());
+                builder = new SqlBuilder().SELECT().COLUMNS(PHYSLOC).FROM(TableName).WHERE(where.AND());
                 var loc = new SqlCmd(builder).FillObject<byte[]>();
                 LOC.Add(loc);
 

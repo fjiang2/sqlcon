@@ -67,7 +67,7 @@ namespace sqlcon.Windows
         private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
             var style = new Style(typeof(System.Windows.Controls.Primitives.DataGridColumnHeader));
-            if (e.Column.Header.ToString() == UniqueTable.ROWID)
+            if (e.Column.Header.ToString() == UniqueTable.ROWID_HEADER)
             {
                 // e.Cancel = true;   // For not to include 
                 e.Column.IsReadOnly = true;

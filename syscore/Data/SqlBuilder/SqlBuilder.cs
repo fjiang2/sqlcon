@@ -141,16 +141,6 @@ namespace Sys.Data
             return this;
         }
 
-        public SqlBuilder ROWID(bool has)
-        {
-            if (has)
-            {
-                return Append($"{SqlExpr.PHYSLOC} AS [{SqlExpr.PHYSLOC}],")
-                       .Append($"0 AS [{SqlExpr.ROWID}],");
-            }
-
-            return this;
-        }
 
 
         public SqlBuilder COLUMNS(string columns)
@@ -330,7 +320,10 @@ namespace Sys.Data
 
         public SqlBuilder WHERE(Locator locator)
         {
-            return Append($"WHERE {locator.Where} ");
+            if (!string.IsNullOrEmpty(locator.Where))
+                return Append($"WHERE {locator.Where} ");
+            else
+                return this;
         }
 
         public SqlBuilder WHERE(string exp)

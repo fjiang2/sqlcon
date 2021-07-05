@@ -24,9 +24,7 @@ namespace Sys.Data
 {
     public sealed class SqlExpr : SqlBuilderInfo
     {
-        internal const string PHYSLOC = "%%physloc%%";
-        internal const string ROWID = "%%RowId%%";
-
+     
         private StringBuilder script = new StringBuilder();
 
         private SqlExpr()

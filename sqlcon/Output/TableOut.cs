@@ -13,7 +13,7 @@ namespace sqlcon
     class TableOut
     {
         private TableName tname;
-        private UniqueTable rTable = null;
+        private UniqueTable uniqueTable = null;
 
         public TableOut(TableName tableName)
         {
@@ -27,7 +27,7 @@ namespace sqlcon
 
         public UniqueTable Table
         {
-            get { return this.rTable; }
+            get { return this.uniqueTable; }
         }
 
 
@@ -35,10 +35,10 @@ namespace sqlcon
         {
             get
             {
-                if (this.rTable == null)
+                if (this.uniqueTable == null)
                     return false;
 
-                return rTable.HasPhysloc;
+                return uniqueTable.HasPhysloc;
             }
         }
 
@@ -109,8 +109,8 @@ namespace sqlcon
         {
             try
             {
-                rTable = new UniqueTable(tname, table);
-                _DisplayTable(rTable, top > 0 && table.Rows.Count == top, cmd);
+                uniqueTable = new UniqueTable(tname, table);
+                _DisplayTable(uniqueTable, top > 0 && table.Rows.Count == top, cmd);
             }
             catch (Exception ex)
             {
@@ -121,25 +121,13 @@ namespace sqlcon
             return true;
         }
 
+
+       
         public bool Display(ApplicationCommand cmd)
         {
-            SqlBuilder builder;
-            int top = cmd.Top;
             string[] columns = cmd.Columns;
 
-            bool hasRowId = cmd.HasRowId && tname.Provider.DpType == DbProviderType.SqlDb;
-
-            if (cmd.wildcard != null)
-            {
-                Locator where = LikeExpr(cmd.wildcard, cmd.Columns);
-                builder = new SqlBuilder().SELECT().ROWID(hasRowId).COLUMNS().FROM(tname).WHERE(where);
-            }
-            else if (cmd.where != null)
-            {
-                var locator = new Locator(cmd.where);
-                builder = new SqlBuilder().SELECT().TOP(top).ROWID(hasRowId).COLUMNS(columns).FROM(tname).WHERE(locator);
-            }
-            else if (cmd.Has("dup"))
+            if (cmd.Has("dup"))
             {
                 DuplicatedTable dup = new DuplicatedTable(tname, columns);
                 if (dup.group.Rows.Count == 0)
@@ -159,8 +147,28 @@ namespace sqlcon
 
                 return true;
             }
-            else
-                builder = new SqlBuilder().SELECT().TOP(top).ROWID(hasRowId).COLUMNS(columns).FROM(tname);
+
+            SqlBuilder builder;
+            int top = cmd.Top;
+
+            bool hasRowId = cmd.HasRowId;
+            Locator locator = Locator.Empty;
+
+            if (cmd.wildcard != null)
+            {
+                locator = LikeExpr(cmd.wildcard, cmd.Columns);
+            }
+            else if (cmd.where != null)
+            {
+                locator = new Locator(cmd.where);
+            }
+
+            builder = new SqlBuilder().SELECT().TOP(top);
+            
+            if (hasRowId)
+                builder.COLUMNS(UniqueTable.ROWID_COLUMN(tname));
+            
+            builder.COLUMNS(columns).FROM(tname).WHERE(locator);
 
             return Display(cmd, builder, tname, top);
         }
