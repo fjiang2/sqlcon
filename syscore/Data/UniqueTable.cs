@@ -194,6 +194,21 @@ namespace Sys.Data
             row.AcceptChanges();
         }
 
+        public void DeleteRow(DataRow row)
+        {
+            SqlMaker gen = new SqlMaker(TableName.FormalName)
+            {
+                PrimaryKeys = parimaryKeys
+            };
+            
+            gen.AddRange(row, DataRowVersion.Original);
+            gen.Remove(ROWID_HEADER);
+            string SQL = gen.Delete();
+
+            new SqlCmd(TableName.Provider, SQL).ExecuteNonQuery();
+            row.AcceptChanges();
+        }
+
         private static object GetDefault(Type type)
         {
             if (type == typeof(string))

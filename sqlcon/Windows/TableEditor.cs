@@ -54,8 +54,10 @@ namespace sqlcon.Windows
             dataGrid.AutoGeneratingColumn += DataGrid_AutoGeneratingColumn;
             dataGrid.CellEditEnding += DataGrid_CellEditEnding;
             udt.Table.RowChanged += Table_RowChanged;
+            udt.Table.RowDeleted += Table_RowChanged;
             udt.Table.ColumnChanged += Table_ColumnChanged;
         }
+
 
         private void DataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
@@ -139,6 +141,7 @@ namespace sqlcon.Windows
                         break;
 
                     case DataRowState.Deleted:
+                        RunWithoutTrigger(() => udt.DeleteRow(e.Row));
                         break;
 
                     case DataRowState.Modified:
