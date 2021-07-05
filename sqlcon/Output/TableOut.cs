@@ -127,15 +127,17 @@ namespace sqlcon
             int top = cmd.Top;
             string[] columns = cmd.Columns;
 
+            bool hasRowId = cmd.HasRowId && tname.Provider.DpType == DbProviderType.SqlDb;
+
             if (cmd.wildcard != null)
             {
                 Locator where = LikeExpr(cmd.wildcard, cmd.Columns);
-                builder = new SqlBuilder().SELECT().ROWID(cmd.HasRowId).COLUMNS().FROM(tname).WHERE(where);
+                builder = new SqlBuilder().SELECT().ROWID(hasRowId).COLUMNS().FROM(tname).WHERE(where);
             }
             else if (cmd.where != null)
             {
                 var locator = new Locator(cmd.where);
-                builder = new SqlBuilder().SELECT().TOP(top).ROWID(cmd.HasRowId).COLUMNS(columns).FROM(tname).WHERE(locator);
+                builder = new SqlBuilder().SELECT().TOP(top).ROWID(hasRowId).COLUMNS(columns).FROM(tname).WHERE(locator);
             }
             else if (cmd.Has("dup"))
             {
@@ -158,7 +160,7 @@ namespace sqlcon
                 return true;
             }
             else
-                builder = new SqlBuilder().SELECT().TOP(top).ROWID(cmd.HasRowId).COLUMNS(columns).FROM(tname);
+                builder = new SqlBuilder().SELECT().TOP(top).ROWID(hasRowId).COLUMNS(columns).FROM(tname);
 
             return Display(cmd, builder, tname, top);
         }

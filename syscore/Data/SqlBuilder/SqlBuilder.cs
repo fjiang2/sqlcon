@@ -338,10 +338,6 @@ namespace Sys.Data
             return Append($"WHERE {exp} ");
         }
 
-        public SqlBuilder WHERE(byte[] loc)
-        {
-            return Append($"WHERE {SqlExpr.PHYSLOC} = {new SqlValue(loc)}").AppendLine();
-        }
 
         #endregion
 

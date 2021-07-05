@@ -18,6 +18,7 @@ namespace Sys.Data
 
         private DataColumn colLoc = null;
         private DataColumn colRowID = null;
+        private string[] parimaryKeys;
 
         public UniqueTable(TableName tname, DataTable table)
         {
@@ -48,7 +49,10 @@ namespace Sys.Data
             }
 
             if (!hasPhysloc)
+            {
+                parimaryKeys = tname.GetTableSchema().PrimaryKeys.Keys;
                 return;
+            }
 
             i = 0;
             foreach (DataRow row in table.Rows)
@@ -70,13 +74,7 @@ namespace Sys.Data
 
         public DataTable Table { get { return this.table; } }
 
-        public byte[] PhysLoc(int rowId)
-        {
-            if (rowId < 0 || rowId > LOC.Count - 1)
-                throw new IndexOutOfRangeException("RowId is out of range");
-
-            return LOC[rowId];
-        }
+       
 
         private int RowId(DataRow row)
         {
@@ -115,9 +113,20 @@ namespace Sys.Data
             return UpdateClause(column, rowId, value);
         }
 
+        public byte[] PhysLoc(int rowId)
+        {
+           
+            return LOC[rowId];
+        }
+
         private SqlBuilder UpdateClause(string column, int rowId, object value)
         {
-            return new SqlBuilder().UPDATE(TableName).SET(column.Assign(value)).WHERE(PhysLoc(rowId));
+            if (rowId < 0 || rowId > LOC.Count - 1)
+                throw new IndexOutOfRangeException("RowId is out of range");
+
+            byte[] loc = LOC[rowId];
+
+            return new SqlBuilder().UPDATE(TableName).SET(column.Assign(value)).WHERE($"{SqlExpr.PHYSLOC} = {new SqlValue(loc)}");
         }
 
         public void UpdateCell(DataRow row, DataColumn column, object value)
@@ -170,12 +179,15 @@ namespace Sys.Data
             var builder = new SqlBuilder().INSERT(TableName, columns.ToArray()).VALUES(values.ToArray());
             new SqlCmd(builder).ExecuteNonQuery();
 
-            builder = new SqlBuilder().SELECT().COLUMNS(SqlExpr.PHYSLOC).FROM(TableName).WHERE(where.AND());
-            var loc = new SqlCmd(builder).FillObject<byte[]>();
-            LOC.Add(loc);
+            if (colLoc != null)
+            {
+                builder = new SqlBuilder().SELECT().COLUMNS(SqlExpr.PHYSLOC).FROM(TableName).WHERE(where.AND());
+                var loc = new SqlCmd(builder).FillObject<byte[]>();
+                LOC.Add(loc);
+
+            }
 
             row[colRowID] = table.Rows.Count - 1; //this will trigger events ColumnChanged or RowChanged
-
             row.AcceptChanges();
         }
 
