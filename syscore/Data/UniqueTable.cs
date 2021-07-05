@@ -196,14 +196,29 @@ namespace Sys.Data
 
         public void DeleteRow(DataRow row)
         {
-            SqlMaker gen = new SqlMaker(TableName.FormalName)
+            string SQL;
+            if (hasPhysloc)
             {
-                PrimaryKeys = parimaryKeys
-            };
-            
-            gen.AddRange(row, DataRowVersion.Original);
-            gen.Remove(ROWID_HEADER);
-            string SQL = gen.Delete();
+                int rowId = RowId(row);
+
+                if (rowId < 0 || rowId > LOC.Count - 1)
+                    throw new IndexOutOfRangeException("RowId is out of range");
+
+                byte[] loc = LOC[rowId];
+
+                SQL = new SqlBuilder().DELETE(TableName).WHERE($"{PHYSLOC} = {new SqlValue(loc)}").ToString();
+            }
+            else
+            {
+                SqlMaker gen = new SqlMaker(TableName.FormalName)
+                {
+                    PrimaryKeys = parimaryKeys
+                };
+
+                gen.AddRange(row, DataRowVersion.Original);
+                gen.Remove(ROWID_HEADER);
+                SQL = gen.Delete();
+            }
 
             new SqlCmd(TableName.Provider, SQL).ExecuteNonQuery();
             row.AcceptChanges();
