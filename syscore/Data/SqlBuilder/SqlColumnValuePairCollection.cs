@@ -47,6 +47,14 @@ namespace Sys.Data
             }
         }
 
+        public void AddRange(DataRow row, DataRowVersion version)
+        {
+            foreach (DataColumn column in row.Table.Columns)
+            {
+                Add(column.ColumnName, row[column, version]);
+            }
+        }
+
         public void AddRange<T>(string columnPrefix, T[] values)
         {
             for (int i = 0; i < values.Length; i++)

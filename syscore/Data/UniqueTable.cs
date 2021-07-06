@@ -9,8 +9,11 @@ namespace Sys.Data
 {
     public class UniqueTable
     {
+        private const string PHYSLOC = "%%physloc%%";
+        private const string ROWID = "%%RowId%%";
+
         public readonly TableName TableName;
-        public static string ROWID = "$RowId";
+        public const string ROWID_HEADER = "$RowId";
 
         private DataTable table;
         private List<byte[]> LOC = new List<byte[]>();
@@ -18,6 +21,7 @@ namespace Sys.Data
 
         private DataColumn colLoc = null;
         private DataColumn colRowID = null;
+        private string[] parimaryKeys;
 
         public UniqueTable(TableName tname, DataTable table)
         {
@@ -30,16 +34,15 @@ namespace Sys.Data
 
             foreach (DataColumn column in table.Columns)
             {
-                if (column.ColumnName == SqlExpr.PHYSLOC)
+                if (column.ColumnName == PHYSLOC)
                 {
                     this.hasPhysloc = true;
                     colLoc = column;
                     I1 = i;
                 }
 
-                if (column.ColumnName == SqlExpr.ROWID)
+                if (column.ColumnName == ROWID)
                 {
-                    this.hasPhysloc = true;
                     colRowID = column;
                     I2 = i;
                 }
@@ -47,77 +50,80 @@ namespace Sys.Data
                 i++;
             }
 
-            if (!hasPhysloc)
+            this.parimaryKeys = tname.GetTableSchema().PrimaryKeys.Keys;
+
+            if (I2 == -1)
                 return;
 
             i = 0;
             foreach (DataRow row in table.Rows)
             {
-                LOC.Add((byte[])row[I1]);
-                row[I2] = i++;
+                if (I1 != -1)
+                    LOC.Add((byte[])row[I1]);
+
+                if (I2 != -1)
+                    row[I2] = i++;
             }
 
-            colRowID.ColumnName = ROWID;
+            colRowID.ColumnName = ROWID_HEADER;
 
-            table.Columns.Remove(colLoc);
+            if (I1 != -1)
+                table.Columns.Remove(colLoc);
+
             table.AcceptChanges();
         }
 
-        public bool HasPhysloc
+        public static string ROWID_COLUMN(TableName tname)
         {
-            get { return hasPhysloc; }
+            if (tname.Provider.DpType == DbProviderType.SqlDb)
+                return $"{PHYSLOC} AS [{PHYSLOC}],0 AS [{ROWID}],";
+
+            return $"0 AS [{ROWID}],";
         }
 
-        public DataTable Table { get { return this.table; } }
 
-        public byte[] PhysLoc(int rowId)
+        public bool HasPhysloc => hasPhysloc;
+        public DataTable Table => this.table;
+
+
+        public SqlBuilder WriteValue(string column, int rowId, object value)
         {
             if (rowId < 0 || rowId > LOC.Count - 1)
                 throw new IndexOutOfRangeException("RowId is out of range");
 
+            DataRow row = table.Rows[rowId];
+            row[column] = value;
+            return UpdateClause(column, row, value);
+        }
+
+        public byte[] PhysLoc(int rowId)
+        {
+
             return LOC[rowId];
         }
 
-        private int RowId(DataRow row)
+        private SqlBuilder UpdateClause(string column, DataRow row, object value)
         {
-            return (int)row[colRowID];
-        }
+            SqlMaker gen = new SqlMaker(TableName.FormalName);
 
-        public object this[DataColumn column, DataRow row]
-        {
-            get
+            if (hasPhysloc)
             {
-                return this[column.ColumnName, RowId(row)];
+                gen.PrimaryKeys = new string[] { PHYSLOC };
+                int rowId = (int)row[colRowID];
+                byte[] loc = LOC[rowId];
+                gen.Add(PHYSLOC, loc);
+                gen.Add(column, value);
             }
-            set
+            else
             {
-                this[column.ColumnName, RowId(row)] = value;
+                gen.PrimaryKeys = parimaryKeys;
+                gen.AddRange(row);
+                gen.Add(column, value);
+                gen.Remove(ROWID_HEADER);
             }
-        }
 
-        public object this[string column, int rowId]
-        {
-            get
-            {
-                return table.Rows[rowId][column];
-            }
-            set
-            {
-                var builder = WriteValue(column, rowId, value);
-                new SqlCmd(builder).ExecuteNonQuery();
-                table.AcceptChanges();
-            }
-        }
-
-        public SqlBuilder WriteValue(string column, int rowId, object value)
-        {
-            table.Rows[rowId][column] = value;
-            return UpdateClause(column, rowId, value);
-        }
-
-        private SqlBuilder UpdateClause(string column, int rowId, object value)
-        {
-            return new SqlBuilder().UPDATE(TableName).SET(column.Assign(value)).WHERE(PhysLoc(rowId));
+            gen.Update();
+            return new SqlBuilder(TableName.Provider).Append(gen.Update());
         }
 
         public void UpdateCell(DataRow row, DataColumn column, object value)
@@ -126,8 +132,7 @@ namespace Sys.Data
                 return;
 
             string col = column.ColumnName;
-            int rowId = RowId(row);
-            var builder = UpdateClause(col, rowId, value);
+            var builder = UpdateClause(col, row, value);
             new SqlCmd(builder).ExecuteNonQuery();
             row.AcceptChanges();
         }
@@ -146,7 +151,7 @@ namespace Sys.Data
                 string name = column.ColumnName;
                 IColumn _column = _columns[column.ColumnName];
 
-                if (column == colRowID)
+                if (column == colRowID || _column.IsIdentity)
                     continue;
 
                 if (value != DBNull.Value)
@@ -170,12 +175,40 @@ namespace Sys.Data
             var builder = new SqlBuilder().INSERT(TableName, columns.ToArray()).VALUES(values.ToArray());
             new SqlCmd(builder).ExecuteNonQuery();
 
-            builder = new SqlBuilder().SELECT().COLUMNS(SqlExpr.PHYSLOC).FROM(TableName).WHERE(where.AND());
-            var loc = new SqlCmd(builder).FillObject<byte[]>();
-            LOC.Add(loc);
+            if (colLoc != null)
+            {
+                builder = new SqlBuilder().SELECT().COLUMNS(PHYSLOC).FROM(TableName).WHERE(where.AND());
+                var loc = new SqlCmd(builder).FillObject<byte[]>();
+                LOC.Add(loc);
+                
+                //todo: load identity
+
+            }
 
             row[colRowID] = table.Rows.Count - 1; //this will trigger events ColumnChanged or RowChanged
+            row.AcceptChanges();
+        }
 
+        public void DeleteRow(DataRow row)
+        {
+            SqlMaker gen = new SqlMaker(TableName.FormalName);
+
+            if (hasPhysloc)
+            {
+                gen.PrimaryKeys = new string[] { PHYSLOC };
+                int rowId = (int)row[colRowID, DataRowVersion.Original];
+                byte[] loc = LOC[rowId];
+                gen.Add(PHYSLOC, loc);
+            }
+            else
+            {
+                gen.PrimaryKeys = parimaryKeys;
+                gen.AddRange(row, DataRowVersion.Original);
+            }
+
+            string SQL = gen.Delete();
+
+            new SqlCmd(TableName.Provider, SQL).ExecuteNonQuery();
             row.AcceptChanges();
         }
 

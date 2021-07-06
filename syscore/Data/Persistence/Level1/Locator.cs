@@ -26,6 +26,8 @@ namespace Sys.Data
     /// </summary>
     public class Locator : IDataPath
     {
+        public static readonly Locator Empty = new Locator(string.Empty);
+
         private string where;
         bool unique = true;
 
