@@ -86,14 +86,11 @@ namespace Sys.Data
         public DataTable Table => this.table;
 
 
-        private int RowId(DataRow row)
-        {
-            return (int)row[colRowID];
-        }
-
-
         public SqlBuilder WriteValue(string column, int rowId, object value)
         {
+            if (rowId < 0 || rowId > LOC.Count - 1)
+                throw new IndexOutOfRangeException("RowId is out of range");
+
             DataRow row = table.Rows[rowId];
             row[column] = value;
             return UpdateClause(column, row, value);
@@ -107,30 +104,26 @@ namespace Sys.Data
 
         private SqlBuilder UpdateClause(string column, DataRow row, object value)
         {
+            SqlMaker gen = new SqlMaker(TableName.FormalName);
+
             if (hasPhysloc)
             {
-                int rowId = RowId(row);
-
-                if (rowId < 0 || rowId > LOC.Count - 1)
-                    throw new IndexOutOfRangeException("RowId is out of range");
-
+                gen.PrimaryKeys = new string[] { PHYSLOC };
+                int rowId = (int)row[colRowID];
                 byte[] loc = LOC[rowId];
-
-                return new SqlBuilder().UPDATE(TableName).SET(column.Assign(value)).WHERE($"{PHYSLOC} = {new SqlValue(loc)}");
+                gen.Add(PHYSLOC, loc);
+                gen.Add(column, value);
             }
             else
             {
-                SqlMaker gen = new SqlMaker(TableName.FormalName)
-                {
-                    PrimaryKeys = parimaryKeys
-                };
+                gen.PrimaryKeys = parimaryKeys;
                 gen.AddRange(row);
                 gen.Add(column, value);
                 gen.Remove(ROWID_HEADER);
-                gen.Update();
-
-                return new SqlBuilder(TableName.Provider).Append(gen.Update());
             }
+
+            gen.Update();
+            return new SqlBuilder(TableName.Provider).Append(gen.Update());
         }
 
         public void UpdateCell(DataRow row, DataColumn column, object value)
@@ -196,29 +189,22 @@ namespace Sys.Data
 
         public void DeleteRow(DataRow row)
         {
-            string SQL;
+            SqlMaker gen = new SqlMaker(TableName.FormalName);
+
             if (hasPhysloc)
             {
-                int rowId = RowId(row);
-
-                if (rowId < 0 || rowId > LOC.Count - 1)
-                    throw new IndexOutOfRangeException("RowId is out of range");
-
+                gen.PrimaryKeys = new string[] { PHYSLOC };
+                int rowId = (int)row[colRowID, DataRowVersion.Original];
                 byte[] loc = LOC[rowId];
-
-                SQL = new SqlBuilder().DELETE(TableName).WHERE($"{PHYSLOC} = {new SqlValue(loc)}").ToString();
+                gen.Add(PHYSLOC, loc);
             }
             else
             {
-                SqlMaker gen = new SqlMaker(TableName.FormalName)
-                {
-                    PrimaryKeys = parimaryKeys
-                };
-
+                gen.PrimaryKeys = parimaryKeys;
                 gen.AddRange(row, DataRowVersion.Original);
-                gen.Remove(ROWID_HEADER);
-                SQL = gen.Delete();
             }
+
+            string SQL = gen.Delete();
 
             new SqlCmd(TableName.Provider, SQL).ExecuteNonQuery();
             row.AcceptChanges();

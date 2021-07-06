@@ -18,7 +18,10 @@
 
         public override string ToString()
         {
-            return string.Format("[{0}] = {1}", ColumnName, Value);
+            if (ColumnName.StartsWith("%%") && ColumnName.EndsWith("%%"))
+                return string.Format("{0} = {1}", ColumnName, Value);
+            else
+                return string.Format("[{0}] = {1}", ColumnName, Value);
         }
 
         internal static string FormalName(string name)
