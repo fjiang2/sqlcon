@@ -79,10 +79,6 @@ namespace Sys.Data
                     dnames = L.ToArray();
                     break;
 
-                case DbProviderType.SqlCe:
-                    dnames = new string[] { "Database" };
-                    break;
-
                 default:
                     throw new NotSupportedException();
             }

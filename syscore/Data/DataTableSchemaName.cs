@@ -28,16 +28,13 @@ namespace Sys.Data
         {
             get
             {
-                if (string.IsNullOrEmpty(dt.Prefix))
-                    return true;
-
                 return dt.Prefix == Data.SchemaName.dbo;
             }
         }
         
         public void UpdateSchemaName(string schemaName)
         {
-            if (schemaName != Data.SchemaName.dbo)
+            if (schemaName != Data.SchemaName.empty)
                 dt.Prefix = schemaName;
         }
 
@@ -46,7 +43,7 @@ namespace Sys.Data
             get
             {
                 if (string.IsNullOrEmpty(dt.Prefix))
-                    return Data.SchemaName.dbo;
+                    return Data.SchemaName.empty;
                 else
                     return dt.Prefix;
             }

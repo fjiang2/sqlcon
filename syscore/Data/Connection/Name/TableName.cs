@@ -130,7 +130,7 @@ namespace Sys.Data
         {
             get
             {
-                if (this.schema != dbo)
+                if (this.schema != dbo && !string.IsNullOrEmpty(this.schema))
                 {
                     return string.Format("{0}.{1}", this.schema, this.tableName);
                 }
