@@ -151,7 +151,7 @@ namespace Sys.Data
                 string name = column.ColumnName;
                 IColumn _column = _columns[column.ColumnName];
 
-                if (column == colRowID)
+                if (column == colRowID || _column.IsIdentity)
                     continue;
 
                 if (value != DBNull.Value)
@@ -180,6 +180,8 @@ namespace Sys.Data
                 builder = new SqlBuilder().SELECT().COLUMNS(PHYSLOC).FROM(TableName).WHERE(where.AND());
                 var loc = new SqlCmd(builder).FillObject<byte[]>();
                 LOC.Add(loc);
+                
+                //todo: load identity
 
             }
 
