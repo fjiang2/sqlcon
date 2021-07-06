@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+7/5/2021 v2.5.1.0
+	Bug Fixes:
+	1. Crashed on command "type /edit" to open SqlCe data table.
+
 7/2/2021 v2.5.0.0
 	Improvements/Enhancements:
 	1. Support SQL Server Compact 4.0. A connection string example:
