@@ -43,7 +43,7 @@ namespace Sys.Data
 
         public override SchemaName DefaultTableSchemaName => SchemaName.Empty;
 
-        public override DbProviderType DpType => DbProviderType.SqlCe;
+        public override DbProviderType DpType => DbProviderType.Sqlite;
 
         public override DbConnection NewDbConnection
         {

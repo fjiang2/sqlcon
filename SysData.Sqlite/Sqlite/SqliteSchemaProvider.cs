@@ -8,30 +8,13 @@ using System.Data;
 namespace Sys.Data
 {
 
-/*
+    /*
 
--- Get all the columns of the database
-SELECT * FROM INFORMATION_SCHEMA.COLUMNS
+    SELECT * FROM sqlite_master
 
--- Get all the indexes of the database
-SELECT * FROM INFORMATION_SCHEMA.INDEXES
+    PRAGMA table_info(MessageBacklog)
 
--- Get all the indexes and columns of the database
-SELECT * FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
-
--- Get all the datatypes of the database
-SELECT * FROM INFORMATION_SCHEMA.PROVIDER_TYPES
-
--- Get all the tables of the database
-SELECT * FROM INFORMATION_SCHEMA.TABLES
-
--- Get all the constraint of the database
-SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS
-
--- Get all the foreign keys of the database
-SELECT * FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS
-     
-*/
+    */
     /// <summary>
     /// 
     /// </summary>
@@ -72,7 +55,7 @@ SELECT * FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS
 
         public override TableName[] GetTableNames(DatabaseName dname)
         {
-            var table = new SqlCmd(dname.Provider, $"SELECT TABLE_SCHEMA AS SchemaName, TABLE_NAME as TableName FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='TABLE' ORDER BY TABLE_SCHEMA,TABLE_NAME")
+            var table = new SqlCmd(dname.Provider, $"SELECT NULL AS SchemaName, NAME as TableName FROM sqlite_master WHERE TYPE='table' AND NOT (name LIKE 'sqlite_%') ORDER BY NAME")
                 .FillDataTable();
 
             if (table != null)
@@ -88,7 +71,7 @@ SELECT * FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS
 
         public override TableName[] GetViewNames(DatabaseName dname)
         {
-            var table = new SqlCmd(dname.Provider, $"SELECT TABLE_SCHEMA AS SchemaName, TABLE_NAME as TableName FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'VIEW' ORDER BY TABLE_SCHEMA, TABLE_NAME")
+            var table = new SqlCmd(dname.Provider, $"SELECT NULL AS SchemaName, NAME as TableName FROM sqlite_master WHERE TYPE='view' AND NOT (name LIKE 'sqlite_%') ORDER BY NAME")
                 .FillDataTable();
 
             if (table != null)

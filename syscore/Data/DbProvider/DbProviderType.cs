@@ -28,7 +28,8 @@ namespace Sys.Data
         /// <summary>
         /// Sql server remote invoke agent (ria), e.g. invoke through http web site
         /// </summary>
-        RiaDb
+        RiaDb,
+        Sqlite,
     }
 
 

@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Sys.Data.Sqlite</RootNamespace>
-    <AssemblyName>SysData.Sqlite</AssemblyName>
+    <AssemblyName>sysdata.Sqlite</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
