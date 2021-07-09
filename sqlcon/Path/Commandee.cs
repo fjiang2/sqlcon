@@ -1291,7 +1291,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             string pvd = cmd.GetValue("pvd");
             if (pvd != null)
             {
-                if (pvd != "sqloledb" && pvd != "xmlfile" && !pvd.StartsWith("file/"))
+                if (pvd != "sqloledb" && pvd != "xmlfile" && !pvd.StartsWith("file/") && pvd != "sqlce")
                 {
                     cerr.WriteLine($"provider={pvd} is not supported");
                     return;
@@ -1308,34 +1308,39 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 
             builder.AppendFormat("data source={0};", dataSource);
 
-            string db = cmd.GetValue("db");
-            if (db != null)
-                builder.Append($"initial catalog={db};");
-            else
-                builder.Append("initial catalog=master;");
-
-            string userId = cmd.GetValue("u");
-            string password = cmd.GetValue("p");
-
-
-
-
-            if (userId == null && password == null)
+            if (pvd == "sqlce")
             {
-                builder.Append("integrated security=SSPI;packet size=4096;");
+                builder.Append("Max Buffer Size=1024;Persist Security Info=False;");
             }
             else
             {
-                if (userId != null)
-                    builder.AppendFormat("User Id={0};", userId);
+                string db = cmd.GetValue("db");
+                if (db != null)
+                    builder.Append($"initial catalog={db};");
                 else
-                    builder.Append("User Id=sa;");
+                    builder.Append("initial catalog=master;");
 
-                if (password != null)
-                    builder.AppendFormat("Password={0};", password);
+                string userId = cmd.GetValue("u");
+                string password = cmd.GetValue("p");
+
+                if (userId == null && password == null)
+                {
+                    builder.Append("integrated security=SSPI;packet size=4096;");
+                }
                 else
-                    builder.Append("Password=;");
+                {
+                    if (userId != null)
+                        builder.AppendFormat("User Id={0};", userId);
+                    else
+                        builder.Append("User Id=sa;");
+
+                    if (password != null)
+                        builder.AppendFormat("Password={0};", password);
+                    else
+                        builder.Append("Password=;");
+                }
             }
+
 
             append("namespace");
             append("class");
@@ -1783,7 +1788,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
 #endif
                 }
             }
-            else if(cmd.Has("string"))
+            else if (cmd.Has("string"))
             {
                 var pt = mgr.current;
                 if (pt.Item is DatabaseName)
@@ -1793,9 +1798,9 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     string root = cmd.GetValue("directory") ?? ".";
                     DatabaseName dname = (DatabaseName)pt.Item;
                     TableName tname = new TableName(dname, schema_name, table_name);
-                    
+
                     StringDumper dumper = new StringDumper(tname);
-                  
+
                     string SqlFileName = cmd.OutputFile(cfg.OutputFile);
                     using (var writer = SqlFileName.CreateStreamWriter(cmd.Append))
                     {

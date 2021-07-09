@@ -34,7 +34,7 @@ namespace Sys.Data.Linq
 
         public static string FormalTableName(this ITableSchema schema)
         {
-            if (schema.SchemaName == SchemaName.dbo)
+            if (schema.SchemaName == SchemaName.dbo || schema.SchemaName == SchemaName.empty)
                 return string.Format("[{0}]", schema.TableName);
             else
                 return $"[{schema.SchemaName}].[{schema.TableName}]";

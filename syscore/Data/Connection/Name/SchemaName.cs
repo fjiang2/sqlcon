@@ -7,7 +7,7 @@ namespace Sys.Data
 {
     public class SchemaName
     {
-        public static readonly SchemaName Empty = new SchemaName(string.Empty);
+        public static readonly SchemaName Empty = new SchemaName(empty);
         public static readonly SchemaName Dbo = new SchemaName(dbo);
         public const string dbo = "dbo";
         public const string empty = "";
