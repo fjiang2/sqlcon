@@ -30,6 +30,7 @@ namespace sqlcon
 
             //Register database connection providers
             Sys.Data.SqlServerCe.Main.RegisterConnectionProvider();
+            Sys.Data.Sqlite.Main.RegisterConnectionProvider();
 
 
             int i = 0;
