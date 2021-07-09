@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+7/9/2021 v2.5.2.0
+	Bug Fixes:
+	1. Cannot mount SqlCe database.
+
 7/5/2021 v2.5.1.0
 	Bug Fixes:
 	1. Crashed on command "type /edit" to open SqlCe data table.
