@@ -95,7 +95,8 @@ namespace Sys.Data
         public override DataTable GetTableSchema(TableName tname)
         {
             List<SchemaRow> rows = new List<SchemaRow>();
-            GetSchemaRows(rows, tname);
+            LoadSchemaColumns(rows, tname);
+            LoadForeignKeys(rows, tname);
 
             DataTable schemaTable = SchemaRowExtension.CreateTable();
             rows.ToDataTable(schemaTable);
@@ -105,75 +106,108 @@ namespace Sys.Data
             return schemaTable;
         }
 
-        private static List<SchemaRow> GetSchemaRows(List<SchemaRow> rows, TableName tname)
+
+
+        private static void LoadSchemaColumns(List<SchemaRow> rows, TableName tname)
         {
             string SQL = $"SELECT * FROM PRAGMA_TABLE_INFO('{tname.Name}')";
             var dt = new SqlCmd(tname.Provider, SQL).FillDataTable();
             foreach (DataRow row in dt.Rows)
             {
-                SchemaRow _row = new SchemaRow
+                string columnName = row.GetField<string>("name");
+                SchemaRow _row = rows.Where(x => x.TableName == tname.Name && x.ColumnName == columnName).SingleOrDefault();
+                if (_row == null)
                 {
-                    SchemaName = "",
-                    TableName = tname.Name,
-                    ColumnName = row.GetField<string>("name"),
-                    DataType = row.GetField<string>("type"),
-                    Length = 0,
-                    Nullable = row.GetField<long>("notnull") == 0,
-                    precision = 0,
-                    scale = 0,
-                    IsPrimary = row.GetField<long>("pk") == 1,
-                    IsIdentity = false,
-                    IsComputed = false,
-                    definition = null,
-                    PKContraintName = null,
-                    PK_Schema = null,
-                    PK_Table = null,
-                    PK_Column = null,
-                    FKContraintName = null,
-                };
+                    _row = new SchemaRow
+                    {
+                        SchemaName = "",
+                        TableName = tname.Name,
+                        ColumnName = row.GetField<string>("name"),
+                    };
+                }
 
-                Parse(_row, row.GetField<string>("type"));
+                _row.DataType = row.GetField<string>("type");
+                _row.Length = 0;
+                _row.Nullable = row.GetField<long>("notnull") == 0;
+                _row.precision = 0;
+                _row.scale = 0;
+                _row.IsPrimary = row.GetField<long>("pk") == 1;
+                _row.IsIdentity = false;
+                _row.IsComputed = false;
+                _row.definition = null;
+                _row.PKContraintName = _row.IsPrimary ? $"PK_{tname.Name}" : null;
+                _row.PK_Schema = null;
+                _row.PK_Table = null;
+                _row.PK_Column = null;
+                _row.FKContraintName = null;
+
+                ParseType(_row, row.GetField<string>("type"));
                 rows.Add(_row);
             }
-
-            return rows;
         }
 
-        private static void Parse(SchemaRow row, string dataType)
+        private static void LoadForeignKeys(List<SchemaRow> rows, TableName tname)
+        {
+            string SQL = $"SELECT * FROM PRAGMA_FOREIGN_KEY_LIST('{tname.Name}')";
+            var dt = new SqlCmd(tname.Provider, SQL).FillDataTable();
+            foreach (DataRow row in dt.Rows)
+            {
+                string columnName = row.GetField<string>("from");
+                SchemaRow _row = rows.Where(x => x.TableName == tname.Name && x.ColumnName == columnName).SingleOrDefault();
+
+                _row.PK_Schema = "";
+                _row.PK_Table = row.GetField<string>("table");
+                _row.PK_Column = row.GetField<string>("to");
+                _row.FKContraintName = $"FK_{tname.Name}_{_row.PK_Table}";
+            }
+        }
+
+
+        private static void ParseType(SchemaRow row, string dataType)
         {
             string type = dataType.ToLower();
 
             switch (type)
             {
+                case "int":
                 case "integer":
                     row.DataType = "int";
                     return;
 
                 case "real":
+                case "double":
                     row.DataType = "float";
+                    return;
+
+                case "blob":
+                    row.DataType = "binary";
                     return;
             }
 
-            if (type.StartsWith("nvarchar"))
-            {
-                string[] items = type.Split(new char[] { '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
-                row.DataType = "nvarchar";
-                row.Length = short.Parse(items[1]);
-                return;
-            }
-
-            if (type.StartsWith("numeric"))
+            if (type.IndexOf('(') > 0 && type.IndexOf(')') > 0)
             {
                 string[] items = type.Split(new char[] { '(', ',', ')' }, StringSplitOptions.RemoveEmptyEntries);
-                row.DataType = "decimal";
-                row.precision = (byte)short.Parse(items[1]);
-                row.scale = (byte)short.Parse(items[2]);
-                return;
+                string _type = items[0];
+                switch (_type)
+                {
+                    case "nvarchar":
+                        row.DataType = "nvarchar";
+                        row.Length = Convert.ToInt16(int.Parse(items[1]) * 2);
+                        return;
+
+                    case "numeric":
+                        row.DataType = "numeric";
+                        row.precision = (byte)short.Parse(items[1]);
+                        row.scale = (byte)short.Parse(items[2]);
+                        return;
+
+                    default:
+                        throw new NotImplementedException();
+                }
             }
 
             row.DataType = type;
             return;
-
         }
 
         public override DataTable GetDatabaseSchema(DatabaseName dname)
@@ -231,7 +265,7 @@ SELECT
             List<SchemaRow> rows = new List<SchemaRow>();
             foreach (TableName tname in dname.GetTableNames())
             {
-                GetSchemaRows(rows, tname);
+                LoadSchemaColumns(rows, tname);
             }
 
             DataTable schemaTable = SchemaRowExtension.CreateTable();
@@ -257,3 +291,4 @@ SELECT
 
     }
 }
+
