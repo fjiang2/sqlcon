@@ -95,7 +95,7 @@ namespace Sys.Data
         public override DataTable GetTableSchema(TableName tname)
         {
             List<SchemaRow> rows = new List<SchemaRow>();
-            LoadSchemaColumns(rows, tname);
+            LoadColumns(rows, tname);
             LoadForeignKeys(rows, tname);
 
             DataTable schemaTable = SchemaRowExtension.CreateTable();
@@ -108,7 +108,7 @@ namespace Sys.Data
 
 
 
-        private static void LoadSchemaColumns(List<SchemaRow> rows, TableName tname)
+        private static void LoadColumns(List<SchemaRow> rows, TableName tname)
         {
             string SQL = $"SELECT * FROM PRAGMA_TABLE_INFO('{tname.Name}')";
             var dt = new SqlCmd(tname.Provider, SQL).FillDataTable();
@@ -120,7 +120,7 @@ namespace Sys.Data
                 {
                     _row = new SchemaRow
                     {
-                        SchemaName = "",
+                        SchemaName = SchemaName.empty,
                         TableName = tname.Name,
                         ColumnName = row.GetField<string>("name"),
                     };
@@ -131,17 +131,15 @@ namespace Sys.Data
                 _row.Nullable = row.GetField<long>("notnull") == 0;
                 _row.precision = 0;
                 _row.scale = 0;
+
                 _row.IsPrimary = row.GetField<long>("pk") == 1;
                 _row.IsIdentity = false;
                 _row.IsComputed = false;
                 _row.definition = null;
-                _row.PKContraintName = _row.IsPrimary ? $"PK_{tname.Name}" : null;
-                _row.PK_Schema = null;
-                _row.PK_Table = null;
-                _row.PK_Column = null;
-                _row.FKContraintName = null;
 
-                ParseType(_row, row.GetField<string>("type"));
+                _row.PKContraintName = _row.IsPrimary ? $"PK_{tname.Name}" : null;
+
+                ParseType(_row, _row.DataType);
                 rows.Add(_row);
             }
         }
@@ -155,7 +153,7 @@ namespace Sys.Data
                 string columnName = row.GetField<string>("from");
                 SchemaRow _row = rows.Where(x => x.TableName == tname.Name && x.ColumnName == columnName).SingleOrDefault();
 
-                _row.PK_Schema = "";
+                _row.PK_Schema = SchemaName.empty;
                 _row.PK_Table = row.GetField<string>("table");
                 _row.PK_Column = row.GetField<string>("to");
                 _row.FKContraintName = $"FK_{tname.Name}_{_row.PK_Table}";
@@ -188,11 +186,17 @@ namespace Sys.Data
             {
                 string[] items = type.Split(new char[] { '(', ',', ')' }, StringSplitOptions.RemoveEmptyEntries);
                 string _type = items[0];
+                int a1 = int.Parse(items[1]);
                 switch (_type)
                 {
                     case "nvarchar":
                         row.DataType = "nvarchar";
-                        row.Length = Convert.ToInt16(int.Parse(items[1]) * 2);
+                        row.Length = Convert.ToInt16(a1 * 2);
+                        return;
+
+                    case "varchar":
+                        row.DataType = "varchar";
+                        row.Length = Convert.ToInt16(a1);
                         return;
 
                     case "numeric":
@@ -265,7 +269,8 @@ SELECT
             List<SchemaRow> rows = new List<SchemaRow>();
             foreach (TableName tname in dname.GetTableNames())
             {
-                LoadSchemaColumns(rows, tname);
+                LoadColumns(rows, tname);
+                LoadForeignKeys(rows, tname);
             }
 
             DataTable schemaTable = SchemaRowExtension.CreateTable();
