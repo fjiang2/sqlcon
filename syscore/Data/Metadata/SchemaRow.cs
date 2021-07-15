@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Sys.Data
 {
-	public partial class SchemaTable
+	public partial class SchemaRow
 	{
 		public string SchemaName { get; set; }
 		public string TableName { get; set; }
@@ -26,24 +26,24 @@ namespace Sys.Data
 		public string FKContraintName { get; set; }
 	}
 
-	public static class SchemaTableExtension
+	public static class SchemaRowExtension
 	{
 		public const string SchemaName = "";
-		public const string TableName = "schema";
+		public const string TableName = "SchemaTable";
 
-		public static List<SchemaTable> ToSchemaTableCollection(this DataTable dt)
+		public static List<SchemaRow> ToSchemaRowCollection(this DataTable dt)
 		{
 			return dt.AsEnumerable()
 			.Select(row =>
 			{
-				var obj = new SchemaTable();
+				var obj = new SchemaRow();
 				FillObject(obj, row);
 				return obj;
 			})
 			.ToList();
 		}
 
-		public static void FillObject(this SchemaTable item, DataRow row)
+		public static void FillObject(this SchemaRow item, DataRow row)
 		{
 			item.SchemaName = row.Field<string>(_SCHEMANAME);
 			item.TableName = row.Field<string>(_TABLENAME);
@@ -64,7 +64,7 @@ namespace Sys.Data
 			item.FKContraintName = row.Field<string>(_FKCONTRAINTNAME);
 		}
 
-		public static void UpdateRow(this SchemaTable item, DataRow row)
+		public static void UpdateRow(this SchemaRow item, DataRow row)
 		{
 			row.SetField(_SCHEMANAME, item.SchemaName);
 			row.SetField(_TABLENAME, item.TableName);
@@ -109,7 +109,7 @@ namespace Sys.Data
 			return dt;
 		}
 
-		public static void ToDataTable(this IEnumerable<SchemaTable> items, DataTable dt)
+		public static void ToDataTable(this IEnumerable<SchemaRow> items, DataTable dt)
 		{
 			foreach (var item in items)
 			{
@@ -120,7 +120,7 @@ namespace Sys.Data
 			dt.AcceptChanges();
 		}
 
-		public static IDictionary<string, object> ToDictionary(this SchemaTable item)
+		public static IDictionary<string, object> ToDictionary(this SchemaRow item)
 		{
 			return new Dictionary<string, object>()
 			{
@@ -144,9 +144,9 @@ namespace Sys.Data
 			};
 		}
 
-		public static SchemaTable FromDictionary(this IDictionary<string, object> dict)
+		public static SchemaRow FromDictionary(this IDictionary<string, object> dict)
 		{
-			return new SchemaTable
+			return new SchemaRow
 			{
 				SchemaName = (string)dict[_SCHEMANAME],
 				TableName = (string)dict[_TABLENAME],
@@ -168,7 +168,7 @@ namespace Sys.Data
 			};
 		}
 
-		public static bool CompareTo(this SchemaTable a, SchemaTable b)
+		public static bool CompareTo(this SchemaRow a, SchemaRow b)
 		{
 			return a.SchemaName == b.SchemaName
 			&& a.TableName == b.TableName
@@ -189,7 +189,7 @@ namespace Sys.Data
 			&& a.FKContraintName == b.FKContraintName;
 		}
 
-		public static void CopyTo(this SchemaTable from, SchemaTable to)
+		public static void CopyTo(this SchemaRow from, SchemaRow to)
 		{
 			to.SchemaName = from.SchemaName;
 			to.TableName = from.TableName;
@@ -210,7 +210,7 @@ namespace Sys.Data
 			to.FKContraintName = from.FKContraintName;
 		}
 
-		public static string ToSimpleString(this SchemaTable obj)
+		public static string ToSimpleString(this SchemaRow obj)
 		{
 			return string.Format("{{SchemaName:{0}, TableName:{1}, ColumnName:{2}, DataType:{3}, Length:{4}, Nullable:{5}, precision:{6}, scale:{7}, IsPrimary:{8}, IsIdentity:{9}, IsComputed:{10}, definition:{11}, PKContraintName:{12}, PK_Schema:{13}, PK_Table:{14}, PK_Column:{15}, FKContraintName:{16}}}",
 			obj.SchemaName,

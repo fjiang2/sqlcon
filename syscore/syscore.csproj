@@ -124,7 +124,7 @@
     <Compile Include="Data\Metadata\IForeignKeys.cs" />
     <Compile Include="Data\Metadata\IPrimaryKeys.cs" />
     <Compile Include="Data\Metadata\ITableSchema.cs" />
-    <Compile Include="Data\Metadata\SchemaTable.cs" />
+    <Compile Include="Data\Metadata\SchemaRow.cs" />
     <Compile Include="Data\Metadata\TableSchemaManager.cs" />
     <Compile Include="Data\DataTableSchemaName.cs" />
     <Compile Include="Data\Connection\Name\SchemaName.cs" />

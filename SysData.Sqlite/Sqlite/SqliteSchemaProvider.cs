@@ -94,19 +94,97 @@ namespace Sys.Data
 
         public override DataTable GetTableSchema(TableName tname)
         {
-            string SQL = string.Format(SQL_SCHEMA, string.Empty, $"WHERE C.TABLE_NAME = '{tname.Name}'");
-            return new SqlCmd(tname.Provider, SQL).FillDataTable();
+            List<SchemaRow> rows = new List<SchemaRow>();
+            GetSchemaRows(rows, tname);
+
+            DataTable schemaTable = SchemaRowExtension.CreateTable();
+            rows.ToDataTable(schemaTable);
+            schemaTable.Columns.Remove(SchemaRowExtension._SCHEMANAME);
+            schemaTable.Columns.Remove(SchemaRowExtension._TABLENAME);
+            schemaTable.AcceptChanges();
+            return schemaTable;
+        }
+
+        private static List<SchemaRow> GetSchemaRows(List<SchemaRow> rows, TableName tname)
+        {
+            string SQL = $"SELECT * FROM PRAGMA_TABLE_INFO('{tname.Name}')";
+            var dt = new SqlCmd(tname.Provider, SQL).FillDataTable();
+            foreach (DataRow row in dt.Rows)
+            {
+                SchemaRow _row = new SchemaRow
+                {
+                    SchemaName = "",
+                    TableName = tname.Name,
+                    ColumnName = row.GetField<string>("name"),
+                    DataType = row.GetField<string>("type"),
+                    Length = 0,
+                    Nullable = row.GetField<long>("notnull") == 0,
+                    precision = 0,
+                    scale = 0,
+                    IsPrimary = row.GetField<long>("pk") == 1,
+                    IsIdentity = false,
+                    IsComputed = false,
+                    definition = null,
+                    PKContraintName = null,
+                    PK_Schema = null,
+                    PK_Table = null,
+                    PK_Column = null,
+                    FKContraintName = null,
+                };
+
+                Parse(_row, row.GetField<string>("type"));
+                rows.Add(_row);
+            }
+
+            return rows;
+        }
+
+        private static void Parse(SchemaRow row, string dataType)
+        {
+            string type = dataType.ToLower();
+
+            switch (type)
+            {
+                case "integer":
+                    row.DataType = "int";
+                    return;
+
+                case "real":
+                    row.DataType = "float";
+                    return;
+            }
+
+            if (type.StartsWith("nvarchar"))
+            {
+                string[] items = type.Split(new char[] { '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
+                row.DataType = "nvarchar";
+                row.Length = short.Parse(items[1]);
+                return;
+            }
+
+            if (type.StartsWith("numeric"))
+            {
+                string[] items = type.Split(new char[] { '(', ',', ')' }, StringSplitOptions.RemoveEmptyEntries);
+                row.DataType = "decimal";
+                row.precision = (byte)short.Parse(items[1]);
+                row.scale = (byte)short.Parse(items[2]);
+                return;
+            }
+
+            row.DataType = type;
+            return;
+
         }
 
         public override DataTable GetDatabaseSchema(DatabaseName dname)
         {
-            return InformationSchema.LoadDatabaseSchema(dname.ServerName, new DatabaseName[] { dname }, CreateSQLOfDatabaseSchema)
+            return LoadDatabaseSchema(dname.ServerName, new DatabaseName[] { dname })
                 .Tables[dname.Name];
         }
 
         public override DataSet GetServerSchema(ServerName sname)
         {
-            return InformationSchema.LoadDatabaseSchema(sname, sname.GetDatabaseNames(), CreateSQLOfDatabaseSchema);
+            return LoadDatabaseSchema(sname, sname.GetDatabaseNames());
         }
 
         public override DependencyInfo[] GetDependencySchema(DatabaseName dname)
@@ -148,55 +226,34 @@ SELECT
         }
 
 
-        private static string CreateSQLOfDatabaseSchema(DatabaseName dname)
+        private static DataTable LoadDatabaseSchema(DatabaseName dname)
         {
-            StringBuilder builder = new StringBuilder();
-            string header = @"C.TABLE_SCHEMA AS SchemaName, C.TABLE_NAME AS TableName,";
-            //builder.AppendFormat("USE [{0}] ", dname.Name).AppendLine();
-            builder.AppendLine(string.Format(SQL_SCHEMA, header, string.Empty));
+            List<SchemaRow> rows = new List<SchemaRow>();
+            foreach (TableName tname in dname.GetTableNames())
+            {
+                GetSchemaRows(rows, tname);
+            }
 
-            return builder.ToString();
+            DataTable schemaTable = SchemaRowExtension.CreateTable();
+            rows.ToDataTable(schemaTable);
+            schemaTable.AcceptChanges();
+            return schemaTable;
         }
 
-       private static string SQL_SCHEMA = @"
-SELECT 
-    {0}
-	C.COLUMN_NAME AS ColumnName,
-	DATA_TYPE AS DataType,
-    CASE WHEN CHARACTER_OCTET_LENGTH IS NULL THEN CAST(0 AS smallint) 
-		WHEN CHARACTER_OCTET_LENGTH > 4000 THEN CAST(-1 AS smallint) 
-		ELSE CAST(CHARACTER_OCTET_LENGTH AS smallint) 
-		END AS Length,
-    CASE WHEN is_nullable = 'YES' THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS Nullable,
-	CASE WHEN NUMERIC_PRECISION IS NOT NULL THEN CAST(NUMERIC_PRECISION AS tinyint) ELSE CAST(0 AS tinyint) END AS precision,
-	CASE WHEN NUMERIC_SCALE IS NOT NULL THEN CAST(NUMERIC_SCALE AS tinyint) ELSE CAST(0 AS tinyint) END AS scale,
-	CASE WHEN I.PRIMARY_KEY IS NOT NULL THEN CAST(I.PRIMARY_KEY AS BIT) ELSE CAST(0 AS BIT) END AS IsPrimary,
-	CAST(0 AS BIT) AS IsIdentity,
-	CAST(0 AS BIT) AS IsComputed,
-	NULL AS definition,
-	I.INDEX_NAME AS PKContraintName,
-	X.PK_Schema,
-	X.PK_Table,
-	X.PK_Column,
-	X.FKContraintName
-FROM INFORMATION_SCHEMA.COLUMNS C
-	LEFT JOIN INFORMATION_SCHEMA.INDEXES I ON I.TABLE_NAME=C.TABLE_NAME AND I.COLUMN_NAME = C.COLUMN_NAME
-	LEFT JOIN (
-		SELECT 
-			U.TABLE_NAME,
-			U.COLUMN_NAME AS COLUMN_NAME,
-			R.UNIQUE_CONSTRAINT_NAME AS PKContraintName,
-			I.TABLE_SCHEMA AS PK_Schema,
-			I.TABLE_NAME  AS PK_Table,
-			I.COLUMN_NAME AS PK_Column,
-			R.CONSTRAINT_NAME AS FKContraintName 
-		FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE U 
-			INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS T ON T.CONSTRAINT_NAME = U.CONSTRAINT_NAME
-		   	INNER JOIN INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS R ON R.CONSTRAINT_TABLE_NAME=T.TABLE_NAME AND R.CONSTRAINT_NAME=T.CONSTRAINT_NAME
-			INNER JOIN INFORMATION_SCHEMA.INDEXES I ON I.INDEX_NAME = R.UNIQUE_CONSTRAINT_NAME
-		WHERE T.CONSTRAINT_TYPE='FOREIGN KEY'
-	) X ON X.COLUMN_NAME = C.COLUMN_NAME AND X.TABLE_NAME=C.TABLE_NAME
-{1}
-";
+        public static DataSet LoadDatabaseSchema(ServerName sname, IEnumerable<DatabaseName> dnames)
+        {
+            DataSet ds = new DataSet();
+            ds.DataSetName = sname.Path;
+
+            foreach (DatabaseName dname in dnames)
+            {
+                DataTable dt = LoadDatabaseSchema(dname);
+                dt.TableName = dname.Name;
+                ds.Tables.Add(dt);
+            }
+
+            return ds;
+        }
+
     }
 }
