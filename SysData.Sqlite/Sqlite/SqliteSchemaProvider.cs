@@ -20,7 +20,7 @@ namespace Sys.Data
     /// </summary>
     class SqliteSchemaProvider : DbSchemaProvider
     {
-        public const string SQLITE_DATABASE_NAME = "SqliteDatabase";
+        public const string SQLITE_DATABASE_NAME = "SQLiteDb";
 
         public SqliteSchemaProvider(ConnectionProvider provider)
             : base(provider)
