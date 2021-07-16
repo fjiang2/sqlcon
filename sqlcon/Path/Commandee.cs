@@ -1261,6 +1261,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("        file/assembly       .Net assembly dll");
                 cout.WriteLine("        file/c#             C# data contract classes");
                 cout.WriteLine("        riadb               Remote Invoke Agent");
+                cout.WriteLine("        sqlce               Sql Server Compact database");
+                cout.WriteLine("        sqlite              SQLite v3 database");
                 cout.WriteLine("   /namespace:xxx           wildcard of namespace name filter on assembly");
                 cout.WriteLine("   /class:xxxx              wildcard of class name filter on assembly");
                 cout.WriteLine("example:");
@@ -1269,6 +1271,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("  mount xml=file://c:\\db\\northwind.xml");
                 cout.WriteLine("  mount cs=file://c:\\db\\northwind.cs /pvd:file/c#");
                 cout.WriteLine("  mount dll=file://c:\\db\\any.dll /pvd:file/assembly /namespace:Sys* /class:Employee*");
+                cout.WriteLine("  mount sdf=c:\\db\\db1.sdf /pvd:sqlce");
+                cout.WriteLine("  mount db=c:\\db\\db2.db /pvd:sqlite");
                 return;
             }
 
@@ -1311,6 +1315,10 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             if (pvd == "sqlce")
             {
                 builder.Append("Max Buffer Size=1024;Persist Security Info=False;");
+            }
+            else if (pvd == "sqlite")
+            {
+                builder.Append("Version=3; DateTimeFormat=Ticks; Pooling=True; Max Pool Size=100;");
             }
             else
             {
