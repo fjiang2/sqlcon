@@ -119,6 +119,12 @@
     <Compile Include="Data\Linq\EntityExtension.cs" />
     <Compile Include="Data\DataContract\IEntityRow.cs" />
     <Compile Include="Data\Linq\IDataContractBroker.cs" />
+    <Compile Include="Data\Metadata\IColumn.cs" />
+    <Compile Include="Data\Metadata\IForeignKey.cs" />
+    <Compile Include="Data\Metadata\IForeignKeys.cs" />
+    <Compile Include="Data\Metadata\IPrimaryKeys.cs" />
+    <Compile Include="Data\Metadata\ITableSchema.cs" />
+    <Compile Include="Data\Metadata\SchemaRow.cs" />
     <Compile Include="Data\Metadata\TableSchemaManager.cs" />
     <Compile Include="Data\DataTableSchemaName.cs" />
     <Compile Include="Data\Connection\Name\SchemaName.cs" />
@@ -281,7 +287,7 @@
     <Compile Include="Data\Metadata\ForeignKeys.cs" />
     <Compile Include="Data\Metadata\IdentityKeys.cs" />
     <Compile Include="Data\Metadata\InformationSchema.cs" />
-    <Compile Include="Data\Metadata\ITable.cs" />
+    <Compile Include="Data\Metadata\IIdentityKeys.cs" />
     <Compile Include="Data\Metadata\PrimaryKeys.cs" />
     <Compile Include="Data\SqlScriptGeneration\DatabaseClause.cs" />
     <Compile Include="Data\SqlScriptGeneration\SqlTemplate.cs" />
