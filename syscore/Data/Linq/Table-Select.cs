@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Collections.Generic;
 using System.Data;
+using System.Text;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -23,6 +24,42 @@ namespace Sys.Data.Linq
 
             var dt = Context.FillDataTable(SQL);
             return ToList(dt);
+        }
+
+
+        /// <summary>
+        /// Select rows by primary keys in entities
+        /// </summary>
+        /// <param name="entities"></param>
+        /// <returns></returns>
+        public IEnumerable<TEntity> Select(IEnumerable<TEntity> entities)
+        {
+            List<TEntity> list = new List<TEntity>();
+            if (entities == null || entities.Count() == 0)
+                return list;
+
+            var gen = this.Generator;
+            StringBuilder SQL = new StringBuilder();
+            foreach (TEntity entity in entities)
+            {
+                foreach (string key in schema.PrimaryKeys)
+                {
+                    object obj = typeof(TEntity).GetProperty(key)?.GetValue(entity);
+                    gen.Add(key, obj);
+                }
+
+                SQL.AppendLine(gen.Select());
+                gen.Clear();
+            }
+
+            var ds = Context.FillDataSet(SQL.ToString());
+            foreach (DataTable dt in ds.Tables)
+            {
+                if (dt.Rows.Count > 0)
+                    list.AddRange(ToList(dt));
+            }
+
+            return list;
         }
 
         public void SelectOnSubmit(Expression<Func<TEntity, bool>> where)

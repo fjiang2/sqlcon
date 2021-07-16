@@ -121,8 +121,34 @@ namespace Sys.Data.Linq
         public static int PatialUpdate<TEntity>(this TEntity entity, Expression<Func<TEntity, object>> modifiedProperties, Expression<Func<TEntity, bool>> where) where TEntity : class
             => Submit<TEntity>(table => table.PartialUpdateOnSubmit(entity, modifiedProperties, where));
 
+
+        /// <summary>
+        /// Support SQL Server
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entities"></param>
+        /// <returns></returns>
         public static int InsertOrUpdate<TEntity>(this IEnumerable<TEntity> entities) where TEntity : class
             => Submit<TEntity>(table => table.InsertOrUpdateOnSubmit(entities));
+
+
+        /// <summary>
+        /// Support SqlCe and SQLite
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entities"></param>
+        /// <returns></returns>
+        public static int Upsert<TEntity>(this IEnumerable<TEntity> entities) where TEntity : class
+            => Submit<TEntity>(table =>
+            {
+                foreach (TEntity entity in entities)
+                {
+                    if (table.Select(entity.AsEnumerable()).Count() == 0)
+                        table.InsertOnSubmit(entities);
+                    else
+                        table.UpdateOnSubmit(entities);
+                }
+            });
 
         public static int Delete<TEntity>(this IEnumerable<TEntity> entities) where TEntity : class
             => Submit<TEntity>(table => table.DeleteOnSubmit(entities));
