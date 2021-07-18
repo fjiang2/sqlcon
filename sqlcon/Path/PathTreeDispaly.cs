@@ -309,12 +309,12 @@ namespace sqlcon
                     if (column.IsPrimary) L.Add("pk");
 
                     string fk = string.Empty;
-                    if ((column as ColumnSchema).IsForeignKey)
+                    ColumnSchema col = column as ColumnSchema;
+                    if (col.IsForeignKey)
                     {
                         L.Add("fk");
                         if (cmd.HasForeignKey)
                         {
-                            var col = column as ColumnSchema;
                             fk = $"-> {col.PK_Schema}.[{col.PK_Table}].[{col.PK_Column}]";
                         }
                     }
