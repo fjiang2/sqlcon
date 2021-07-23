@@ -1,5 +1,10 @@
 ﻿sqlcon release notes
 
+7/23/2021 v2.6.0.0
+	Improvements/Enhancements:
+	1. Support SQLite 3.0. A connection string example:
+	"provider=sqlite;Data Source=c:\data\sample.db;Version=3; DateTimeFormat=Ticks; Pooling=True; Max Pool Size=100;"
+
 7/9/2021 v2.5.2.0
 	Bug Fixes:
 	1. Cannot mount SqlCe database.
