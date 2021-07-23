@@ -504,7 +504,7 @@ namespace UnitTestProject
         {
             using (var db = new DataContext(connectionString))
             {
-                var L = new int[] { 10, 30, 40 }.AsQueryable(); 
+                var L = new int[] { 10, 30, 40 }.AsQueryable();
                 var table = db.GetTable<Products>();
                 table.SelectOnSubmit(row => L.Contains(row.ProductID));
 
@@ -524,6 +524,23 @@ namespace UnitTestProject
 
                 Debug.Assert(text == "[1,2,24,34,35,38,39,43,67,70,75,76]");
             }
+        }
+
+        [TestMethod]
+        public void TestUpsert()
+        {
+            Categories category = new Categories
+            {
+                CategoryID = 11,
+                CategoryName = "Drink",
+                Description = "Coke",
+            };
+
+            Query.Upsert(category.AsEnumerable());
+            var L = Query.Select<Categories>(row => row.CategoryID == 11);
+            string text = L.First().ToSimpleString();
+
+            Debug.Assert(text == "{CategoryID:11, CategoryName:Drink, Description:Coke, Picture:}");
         }
     }
 }

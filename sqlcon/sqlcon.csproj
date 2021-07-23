@@ -32,7 +32,7 @@
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>index.html</WebPage>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>2.5.2.%2a</ApplicationVersion>
+    <ApplicationVersion>2.6.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -218,6 +218,10 @@
     <ProjectReference Include="..\syscore\syscore.csproj">
       <Project>{58332852-369d-4045-93c2-5cfe9cfb2313}</Project>
       <Name>syscore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SysData.Sqlite\SysData.Sqlite.csproj">
+      <Project>{8049d6c4-6b0e-42e4-be26-1c7cd9a52875}</Project>
+      <Name>SysData.Sqlite</Name>
     </ProjectReference>
     <ProjectReference Include="..\SysData.SqlServerCe\SysData.SqlServerCe.csproj">
       <Project>{b78cffc9-5cd5-4c79-a781-5c5dd87a8bc4}</Project>

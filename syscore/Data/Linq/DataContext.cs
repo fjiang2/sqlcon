@@ -99,7 +99,7 @@ namespace Sys.Data.Linq
             return null;
         }
 
-        private DataSet FillDataSet(string query)
+        internal DataSet FillDataSet(string query)
         {
             var cmd = sqlCommand(query);
             var ds = new DataSet();

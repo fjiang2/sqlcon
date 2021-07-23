@@ -37,7 +37,7 @@ SELECT * FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS
     /// </summary>
     class SqlCeSchemaProvider : DbSchemaProvider
     {
-        public const string SQLCE_DATABASE_NAME = "SqlCeDatabase";
+        public const string SQLCE_DATABASE_NAME = "SqlCeDb";
 
         public SqlCeSchemaProvider(ConnectionProvider provider)
             : base(provider)

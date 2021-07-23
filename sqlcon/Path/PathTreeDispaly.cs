@@ -225,7 +225,7 @@ namespace sqlcon
                 }
 
                 _DisplayColumnNodes(cmd, tname);
-                flag = true;
+                return true;
             }
 
             if (cmd.HasPrimaryKey)
@@ -307,17 +307,29 @@ namespace sqlcon
                     List<string> L = new List<string>();
                     if (column.IsIdentity) L.Add("++");
                     if (column.IsPrimary) L.Add("pk");
-                    if ((column as ColumnSchema).IsForeignKey) L.Add("fk");
+
+                    string fk = string.Empty;
+                    ColumnSchema col = column as ColumnSchema;
+                    if (col.IsForeignKey)
+                    {
+                        L.Add("fk");
+                        if (cmd.HasForeignKey)
+                        {
+                            fk = $"-> {col.PK_Schema}.[{col.PK_Table}].[{col.PK_Column}]";
+                        }
+                    }
+
                     string keys = string.Join(",", L);
 
                     if (!hasJson)
                     {
-                        cout.WriteLine("{0,5} {1,26} {2,-16} {3,10} {4,10}",
+                        cout.WriteLine("{0,5} {1,26} {2,-16} {3,10} {4,10} {5}",
                            sub(++i),
                            string.Format("[{0}]", column.ColumnName),
                            column.GetSQLType(),
                            keys,
-                           column.Nullable ? "null" : "not null");
+                           column.Nullable ? "null" : "not null",
+                           fk);
                     }
                     else
                     {

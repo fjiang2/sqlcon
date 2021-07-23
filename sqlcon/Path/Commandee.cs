@@ -9,7 +9,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
+using System.Data.Common;
 using Sys.Stdio;
 using Sys.Data.Resource;
 using Tie;
@@ -1253,6 +1253,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("   /pvd:provider          : default is SQL Server client");
                 cout.WriteLine("        sqldb               SQL Server, default provider");
                 cout.WriteLine("        sqloledb            ODBC Database Server");
+                cout.WriteLine("        sqlce               Sql Server Compact database");
+                cout.WriteLine("        sqlite              SQLite v3 database");
                 cout.WriteLine("        file/db/xml         sqlcon Database Schema, default provider for xml file");
                 cout.WriteLine("        file/dataset/json   System.Data.DataSet");
                 cout.WriteLine("        file/dataset/xml    System.Data.DataSet");
@@ -1269,6 +1271,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("  mount xml=file://c:\\db\\northwind.xml");
                 cout.WriteLine("  mount cs=file://c:\\db\\northwind.cs /pvd:file/c#");
                 cout.WriteLine("  mount dll=file://c:\\db\\any.dll /pvd:file/assembly /namespace:Sys* /class:Employee*");
+                cout.WriteLine("  mount sdf=c:\\db\\db1.sdf /pvd:sqlce");
+                cout.WriteLine("  mount db=c:\\db\\db2.db /pvd:sqlite");
                 return;
             }
 
@@ -1287,57 +1291,66 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             string serverName = items[0].Trim();
             string dataSource = items[1].Trim();
 
-            StringBuilder builder = new StringBuilder();
+            DbConnectionStringBuilder conn = new DbConnectionStringBuilder();
             string pvd = cmd.GetValue("pvd");
             if (pvd != null)
             {
-                if (pvd != "sqloledb" && pvd != "xmlfile" && !pvd.StartsWith("file/") && pvd != "sqlce")
+                if (pvd != "sqloledb" && pvd != "xmlfile" && !pvd.StartsWith("file/") && pvd != "sqlce" && pvd != "sqlite")
                 {
                     cerr.WriteLine($"provider={pvd} is not supported");
                     return;
                 }
 
-                builder.Append($"provider={pvd};");
+                conn["provider"] = pvd;
             }
             else
             {
                 if (dataSource.StartsWith("file://") || dataSource.StartsWith("http://") || dataSource.StartsWith("ftp://"))
-                    builder.Append("provider=xmlfile;");
+                    conn["provider"] = "file/db/xml";   // it == xmlfile
             }
 
 
-            builder.AppendFormat("data source={0};", dataSource);
+            conn["data source"] = dataSource;
 
             if (pvd == "sqlce")
             {
-                builder.Append("Max Buffer Size=1024;Persist Security Info=False;");
+                conn["Max Buffer Size"] = 1024;
+                conn["Persist Security Info"] = false;
+            }
+            else if (pvd == "sqlite")
+            {
+                conn["Version"] = 3;
+                conn["DateTimeFormat"] = "Ticks";
+                conn["Pooling"] = true;
+                conn["Max Pool Size"] = 100;
             }
             else
             {
                 string db = cmd.GetValue("db");
                 if (db != null)
-                    builder.Append($"initial catalog={db};");
+                    conn["initial catalog"] = db;
                 else
-                    builder.Append("initial catalog=master;");
+                    conn["initial catalog"] = "master";
 
                 string userId = cmd.GetValue("u");
                 string password = cmd.GetValue("p");
 
                 if (userId == null && password == null)
                 {
-                    builder.Append("integrated security=SSPI;packet size=4096;");
+                    conn["integrated security"] = "SSPI";
+                    conn["packet size"] = 4096;
                 }
                 else
                 {
                     if (userId != null)
-                        builder.AppendFormat("User Id={0};", userId);
+                        conn["User Id"] = userId;
                     else
-                        builder.Append("User Id=sa;");
+                        conn["User Id"] = "sa";
 
                     if (password != null)
-                        builder.AppendFormat("Password={0};", password);
+                        conn["Password"] = password;
                     else
-                        builder.Append("Password=;");
+                        conn["Password"] = "";
                 }
             }
 
@@ -1349,10 +1362,10 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             {
                 string value = cmd.GetValue(key);
                 if (value != null)
-                    builder.Append($"{key}={value};");
+                    conn[key] = value;
             }
 
-            string connectionString = builder.ToString();
+            string connectionString = conn.ConnectionString;
 
             ConnectionProvider provider = ConnectionProviderManager.Register(serverName, connectionString);
             if (!provider.CheckConnection())
