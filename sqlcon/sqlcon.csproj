@@ -191,6 +191,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Output\ConsoleGrid.cs" />
+    <Content Include="x64\SQLite.Interop.dll" />
+    <Content Include="x86\SQLite.Interop.dll" />
     <None Include="sqlcon_TemporaryKey.pfx" />
     <Resource Include="Windows\images\Home_16x16.png" />
     <Resource Include="Windows\images\Close_16x16.png" />
@@ -253,6 +255,9 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <PackageReference Include="System.Data.SQLite.Core">
+      <Version>1.0.115</Version>
+    </PackageReference>
     <PackageReference Include="Tie">
       <Version>2.0.8</Version>
     </PackageReference>
