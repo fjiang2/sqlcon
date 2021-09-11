@@ -8,226 +8,235 @@ using System.Data;
 namespace Sys.Data
 {
 
-    /*
+	/*
 
     SELECT * FROM sqlite_master
 
     PRAGMA table_info(MessageBacklog)
 
     */
-    /// <summary>
-    /// 
-    /// </summary>
-    class SqliteSchemaProvider : DbSchemaProvider
-    {
-        public const string SQLITE_DATABASE_NAME = "SQLiteDb";
+	/// <summary>
+	/// 
+	/// </summary>
+	class SqliteSchemaProvider : DbSchemaProvider
+	{
+		public const string SQLITE_DATABASE_NAME = "SQLiteDb";
 
-        public SqliteSchemaProvider(ConnectionProvider provider)
-            : base(provider)
-        {
-        }
+		public SqliteSchemaProvider(ConnectionProvider provider)
+			: base(provider)
+		{
+		}
 
-        public override bool Exists(DatabaseName dname)
-        {
-            return true;
-        }
-
-
-        public override bool Exists(TableName tname)
-        {
-            try
-            {
-                var tnames = GetTableNames(tname.DatabaseName);
-                return tnames.FirstOrDefault(row => row.Name.ToUpper() == tname.Name.ToUpper() && row.SchemaName?.ToUpper() == tname.SchemaName?.ToUpper()) != null;
-
-            }
-            catch (Exception)
-            {
-            }
-
-            return false;
-        }
-
-        public override DatabaseName[] GetDatabaseNames()
-        {
-            return new DatabaseName[] { new DatabaseName(provider, SQLITE_DATABASE_NAME) };
-        }
-
-        public override TableName[] GetTableNames(DatabaseName dname)
-        {
-            var table = new SqlCmd(dname.Provider, $"SELECT NULL AS SchemaName, NAME as TableName FROM sqlite_master WHERE TYPE='table' AND NOT (name LIKE 'sqlite_%') ORDER BY NAME")
-                .FillDataTable();
-
-            if (table != null)
-            {
-                return table
-                    .AsEnumerable()
-                    .Select(row => new TableName(dname, row["SchemaName"].IsNull(string.Empty), row.Field<string>("TableName")))
-                    .ToArray();
-            }
-
-            return new TableName[] { };
-        }
-
-        public override TableName[] GetViewNames(DatabaseName dname)
-        {
-            var table = new SqlCmd(dname.Provider, $"SELECT NULL AS SchemaName, NAME as TableName FROM sqlite_master WHERE TYPE='view' AND NOT (name LIKE 'sqlite_%') ORDER BY NAME")
-                .FillDataTable();
-
-            if (table != null)
-                return table.AsEnumerable()
-                .Select(row => new TableName(dname, row["SchemaName"].IsNull(string.Empty), row.Field<string>("TableName")) { Type = TableNameType.View })
-                .ToArray();
-
-            return new TableName[] { };
-        }
-
-        public override TableName[] GetProcedureNames(DatabaseName dname)
-        {
-            return new TableName[] { };
-        }
-
-        public override string GetProcedure(TableName pname)
-        {
-            return string.Empty;
-        }
-
-        public override DataTable GetTableSchema(TableName tname)
-        {
-            List<SchemaRow> rows = new List<SchemaRow>();
-            LoadColumns(rows, tname);
-            LoadForeignKeys(rows, tname);
-
-            DataTable schemaTable = SchemaRowExtension.CreateTable();
-            rows.ToDataTable(schemaTable);
-            schemaTable.Columns.Remove(SchemaRowExtension._SCHEMANAME);
-            schemaTable.Columns.Remove(SchemaRowExtension._TABLENAME);
-            schemaTable.AcceptChanges();
-            return schemaTable;
-        }
+		public override bool Exists(DatabaseName dname)
+		{
+			return true;
+		}
 
 
+		public override bool Exists(TableName tname)
+		{
+			try
+			{
+				var tnames = GetTableNames(tname.DatabaseName);
+				return tnames.FirstOrDefault(row => row.Name.ToUpper() == tname.Name.ToUpper() && row.SchemaName?.ToUpper() == tname.SchemaName?.ToUpper()) != null;
 
-        private static void LoadColumns(List<SchemaRow> rows, TableName tname)
-        {
-            string SQL = $"SELECT * FROM PRAGMA_TABLE_INFO('{tname.Name}')";
-            var dt = new SqlCmd(tname.Provider, SQL).FillDataTable();
-            foreach (DataRow row in dt.Rows)
-            {
-                string columnName = row.GetField<string>("name");
-                SchemaRow _row = rows.Where(x => x.TableName == tname.Name && x.ColumnName == columnName).SingleOrDefault();
-                if (_row == null)
-                {
-                    _row = new SchemaRow
-                    {
-                        SchemaName = SchemaName.empty,
-                        TableName = tname.Name,
-                        ColumnName = row.GetField<string>("name"),
-                    };
-                }
+			}
+			catch (Exception)
+			{
+			}
 
-                _row.DataType = row.GetField<string>("type");
-                _row.Length = 0;
-                _row.Nullable = row.GetField<long>("notnull") == 0;
-                _row.precision = 0;
-                _row.scale = 0;
+			return false;
+		}
 
-                _row.IsPrimary = row.GetField<long>("pk") == 1;
-                _row.IsIdentity = false;
-                _row.IsComputed = false;
-                _row.definition = null;
+		public override DatabaseName[] GetDatabaseNames()
+		{
+			return new DatabaseName[] { new DatabaseName(provider, SQLITE_DATABASE_NAME) };
+		}
 
-                _row.PKContraintName = _row.IsPrimary ? $"PK_{tname.Name}" : null;
+		public override TableName[] GetTableNames(DatabaseName dname)
+		{
+			var table = new SqlCmd(dname.Provider, $"SELECT NULL AS SchemaName, NAME as TableName FROM sqlite_master WHERE TYPE='table' AND NOT (name LIKE 'sqlite_%') ORDER BY NAME")
+				.FillDataTable();
 
-                ParseType(_row, _row.DataType);
-                rows.Add(_row);
-            }
-        }
+			if (table != null)
+			{
+				return table
+					.AsEnumerable()
+					.Select(row => new TableName(dname, row["SchemaName"].IsNull(string.Empty), row.Field<string>("TableName")))
+					.ToArray();
+			}
 
-        private static void LoadForeignKeys(List<SchemaRow> rows, TableName tname)
-        {
-            string SQL = $"SELECT * FROM PRAGMA_FOREIGN_KEY_LIST('{tname.Name}')";
-            var dt = new SqlCmd(tname.Provider, SQL).FillDataTable();
-            foreach (DataRow row in dt.Rows)
-            {
-                string columnName = row.GetField<string>("from");
-                SchemaRow _row = rows.Where(x => x.TableName == tname.Name && x.ColumnName == columnName).SingleOrDefault();
+			return new TableName[] { };
+		}
 
-                _row.PK_Schema = SchemaName.empty;
-                _row.PK_Table = row.GetField<string>("table");
-                _row.PK_Column = row.GetField<string>("to");
-                _row.FKContraintName = $"FK_{tname.Name}_{_row.PK_Table}";
-            }
-        }
+		public override TableName[] GetViewNames(DatabaseName dname)
+		{
+			var table = new SqlCmd(dname.Provider, $"SELECT NULL AS SchemaName, NAME as TableName FROM sqlite_master WHERE TYPE='view' AND NOT (name LIKE 'sqlite_%') ORDER BY NAME")
+				.FillDataTable();
+
+			if (table != null)
+				return table.AsEnumerable()
+				.Select(row => new TableName(dname, row["SchemaName"].IsNull(string.Empty), row.Field<string>("TableName")) { Type = TableNameType.View })
+				.ToArray();
+
+			return new TableName[] { };
+		}
+
+		public override TableName[] GetProcedureNames(DatabaseName dname)
+		{
+			return new TableName[] { };
+		}
+
+		public override string GetProcedure(TableName pname)
+		{
+			return string.Empty;
+		}
+
+		public override DataTable GetTableSchema(TableName tname)
+		{
+			List<SchemaRow> rows = new List<SchemaRow>();
+			LoadColumns(rows, tname);
+			LoadForeignKeys(rows, tname);
+
+			DataTable schemaTable = SchemaRowExtension.CreateTable();
+			rows.ToDataTable(schemaTable);
+			schemaTable.Columns.Remove(SchemaRowExtension._SCHEMANAME);
+			schemaTable.Columns.Remove(SchemaRowExtension._TABLENAME);
+			schemaTable.AcceptChanges();
+			return schemaTable;
+		}
 
 
-        private static void ParseType(SchemaRow row, string dataType)
-        {
-            string type = dataType.ToLower();
 
-            switch (type)
-            {
-                case "int":
-                case "integer":
-                    row.DataType = "int";
-                    return;
+		private static void LoadColumns(List<SchemaRow> rows, TableName tname)
+		{
+			string SQL = $"SELECT * FROM PRAGMA_TABLE_INFO('{tname.Name}')";
+			var dt = new SqlCmd(tname.Provider, SQL).FillDataTable();
+			foreach (DataRow row in dt.Rows)
+			{
+				string columnName = row.GetField<string>("name");
+				SchemaRow _row = rows.Where(x => x.TableName == tname.Name && x.ColumnName == columnName).SingleOrDefault();
+				if (_row == null)
+				{
+					_row = new SchemaRow
+					{
+						SchemaName = SchemaName.empty,
+						TableName = tname.Name,
+						ColumnName = row.GetField<string>("name"),
+					};
+				}
 
-                case "real":
-                case "double":
-                    row.DataType = "float";
-                    return;
+				_row.DataType = row.GetField<string>("type");
+				_row.Length = 0;
+				_row.Nullable = row.GetField<long>("notnull") == 0;
+				_row.precision = 0;
+				_row.scale = 0;
 
-                case "blob":
-                    row.DataType = "binary";
-                    return;
-            }
+				_row.IsPrimary = row.GetField<long>("pk") == 1;
+				_row.IsIdentity = _row.DataType.ToLower().Contains("identity");
+				_row.IsComputed = false;
+				_row.definition = null;
 
-            if (type.IndexOf('(') > 0 && type.IndexOf(')') > 0)
-            {
-                string[] items = type.Split(new char[] { '(', ',', ')' }, StringSplitOptions.RemoveEmptyEntries);
-                string _type = items[0];
-                int a1 = int.Parse(items[1]);
-                switch (_type)
-                {
-                    case "nvarchar":
-                        row.DataType = "nvarchar";
-                        row.Length = Convert.ToInt16(a1 * 2);
-                        return;
+				_row.PKContraintName = _row.IsPrimary ? $"PK_{tname.Name}" : null;
 
-                    case "varchar":
-                        row.DataType = "varchar";
-                        row.Length = Convert.ToInt16(a1);
-                        return;
+				ParseType(_row, _row.DataType);
+				rows.Add(_row);
+			}
+		}
 
-                    case "numeric":
-                        row.DataType = "numeric";
-                        row.precision = (byte)short.Parse(items[1]);
-                        row.scale = (byte)short.Parse(items[2]);
-                        return;
+		private static void LoadForeignKeys(List<SchemaRow> rows, TableName tname)
+		{
+			string SQL = $"SELECT * FROM PRAGMA_FOREIGN_KEY_LIST('{tname.Name}')";
+			var dt = new SqlCmd(tname.Provider, SQL).FillDataTable();
+			foreach (DataRow row in dt.Rows)
+			{
+				string columnName = row.GetField<string>("from");
+				SchemaRow _row = rows.Where(x => x.TableName == tname.Name && x.ColumnName == columnName).SingleOrDefault();
 
-                    default:
-                        throw new NotImplementedException();
-                }
-            }
+				_row.PK_Schema = SchemaName.empty;
+				_row.PK_Table = row.GetField<string>("table");
+				_row.PK_Column = row.GetField<string>("to");
+				_row.FKContraintName = $"FK_{tname.Name}_{_row.PK_Table}";
+			}
+		}
 
-            row.DataType = type;
-            return;
-        }
 
-        public override DataTable GetDatabaseSchema(DatabaseName dname)
-        {
-            return LoadDatabaseSchema(dname.ServerName, new DatabaseName[] { dname })
-                .Tables[dname.Name];
-        }
+		private static void ParseType(SchemaRow row, string dataType)
+		{
+			string type = dataType.ToLower();
+			
+			//possible type: int IDENTITY(1,1)
+			string[] L = type.Split(' ');
+			string ty;
+			
+			if (L.Length > 1)
+				ty = L[0];
+			else
+				ty = type;
 
-        public override DataSet GetServerSchema(ServerName sname)
-        {
-            return LoadDatabaseSchema(sname, sname.GetDatabaseNames());
-        }
+			switch (ty)
+			{
+				case "int":
+				case "integer":
+					row.DataType = "int";
+					return;
 
-        public override DependencyInfo[] GetDependencySchema(DatabaseName dname)
-        {
-            const string sql = @"
+				case "real":
+				case "double":
+					row.DataType = "float";
+					return;
+
+				case "blob":
+					row.DataType = "binary";
+					return;
+			}
+
+			if (type.IndexOf('(') > 0 && type.IndexOf(')') > 0)
+			{
+				string[] items = type.Split(new char[] { '(', ',', ')' }, StringSplitOptions.RemoveEmptyEntries);
+				string _type = items[0];
+				int a1 = int.Parse(items[1]);
+				switch (_type)
+				{
+					case "nvarchar":
+						row.DataType = "nvarchar";
+						row.Length = Convert.ToInt16(a1 * 2);
+						return;
+
+					case "varchar":
+						row.DataType = "varchar";
+						row.Length = Convert.ToInt16(a1);
+						return;
+
+					case "numeric":
+						row.DataType = "numeric";
+						row.precision = (byte)short.Parse(items[1]);
+						row.scale = (byte)short.Parse(items[2]);
+						return;
+
+					default:
+						throw new NotImplementedException();
+				}
+			}
+
+			row.DataType = type;
+			return;
+		}
+
+		public override DataTable GetDatabaseSchema(DatabaseName dname)
+		{
+			return LoadDatabaseSchema(dname.ServerName, new DatabaseName[] { dname })
+				.Tables[dname.Name];
+		}
+
+		public override DataSet GetServerSchema(ServerName sname)
+		{
+			return LoadDatabaseSchema(sname, sname.GetDatabaseNames());
+		}
+
+		public override DependencyInfo[] GetDependencySchema(DatabaseName dname)
+		{
+			const string sql = @"
 SELECT  
 		FK.TABLE_SCHEMA AS FK_SCHEMA,
 		FK.TABLE_NAME AS FK_Table,
@@ -248,52 +257,52 @@ SELECT
  WHERE FK.TABLE_NAME <> PK.TABLE_NAME
 ";
 
-            var dt = new SqlCmd(dname.Provider, sql).FillDataTable();
+			var dt = new SqlCmd(dname.Provider, sql).FillDataTable();
 
-            DependencyInfo[] rows = dt.AsEnumerable().Select(
-                row => new DependencyInfo
-                {
-                    FkTable = new TableName(dname, row["FK_SCHEMA"].IsNull(string.Empty), (string)row["FK_Table"]),
-                    PkTable = new TableName(dname, row["PK_SCHEMA"].IsNull(string.Empty), (string)row["PK_Table"]),
-                    PkColumn = (string)row["PK_Column"],
-                    FkColumn = (string)row["FK_Column"]
-                })
-                .ToArray();
+			DependencyInfo[] rows = dt.AsEnumerable().Select(
+				row => new DependencyInfo
+				{
+					FkTable = new TableName(dname, row["FK_SCHEMA"].IsNull(string.Empty), (string)row["FK_Table"]),
+					PkTable = new TableName(dname, row["PK_SCHEMA"].IsNull(string.Empty), (string)row["PK_Table"]),
+					PkColumn = (string)row["PK_Column"],
+					FkColumn = (string)row["FK_Column"]
+				})
+				.ToArray();
 
-            return rows;
-        }
+			return rows;
+		}
 
 
-        private static DataTable LoadDatabaseSchema(DatabaseName dname)
-        {
-            List<SchemaRow> rows = new List<SchemaRow>();
-            foreach (TableName tname in dname.GetTableNames())
-            {
-                LoadColumns(rows, tname);
-                LoadForeignKeys(rows, tname);
-            }
+		private static DataTable LoadDatabaseSchema(DatabaseName dname)
+		{
+			List<SchemaRow> rows = new List<SchemaRow>();
+			foreach (TableName tname in dname.GetTableNames())
+			{
+				LoadColumns(rows, tname);
+				LoadForeignKeys(rows, tname);
+			}
 
-            DataTable schemaTable = SchemaRowExtension.CreateTable();
-            rows.ToDataTable(schemaTable);
-            schemaTable.AcceptChanges();
-            return schemaTable;
-        }
+			DataTable schemaTable = SchemaRowExtension.CreateTable();
+			rows.ToDataTable(schemaTable);
+			schemaTable.AcceptChanges();
+			return schemaTable;
+		}
 
-        public static DataSet LoadDatabaseSchema(ServerName sname, IEnumerable<DatabaseName> dnames)
-        {
-            DataSet ds = new DataSet();
-            ds.DataSetName = sname.Path;
+		public static DataSet LoadDatabaseSchema(ServerName sname, IEnumerable<DatabaseName> dnames)
+		{
+			DataSet ds = new DataSet();
+			ds.DataSetName = sname.Path;
 
-            foreach (DatabaseName dname in dnames)
-            {
-                DataTable dt = LoadDatabaseSchema(dname);
-                dt.TableName = dname.Name;
-                ds.Tables.Add(dt);
-            }
+			foreach (DatabaseName dname in dnames)
+			{
+				DataTable dt = LoadDatabaseSchema(dname);
+				dt.TableName = dname.Name;
+				ds.Tables.Add(dt);
+			}
 
-            return ds;
-        }
+			return ds;
+		}
 
-    }
+	}
 }
 
