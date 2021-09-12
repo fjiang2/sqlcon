@@ -35,7 +35,7 @@ namespace Sys.Data.Resource
         /// <param name="entries"></param>
         public void SubmitChanges(List<ResourceEntry> entries, bool deleteRowNotInResource)
         {
-            SqlMaker gen = new SqlMaker(tname.FormalName)
+            SqlGenerator gen = new SqlGenerator(tname.FormalName)
             {
                 PrimaryKeys = new string[] { name_column }
             };

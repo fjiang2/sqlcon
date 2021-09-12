@@ -7,7 +7,6 @@ using Sys;
 using Sys.Data;
 using Sys.CodeBuilder;
 using Sys.Data.Manager;
-using Sys.Data.Linq;
 using System.Data.Common;
 
 namespace sqlcon

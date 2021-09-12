@@ -31,7 +31,7 @@
     <MinimumRequiredVersion>1.3.1.5</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>index.html</WebPage>
-    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationRevision>1</ApplicationRevision>
     <ApplicationVersion>2.6.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -217,6 +217,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\sqlcode\sqlcode\sqlcode.csproj">
+      <Project>{e0d0fb34-b473-4d89-a6e0-44c1c02e2fd0}</Project>
+      <Name>sqlcode</Name>
+    </ProjectReference>
     <ProjectReference Include="..\syscore\syscore.csproj">
       <Project>{58332852-369d-4045-93c2-5cfe9cfb2313}</Project>
       <Name>syscore</Name>

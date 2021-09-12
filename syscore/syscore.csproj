@@ -114,12 +114,7 @@
     <Compile Include="Data.Resource\XlfFile.cs" />
     <Compile Include="DataStructure\DictionaryBuilder.cs" />
     <Compile Include="Data\Connection\SimpleDbConnectionStringBuilder.cs" />
-    <Compile Include="Data\Linq\BrokerOfDataContract.cs" />
-    <Compile Include="Data\Linq\BrokerOfDataContract2.cs" />
-    <Compile Include="Data\Linq\BrokerOfDataContract1.cs" />
-    <Compile Include="Data\Linq\EntityExtension.cs" />
     <Compile Include="Data\DataContract\IEntityRow.cs" />
-    <Compile Include="Data\Linq\IDataContractBroker.cs" />
     <Compile Include="Data\Metadata\IColumn.cs" />
     <Compile Include="Data\Metadata\IForeignKey.cs" />
     <Compile Include="Data\Metadata\IForeignKeys.cs" />
@@ -130,33 +125,10 @@
     <Compile Include="Data\DataTableSchemaName.cs" />
     <Compile Include="Data\Connection\Name\SchemaName.cs" />
     <Compile Include="Data\Extension\TableNameExtension.cs" />
-    <Compile Include="Data\Linq\DataContext.cs" />
-    <Compile Include="Data\Linq\Constraint.cs" />
-    <Compile Include="Data\Linq\DataContextHelper.cs" />
-    <Compile Include="Data\Linq\EntityRef.cs" />
-    <Compile Include="Data\Linq\EntitySet.cs" />
-    <Compile Include="Data\Linq\IConstraint.cs" />
-    <Compile Include="Data\Linq\ITable.cs" />
-    <Compile Include="Data\Linq\ITableSchema.cs" />
-    <Compile Include="Data\Linq\Query.cs" />
-    <Compile Include="Data\Linq\QueryResultReader.cs" />
-    <Compile Include="Data\Linq\PropertyTranslator.cs" />
-    <Compile Include="Data\Linq\RowEvent.cs" />
-    <Compile Include="Data\Linq\RowEventArgs.cs" />
-    <Compile Include="Data\Linq\RowOperation.cs" />
-    <Compile Include="Data\Linq\QueryTranslator.cs" />
-    <Compile Include="Data\Linq\SqlCodeBlock.cs" />
-    <Compile Include="Data\Linq\Table-Expand.cs" />
-    <Compile Include="Data\Linq\Table-Select.cs" />
-    <Compile Include="Data\Linq\Table.cs" />
-    <Compile Include="Data\Linq\TableSchema.cs" />
-    <Compile Include="Data\Linq\TableSchemaExtension.cs" />
     <Compile Include="Data\Metadata\TableSchemaCache.cs" />
     <Compile Include="Data\Persistence\Level0\IDbCmd.cs" />
     <Compile Include="Data\Persistence\Level0\StringBuffer.cs" />
     <Compile Include="Data\Persistence\Level0\SqlExecutionEventArgs.cs" />
-    <Compile Include="Data\SqlBuilder\SqlColumnValuePair.cs" />
-    <Compile Include="Data\SqlBuilder\SqlColumnValuePairCollection.cs" />
     <Compile Include="Data\SqlClause\ColumnDescriptor.cs" />
     <Compile Include="Data\SqlClause\SqlClauseAction.cs" />
     <Compile Include="Data\SqlScriptGeneration\ColumnPairCollection.cs" />
@@ -400,8 +372,6 @@
     <Compile Include="Data\SqlBuilder\SqlBuilderInfo.cs" />
     <Compile Include="Data\SqlBuilder\SqlExpr.cs" />
     <Compile Include="Data\SqlBuilder\SqlExprExtension.cs" />
-    <Compile Include="Data\SqlBuilder\SqlMaker.cs" />
-    <Compile Include="Data\SqlBuilder\SqlValue.cs" />
     <Compile Include="Data\SqlParser\CompilingException.cs" />
     <Compile Include="Data\SqlParser\Constant.cs" />
     <Compile Include="Data\SqlParser\Error.cs" />
@@ -444,7 +414,12 @@
       <Version>2.0.8</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\sqlcode\sqlcode\sqlcode.csproj">
+      <Project>{e0d0fb34-b473-4d89-a6e0-44c1c02e2fd0}</Project>
+      <Name>sqlcode</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

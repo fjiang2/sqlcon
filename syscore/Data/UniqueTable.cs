@@ -104,7 +104,7 @@ namespace Sys.Data
 
         private SqlBuilder UpdateClause(string column, DataRow row, object value)
         {
-            SqlMaker gen = new SqlMaker(TableName.FormalName);
+            SqlGenerator gen = new SqlGenerator(TableName.FormalName);
 
             if (hasPhysloc)
             {
@@ -191,7 +191,7 @@ namespace Sys.Data
 
         public void DeleteRow(DataRow row)
         {
-            SqlMaker gen = new SqlMaker(TableName.FormalName);
+            SqlGenerator gen = new SqlGenerator(TableName.FormalName);
 
             if (hasPhysloc)
             {
