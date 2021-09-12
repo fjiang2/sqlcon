@@ -150,6 +150,9 @@ namespace sqlcon
 
             SqlBuilder builder;
             int top = cmd.Top;
+            
+            if (tname.Provider.DpType == DbProviderType.Sqlite)
+                top = 0;
 
             bool hasRowId = cmd.HasRowId;
             Locator locator = Locator.Empty;

@@ -8,30 +8,38 @@ using System.Data;
 namespace Sys.Data
 {
 
-/*
+    /*
+    https://docs.microsoft.com/en-us/previous-versions/sql/compact/sql-server-compact-4.0/ms174156(v=sql.110)?redirectedfrom=MSDN
 
--- Get all the columns of the database
-SELECT * FROM INFORMATION_SCHEMA.COLUMNS
+    -- Create the Tool table.
+   CREATE TABLE Tool
+   (
+     ID INT IDENTITY NOT NULL PRIMARY KEY, 
+     Name VARCHAR(40) NOT NULL
+   )
 
--- Get all the indexes of the database
-SELECT * FROM INFORMATION_SCHEMA.INDEXES
+    -- Get all the columns of the database
+    SELECT * FROM INFORMATION_SCHEMA.COLUMNS
 
--- Get all the indexes and columns of the database
-SELECT * FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+    -- Get all the indexes of the database
+    SELECT * FROM INFORMATION_SCHEMA.INDEXES
 
--- Get all the datatypes of the database
-SELECT * FROM INFORMATION_SCHEMA.PROVIDER_TYPES
+    -- Get all the indexes and columns of the database
+    SELECT * FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
 
--- Get all the tables of the database
-SELECT * FROM INFORMATION_SCHEMA.TABLES
+    -- Get all the datatypes of the database
+    SELECT * FROM INFORMATION_SCHEMA.PROVIDER_TYPES
 
--- Get all the constraint of the database
-SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS
+    -- Get all the tables of the database
+    SELECT * FROM INFORMATION_SCHEMA.TABLES
 
--- Get all the foreign keys of the database
-SELECT * FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS
-     
-*/
+    -- Get all the constraint of the database
+    SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS
+
+    -- Get all the foreign keys of the database
+    SELECT * FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS
+
+    */
     /// <summary>
     /// 
     /// </summary>
