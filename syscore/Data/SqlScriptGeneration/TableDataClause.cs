@@ -21,7 +21,7 @@ namespace Sys.Data
         {
             this.schema = schema;
             this.tableName = schema.TableName;
-            this.template = new SqlTemplate(tableName);
+            this.template = new SqlTemplate(tableName.FormalName, DbAgentStyle.SqlServer);
 
             this.pk = schema.PrimaryKeys.Keys;
             this.ik = schema.Identity.ColumnNames;

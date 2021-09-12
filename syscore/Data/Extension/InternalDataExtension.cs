@@ -251,7 +251,7 @@ namespace Sys.Data
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="where"></param>
-        public static void Delete<T>(this SqlExpr where) where T : class, IDPObject, new()
+        public static void Delete<T>(this Expresssion where) where T : class, IDPObject, new()
         {
             TableName tableName = typeof(T).TableName();
             tableName.Provider.ExecuteScalar($"DELETE FROM {tableName} WHERE {where}");

@@ -263,8 +263,6 @@
     <Compile Include="Data\Metadata\IIdentityKeys.cs" />
     <Compile Include="Data\Metadata\PrimaryKeys.cs" />
     <Compile Include="Data\SqlScriptGeneration\DatabaseClause.cs" />
-    <Compile Include="Data\SqlScriptGeneration\SqlTemplate.cs" />
-    <Compile Include="Data\SqlScriptGeneration\SqlTemplateFormat.cs" />
     <Compile Include="Data\Metadata\TableSchema.cs" />
     <Compile Include="Data\SqlScriptGeneration\TableClause.cs" />
     <Compile Include="Data\Extension\DataExtension.cs" />
@@ -370,7 +368,7 @@
     <Compile Include="Data\SqlBuilder\ISqlBuilder.cs" />
     <Compile Include="Data\SqlBuilder\SqlBuilder.cs" />
     <Compile Include="Data\SqlBuilder\SqlBuilderInfo.cs" />
-    <Compile Include="Data\SqlBuilder\SqlExpr.cs" />
+    <Compile Include="Data\SqlBuilder\Expresssion.cs" />
     <Compile Include="Data\SqlBuilder\SqlExprExtension.cs" />
     <Compile Include="Data\SqlParser\CompilingException.cs" />
     <Compile Include="Data\SqlParser\Constant.cs" />

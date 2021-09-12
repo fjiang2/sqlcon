@@ -92,7 +92,7 @@ namespace Sys.Data
             }
             else
             {
-                SqlExpr where = association.Column2.ColumnName() == association.Column1.ParameterName();
+                Expresssion where = association.Column2.ColumnName() == association.Column1.ParameterName();
                 if (association.Filter != null)
                     where = where.AND(association.Filter);
 

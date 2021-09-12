@@ -86,7 +86,7 @@ namespace Sys.Data
         /// Instantiate an instant from select a record from database
         /// </summary>
         /// <param name="where"></param>
-        public void UpdateObject(SqlExpr where)
+        public void UpdateObject(Expresssion where)
         {
             DataRow row = new SqlCmd(this.TableName.Provider, new SqlBuilder().SELECT().COLUMNS().FROM(TableName).WHERE(where).Clause).FillDataRow();
             this.exists = row != null;
@@ -523,7 +523,7 @@ namespace Sys.Data
         /// </summary>
         /// <param name="where"></param>
         /// <returns></returns>
-        public virtual DataRow Update(SqlExpr where)
+        public virtual DataRow Update(Expresssion where)
         {
             Locator temp = this.locator;
             
@@ -675,7 +675,7 @@ namespace Sys.Data
         /// </summary>
         /// <param name="where"></param>
         /// <returns></returns>
-        public virtual bool Delete(SqlExpr where)
+        public virtual bool Delete(Expresssion where)
         {
             Locator temp = this.locator;
 

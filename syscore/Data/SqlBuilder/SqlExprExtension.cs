@@ -27,13 +27,13 @@ namespace Sys.Data
         #region SqlExpr/SqlClause: ColumName/ParameterName/AddParameter
 
     
-        public static SqlExpr Assign(this string name, object value)
+        public static Expresssion Assign(this string name, object value)
         {
-          return SqlExpr.Assign(name, value);
+          return Expresssion.Assign(name, value);
         }
-        public static SqlExpr Equal(this string name, object value)
+        public static Expresssion Equal(this string name, object value)
         {
-            return SqlExpr.Equal(name, value);
+            return Expresssion.Equal(name, value);
         }
 
         /// <summary>
@@ -41,25 +41,25 @@ namespace Sys.Data
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static SqlExpr ColumnName(this string name)
+        public static Expresssion ColumnName(this string name)
         {
-            return SqlExpr.ColumnName(name, null);
+            return Expresssion.ColumnName(name, null);
         }
 
-        public static SqlExpr ColumnName(this string name, string alias)
+        public static Expresssion ColumnName(this string name, string alias)
         {
-            return SqlExpr.ColumnName(name, alias);
+            return Expresssion.ColumnName(name, alias);
         }
 
-        public static SqlExpr ColumnName(this string[] names)
+        public static Expresssion ColumnName(this string[] names)
         {
             var L = names.Select(column => column.ColumnName()).ToArray();
-            return SqlExpr.Join(L);
+            return Expresssion.Join(L);
         }
 
-        public static SqlExpr Func(this string name, params SqlExpr[] args)
+        public static Expresssion Func(this string name, params Expresssion[] args)
         {
-            return SqlExpr.Func(name, args);
+            return Expresssion.Func(name, args);
         }
 
 
@@ -68,18 +68,18 @@ namespace Sys.Data
         /// </summary>
         /// <param name="any"></param>
         /// <returns></returns>
-        public static SqlExpr Inject(this string any)
+        public static Expresssion Inject(this string any)
         {
-            return SqlExpr.Write(any);
+            return Expresssion.Write(any);
         }
         /// <summary>
         /// "name" -> "@name"
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static SqlExpr ParameterName(this string name)
+        public static Expresssion ParameterName(this string name)
         {
-            return SqlExpr.ParameterName(name);
+            return Expresssion.ParameterName(name);
         }
 
 
@@ -88,14 +88,14 @@ namespace Sys.Data
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static SqlExpr AddParameter(this string columnName)
+        public static Expresssion AddParameter(this string columnName)
         {
-            return SqlExpr.AddParameter(columnName, columnName);
+            return Expresssion.AddParameter(columnName, columnName);
         }
 
-        public static SqlExpr AddParameter(this string columnName, SqlExpr value)
+        public static Expresssion AddParameter(this string columnName, Expresssion value)
         {
-            return SqlExpr.AddParameter(columnName, columnName);
+            return Expresssion.AddParameter(columnName, columnName);
         }
 
         /// <summary>
@@ -105,85 +105,85 @@ namespace Sys.Data
         /// <param name="columnName"></param>
         /// <param name="parameterName"></param>
         /// <returns></returns>
-        public static SqlExpr AddParameter(this string columnName, string parameterName)
+        public static Expresssion AddParameter(this string columnName, string parameterName)
         {
-            return SqlExpr.AddParameter(columnName, parameterName);
+            return Expresssion.AddParameter(columnName, parameterName);
         }
 
         #endregion
 
-        public static SqlExpr AND(this SqlExpr exp1, SqlExpr exp2)
+        public static Expresssion AND(this Expresssion exp1, Expresssion exp2)
         {
-            return SqlExpr.OPR(exp1, "AND", exp2);
+            return Expresssion.OPR(exp1, "AND", exp2);
         }
-        public static SqlExpr AND(this IEnumerable<SqlExpr> expl)
+        public static Expresssion AND(this IEnumerable<Expresssion> expl)
         {
             if(expl.Count() >1)
-                return SqlExpr.OPR(expl.First(), "AND", expl.Skip(1).ToArray());
+                return Expresssion.OPR(expl.First(), "AND", expl.Skip(1).ToArray());
             else
                 return expl.First();
         }
 
 
-        public static SqlExpr OR(this SqlExpr exp1, SqlExpr exp2)
+        public static Expresssion OR(this Expresssion exp1, Expresssion exp2)
         {
-            return SqlExpr.OPR(exp1, "OR", exp2);
+            return Expresssion.OPR(exp1, "OR", exp2);
         }
 
-        public static SqlExpr OR(this IEnumerable<SqlExpr> expl)
+        public static Expresssion OR(this IEnumerable<Expresssion> expl)
         {
             if (expl.Count() > 1)
-                return SqlExpr.OPR(expl.First(), "OR", expl.Skip(1).ToArray());
+                return Expresssion.OPR(expl.First(), "OR", expl.Skip(1).ToArray());
             else
                 return expl.First();
         }
 
 
-        public static SqlExpr NOT(this SqlExpr exp)
+        public static Expresssion NOT(this Expresssion exp)
         {
-            return SqlExpr.OPR("NOT", exp);
+            return Expresssion.OPR("NOT", exp);
         }
 
-        public static SqlExpr LEN(this SqlExpr expr)
+        public static Expresssion LEN(this Expresssion expr)
         {
-            return SqlExpr.Func("LEN", expr);
+            return Expresssion.Func("LEN", expr);
         }
 
-        public static SqlExpr SUBSTRING(this SqlExpr expr, SqlExpr start, SqlExpr length)
+        public static Expresssion SUBSTRING(this Expresssion expr, Expresssion start, Expresssion length)
         {
-            return SqlExpr.Func("SUBSTRING", expr, start, length);
-        }
-
-
-        public static SqlExpr SUM(this SqlExpr expr)
-        {
-            return SqlExpr.Func("SUM", expr);
-        }
-
-        public static SqlExpr MAX(this SqlExpr expr)
-        {
-            return SqlExpr.Func("MAX", expr);
-        }
-
-        public static SqlExpr MIN(this SqlExpr expr)
-        {
-            return SqlExpr.Func("MIN", expr);
-        }
-
-        public static SqlExpr COUNT(this SqlExpr expr)
-        {
-            return SqlExpr.Func("COUNT", expr);
+            return Expresssion.Func("SUBSTRING", expr, start, length);
         }
 
 
-        public static SqlExpr ISNULL(this SqlExpr expr)
+        public static Expresssion SUM(this Expresssion expr)
         {
-            return SqlExpr.Func("ISNULL", expr);
+            return Expresssion.Func("SUM", expr);
         }
 
-        public static SqlExpr GETDATE()
+        public static Expresssion MAX(this Expresssion expr)
         {
-            return SqlExpr.Func("GETDATE");
+            return Expresssion.Func("MAX", expr);
+        }
+
+        public static Expresssion MIN(this Expresssion expr)
+        {
+            return Expresssion.Func("MIN", expr);
+        }
+
+        public static Expresssion COUNT(this Expresssion expr)
+        {
+            return Expresssion.Func("COUNT", expr);
+        }
+
+
+        public static Expresssion ISNULL(this Expresssion expr)
+        {
+            return Expresssion.Func("ISNULL", expr);
+        }
+
+        public static Expresssion GETDATE()
+        {
+            return Expresssion.Func("GETDATE");
         }
     }
 }

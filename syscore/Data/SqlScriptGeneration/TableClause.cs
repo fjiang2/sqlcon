@@ -17,7 +17,7 @@ namespace Sys.Data
 		{
 			this.schema = schema;
 			this.tableName = schema.TableName;
-			this.template = new SqlTemplate(tableName);
+			this.template = new SqlTemplate(tableName.FormalName, DbAgentStyle.SqlServer);
 		}
 
 		#region SELECT/UPDATE/DELETE/INSERT template

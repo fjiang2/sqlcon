@@ -141,7 +141,7 @@ namespace Sys.Data
         {
             List<string> columns = new List<string>();
             List<object> values = new List<object>();
-            List<SqlExpr> where = new List<SqlExpr>();
+            List<Expresssion> where = new List<Expresssion>();
 
             var _columns = TableName.GetTableSchema().Columns;
 

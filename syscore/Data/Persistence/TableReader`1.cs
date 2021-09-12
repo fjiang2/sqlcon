@@ -45,7 +45,7 @@ namespace Sys.Data
         /// read records by filter
         /// </summary>
         /// <param name="where"></param>
-        public TableReader(SqlExpr where)
+        public TableReader(Expresssion where)
         {
             this.reader = new TableReader(TableName, new SqlBuilder().SELECT().COLUMNS().FROM(TableName).WHERE(where).Clause);
         }

@@ -50,7 +50,7 @@ namespace Sys.Data.Comparison
         {
             string Set = string.Join<ColumnPair>(", ", L2);
             string where = string.Join<ColumnPair>(" AND ", L1);
-            return new SqlTemplate(tableName).Update(Set, where);
+            return new SqlTemplate(tableName.FormalName, DbAgentStyle.SqlServer).Update(Set, where);
         }
 
         public static bool Compare(string[] columns, DataRow row1, DataRow row2)

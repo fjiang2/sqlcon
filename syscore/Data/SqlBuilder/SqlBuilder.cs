@@ -120,7 +120,7 @@ namespace Sys.Data
             return Append($"USE {databaseName.Name}").AppendLine();
         }
 
-        public SqlBuilder SET(string key, SqlExpr value)
+        public SqlBuilder SET(string key, Expresssion value)
         {
             return AppendLine($"SET {key} {value}");
         }
@@ -160,7 +160,7 @@ namespace Sys.Data
         }
 
 
-        public SqlBuilder COLUMNS(params SqlExpr[] columns)
+        public SqlBuilder COLUMNS(params Expresssion[] columns)
         {
             if (columns.Length == 0)
                 return Append("* ");
@@ -259,10 +259,10 @@ namespace Sys.Data
 
 
 
-        public SqlBuilder SET(params SqlExpr[] assignments)
+        public SqlBuilder SET(params Expresssion[] assignments)
         {
             Append("SET ");
-            string s = string.Join<SqlExpr>(", ", assignments);
+            string s = string.Join<Expresssion>(", ", assignments);
             return AppendLine(s);
         }
 
@@ -311,7 +311,7 @@ namespace Sys.Data
 
         #region WHERE clause
 
-        public SqlBuilder WHERE(SqlExpr exp)
+        public SqlBuilder WHERE(Expresssion exp)
         {
             Append($"WHERE {exp} ");
             this.Merge(exp);
@@ -376,7 +376,7 @@ namespace Sys.Data
             return this;
         }
 
-        public SqlBuilder ON(SqlExpr exp)
+        public SqlBuilder ON(Expresssion exp)
         {
             Append($"ON {exp} ");
             this.Merge(exp);
@@ -393,7 +393,7 @@ namespace Sys.Data
             return Append($"GROUP BY {ConcatColumns(columns)} ");
         }
 
-        public SqlBuilder HAVING(SqlExpr expr)
+        public SqlBuilder HAVING(Expresssion expr)
         {
             return Append($"HAVING {expr} ");
         }

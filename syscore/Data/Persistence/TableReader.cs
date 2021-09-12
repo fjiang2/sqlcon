@@ -64,7 +64,7 @@ namespace Sys.Data
         /// </summary>
         /// <param name="tableName"></param>
         /// <param name="where"></param>
-        public TableReader(TableName tableName, SqlExpr where)
+        public TableReader(TableName tableName, Expresssion where)
             : this(tableName, new SqlBuilder().SELECT().COLUMNS().FROM(tableName).WHERE(where).Clause)
         {
         }

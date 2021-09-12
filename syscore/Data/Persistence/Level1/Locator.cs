@@ -60,7 +60,7 @@ namespace Sys.Data
         {
         }
 
-        public Locator(SqlExpr expression)
+        public Locator(Expresssion expression)
         {
             this.where = expression.ToString();
         }

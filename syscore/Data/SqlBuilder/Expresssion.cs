@@ -22,35 +22,35 @@ using System.Text;
 
 namespace Sys.Data
 {
-    public sealed class SqlExpr : SqlBuilderInfo
+    public sealed class Expresssion : SqlBuilderInfo
     {
      
         private StringBuilder script = new StringBuilder();
 
-        private SqlExpr()
+        private Expresssion()
         {
         }
 
 
 
-        private SqlExpr NextValue(object value)
+        private Expresssion NextValue(object value)
         {
             script.Append(new SqlValue(value));
             return this;
         }
 
-        private SqlExpr Next(object x)
+        private Expresssion Next(object x)
         {
             script.Append(x);
             return this;
         }
 
-        internal static SqlExpr Assign(string name, object value)
+        internal static Expresssion Assign(string name, object value)
         {
             return ColumnName(name, null).Next(" = ").NextValue(value);
         }
 
-        internal static SqlExpr Equal(string name, object value)
+        internal static Expresssion Equal(string name, object value)
         {
             if (value == null || value == DBNull.Value)
                 return ColumnName(name, null).Next(" IS NULL");
@@ -58,9 +58,9 @@ namespace Sys.Data
                 return ColumnName(name, null).Next(" = ").NextValue(value);
         }
 
-        internal static SqlExpr ColumnName(string name, string alias)
+        internal static Expresssion ColumnName(string name, string alias)
         {
-            SqlExpr exp = new SqlExpr();
+            Expresssion exp = new Expresssion();
             if (alias != null)
                 exp.Next(alias)
                     .Next(".");
@@ -70,9 +70,9 @@ namespace Sys.Data
             return exp;
         }
 
-        internal static SqlExpr AllColumnNames(string alias)
+        internal static Expresssion AllColumnNames(string alias)
         {
-            SqlExpr exp = new SqlExpr();
+            Expresssion exp = new Expresssion();
             if (alias != null)
                 exp.Next(alias)
                     .Next(".");
@@ -81,16 +81,16 @@ namespace Sys.Data
             return exp;
         }
 
-        internal static SqlExpr ParameterName(string name)
+        internal static Expresssion ParameterName(string name)
         {
-            SqlExpr exp = new SqlExpr().Next(name.SqlParameterName());
+            Expresssion exp = new Expresssion().Next(name.SqlParameterName());
             exp.AddParam(name, null);
             return exp;
         }
 
-        internal static SqlExpr AddParameter(string columnName, string parameterName)
+        internal static Expresssion AddParameter(string columnName, string parameterName)
         {
-            SqlExpr exp = new SqlExpr()
+            Expresssion exp = new Expresssion()
                 .Next("[" + columnName + "]")
                 .Next("=")
                 .Next(parameterName.SqlParameterName());
@@ -100,16 +100,16 @@ namespace Sys.Data
             return exp;
         }
 
-        internal static SqlExpr Join(SqlExpr[] expl)
+        internal static Expresssion Join(Expresssion[] expl)
         {
-            SqlExpr exp = new SqlExpr()
-                .Next(string.Join<SqlExpr>(",", expl));
+            Expresssion exp = new Expresssion()
+                .Next(string.Join<Expresssion>(",", expl));
             return exp;
         }
 
-        internal static SqlExpr Write(string any)
+        internal static Expresssion Write(string any)
         {
-            return new SqlExpr().Next(any);
+            return new Expresssion().Next(any);
         }
 
 #if USE
@@ -183,87 +183,87 @@ namespace Sys.Data
 #endif
 
         #region implicit section
-        public static implicit operator SqlExpr(ident ident)
+        public static implicit operator Expresssion(ident ident)
         {
-            return new SqlExpr().Next(ident);
+            return new Expresssion().Next(ident);
         }
 
 
-        public static implicit operator SqlExpr(string value)
+        public static implicit operator Expresssion(string value)
         {
-            return new SqlExpr().NextValue(value);    // s= 'string'
+            return new Expresssion().NextValue(value);    // s= 'string'
         }
 
-        public static implicit operator SqlExpr(bool value)
+        public static implicit operator Expresssion(bool value)
         {
-            return new SqlExpr().NextValue(value);    // b=1 or b=0
-        }
-
-
-        public static implicit operator SqlExpr(char value)
-        {
-            return new SqlExpr().NextValue(value);    // ch= 'c'
-        }
-
-        public static implicit operator SqlExpr(byte value)
-        {
-            return new SqlExpr().NextValue(value);
-        }
-
-        public static implicit operator SqlExpr(sbyte value)
-        {
-            return new SqlExpr().NextValue(value);
+            return new Expresssion().NextValue(value);    // b=1 or b=0
         }
 
 
-        public static implicit operator SqlExpr(int value)
+        public static implicit operator Expresssion(char value)
         {
-            return new SqlExpr().NextValue(value);
+            return new Expresssion().NextValue(value);    // ch= 'c'
         }
 
-        public static implicit operator SqlExpr(short value)
+        public static implicit operator Expresssion(byte value)
         {
-            return new SqlExpr().NextValue(value);
+            return new Expresssion().NextValue(value);
         }
 
-        public static implicit operator SqlExpr(ushort value)
+        public static implicit operator Expresssion(sbyte value)
         {
-            return new SqlExpr().NextValue(value);
+            return new Expresssion().NextValue(value);
         }
 
-        public static implicit operator SqlExpr(uint value)
+
+        public static implicit operator Expresssion(int value)
         {
-            return new SqlExpr().NextValue(value);
+            return new Expresssion().NextValue(value);
         }
 
-        public static implicit operator SqlExpr(long value)
+        public static implicit operator Expresssion(short value)
         {
-            return new SqlExpr().NextValue(value);
+            return new Expresssion().NextValue(value);
         }
 
-        public static implicit operator SqlExpr(ulong value)
+        public static implicit operator Expresssion(ushort value)
         {
-            return new SqlExpr().NextValue(value);
+            return new Expresssion().NextValue(value);
         }
 
-        public static implicit operator SqlExpr(float value)
+        public static implicit operator Expresssion(uint value)
         {
-            return new SqlExpr().NextValue(value);
+            return new Expresssion().NextValue(value);
         }
 
-        public static implicit operator SqlExpr(DateTime value)
+        public static implicit operator Expresssion(long value)
         {
-            return new SqlExpr().NextValue(value);    //dt = '10/20/2012'
+            return new Expresssion().NextValue(value);
         }
 
-        public static implicit operator SqlExpr(DBNull value)
+        public static implicit operator Expresssion(ulong value)
         {
-            return new SqlExpr().NextValue(value);    // NULL
+            return new Expresssion().NextValue(value);
         }
 
-        public static implicit operator SqlExpr(Enum value)
+        public static implicit operator Expresssion(float value)
         {
-            return new SqlExpr().NextValue(Convert.ToInt32(value));    // NULL
+            return new Expresssion().NextValue(value);
+        }
+
+        public static implicit operator Expresssion(DateTime value)
+        {
+            return new Expresssion().NextValue(value);    //dt = '10/20/2012'
+        }
+
+        public static implicit operator Expresssion(DBNull value)
+        {
+            return new Expresssion().NextValue(value);    // NULL
+        }
+
+        public static implicit operator Expresssion(Enum value)
+        {
+            return new Expresssion().NextValue(Convert.ToInt32(value));    // NULL
         }
 
         #endregion
@@ -274,19 +274,19 @@ namespace Sys.Data
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        public static explicit operator string(SqlExpr expr)
+        public static explicit operator string(Expresssion expr)
         {
             return expr.ToString();
         }
 
-        public SqlExpr AS(SqlExpr alias)
+        public Expresssion AS(Expresssion alias)
         {
             this.Next(" AS ").Next(alias);
             return this;
         }
 
 
-        public SqlExpr this[SqlExpr exp]
+        public Expresssion this[Expresssion exp]
         {
             get
             {
@@ -296,7 +296,7 @@ namespace Sys.Data
         }
 
 
-        public SqlExpr IN(SqlBuilder select)
+        public Expresssion IN(SqlBuilder select)
         {
             this
                     .Next(" IN (")
@@ -307,12 +307,12 @@ namespace Sys.Data
             return this;
         }
 
-        public SqlExpr IN(params SqlExpr[] collection)
+        public Expresssion IN(params Expresssion[] collection)
         {
             return IN(collection);
         }
 
-        public SqlExpr NOT
+        public Expresssion NOT
         {
             get
             {
@@ -321,7 +321,7 @@ namespace Sys.Data
             }
         }
 
-        public SqlExpr NULL
+        public Expresssion NULL
         {
             get
             {
@@ -330,7 +330,7 @@ namespace Sys.Data
             }
         }
 
-        public SqlExpr IS
+        public Expresssion IS
         {
             get
             {
@@ -339,7 +339,7 @@ namespace Sys.Data
             }
         }
 
-        public SqlExpr IN<T>(IEnumerable<T> collection)
+        public Expresssion IN<T>(IEnumerable<T> collection)
         {
             this.Next(" IN (")
                 .Next(string.Join<T>(",", collection))
@@ -349,7 +349,7 @@ namespace Sys.Data
         }
 
 
-        public SqlExpr BETWEEN(SqlExpr exp1, SqlExpr exp2)
+        public Expresssion BETWEEN(Expresssion exp1, Expresssion exp2)
         {
             this.Next(" BETWEEN ")
                 .Next(exp1)
@@ -366,7 +366,7 @@ namespace Sys.Data
         /// </summary>
         private bool compound = false;
 
-        private static string ExpToString(SqlExpr exp)
+        private static string ExpToString(Expresssion exp)
         {
             if (exp.compound)
                 return string.Format("({0})", exp);
@@ -374,9 +374,9 @@ namespace Sys.Data
                 return exp.ToString();
         }
 
-        internal static SqlExpr OPR(SqlExpr exp1, string opr, SqlExpr exp2)
+        internal static Expresssion OPR(Expresssion exp1, string opr, Expresssion exp2)
         {
-            SqlExpr exp = new SqlExpr()
+            Expresssion exp = new Expresssion()
                 .Next(string.Format("{0} {1} {2}", ExpToString(exp1), opr, ExpToString(exp2)));
 
             exp.Merge(exp1).Merge(exp2);
@@ -386,13 +386,13 @@ namespace Sys.Data
         }
 
         // AND(A==1, B!=3, C>4) => "(A=1 AND B<>3 AND C>4)"
-        internal static SqlExpr OPR(SqlExpr exp1, string opr, SqlExpr[] exps)
+        internal static Expresssion OPR(Expresssion exp1, string opr, Expresssion[] exps)
         {
-            SqlExpr exp = new SqlExpr();
+            Expresssion exp = new Expresssion();
             exp.Next("(")
                .Next(string.Format("{0}", ExpToString(exp1)));
 
-            foreach (SqlExpr exp2 in exps)
+            foreach (Expresssion exp2 in exps)
             {
                 exp.Next(string.Format(" {0} {1}", opr, ExpToString(exp2)));
             }
@@ -401,56 +401,56 @@ namespace Sys.Data
             return exp.Next(")");
         }
 
-        internal static SqlExpr OPR(string opr, SqlExpr exp1)
+        internal static Expresssion OPR(string opr, Expresssion exp1)
         {
-            SqlExpr exp = new SqlExpr()
+            Expresssion exp = new Expresssion()
                 .Next(string.Format("{0} {1}", opr, ExpToString(exp1)));
 
             exp.Merge(exp1);
             return exp;
         }
 
-        public static SqlExpr operator -(SqlExpr exp1)
+        public static Expresssion operator -(Expresssion exp1)
         {
             return OPR("-", exp1);
         }
 
-        public static SqlExpr operator +(SqlExpr exp1)
+        public static Expresssion operator +(Expresssion exp1)
         {
             return OPR("+", exp1);
         }
 
-        public static SqlExpr operator +(SqlExpr exp1, SqlExpr exp2)
+        public static Expresssion operator +(Expresssion exp1, Expresssion exp2)
         {
             return OPR(exp1, "+", exp2);
         }
 
-        public static SqlExpr operator -(SqlExpr exp1, SqlExpr exp2)
+        public static Expresssion operator -(Expresssion exp1, Expresssion exp2)
         {
             return OPR(exp1, "-", exp2);
         }
 
-        public static SqlExpr operator *(SqlExpr exp1, SqlExpr exp2)
+        public static Expresssion operator *(Expresssion exp1, Expresssion exp2)
         {
             return OPR(exp1, "*", exp2);
         }
 
-        public static SqlExpr operator /(SqlExpr exp1, SqlExpr exp2)
+        public static Expresssion operator /(Expresssion exp1, Expresssion exp2)
         {
             return OPR(exp1, "/", exp2);
         }
 
-        public static SqlExpr operator %(SqlExpr exp1, SqlExpr exp2)
+        public static Expresssion operator %(Expresssion exp1, Expresssion exp2)
         {
             return OPR(exp1, "%", exp2);
         }
 
 
-        public static SqlExpr operator ==(SqlExpr exp1, SqlExpr exp2)
+        public static Expresssion operator ==(Expresssion exp1, Expresssion exp2)
         {
             if ((object)exp2 == null || exp2.ToString() == "NULL")
             {
-                SqlExpr exp = new SqlExpr().Next(exp1).Next(" IS NULL");
+                Expresssion exp = new Expresssion().Next(exp1).Next(" IS NULL");
                 exp.Merge(exp1);
                 return exp;
             }
@@ -459,11 +459,11 @@ namespace Sys.Data
         }
 
 
-        public static SqlExpr operator !=(SqlExpr exp1, SqlExpr exp2)
+        public static Expresssion operator !=(Expresssion exp1, Expresssion exp2)
         {
             if ((object)exp2 == null || exp2.ToString() == "NULL")
             {
-                SqlExpr exp = new SqlExpr().Next(exp1).Next(" IS NOT NULL");
+                Expresssion exp = new Expresssion().Next(exp1).Next(" IS NOT NULL");
                 exp.Merge(exp1);
                 return exp;
             }
@@ -471,38 +471,38 @@ namespace Sys.Data
             return OPR(exp1, "<>", exp2);
         }
 
-        public static SqlExpr operator >(SqlExpr exp1, SqlExpr exp2)
+        public static Expresssion operator >(Expresssion exp1, Expresssion exp2)
         {
             return OPR(exp1, ">", exp2);
         }
 
-        public static SqlExpr operator <(SqlExpr exp1, SqlExpr exp2)
+        public static Expresssion operator <(Expresssion exp1, Expresssion exp2)
         {
             return OPR(exp1, "<", exp2);
         }
 
-        public static SqlExpr operator >=(SqlExpr exp1, SqlExpr exp2)
+        public static Expresssion operator >=(Expresssion exp1, Expresssion exp2)
         {
             return OPR(exp1, ">=", exp2);
         }
 
-        public static SqlExpr operator <=(SqlExpr exp1, SqlExpr exp2)
+        public static Expresssion operator <=(Expresssion exp1, Expresssion exp2)
         {
             return OPR(exp1, "<=", exp2);
         }
 
 
-        public static SqlExpr operator &(SqlExpr exp1, SqlExpr exp2)
+        public static Expresssion operator &(Expresssion exp1, Expresssion exp2)
         {
             return OPR(exp1, "&", exp2);
         }
 
-        public static SqlExpr operator |(SqlExpr exp1, SqlExpr exp2)
+        public static Expresssion operator |(Expresssion exp1, Expresssion exp2)
         {
             return OPR(exp1, "|", exp2);
         }
 
-        public static SqlExpr operator ~(SqlExpr exp)
+        public static Expresssion operator ~(Expresssion exp)
         {
             return OPR("~", exp);
         }
@@ -512,12 +512,12 @@ namespace Sys.Data
 
         #region SQL Function
 
-        internal static SqlExpr Func(string func, params SqlExpr[] expl)
+        internal static Expresssion Func(string func, params Expresssion[] expl)
         {
-            SqlExpr exp = new SqlExpr()
+            Expresssion exp = new Expresssion()
                 .Next(func)
                 .Next("(")
-                .Next(string.Join<SqlExpr>(",", expl))
+                .Next(string.Join<Expresssion>(",", expl))
                 .Next(")");
 
             //exp.Merge(exp1);
@@ -529,7 +529,7 @@ namespace Sys.Data
 
         public override bool Equals(object obj)
         {
-            return script.Equals(((SqlExpr)obj).script);
+            return script.Equals(((Expresssion)obj).script);
         }
 
         public override int GetHashCode()
