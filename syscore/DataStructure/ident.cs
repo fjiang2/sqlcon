@@ -53,13 +53,13 @@ namespace Sys
             if (!char.IsLetter(ch) && ch != '_' && ch != '@')
                 return false;
 
-            while (i < id.Length) 
+            while (i < id.Length)
             {
                 ch = id[i++];
 
                 if (ch != '_' && !char.IsLetterOrDigit(ch))
                     return false;
-            } 
+            }
 
             return true;
         }
@@ -84,19 +84,19 @@ namespace Sys
             return this.id;
         }
 
-        public static bool operator == (ident id1, ident id2)
+        public static bool operator ==(ident id1, ident id2)
         {
             return id1.id.Equals(id2.id);
         }
 
         public static bool operator !=(ident id1, ident id2)
         {
-            return !(id1==id2);
+            return !(id1 == id2);
         }
 
         public static explicit operator string(ident ident)
         {
-            return ident.id; 
+            return ident.id;
         }
 
         public int CompareTo(object obj)
@@ -109,16 +109,16 @@ namespace Sys
             return this.id.CompareTo(other);
         }
 
-        public static string Identifier(string s)
+        public static string Identifier(string s, string prefix = "_")
         {
             s = s.Trim();
             StringBuilder sb = new StringBuilder();
-            
+
             if (char.IsDigit(s[0]))
-                sb.Append("_");
+                sb.Append(prefix);
 
             for (int i = 0; i < s.Length; i++)
-                if (IsBasicLetter(s[i]) || s[i] == '_')
+                if (IsBasicLetter(s[i]) || char.IsDigit(s[i]) || s[i] == '_')
                     sb.Append(s[i]);
                 else
                     sb.Append('_');

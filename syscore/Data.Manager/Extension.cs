@@ -22,17 +22,7 @@ namespace Sys.Data.Manager
 
         public static string ToFieldName(this string columnName, string prefix, CodeStyle style = CodeStyle.Original)
         {
-            string fieldName = columnName;
-            if (columnName.IndexOf("#") != -1
-                || columnName.IndexOf(" ") != -1
-                || columnName.IndexOf("/") != -1
-                || !Char.IsLetter(columnName[0]))
-            {
-                fieldName = columnName.Replace("#", "_").Replace(" ", "_").Replace("/", "_");
-
-                if (!Char.IsLetter(columnName[0]))
-                    fieldName = prefix + fieldName;
-            }
+            string fieldName = ident.Identifier(columnName, prefix);
 
             char ch = fieldName[0];
             switch (style)
