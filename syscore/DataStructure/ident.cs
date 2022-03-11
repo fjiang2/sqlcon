@@ -114,17 +114,21 @@ namespace Sys
             s = s.Trim();
             StringBuilder sb = new StringBuilder();
             
-            if (!char.IsLetter(s[0]) && s[0] != '_')
+            if (char.IsDigit(s[0]))
                 sb.Append("_");
 
             for (int i = 0; i < s.Length; i++)
-                if (char.IsLetterOrDigit(s[i]) || s[i] == '_')
+                if (IsBasicLetter(s[i]) || s[i] == '_')
                     sb.Append(s[i]);
                 else
                     sb.Append('_');
 
             return sb.ToString();
         }
-        
+
+        public static bool IsBasicLetter(char c)
+        {
+            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+        }
     }
 }
