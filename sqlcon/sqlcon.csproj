@@ -32,7 +32,7 @@
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>index.html</WebPage>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>2.6.1.%2a</ApplicationVersion>
+    <ApplicationVersion>2.6.2.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -67,7 +67,7 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>4CA360EB0E2BC4FDB6594DC0E642538D0EDAC756</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>D38644760117EACCFD695C788E47B3566DEADC44</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>sqlcon_TemporaryKey.pfx</ManifestKeyFile>
@@ -256,10 +256,10 @@
   <ItemGroup />
   <ItemGroup>
     <PackageReference Include="System.Data.SQLite.Core">
-      <Version>1.0.115</Version>
+      <Version>1.0.115.5</Version>
     </PackageReference>
     <PackageReference Include="Tie">
-      <Version>2.0.8</Version>
+      <Version>2.0.9</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

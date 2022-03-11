@@ -194,7 +194,7 @@ namespace Sys.Data
 			if (type.IndexOf('(') > 0 && type.IndexOf(')') > 0)
 			{
 				string[] items = type.Split(new char[] { '(', ',', ')' }, StringSplitOptions.RemoveEmptyEntries);
-				string _type = items[0];
+				string _type = items[0].Trim();
 				int a1 = int.Parse(items[1]);
 				switch (_type)
 				{
@@ -203,8 +203,9 @@ namespace Sys.Data
 						row.Length = Convert.ToInt16(a1 * 2);
 						return;
 
+					case "nchar":
 					case "varchar":
-						row.DataType = "varchar";
+						row.DataType = _type;
 						row.Length = Convert.ToInt16(a1);
 						return;
 

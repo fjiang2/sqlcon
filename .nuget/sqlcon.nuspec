@@ -239,7 +239,7 @@
 		</releaseNotes>
 		<dependencies>
 			<group targetFramework=".NETFramework4.8">
-				<dependency id="Tie" version="2.0.8.0" />
+				<dependency id="Tie" version="2.0.9.0" />
 			</group>
 		</dependencies>
 	</metadata>
