@@ -1,6 +1,6 @@
 ﻿sqlcon release notes
 
-3/11/2022 v2.6.2.0
+3/11/2022 v2.6.3.0
 	Bug Fixes:
 	1. Cannot process invalid column name and table name in data entity class.
 
