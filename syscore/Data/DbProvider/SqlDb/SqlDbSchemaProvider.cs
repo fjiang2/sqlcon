@@ -195,7 +195,10 @@ namespace Sys.Data
 
         public override DataTable GetTableSchema(TableName tname)
         {
-            string SQL = string.Format(SQL_SCHEMA, string.Empty, $"WHERE t.name='{tname.Name}'");
+            string SQL = string.Format(SQL_SCHEMA, 
+                string.Empty, 
+                $"AND pk.TABLE_SCHEMA = '{tname.SchemaName}'", 
+                $"WHERE t.name='{tname.Name}' AND SCHEMA_NAME(t.schema_id) = '{tname.SchemaName}'");
 
             StringBuilder builder = new StringBuilder();
             builder.AppendLine($"USE [{tname.DatabaseName.Name}]");
@@ -260,7 +263,7 @@ SELECT
             StringBuilder builder = new StringBuilder();
             string header = @"SCHEMA_NAME(t.schema_id) AS SchemaName,t.name AS TableName,";
             builder.AppendLine($"USE [{dname.Name}]");
-            builder.AppendLine(string.Format(SQL_SCHEMA, header, string.Empty));
+            builder.AppendLine(string.Format(SQL_SCHEMA, header, string.Empty, string.Empty));
 
             return builder.ToString();
         }
@@ -290,7 +293,7 @@ SELECT
 		LEFT JOIN (SELECT pk.TABLE_NAME, k.COLUMN_NAME, pk.CONSTRAINT_NAME
 					FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS pk 
 						INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE k ON  k.TABLE_NAME = pk.TABLE_NAME AND k.CONSTRAINT_NAME = pk.CONSTRAINT_NAME
-						WHERE pk.CONSTRAINT_TYPE = 'PRIMARY KEY'
+						WHERE pk.CONSTRAINT_TYPE = 'PRIMARY KEY' {1}
 						) p	ON p.TABLE_NAME = t.name  AND p.COLUMN_NAME = c.name
 		LEFT JOIN (SELECT   FK.TABLE_SCHEMA AS FK_Schema,
 							FK.TABLE_NAME AS FK_Table,
@@ -310,7 +313,7 @@ SELECT
 										 WHERE  i1.CONSTRAINT_TYPE = 'PRIMARY KEY'
 									   ) PT ON PT.TABLE_NAME = PK.TABLE_NAME
 				   ) f ON f.FK_Table = t.name AND f.FK_Column = c.name
-{1}
+{2}
 ORDER BY t.name, c.column_id
 ";
     }
