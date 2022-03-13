@@ -39,6 +39,9 @@ namespace sqlcon
                 new TypeInfo { Type = typeof(IEntityRow) },
                 new TypeInfo { UserType = $"IEquatable<{ClassName}>" }
             };
+
+            _base = OptionalBaseType(_base);
+
             var clss = new Class(ClassName, _base)
             {
                 Modifier = Modifier.Public | Modifier.Partial
