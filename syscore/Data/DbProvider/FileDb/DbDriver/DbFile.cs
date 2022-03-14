@@ -66,10 +66,10 @@ namespace Sys.Data
         protected static int QueryData(DataSet data, SelectClause select, DataSet result)
         {
             TableName tname = select.TableName;
-            if (!data.Tables.Contains(tname.ShortName))
+            if (!data.Tables.Contains(tname.Name))
                 return -1;
 
-            DataTable dt = data.Tables[tname.ShortName];
+            DataTable dt = data.Tables[tname.Name];
             result.Clear();
 
             DataView dv = new DataView(dt)
