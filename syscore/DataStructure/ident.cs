@@ -112,6 +112,8 @@ namespace Sys
         public static string Identifier(string s, string prefix = "_")
         {
             s = s.Trim();
+            s = s.Replace("+", "plus").Replace("-", "dash");
+            
             StringBuilder sb = new StringBuilder();
 
             if (char.IsDigit(s[0]))
