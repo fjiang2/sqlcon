@@ -98,20 +98,12 @@ namespace Sys.Data.Comparison
             if (!IgnoreCaseEquals(c.ColumnName, column.ColumnName))
                 return false;
 
-            //MaxLength = -1 in DataTable when CType is int
-            if (c.Length != -1 && column.Length != -1 && c.Length != column.Length)
-                return true;
-
-            //Precision = 1 in DataTable when CType is bool
-            if (c.CType != CType.Bit)
-            {
-                if (c.Precision != 0 && column.Precision != 0 && c.Precision != column.Precision)
-                    return true;
-            }
 
             bool notEqual = c.CType != column.CType
+                   || c.Length != column.Length
                    || c.Nullable != column.Nullable
                    || c.Scale != column.Scale
+                   || c.Precision != column.Precision
                    || c.IsIdentity != column.IsIdentity
                    || c.IsComputed != column.IsComputed;
 

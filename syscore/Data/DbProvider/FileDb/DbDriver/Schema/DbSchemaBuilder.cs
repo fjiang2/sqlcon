@@ -42,12 +42,13 @@ namespace Sys.Data
             {
                 foreach (DataColumn column in dt.Columns)
                 {
+                    CType cty = column.DataType.ToCType();
                     DbSchemaColumn _column = new DbSchemaColumn
                     {
                         SchemaName = dt.GetSchemaName(),
                         TableName = dt.TableName,
                         ColumnName = column.ColumnName,
-                        DataType = column.DataType.ToCType().GetSqlType(),
+                        DataType = cty.GetSqlType(),
                         Length = (short)column.MaxLength,
                         Nullable = column.AllowDBNull,
                         precision = 10,
@@ -62,6 +63,29 @@ namespace Sys.Data
                         PK_Column = null,
                         FKContraintName = null,
                     };
+
+                    switch (cty)
+                    {
+                        case CType.Int:
+                            _column.Length = 4;
+                            break;
+
+                        case CType.BigInt:
+                            _column.Length = 8;
+                            break;
+
+                        case CType.NVarChar:
+                        case CType.NText:
+                        case CType.NChar:
+                            _column.Length *= 2;
+                            _column.precision = 0;
+                            break;
+
+                        case CType.Bit:
+                            _column.Length = 1;
+                            _column.precision = 1;
+                            break;
+                    }
 
                     if (_column.IsPrimary)
                         _column.PKContraintName = $"PK_{dtSchema.TableName.ToIdent()}";
