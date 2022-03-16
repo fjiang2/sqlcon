@@ -535,6 +535,12 @@ namespace sqlcon
             {
                 PathBothSide both = new PathBothSide(mgr, cmd);
                 var dname2 = mgr.GetPathFrom<DatabaseName>(both.ps2.Node);
+                if (dname2 == null)
+                {
+                    cout.WriteLine("invalid destination path");
+                    return;
+                }
+
                 if (both.ps1.MatchedTables == null || both.ps1.MatchedTables.Length == 0)
                 {
                     cout.WriteLine("no table found");
@@ -2136,8 +2142,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            if (!Navigate(cmd.Path1))
-                return;
+            //if (!Navigate(cmd.Path1))
+            //    return;
 
             if (pt.Item is ServerName)
             {

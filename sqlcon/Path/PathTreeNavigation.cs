@@ -40,6 +40,9 @@ namespace sqlcon
                 return default(T);
 
             var pt = current;
+            if (pt == null)
+                return default(T);
+
             while (!(pt.Item is T))
             {
                 pt = pt.Parent;
