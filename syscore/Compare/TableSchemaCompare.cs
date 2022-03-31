@@ -34,17 +34,7 @@ namespace Sys.Data.Comparison
                 {
                     builder.AppendLine(script.ADD_COLUMN(column));
                 }
-                else if (schema2.Columns.Where(c =>
-                    IgnoreCaseEquals(c.ColumnName, column.ColumnName)
-                    && (c.CType != column.CType
-                    || c.Length != column.Length
-                    || c.Nullable != column.Nullable
-                    || c.Precision != column.Precision
-                    || c.Scale != column.Scale
-                    || c.IsIdentity != column.IsIdentity
-                    || c.IsComputed != column.IsComputed
-                    ))
-                    .Count() != 0)
+                else if (schema2.Columns.Where(c => ColumnNotEqual(c, column)).Count() != 0)
                 {
                     builder.AppendLine(script.ALTER_COLUMN(column));
                 }
@@ -101,6 +91,23 @@ namespace Sys.Data.Comparison
 
 
             return builder.ToString();
+        }
+
+        private static bool ColumnNotEqual(IColumn c, ColumnSchema column)
+        {
+            if (!IgnoreCaseEquals(c.ColumnName, column.ColumnName))
+                return false;
+
+
+            bool notEqual = c.CType != column.CType
+                   || c.Length != column.Length
+                   || c.Nullable != column.Nullable
+                   || c.Scale != column.Scale
+                   || c.Precision != column.Precision
+                   || c.IsIdentity != column.IsIdentity
+                   || c.IsComputed != column.IsComputed;
+
+            return notEqual;
         }
 
         private static bool IgnoreCaseEquals(string s1, string s2)
