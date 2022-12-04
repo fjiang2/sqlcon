@@ -551,8 +551,10 @@ namespace sqlcon
                 gen = new DataContractClassBuilder(cmd, tnd.Name, dt, allowDbNull);
             else if (version == 1)
                 gen = new DataContract1ClassBuilder(cmd, tnd.Name, dt, allowDbNull);
-            else
+            else if (version == 2)
                 gen = new DataContract2ClassBuilder(cmd, tnd.Name, dt, allowDbNull);
+            else
+                gen = new ViewModelClassBuilder(cmd, tnd.Name, dt, allowDbNull);
 
             if (gen != null)
             {
@@ -1029,6 +1031,8 @@ namespace sqlcon
                 ExportDataContract(1);
             else if (cmd.Has("dc2"))
                 ExportDataContract(2);
+            else if (cmd.Has("vm"))
+                ExportDataContract(3);
             else if (cmd.Has("entity"))
                 ExportEntityClass();
             else if (cmd.Has("l2s"))

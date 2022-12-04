@@ -38,6 +38,7 @@ namespace Sys.CodeBuilder
         {
         }
 
+        private bool IsAbstract => Modifier.HasFlag(Modifier.Partial) || Modifier.HasFlag(Modifier.Abstract);
         protected override string signature
         {
             get
@@ -52,8 +53,16 @@ namespace Sys.CodeBuilder
                 }
             }
         }
+
+
         protected override void BuildBlock(CodeBlock block)
         {
+            if (IsAbstract)
+            {
+                block.Append(signature).Append(";");
+                return;
+            }
+
             if (IsExpressionBodied)
             {
                 block.Append(signature);

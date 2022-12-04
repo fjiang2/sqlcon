@@ -111,6 +111,7 @@
     <Compile Include="ClassBuilder\DataClassBuilder.cs" />
     <Compile Include="ClassBuilder\ConfigScript.cs" />
     <Compile Include="ClassBuilder\DataClassType.cs" />
+    <Compile Include="ClassBuilder\ViewModelClassBuilder.cs" />
     <Compile Include="ClassBuilder\DataContractClassBuilder.cs" />
     <Compile Include="ClassBuilder\DataTableClassBuilder.cs" />
     <Compile Include="ClassBuilder\Json2CSharp.cs" />
