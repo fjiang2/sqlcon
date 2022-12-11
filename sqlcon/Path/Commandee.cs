@@ -2142,8 +2142,8 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 return;
             }
 
-            //if (!Navigate(cmd.Path1))
-            //    return;
+            if (!Navigate(cmd.Path1))
+                return;
 
             if (pt.Item is ServerName)
             {

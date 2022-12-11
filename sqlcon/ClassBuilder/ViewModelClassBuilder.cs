@@ -130,7 +130,7 @@ namespace sqlcon
             };
             clss.Add(method);
             var sent = method.Statement;
-            sent.IF(new Expression("this.PropertyChanged != null"), new Statement("this.PropertyChanged(this, new PropertyChangedEventArgs(property));"));
+            sent.AppendLine("this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));");
 
         }
 
