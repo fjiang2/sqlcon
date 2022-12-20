@@ -551,8 +551,10 @@ namespace sqlcon
                 gen = new DataContractClassBuilder(cmd, tnd.Name, dt, allowDbNull);
             else if (version == 1)
                 gen = new DataContract1ClassBuilder(cmd, tnd.Name, dt, allowDbNull);
-            else
+            else if (version == 2)
                 gen = new DataContract2ClassBuilder(cmd, tnd.Name, dt, allowDbNull);
+            else
+                gen = new ViewModelClassBuilder(cmd, tnd.Name, dt, allowDbNull);
 
             if (gen != null)
             {
@@ -942,7 +944,8 @@ namespace sqlcon
             cout.WriteLine("      [/data-column-property]: create data column property: AllowDbNull,MaxLength,Unique in CreateTable()");
             cout.WriteLine("      [/methods:NewObject,FillObject,UpdateRow,CreateTable,ToDataTable,ToDictionary,FromDictionary,CopyTo,CompareTo,ToSimpleString]");
             cout.WriteLine("   /dc2     : generate C# data contract class and extension class");
-            cout.WriteLine("      option of data contract /[dc|dc1|dc2] :");
+            cout.WriteLine("   /vm      : generate C# data view model class");
+            cout.WriteLine("      option of data contract /[dc|dc1|dc2|vm] :");
             cout.WriteLine("      [/readonly]: contract class for reading only");
             cout.WriteLine("      [/last]: generate C# data contract from last result");
             cout.WriteLine("      [/method:name] default convert method is defined on the .cfg");
@@ -1029,6 +1032,8 @@ namespace sqlcon
                 ExportDataContract(1);
             else if (cmd.Has("dc2"))
                 ExportDataContract(2);
+            else if (cmd.Has("vm"))
+                ExportDataContract(3);
             else if (cmd.Has("entity"))
                 ExportEntityClass();
             else if (cmd.Has("l2s"))

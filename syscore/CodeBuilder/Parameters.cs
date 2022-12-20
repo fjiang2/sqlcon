@@ -51,6 +51,14 @@ namespace Sys.CodeBuilder
             return this;
         }
 
+        public Parameters Add(TypeInfo userType, string name)
+        {
+            var param = new Parameter(userType, name);
+
+            parameters.Add(param);
+            return this;
+        }
+
         public Parameters Add(Type type, string name)
         {
             var param = new Parameter(new TypeInfo { Type = type }, name);

@@ -33,7 +33,13 @@ namespace sqlcon
         {
             bool found = false;
 
-            string sql = "SELECT name AS TableName FROM sys.tables";
+            string sql = @"
+SELECT
+    s.name as SchemaName,
+	t.name AS TableName
+FROM sys.tables t
+INNER JOIN sys.schemas s ON s.schema_id = t.schema_id
+ORDER BY s.name, t.name";
             var dt = new SqlCmd(provider, sql).FillDataTable();
             Search(match, dt, "TableName");
             if (dt.Rows.Count != 0)
@@ -57,7 +63,7 @@ FROM sys.tables t
      INNER JOIN sys.types ty ON ty.system_type_id =c.system_type_id AND ty.name<>'sysname'
      LEFT JOIN sys.Computed_columns d ON t.object_id = d.object_id AND c.name = d.name
 	 INNER JOIN sys.schemas s ON s.schema_id=t.schema_id
-ORDER BY c.name, c.column_id
+ORDER BY s.name, c.name, c.column_id
 ";
             dt = new SqlCmd(provider, sql).FillDataTable();
             Search(match, dt, "ColumnName");
