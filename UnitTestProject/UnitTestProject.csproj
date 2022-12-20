@@ -84,7 +84,19 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitTestCodeBuilder.cs" />
     <Compile Include="UnitTestDataContext.cs" />
+    <Compile Include="ViewModel\Categories.cs" />
+    <Compile Include="ViewModel\CustomerCustomerDemo.cs" />
+    <Compile Include="ViewModel\CustomerDemographics.cs" />
+    <Compile Include="ViewModel\Customers.cs" />
+    <Compile Include="ViewModel\Employees.cs" />
+    <Compile Include="ViewModel\EmployeeTerritories.cs" />
+    <Compile Include="ViewModel\Orders.cs" />
+    <Compile Include="ViewModel\Order_Details.cs" />
     <Compile Include="ViewModel\Products.cs" />
+    <Compile Include="ViewModel\Region.cs" />
+    <Compile Include="ViewModel\Shippers.cs" />
+    <Compile Include="ViewModel\Suppliers.cs" />
+    <Compile Include="ViewModel\Territories.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gen-dbo-northwind.sqc" />
