@@ -1,5 +1,11 @@
 ﻿sqlcon release notes
 
+12/20/2022 v2.6.5.0
+	Bug Fixes:
+	1. Fixed bug on command: find
+	Improvements/Enhancements:
+	1. Command "export /vm" generates view model class.
+
 3/30/2022 v2.6.5.0
 	Bug Fixes:
 	1. Fixed bug on comparing schema when file/xml/dataset as data provider
