@@ -944,7 +944,8 @@ namespace sqlcon
             cout.WriteLine("      [/data-column-property]: create data column property: AllowDbNull,MaxLength,Unique in CreateTable()");
             cout.WriteLine("      [/methods:NewObject,FillObject,UpdateRow,CreateTable,ToDataTable,ToDictionary,FromDictionary,CopyTo,CompareTo,ToSimpleString]");
             cout.WriteLine("   /dc2     : generate C# data contract class and extension class");
-            cout.WriteLine("      option of data contract /[dc|dc1|dc2] :");
+            cout.WriteLine("   /vm      : generate C# data view model class");
+            cout.WriteLine("      option of data contract /[dc|dc1|dc2|vm] :");
             cout.WriteLine("      [/readonly]: contract class for reading only");
             cout.WriteLine("      [/last]: generate C# data contract from last result");
             cout.WriteLine("      [/method:name] default convert method is defined on the .cfg");

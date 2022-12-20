@@ -84,6 +84,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitTestCodeBuilder.cs" />
     <Compile Include="UnitTestDataContext.cs" />
+    <Compile Include="ViewModel\Products.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gen-dbo-northwind.sqc" />
@@ -102,6 +103,7 @@
       <Version>2.2.8</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
