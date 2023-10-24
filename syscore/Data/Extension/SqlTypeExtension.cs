@@ -63,10 +63,12 @@ namespace Sys.Data
 
                 case CType.NVarChar:
                 case CType.NChar:
-                    if (Length >= 0)
+                    if (Length <= 0)
+                        ty = string.Format("{0}(max)", DataType);
+                    else if (Length <= 8000)
                         ty = string.Format("{0}({1})", DataType, Length / 2);
                     else
-                        ty = string.Format("{0}(max)", DataType);
+                        ty = CType.NText.ToString();
                     break;
 
                 //case SqlDbType.Numeric:
