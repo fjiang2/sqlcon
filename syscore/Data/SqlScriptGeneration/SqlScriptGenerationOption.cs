@@ -20,5 +20,8 @@
         ///   "INSERT INTO table-name(column,....) VALUES (...)"
         /// </summary>
         public bool InsertWithoutColumns { get; set; }
+
+
+        public bool IncludeIdentity { get; set; }
     }
 }

@@ -40,7 +40,7 @@ namespace Sys.Data
             }
 
             DbSchemaBuilder dbb = new DbSchemaBuilder();
-            dbb.AddSchema(ds);
+            dbb.AddSchema(dt);
 
             Add(tname, dbb.DbSchmea.Tables[0]);
         }

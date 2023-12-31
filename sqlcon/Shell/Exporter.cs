@@ -99,7 +99,7 @@ namespace sqlcon
                 DataColumn col = dt.Columns[column.ColumnName];
                 col.AllowDBNull = column.Nullable;
                 col.AutoIncrement = column.IsIdentity;
-                
+
                 //because string supports Unicode
                 if (column.CType == CType.NVarChar || column.CType == CType.NChar)
                 {
@@ -202,6 +202,7 @@ namespace sqlcon
             {
                 HasIfExists = cmd.HasIfExists,
                 InsertWithoutColumns = cmd.Has("no-columns"),
+                IncludeIdentity = cmd.Has("identity"),
             };
 
             if (tname != null)
@@ -903,7 +904,7 @@ namespace sqlcon
             cout.WriteLine("Option:");
             cout.WriteLine("   /out:xxx : output path or file name");
             cout.WriteLine("Option of SQL generation:");
-            cout.WriteLine("   /INSERT  : export data in INSERT INTO script on current table/database"); 
+            cout.WriteLine("   /INSERT  : export data in INSERT INTO script on current table/database");
             cout.WriteLine("   /UPDATE  : export data in UPDATE SET script on current table/database");
             cout.WriteLine("   /SAVE    : export data in IF NOT EXISTS INSERT ELSE UPDATE script on current table/database");
             cout.WriteLine("      [/if]           : option /if generate if exists row then UPDATE else INSERT; or check existence of table when drop table");

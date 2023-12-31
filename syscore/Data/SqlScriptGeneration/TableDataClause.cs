@@ -40,11 +40,16 @@ namespace Sys.Data
             return template.IfNotExistsInsert(WHERE(pairs), INSERT(pairs));
         }
 
-        public string INSERT(ColumnPairCollection pairs, bool InsertWithoutColumns = false)
+        public string INSERT(ColumnPairCollection pairs, bool InsertWithoutColumns = false, bool includeIdentity = false)
         {
             var L1 = pairs
-              .Where(column => !ik.Contains(column.ColumnName))
               .Where(column => !ck.Contains(column.ColumnName));
+
+            if (!includeIdentity)
+            {
+                L1 = L1.Where(column => !ik.Contains(column.ColumnName));
+            }
+
 
             var x1 = L1.Select(p => p.ColumnName.ColumnName());
             var x2 = L1.Select(p => p.Value.ToScript());
