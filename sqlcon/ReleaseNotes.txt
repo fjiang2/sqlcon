@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+12/20/2022 v2.6.7.0
+	Improvements/Enhancements:
+	1. Command "export /INSERT /identity" generates SQL INSERT statements with identity values.
+
 12/20/2022 v2.6.5.0
 	Bug Fixes:
 	1. Fixed bug on command: find
