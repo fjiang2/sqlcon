@@ -10,4 +10,4 @@ rem export * /ns:{ns}.dbo /dc1 /out:{output}\dbo /method:GetField /using:Sys.Dat
 
 rem export * /ns:{ns}.l2s /l2s /out:{output}\l2s /method:GetField /using:Sys.Data;Sys.Data.Linq
 
-export * /ns:{ns}.ViewModel /vm /out:{output}\ViewModel /method:GetField /using:Sys.Data;Sys.Data.Linq
+export * /ns:{ns}.ViewModel /vm /out:{output}\ViewModel /method:GetField
