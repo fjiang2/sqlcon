@@ -359,7 +359,7 @@ namespace sqlcon
             {
                 Modifier = Modifier.Public,
                 Type = new TypeInfo { UserType = associationClassName },
-                Params = new Parameters().Add("IQuery", "query"),
+                Params = new Parameters().Add("IDbQuery", "query"),
             };
             Statement sent = method.Statement;
 
@@ -371,7 +371,7 @@ namespace sqlcon
             {
                 Modifier = Modifier.Public | Modifier.Static,
                 Type = new TypeInfo { UserType = $"IEnumerable<{associationClassName}>" },
-                Params = new Parameters().Add("IQuery", "query").Add($"IEnumerable<{ClassName}>", "entities"),
+                Params = new Parameters().Add("IDbQuery", "query").Add($"IEnumerable<{ClassName}>", "entities"),
             };
             clss.Insert(index++, method);
 
