@@ -67,16 +67,20 @@ namespace sqlcon
                 Method_CopyTo(clss);
             if (ContainsMethod("Equals"))
                 Method_Equals(clss);
-            //if (ContainsMethod("CreateTable"))
-            //    Method_CreateTable(clss);
+            if (ContainsMethod("CreateTable"))
+                Method_CreateTable(clss);
             if (ContainsMethod("ToDictionary"))
                 Method_ToDictionary(clss);
             if (ContainsMethod("FromDictionary"))
                 Constructor_FromDictionary(clss);
             //Method_CRUD(dt, clss);
+            
+            int index2 = clss.Index;
             if (ContainsMethod("ToString"))
                 Method_ToString(clss);
 
+            int index1 = clss.Index;
+            clss.AppendLine();
 
             //Const Field
             foreach (DataColumn column in dt.Columns)
@@ -88,7 +92,11 @@ namespace sqlcon
                 clss.Add(field);
             }
 
+            var clssAssoc = Class_Assoication(clss, index1, index2);
+            if (clssAssoc.Index > 0)
+                builder.AddClass(clssAssoc);
         }
+
         private void Constructor_Default(Class clss)
         {
             Constructor constructor = new Constructor(clss.Name)
@@ -316,6 +324,89 @@ namespace sqlcon
             };
             method.Statement.AppendLine("return $\"" + gen.Delete() + "\";");
             clss.Add(method);
+        }
+
+
+        private Class Class_Assoication(Class clss, int index1, int index2)
+        {
+            Class clssAssoc = new Class(ClassName + ASSOCIATION) { Modifier = Modifier.Public };
+
+            bool hasFK = cmd.Has("fk");
+            bool hasAssoc = cmd.Has("assoc");
+            if (hasAssoc)
+                hasFK = true;
+
+            if (hasFK)
+            {
+                var field = CreateConstraintField(tname, string.Empty);
+                if (field != null)
+                    clss.Insert(index1, field);
+            }
+
+            if (hasAssoc)
+            {
+                var properties = CreateAssoicationClass(tname, clssAssoc);
+                Method_Association(clss, index2, properties);
+            }
+
+            return clssAssoc;
+        }
+
+        private Method Method_Association(Class clss, int index, List<AssociationPropertyInfo> properties)
+        {
+            string associationClassName = ClassName + ASSOCIATION;
+            Method method = new Method("GetAssociation")
+            {
+                Modifier = Modifier.Public,
+                Type = new TypeInfo { UserType = associationClassName },
+                Params = new Parameters().Add("IQuery", "query"),
+            };
+            Statement sent = method.Statement;
+
+            sent.RETURN($"GetAssociation(query, new {ClassName}[] {{ this }}).FirstOrDefault()");
+            clss.Insert(index++, method);
+
+
+            method = new Method("GetAssociation")
+            {
+                Modifier = Modifier.Public | Modifier.Static,
+                Type = new TypeInfo { UserType = $"IEnumerable<{associationClassName}>" },
+                Params = new Parameters().Add("IQuery", "query").Add($"IEnumerable<{ClassName}>", "entities"),
+            };
+            clss.Insert(index++, method);
+
+            sent = method.Statement;
+            sent.AppendLine("var reader = query.Expand(entities);");
+            sent.AppendLine();
+            sent.AppendLine($"var associations = new List<{associationClassName}>();");
+            sent.AppendLine();
+
+            foreach (var property in properties)
+            {
+                sent.AppendLine($"var _{property.PropertyName} = reader.Read<{property.PropertyType}>();");
+            }
+            sent.AppendLine();
+
+            sent.AppendLine("foreach (var entity in entities)");
+            sent.Begin();
+            sent.AppendLine($"var association = new {associationClassName}");
+            sent.Begin();
+
+            foreach (var p in properties)
+            {
+                if (p.OneToMany)
+                    sent.AppendLine($"{p.PropertyName} = new EntitySet<{p.PropertyType}>(_{p.PropertyName}.Where(row => row.{p.FK_Column} == entity.{p.PK_Column})),");
+                else
+                    sent.AppendLine($"{p.PropertyName} = new EntityRef<{p.PropertyType}>(_{p.PropertyName}.FirstOrDefault(row => row.{p.FK_Column} == entity.{p.PK_Column})),");
+            }
+
+            sent.End(";");
+            sent.AppendLine("associations.Add(association);");
+            sent.End();
+
+            sent.AppendLine();
+            sent.AppendLine($"return associations;");
+            return method;
         }
     }
 }

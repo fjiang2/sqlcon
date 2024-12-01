@@ -67,7 +67,7 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>D24B1EB3A4022E87CD41908A6C7E5F06F4A9EDC6</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>8A1544C568D1B44D6229D668ED09E7D77DACB375</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>sqlcon_TemporaryKey.pfx</ManifestKeyFile>
@@ -257,10 +257,10 @@
   <ItemGroup />
   <ItemGroup>
     <PackageReference Include="System.Data.SQLite.Core">
-      <Version>1.0.115.5</Version>
+      <Version>1.0.119</Version>
     </PackageReference>
     <PackageReference Include="Tie">
-      <Version>2.0.9</Version>
+      <Version>2.0.11</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -61,7 +61,7 @@ namespace sqlcon
 
             if (hasFK)
             {
-                var field = CreateConstraintField(tname);
+                var field = CreateConstraintField(tname, EXTENSION);
                 if (field != null)
                     clss3.Insert(index1, field);
             }
@@ -294,11 +294,11 @@ namespace sqlcon
             {
                 Modifier = Modifier.Public | Modifier.Static,
                 Type = new TypeInfo { UserType = associationClassName },
-                Params = new Parameters().Add(ClassName, "entity"),
+                Params = new Parameters().Add(ClassName, "entity").Add("IQuery", "query"),
                 IsExtensionMethod = true
             };
             Statement sent = method.Statement;
-            sent.RETURN("entity.AsEnumerable().GetAssociation().FirstOrDefault()");
+            sent.RETURN($"GetAssociation(new {ClassName}[] {{ entity }}, query).FirstOrDefault()");
             clss.Insert(index++, method);
 
 
@@ -306,13 +306,13 @@ namespace sqlcon
             {
                 Modifier = Modifier.Public | Modifier.Static,
                 Type = new TypeInfo { UserType = $"IEnumerable<{associationClassName}>" },
-                Params = new Parameters().Add($"IEnumerable<{ClassName}>", "entities"),
+                Params = new Parameters().Add($"IEnumerable<{ClassName}>", "entities").Add("IQuery", "query"),
                 IsExtensionMethod = true
             };
             clss.Insert(index++, method);
 
             sent = method.Statement;
-            sent.AppendLine("var reader = entities.Expand();");
+            sent.AppendLine("var reader = query.Expand(entities);");
             sent.AppendLine();
             sent.AppendLine($"var associations = new List<{associationClassName}>();");
             sent.AppendLine();
