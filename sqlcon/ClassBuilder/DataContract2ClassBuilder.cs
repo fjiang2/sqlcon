@@ -74,13 +74,13 @@ namespace sqlcon
             if (ContainsMethod("FromDictionary"))
                 Constructor_FromDictionary(clss);
             //Method_CRUD(dt, clss);
-            
+
             int index2 = clss.Index;
             if (ContainsMethod("ToString"))
                 Method_ToString(clss);
 
-            int index1 = clss.Index;
-            clss.AppendLine();
+            int index1 = clss.Index - 1;
+            //clss.AppendLine();
 
             //Const Field
             foreach (DataColumn column in dt.Columns)
