@@ -245,8 +245,8 @@ namespace sqlcon
             }
 
 
-            TypeInfo typeinfo = new TypeInfo { UserType = $"Dictionary<{keyType}, {valueType}>" };
-            Field field = new Field(typeinfo, fieldName, new Value(dict) { Type = typeinfo })
+            TypeInfo typeInfo = new TypeInfo { UserType = $"Dictionary<{keyType}, {valueType}>" };
+            Field field = new Field(typeInfo, fieldName, new Value(dict) { Type = typeInfo })
             {
                 Modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
             };
@@ -307,7 +307,7 @@ namespace sqlcon
 
             DataColumn _feature = null;     //1st string column as property name
             DataColumn _value = null;       //1st int column as property value
-            DataColumn _label = null;       //2nd string column as attribute [DataEnum("label")]
+            DataColumn _label = null;       //2nd string column as attribute [Description("label")]
             DataColumn _category = null;    //3rd string column as category to generate multiple enum types
             foreach (DataColumn column in dt.Columns)
             {

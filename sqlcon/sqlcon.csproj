@@ -67,7 +67,7 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>8A1544C568D1B44D6229D668ED09E7D77DACB375</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>42F5272179C1A7F02852972B5D263DA44EBD466F</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>sqlcon_TemporaryKey.pfx</ManifestKeyFile>
