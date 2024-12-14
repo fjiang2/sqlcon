@@ -20,6 +20,9 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("UnitTestProject")]
 
 namespace Sys.Data
 {
