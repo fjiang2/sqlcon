@@ -22,6 +22,22 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="Windows\images\AlignHorizontalTop_16x16.png" />
+      <None Remove="Windows\images\Close_16x16.png" />
+      <None Remove="Windows\images\database.png" />
+      <None Remove="Windows\images\Home_16x16.png" />
+      <None Remove="Windows\images\key.png" />
+      <None Remove="Windows\images\New_16x16.png" />
+      <None Remove="Windows\images\Next_16x16.png" />
+      <None Remove="Windows\images\Open_16x16.png" />
+      <None Remove="Windows\images\Save_16x16.png" />
+      <None Remove="Windows\images\SelectTable_16x16.png" />
+      <None Remove="Windows\images\server.png" />
+      <None Remove="Windows\images\server_error.png" />
+      <None Remove="Windows\images\Table_16x16.png" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Tie" Version="2.0.11" />
         <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
     </ItemGroup>
@@ -48,6 +64,21 @@
         <Reference Include="System.Data" />
         <Reference Include="System.Xml" />
         <Reference Include="WindowsBase" />
+    </ItemGroup>
+    <ItemGroup>
+      <Resource Include="Windows\images\AlignHorizontalTop_16x16.png" />
+      <Resource Include="Windows\images\Close_16x16.png" />
+      <Resource Include="Windows\images\database.png" />
+      <Resource Include="Windows\images\Home_16x16.png" />
+      <Resource Include="Windows\images\key.png" />
+      <Resource Include="Windows\images\New_16x16.png" />
+      <Resource Include="Windows\images\Next_16x16.png" />
+      <Resource Include="Windows\images\Open_16x16.png" />
+      <Resource Include="Windows\images\Save_16x16.png" />
+      <Resource Include="Windows\images\SelectTable_16x16.png" />
+      <Resource Include="Windows\images\server.png" />
+      <Resource Include="Windows\images\server_error.png" />
+      <Resource Include="Windows\images\Table_16x16.png" />
     </ItemGroup>
     <ItemGroup>
       <None Update="sqlcon.cfg">
