@@ -104,17 +104,16 @@ namespace sqlcon
             if (ContainsMethod("FromDictionary"))
                 Method_FromDictionary(clss);
 
-            UtilsStaticMethod option = UtilsStaticMethod.Undefined;
-            if (ContainsMethod("CopyTo"))
-                option |= UtilsStaticMethod.CopyTo;
-
+            ICommonMethod option = clss.CommonMethod(ClassName, dict.Keys.Select(column => new PropertyInfo { PropertyName = PropertyName(column) }),isExtensionMethod: true);
             if (ContainsMethod("CompareTo"))
-                option |= UtilsStaticMethod.CompareTo;
+                option.StaticCompare();
+
+            if (ContainsMethod("CopyTo"))
+                option.StaticCopy();
 
             if (ContainsMethod("ToSimpleString"))
-                option |= UtilsStaticMethod.ToSimpleString;
+                option.StaticToSimpleString();
 
-            clss.AddUtilsMethod(ClassName, dict.Keys.Select(column => new PropertyInfo { PropertyName = PropertyName(column) }), option);
             index2 = clss.Index;
             clss.AppendLine();
 
@@ -298,7 +297,7 @@ namespace sqlcon
                 IsExtensionMethod = true
             };
             Statement sent = method.Statement;
-            sent.RETURN($"GetAssociation(new {ClassName}[] {{ entity }}, query).FirstOrDefault()");
+            sent.Return($"GetAssociation(new {ClassName}[] {{ entity }}, query).FirstOrDefault()");
             clss.Insert(index++, method);
 
 

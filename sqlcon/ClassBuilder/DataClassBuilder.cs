@@ -195,11 +195,11 @@ namespace sqlcon
             TypeInfo type = new TypeInfo { UserType = $"{cname}" };
             foreach (DataRow row in dt.Rows)
             {
-                string key = Value.ToPrimitive(row[0]);
+                string key = ValueExtension.ToPrimitive(row[0]);
 
                 if (dt.Columns.Count != 2)
                 {
-                    var V = Value.NewPropertyObject(type);
+                    var V = ValueExtension.NewPropertyObject(type);
                     for (int i = 0; i < columns.Length; i++)
                     {
                         object obj = row[i];
@@ -261,7 +261,7 @@ namespace sqlcon
             TypeInfo type = new TypeInfo { UserType = $"{cname}" };
             foreach (DataRow row in dt.Rows)
             {
-                var V = Value.NewPropertyObject(type);
+                var V = ValueExtension.NewPropertyObject(type);
                 for (int i = 0; i < columns.Length; i++)
                 {
                     object obj = row[i];

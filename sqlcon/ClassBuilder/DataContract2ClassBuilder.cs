@@ -363,7 +363,7 @@ namespace sqlcon
             };
             Statement sent = method.Statement;
 
-            sent.RETURN($"GetAssociation(query, new {ClassName}[] {{ this }}).FirstOrDefault()");
+            sent.Return($"GetAssociation(query, new {ClassName}[] {{ this }}).FirstOrDefault()");
             clss.Insert(index++, method);
 
 

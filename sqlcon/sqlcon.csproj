@@ -4,10 +4,21 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>net48</TargetFramework>
         <Version>2.7.0.0</Version>
+        <Title>sqlcon</Title>
+        <Description>Sql Server Console</Description>
+        <Configuration>datconn</Configuration>
+        <Company>Datum Connect</Company>
+        <Product>sqlcon</Product>
+        <Copyright>Copyright ©  DATCONN 2012-2024</Copyright>
+        <Trademark>datconn</Trademark>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+      <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
@@ -37,5 +48,13 @@
         <Reference Include="System.Data" />
         <Reference Include="System.Xml" />
         <Reference Include="WindowsBase" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Update="sqlcon.cfg">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="user.ini">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 </Project>
