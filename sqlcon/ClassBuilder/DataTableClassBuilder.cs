@@ -234,7 +234,7 @@ namespace sqlcon
             {
                 string entity = ident.Identifier(pkey.FK_Table);
                 TypeInfo type = new TypeInfo { UserType = $"{CONSTRAINT}<{entity}>" };
-                var V = ValueExtension.NewPropertyObject(type);
+                var V = ClassMaker.NewPropertyObject(type);
                 V.AddProperty(nameof(IConstraint.ThisKey), ToColumn2(pkey.PK_Column));
                 V.AddProperty(nameof(IConstraint.OtherKey), ToColumn(pkey.FK_Table, pkey.FK_Column));
                 if (IsOneToMany(tname, pkey))
@@ -247,7 +247,7 @@ namespace sqlcon
             {
                 string entity = ident.Identifier(fkey.PK_Table);
                 TypeInfo type = new TypeInfo { UserType = $"{CONSTRAINT}<{entity}>" };
-                var V = ValueExtension.NewPropertyObject(type);
+                var V = ClassMaker.NewPropertyObject(type);
                 V.AddProperty(nameof(IConstraint.Name), new Value(fkey.Constraint_Name));
                 V.AddProperty(nameof(IConstraint.ThisKey), ToColumn2(fkey.FK_Column));
                 V.AddProperty(nameof(IConstraint.OtherKey), ToColumn(fkey.PK_Table, fkey.PK_Column));

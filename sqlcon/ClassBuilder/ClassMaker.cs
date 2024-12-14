@@ -189,7 +189,14 @@ namespace sqlcon
                     }
                 }
             }
+
         }
+
+        public static Value NewPropertyObject(TypeInfo type)
+        {
+            return new Value(new Dictionary<string, Value>()) { Type = type };
+        }
+
     }
 
 }
