@@ -16,6 +16,7 @@ namespace sqlcon
         public bool Refresh { get; private set; }
         public bool IsVertical { get; private set; }
         public bool IsSchema { get; private set; }
+        public bool IsView { get; private set; }
         public bool HasHelp { get; private set; }
         public bool HasIfExists { get; private set; }
         public bool HasPage { get; private set; }
@@ -51,6 +52,10 @@ namespace sqlcon
 
                 case "/s":
                     IsSchema = true;
+                    return true;
+                
+                case "/view":
+                    IsView = true;
                     return true;
 
                 case "/t":

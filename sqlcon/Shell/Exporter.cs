@@ -72,7 +72,11 @@ namespace sqlcon
             if (cmd.wildcard != null)
             {
                 var md = new MatchedDatabase(dname, cmd);
-                tnames = md.TableNames();
+                if (!cmd.IsView)
+                    tnames = md.TableNames();
+                else
+                    tnames = md.ViewNames();
+
                 if (tnames.Length == 0)
                 {
                     cerr.WriteLine("warning: no table is matched");
@@ -81,7 +85,10 @@ namespace sqlcon
             }
             else
             {
-                tnames = dname.GetTableNames();
+                if (!cmd.IsView)
+                    tnames = dname.GetTableNames();
+                else
+                    tnames = dname.GetViewNames();
             }
 
             return tnames;
@@ -986,11 +993,13 @@ namespace sqlcon
             cout.WriteLine("      [/type:f|h] script type");
             cout.WriteLine("          h : generate TIE hierarchial config script file");
             cout.WriteLine("          f : generate TIE config script file");
-            cout.WriteLine("common options /conf and /cfg");
+            cout.WriteLine("Common options");
+            cout.WriteLine("      [/view] operation in views rather than tables");
+            cout.WriteLine("Common options /conf and /cfg");
             cout.WriteLine("      [/in:path] input path(.cfg)");
             cout.WriteLine("      [/key:column] column of key on config table");
             cout.WriteLine("      [/default:column] column of default value config table");
-            cout.WriteLine("common options for code generation");
+            cout.WriteLine("Common options for code generation");
             cout.WriteLine("      [/ns:name] default name space is defined on the .cfg");
             cout.WriteLine("      [/class:name] default class name is defined on the .cfg");
             cout.WriteLine("      [/using:assembly] allow the use of types in a namespace, delimited by ;");

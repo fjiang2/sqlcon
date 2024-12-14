@@ -1955,6 +1955,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("  /datalake                : format of json file is data lake");
                 cout.WriteLine("example:");
                 cout.WriteLine("  last                     : display last dataset");
+                cout.WriteLine("  last /pk:table1=pk1+pk2  : setup primary keys");
                 cout.WriteLine("  last products.cs         : display dataset file in c# format");
                 cout.WriteLine("  last products.xml        : display dataset file in xml format");
                 cout.WriteLine("  last products.json       : display dataset file in json format");
@@ -1966,6 +1967,42 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                 cout.WriteLine("  last products.cs  /load  : load c# file to last dataset");
                 cout.WriteLine("  last products.xml /load  : load xml file to last dataset");
                 cout.WriteLine("  last products.json /load : load json file to last dataset");
+                return;
+            }
+
+            IDictionary<string, string[]> parimaryKeys = cmd.PK;
+            if (parimaryKeys.Count != 0)
+            {
+                DataSet ds = ShellHistory.LastDataSet();
+                foreach (var kvp in parimaryKeys)
+                {
+                    string tableName = kvp.Key;
+                    string[] pkKeys = kvp.Value;
+
+                    DataTable dt = ds.Tables.OfType<DataTable>().FirstOrDefault(x => x.TableName == tableName);
+                    if (dt != null)
+                    {
+                        try
+                        {
+                            var pkColumns = dt.Columns.OfType<DataColumn>().Where(x => pkKeys.Contains(x.ColumnName)).ToArray();
+                            dt.PrimaryKey = pkColumns;
+                            if (dt.PrimaryKey.Length != pkKeys.Length)
+                            {
+                                var L1 = pkKeys.Except(dt.Columns.OfType<DataColumn>().Select(x => x.ColumnName));
+                                cerr.WriteLine($"Cannot find columns last table: {L1.ToSimpleString()}");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            cerr.WriteLine($"invalid primary keys: {pkKeys.ToSimpleString()}, {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        cerr.WriteLine($"invalid table name: {tableName}");
+                    }
+
+                }
                 return;
             }
 
