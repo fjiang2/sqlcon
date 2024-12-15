@@ -7,7 +7,7 @@ using System.Windows;
 using Sys;
 using Sys.Data;
 
-namespace sqlcon.Windows
+namespace SqlCon.Windows
 {
     public class DbColumnNodeUI : DbTreeNodeUI
     {

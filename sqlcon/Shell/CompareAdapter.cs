@@ -10,7 +10,7 @@ using Sys.Data;
 using Sys.Data.Comparison;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
 
     class CompareAdapter
@@ -33,7 +33,7 @@ namespace sqlcon
         {
             if (!tname.Exists())
             {
-                cout.WriteLine("table not found : {0}", tname);
+                Cout.WriteLine("table not found : {0}", tname);
                 return false;
             }
 
@@ -44,7 +44,7 @@ namespace sqlcon
         {
             if (!dname.Exists())
             {
-                cout.WriteLine("table not found : {0}", dname);
+                Cout.WriteLine("table not found : {0}", dname);
                 return false;
             }
 
@@ -59,8 +59,8 @@ namespace sqlcon
             DatabaseName dname1 = Side1.DatabaseName;
             DatabaseName dname2 = Side2.DatabaseName;
 
-            cout.WriteLine("server1: {0} default database:{1}", Side1.Provider.DataSource, dname1.Name);
-            cout.WriteLine("server2: {0} default database:{1}", Side2.Provider.DataSource, dname2.Name);
+            Cout.WriteLine("server1: {0} default database:{1}", Side1.Provider.DataSource, dname1.Name);
+            Cout.WriteLine("server2: {0} default database:{1}", Side2.Provider.DataSource, dname2.Name);
 
             if (!Exists(dname1) || !Exists(dname2))
                 return string.Empty;
@@ -92,7 +92,7 @@ namespace sqlcon
 
                     if (compareType == ActionType.CompareData && !match.Contains(tname1))
                     {
-                        cout.WriteLine("{0} is excluded", tname1);
+                        Cout.WriteLine("{0} is excluded", tname1);
                         continue;
                     }
 
@@ -104,7 +104,7 @@ namespace sqlcon
                         }
                         catch (Exception ex)
                         {
-                            cerr.WriteLine(ex.Message);
+                            Cerr.WriteLine(ex.Message);
                         }
                     }
                     else
@@ -112,14 +112,14 @@ namespace sqlcon
                         if (compareType == ActionType.CompareSchema)
                         {
                             string sql = tname1.GenerateCreateTableClause(appendGO: false);
-                            cout.WriteLine(sql);
+                            Cout.WriteLine(sql);
                             builder
                             .Append(sql)
                             .AppendLine(SqlScript.GO);
                         }
                         else
                         {
-                            cout.WriteLine("{0} doesn't exist", tname2);
+                            Cout.WriteLine("{0} doesn't exist", tname2);
                         }
                     }
 
@@ -133,15 +133,15 @@ namespace sqlcon
 
         private string CompareDatabaseSchema(CompareSideType sideType, DatabaseName db1, DatabaseName db2)
         {
-            cout.WriteLine("{0} database schema {1} => {2}", sideType, db1.Name, db2.Name);
+            Cout.WriteLine("{0} database schema {1} => {2}", sideType, db1.Name, db2.Name);
             return Compare.DatabaseSchemaDifference(sideType, db1, db2);
         }
 
         private string CompareDatabaseData(CompareSideType sideType, DatabaseName db1, DatabaseName db2, string[] excludedtables)
         {
-            cout.WriteLine("compare database data {0} => {1}", db1.Name, db2.Name);
+            Cout.WriteLine("compare database data {0} => {1}", db1.Name, db2.Name);
             if (excludedtables != null && excludedtables.Length > 0)
-                cout.WriteLine("ignore tables: {0}", string.Join(",", excludedtables));
+                Cout.WriteLine("ignore tables: {0}", string.Join(",", excludedtables));
             return Compare.DatabaseDifference(sideType, db1, db2, excludedtables);
         }
 
@@ -165,7 +165,7 @@ namespace sqlcon
             if (actiontype == ActionType.CompareSchema)
             {
                 sql = Compare.TableSchemaDifference(sidetype, tname1, tname2);
-                cout.WriteLine("completed to {0} table schema {1} => {2}", sidetype, tname1, tname2);
+                Cout.WriteLine("completed to {0} table schema {1} => {2}", sidetype, tname1, tname2);
             }
             else if (actiontype == ActionType.CompareData)
             {
@@ -176,7 +176,7 @@ namespace sqlcon
 
                 if (Compare.TableSchemaDifference(sidetype, tname1, tname2) != string.Empty)
                 {
-                    cout.WriteLine("failed to {0} becuase of different table schemas", sidetype);
+                    Cout.WriteLine("failed to {0} becuase of different table schemas", sidetype);
                     return string.Empty;
                 }
 
@@ -184,7 +184,7 @@ namespace sqlcon
             }
 
             if (sql != string.Empty && sidetype == CompareSideType.compare)
-                cout.WriteLine(sql);
+                Cout.WriteLine(sql);
 
             return sql;
         }
@@ -195,7 +195,7 @@ namespace sqlcon
             if (!Exists(tname2))
             {
                 text = $"warning: {tname2} doesn't exist";
-                cout.WriteLine(ConsoleColor.DarkRed, text);
+                Cout.WriteLine(ConsoleColor.DarkRed, text);
                 return text;
             }
 
@@ -205,11 +205,11 @@ namespace sqlcon
             if (count1 != count2)
             {
                 text = $"{tname1} => {tname2} count={count1} != {count2}";
-                cout.WriteLine(ConsoleColor.Red, $"completed table count {text}");
+                Cout.WriteLine(ConsoleColor.Red, $"completed table count {text}");
                 return text + Environment.NewLine;
             }
             else
-                cout.WriteLine($"completed table count {tname1} => {tname2} count={count1}");
+                Cout.WriteLine($"completed table count {tname1} => {tname2} count={count1}");
 
             return text;
         }
@@ -222,23 +222,23 @@ namespace sqlcon
 
             if (!hasPk)
             {
-                cout.WriteLine("warning: no primary key found : {0}", tname1);
+                Cout.WriteLine("warning: no primary key found : {0}", tname1);
 
                 string key = tname1.Name.ToUpper();
                 if (pk.ContainsKey(key))
                 {
-                    cout.WriteLine("use predefine keys defined in ini file: {0}", tname1);
+                    Cout.WriteLine("use predefine keys defined in ini file: {0}", tname1);
                     sql = Compare.TableDifference(sidetype, schema1, schema2, pk[key], exceptColumns);
                 }
                 else
                 {
-                    cout.WriteLine("use entire row as primary keys:{0}", tname1);
+                    Cout.WriteLine("use entire row as primary keys:{0}", tname1);
                     var keys = schema1.Columns.Select(row => row.ColumnName).ToArray();
                     sql = Compare.TableDifference(sidetype, schema1, schema2, keys, exceptColumns);
                 }
             }
 
-            cout.WriteLine("completed to {0} table data {1} => {2}", sidetype, tname1, tname2);
+            Cout.WriteLine("completed to {0} table data {1} => {2}", sidetype, tname1, tname2);
             return sql;
         }
     }

@@ -9,7 +9,7 @@ using System.Globalization;
 using System.Data.Entity.Design.PluralizationServices;
 #endif
 
-namespace sqlcon
+namespace SqlCon
 {
     class Plural
     {

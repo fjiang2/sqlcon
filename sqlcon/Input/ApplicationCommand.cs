@@ -8,7 +8,7 @@ using System.IO;
 using Sys;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
     class ApplicationCommand : Command
     {

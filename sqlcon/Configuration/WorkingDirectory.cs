@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
     public class WorkingDirectory
     {
@@ -32,7 +32,7 @@ namespace sqlcon
                 path = Path.Combine(CurrentDirectory, path);
 
             if (!Directory.Exists(path))
-                cerr.WriteLine($"path not exists {path}");
+                Cerr.WriteLine($"path not exists {path}");
             else
                 CurrentDirectory = Path.GetFullPath(path);
         }
@@ -72,7 +72,7 @@ namespace sqlcon
             if (File.Exists(path))
                 return File.ReadAllLines(path);
             else
-                cout.WriteLine($"file not found {path}");
+                Cout.WriteLine($"file not found {path}");
 
             return null;
         }
@@ -89,12 +89,12 @@ namespace sqlcon
 
             if (Directory.Exists(path))
             {
-                cout.WriteLine($"Directory of {path}\n");
+                Cout.WriteLine($"Directory of {path}\n");
                 var directories = Directory.GetDirectories(path).OrderBy(x => x);
                 foreach (string directory in directories)
                 {
                     var directoryInfo = new DirectoryInfo(directory);
-                    cout.WriteLine($"{directoryInfo.LastWriteTime,24}{DIR,20} {directoryInfo.Name,-30}");
+                    Cout.WriteLine($"{directoryInfo.LastWriteTime,24}{DIR,20} {directoryInfo.Name,-30}");
                 }
 
                 var files = Directory.GetFiles(path).OrderBy(x => x);
@@ -113,14 +113,14 @@ namespace sqlcon
                 string pattern = Path.GetFileName(path);
                 if (!Directory.Exists(directory))
                 {
-                    cerr.WriteLine("directory doesn't exist");
+                    Cerr.WriteLine("directory doesn't exist");
                     return;
                 }
 
                 string[] files = Directory.GetFiles(directory, pattern);
                 if (files.Length == 0)
                 {
-                    cout.WriteLine("no file found");
+                    Cout.WriteLine("no file found");
                     return;
                 }
 
@@ -133,7 +133,7 @@ namespace sqlcon
             void display(string file)
             {
                 var fileInfo = new FileInfo(file);
-                cout.WriteLine($"{fileInfo.LastWriteTime,24}{fileInfo.Length,20} {fileInfo.Name,-30}");
+                Cout.WriteLine($"{fileInfo.LastWriteTime,24}{fileInfo.Length,20} {fileInfo.Name,-30}");
             }
         }
     }

@@ -10,7 +10,7 @@ using Sys.Data;
 using Sys.Stdio;
 using Tie;
 
-namespace sqlcon
+namespace SqlCon
 {
     class Loader
     {
@@ -31,7 +31,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                cerr.WriteLine(ex.Message);
+                Cerr.WriteLine(ex.Message);
                 return 0;
             }
 
@@ -75,7 +75,7 @@ namespace sqlcon
                     }
                     catch (System.Data.SqlClient.SqlException ex)
                     {
-                        cerr.WriteLine(ex.AllMessages(builder.ToString()));
+                        Cerr.WriteLine(ex.AllMessages(builder.ToString()));
                         return count;
                     }
 
@@ -110,7 +110,7 @@ namespace sqlcon
 
             if (items.Length > columns.Length)
             {
-                cerr.WriteLine($"#columns({items.Length}) on .csv > #column({columns.Length}) on database, {line}");
+                Cerr.WriteLine($"#columns({items.Length}) on .csv > #column({columns.Length}) on database, {line}");
                 return null;
             }
 
@@ -123,7 +123,7 @@ namespace sqlcon
                 }
                 catch (Exception ex)
                 {
-                    cerr.WriteLine($"cannot parse {items[i]} on column {columns[i]}, {ex.Message}");
+                    Cerr.WriteLine($"cannot parse {items[i]} on column {columns[i]}, {ex.Message}");
                 }
             }
 
@@ -136,7 +136,7 @@ namespace sqlcon
             int count = 0;
             if (!File.Exists(path))
             {
-                cerr.WriteLine($"file {path} not found");
+                Cerr.WriteLine($"file {path} not found");
                 return 0;
             }
 
@@ -177,7 +177,7 @@ namespace sqlcon
                 }
                 catch (Exception ex)
                 {
-                    cerr.WriteLine(ex.Message);
+                    Cerr.WriteLine(ex.Message);
                     break;
                 }
             }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Sys.Stdio
 {
-    public class cout
+    public class Cout
     {
         /// <summary>
         /// turn command-echoing on/off on the screen
@@ -14,7 +14,7 @@ namespace Sys.Stdio
         public static bool echo { get; set; } = true;
         private static int WindowWidth { get; } = 80;
 
-        static cout()
+        static Cout()
         {
             if (!Console.IsOutputRedirected && IsConsole)
                 WindowWidth = Console.BufferWidth;
@@ -27,7 +27,7 @@ namespace Sys.Stdio
             if (echo)
                 Console.Write(text);
 
-            clog.Write(text);
+            Clog.Write(text);
         }
 
         public static void WriteLine(string text)
@@ -35,7 +35,7 @@ namespace Sys.Stdio
             if (echo)
                 Console.WriteLine(text);
 
-            clog.WriteLine(text);
+            Clog.WriteLine(text);
         }
 
         public static void WriteLine()
@@ -72,7 +72,7 @@ namespace Sys.Stdio
                     Console.WriteLine(text);
             }
 
-            clog.WriteLine(text);
+            Clog.WriteLine(text);
         }
 
 

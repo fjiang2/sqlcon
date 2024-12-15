@@ -43,7 +43,7 @@ namespace Sys
             }
             catch (Exception ex)
             {
-                cout.WriteLine("error on configuration file {0}, {1}:", cfg.Personal, ex.Message);
+                Cout.WriteLine("error on configuration file {0}, {1}:", cfg.Personal, ex.Message);
                 return null;
             }
 
@@ -116,7 +116,7 @@ namespace Sys
             }
             catch (Exception ex)
             {
-                cerr.WriteLine($"failed to initialize {file}, {ex.Message}");
+                Cerr.WriteLine($"failed to initialize {file}, {ex.Message}");
             }
 
             return file;

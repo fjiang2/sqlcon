@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using Sys.Data;
 
-namespace sqlcon
+namespace SqlCon
 {
     class DataContract1ClassBuilder : DataTableClassBuilder
     {

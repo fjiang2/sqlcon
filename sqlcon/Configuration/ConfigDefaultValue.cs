@@ -2,7 +2,7 @@ using System;
 using Sys.Data.Manager;
 using Sys;
 
-namespace sqlcon
+namespace SqlCon
 {
     public static partial class ConfigDefaultValue
     {

@@ -11,7 +11,7 @@ using Sys.Data.Manager;
 using Sys.Data.Linq;
 using System.Data.Common;
 
-namespace sqlcon
+namespace SqlCon
 {
     abstract class DataTableClassBuilder : TheClassBuilder
     {
@@ -75,7 +75,7 @@ namespace sqlcon
         public static string COLUMN(DataColumn column) => COLUMN(column.ColumnName);
         public static string COLUMN(string columnName)
         {
-            string name = ident.Identifier(columnName).ToUpper();
+            string name = Ident.Identifier(columnName).ToUpper();
             if (name.StartsWith("_"))
                 return name;
             else
@@ -214,7 +214,7 @@ namespace sqlcon
             const string CONSTRAINT = nameof(Constraint);
             Value ToColumn(string table, string column)
             {
-                table = ident.Identifier(table);
+                table = Ident.Identifier(table);
                 column = COLUMN(column);
                 column = $"{table}{EXTENSION}.{column}";
                 return new Value(new CodeString(column));
@@ -232,7 +232,7 @@ namespace sqlcon
             List<Value> L = new List<Value>();
             foreach (IForeignKey pkey in pkeys)
             {
-                string entity = ident.Identifier(pkey.FK_Table);
+                string entity = Ident.Identifier(pkey.FK_Table);
                 TypeInfo type = new TypeInfo { UserType = $"{CONSTRAINT}<{entity}>" };
                 var V = ClassMaker.NewPropertyObject(type);
                 V.AddProperty(nameof(IConstraint.ThisKey), ToColumn2(pkey.PK_Column));
@@ -245,7 +245,7 @@ namespace sqlcon
             var fkeys = schema.ForeignKeys.Keys.OrderBy(k => k.FK_Table);
             foreach (IForeignKey fkey in fkeys)
             {
-                string entity = ident.Identifier(fkey.PK_Table);
+                string entity = Ident.Identifier(fkey.PK_Table);
                 TypeInfo type = new TypeInfo { UserType = $"{CONSTRAINT}<{entity}>" };
                 var V = ClassMaker.NewPropertyObject(type);
                 V.AddProperty(nameof(IConstraint.Name), new Value(fkey.Constraint_Name));
@@ -285,7 +285,7 @@ namespace sqlcon
 
             foreach (IForeignKey pkey in pkeys)
             {
-                string entity = ident.Identifier(pkey.FK_Table);
+                string entity = Ident.Identifier(pkey.FK_Table);
 
                 TypeInfo type;
                 string propertyName;
@@ -316,7 +316,7 @@ namespace sqlcon
             var fkeys = schema.ForeignKeys.Keys.OrderBy(k => k.FK_Table);
             foreach (IForeignKey fkey in fkeys)
             {
-                string entity = ident.Identifier(fkey.PK_Table);
+                string entity = Ident.Identifier(fkey.PK_Table);
                 TypeInfo type = new TypeInfo { UserType = $"EntityRef<{entity}>" };
                 string propertyName = Plural.Singularize(entity);
                 var property = new Property(type, propertyName);

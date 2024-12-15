@@ -7,7 +7,7 @@ using Tie;
 using Sys.Stdio;
 using Sys.Data;
 
-namespace sqlcon
+namespace SqlCon
 {
     class Program
     {
@@ -46,13 +46,13 @@ namespace sqlcon
                         }
                         else
                         {
-                            cout.WriteLine("/cfg configuration file missing");
+                            Cout.WriteLine("/cfg configuration file missing");
                             return;
                         }
 
                     case "/h":
                     case "/?":
-                        sqlcon.Main.ShowHelp();
+                        SqlCon.Main.ShowHelp();
                         return;
                 }
 
@@ -70,7 +70,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                cout.WriteLine("error on configuration file {0}, {1}:", cfg.Personal, ex.Message);
+                Cout.WriteLine("error on configuration file {0}, {1}:", cfg.Personal, ex.Message);
                 return;
             }
 

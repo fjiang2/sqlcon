@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 using System.IO;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
     static class Helper
     {
@@ -62,7 +62,7 @@ namespace sqlcon
                 }
                 catch (Exception ex)
                 {
-                    cerr.WriteLine($"invalid file or directory \"{outputFile}\", {ex.Message}");
+                    Cerr.WriteLine($"invalid file or directory \"{outputFile}\", {ex.Message}");
                 }
             }
 

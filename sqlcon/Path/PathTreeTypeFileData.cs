@@ -8,7 +8,7 @@ using Sys;
 using Sys.Data;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
     partial class PathManager
     {
@@ -41,11 +41,11 @@ namespace sqlcon
                     int index = 1;
                     foreach (DatabaseName dname in sname.GetDatabaseNames())
                     {
-                        cout.WriteLine();
-                        cout.WriteLine($"({index++}) {dname.Name}");
+                        Cout.WriteLine();
+                        Cout.WriteLine($"({index++}) {dname.Name}");
                         foreach (TableName tname in dname.GetTableNames())
                         {
-                            cout.WriteLine($"[{tname.ShortName}]");
+                            Cout.WriteLine($"[{tname.ShortName}]");
                             tout = new TableOut(tname);
                             tout.Display(cmd);
                         }
@@ -60,8 +60,8 @@ namespace sqlcon
                 DatabaseName dname = (DatabaseName)pt.Item;
                 foreach (TableName tname in dname.GetTableNames())
                 {
-                    cout.WriteLine();
-                    cout.WriteLine($"[{tname.ShortName}]");
+                    Cout.WriteLine();
+                    Cout.WriteLine($"[{tname.ShortName}]");
                     tout = new TableOut(tname);
                     tout.Display(cmd);
                 }
@@ -82,7 +82,7 @@ namespace sqlcon
                     string code = tname.DatabaseName.GetProcedure(tname);
                     if (!string.IsNullOrEmpty(code))
                     {
-                        cout.WriteLine(code);
+                        Cout.WriteLine(code);
                         return true;
                     }
                 }

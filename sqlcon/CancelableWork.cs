@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
    
     class CancelableWork
@@ -19,7 +19,7 @@ namespace sqlcon
                 {
                     e.Cancel = true;
                     cts.Cancel();
-                    cout.WriteLine("command interrupting...");
+                    Cout.WriteLine("command interrupting...");
                 };
 
             Console.CancelKeyPress += cancelKeyPress;
@@ -38,8 +38,8 @@ namespace sqlcon
             {
                 if (message == null)
                     message = "command interrupted";
-                cout.WriteLine();
-                cout.WriteLine(message);
+                Cout.WriteLine();
+                Cout.WriteLine(message);
             }
 
             cts.Dispose();

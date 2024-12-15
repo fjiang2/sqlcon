@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Data;
 using System.IO;
 
-namespace sqlcon
+namespace SqlCon
 {
     public class OutputDataTable
     {

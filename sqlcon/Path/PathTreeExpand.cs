@@ -7,7 +7,7 @@ using Sys;
 using Sys.Data;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
     partial class PathManager
     {
@@ -75,7 +75,7 @@ namespace sqlcon
                 }
                 catch (Exception ex)
                 {
-                    cerr.WriteLine($"failed to retrieve table names from {dname}, {ex.Message}");
+                    Cerr.WriteLine($"failed to retrieve table names from {dname}, {ex.Message}");
                     return false;
                 }
             }

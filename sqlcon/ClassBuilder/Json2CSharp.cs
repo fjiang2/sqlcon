@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tie;
 
-namespace sqlcon
+namespace SqlCon
 {
     internal class Json2CSharp
     {

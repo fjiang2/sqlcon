@@ -8,7 +8,7 @@ using Sys;
 using Sys.CodeBuilder;
 using Sys.Data;
 
-namespace sqlcon
+namespace SqlCon
 {
 
     class DataContract2ClassBuilder : DataTableClassBuilder

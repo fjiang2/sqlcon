@@ -16,13 +16,13 @@ namespace Sys
         {
             if (val.Size != 2)
             {
-                cerr.WriteLine("required 2 parameters on function cfg(file,variable), 1: app.cfg/web.cfg name; 2: variable to reach connection string");
+                Cerr.WriteLine("required 2 parameters on function cfg(file,variable), 1: app.cfg/web.cfg name; 2: variable to reach connection string");
                 return null;
             }
 
             if (val[0].VALTYPE != VALTYPE.stringcon || val[1].VALTYPE != VALTYPE.stringcon)
             {
-                cerr.WriteLine("error on function cfg(file,variable) argument type, 1: string, 2: string");
+                Cerr.WriteLine("error on function cfg(file,variable) argument type, 1: string, 2: string");
                 return null;
             }
 
@@ -43,26 +43,26 @@ namespace Sys
                         }
                         catch (Exception ex)
                         {
-                            cerr.WriteLine($"configuration file format error in {cfgFile}, {ex.Message}");
+                            Cerr.WriteLine($"configuration file format error in {cfgFile}, {ex.Message}");
                             return null;
                         }
                     }
                 }
                 else
                 {
-                    cerr.WriteLine($"cannot find configuration file: {cfgFile}");
+                    Cerr.WriteLine($"cannot find configuration file: {cfgFile}");
                     return null;
                 }
 
                 VAL value = localDS.GetValue(variable);
                 if (value.Undefined)
                 {
-                    cerr.WriteLine($"undefined variable {variable}");
+                    Cerr.WriteLine($"undefined variable {variable}");
                     return null;
                 }
                 else if (!(value.Value is string))
                 {
-                    cerr.WriteLine($"connection string must be string, {variable}={value}");
+                    Cerr.WriteLine($"connection string must be string, {variable}={value}");
                     return null;
                 }
                 else
@@ -70,7 +70,7 @@ namespace Sys
             }
             catch (Exception)
             {
-                cerr.WriteLine($"cannot find connection string on {cfgFile}, variable={variable}");
+                Cerr.WriteLine($"cannot find connection string on {cfgFile}, variable={variable}");
                 return null;
             }
         }
@@ -80,13 +80,13 @@ namespace Sys
         {
             if (val.Size != 3)
             {
-                cerr.WriteLine("required 2 parameters on function config(file,path,value), 1: app.config/web.config name; 2: path to reach connection string; 3:connection string attribute");
+                Cerr.WriteLine("required 2 parameters on function config(file,path,value), 1: app.config/web.config name; 2: path to reach connection string; 3:connection string attribute");
                 return null;
             }
 
             if (val[0].VALTYPE != VALTYPE.stringcon || val[1].VALTYPE != VALTYPE.stringcon || val[2].VALTYPE != VALTYPE.stringcon)
             {
-                cerr.WriteLine("error on function config(file,path,value) argument type, 1: string, 2: string, 3:string");
+                Cerr.WriteLine("error on function config(file,path,value) argument type, 1: string, 2: string, 3:string");
                 return null;
             }
 
@@ -100,7 +100,7 @@ namespace Sys
             }
             catch (Exception)
             {
-                cerr.WriteLine($"cannot find connection string on {xmlFile}, path={path}");
+                Cerr.WriteLine($"cannot find connection string on {xmlFile}, path={path}");
                 return null;
             }
         }
@@ -115,7 +115,7 @@ namespace Sys
         {
             if (!File.Exists(xmlFile))
             {
-                cerr.WriteLine($"warning: not found {xmlFile}");
+                Cerr.WriteLine($"warning: not found {xmlFile}");
                 return null;
             }
 

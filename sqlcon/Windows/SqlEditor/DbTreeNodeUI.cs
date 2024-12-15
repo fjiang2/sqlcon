@@ -2,7 +2,7 @@
 using System.Windows.Media;
 using Sys.Data;
 
-namespace sqlcon.Windows
+namespace SqlCon.Windows
 {
     public class DbTreeNodeUI : TreeViewItem
     {

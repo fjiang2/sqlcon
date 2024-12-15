@@ -7,7 +7,7 @@ using System.IO;
 using Sys.Stdio;
 using Sys;
 
-namespace sqlcon
+namespace SqlCon
 {
     class Batch
     {
@@ -51,7 +51,7 @@ namespace sqlcon
                 }
                 catch(Exception ex)
                 {
-                    cerr.WriteLine($"invalid path:\"{_path}\", using ; as delimiter", ex);
+                    Cerr.WriteLine($"invalid path:\"{_path}\", using ; as delimiter", ex);
                 }
             }
 
@@ -63,7 +63,7 @@ namespace sqlcon
         {
             if (!IsBatch)
             {
-                cerr.WriteLine($"must be {EXT} file: {path}");
+                Cerr.WriteLine($"must be {EXT} file: {path}");
                 return false;
             }
 
@@ -83,7 +83,7 @@ namespace sqlcon
             }
             else
             {
-                cerr.WriteLine($"cannot find the file: {path}");
+                Cerr.WriteLine($"cannot find the file: {path}");
                 return false;
             }
         }

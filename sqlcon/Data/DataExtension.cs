@@ -7,7 +7,7 @@ using System.Text;
 using Sys.Data;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
     public static class DataExtension
     {
@@ -31,7 +31,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                cerr.WriteLine($"invalid data set file: {path}, {ex.Message}");
+                Cerr.WriteLine($"invalid data set file: {path}, {ex.Message}");
             }
 
             return null;

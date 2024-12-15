@@ -9,7 +9,7 @@ using System.Linq;
 using Sys.Data.Manager;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
 
     class EntityClassBuilder : TheClassBuilder

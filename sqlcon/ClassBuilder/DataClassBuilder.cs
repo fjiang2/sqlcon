@@ -10,7 +10,7 @@ using Sys.Data;
 using Sys.Data.Manager;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
 
     class DataClassBuilder : ClassMaker
@@ -172,7 +172,7 @@ namespace sqlcon
             {
                 if (dt.Columns.Count < 2)
                 {
-                    cerr.WriteLine("cannot generate dictionary class, column# > 2");
+                    Cerr.WriteLine("cannot generate dictionary class, column# > 2");
                     return;
                 }
 
@@ -291,7 +291,7 @@ namespace sqlcon
             int count = dt.Columns.Count;
             if (count < 2)
             {
-                cerr.WriteLine("cannot generate enum class because table is < 2 columns");
+                Cerr.WriteLine("cannot generate enum class because table is < 2 columns");
                 return;
             }
 
@@ -327,13 +327,13 @@ namespace sqlcon
 
             if (_feature == null)
             {
-                cerr.WriteLine("invalid enum property name");
+                Cerr.WriteLine("invalid enum property name");
                 return;
             }
 
             if (_value == null)
             {
-                cerr.WriteLine("invalid enum property value");
+                Cerr.WriteLine("invalid enum property value");
                 return;
             }
 
@@ -382,7 +382,7 @@ namespace sqlcon
 
             if (optionColumns.Length == 0)
             {
-                cerr.WriteLine("missing parameter /field:col1,col2");
+                Cerr.WriteLine("missing parameter /field:col1,col2");
                 return;
             }
 
@@ -392,7 +392,7 @@ namespace sqlcon
             }
             else if (optionColumns.Length != optionConstants.Length)
             {
-                cerr.WriteLine($"invalid parameter /value:{string.Join(",", optionConstants)}");
+                Cerr.WriteLine($"invalid parameter /value:{string.Join(",", optionConstants)}");
                 return;
             }
 
@@ -424,7 +424,7 @@ namespace sqlcon
                 }
                 else if (type != _type)
                 {
-                    cerr.WriteLine($"column [{constant}] data type is imcompatible");
+                    Cerr.WriteLine($"column [{constant}] data type is imcompatible");
                     continue;
                 }
 
@@ -441,7 +441,7 @@ namespace sqlcon
 
             foreach (var kvp in dict)
             {
-                string fieldName = Sys.ident.Identifier(kvp.Key);
+                string fieldName = Sys.Ident.Identifier(kvp.Key);
 
                 Field field = new Field(new TypeInfo(type), fieldName, new Value(kvp.Value))
                 {

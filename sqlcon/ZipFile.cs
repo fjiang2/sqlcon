@@ -7,7 +7,7 @@ using System.IO;
 using System.IO.Compression;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
     class ZipFileReader
     {
@@ -27,7 +27,7 @@ namespace sqlcon
 
         private static void ProcessFile(ZipArchiveEntry entry, Action<string> action)
         {
-            cout.WriteLine($"processing {entry.FullName}");
+            Cout.WriteLine($"processing {entry.FullName}");
 
             using (GZipStream decompressionStream = new GZipStream(entry.Open(), CompressionMode.Decompress, leaveOpen: true))
             using (var reader = new StreamReader(decompressionStream))

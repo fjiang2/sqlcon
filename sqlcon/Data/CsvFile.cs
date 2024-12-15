@@ -5,7 +5,7 @@ using System.Text;
 using System.Data;
 using System.IO;
 
-namespace sqlcon
+namespace SqlCon
 {
     class CsvFile
     {

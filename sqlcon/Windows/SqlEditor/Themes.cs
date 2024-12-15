@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace sqlcon.Windows
+namespace SqlCon.Windows
 {
     static class Themes
     {

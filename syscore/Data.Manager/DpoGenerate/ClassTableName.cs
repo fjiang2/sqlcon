@@ -40,7 +40,7 @@ namespace Sys.Data.Manager
 
         public string SubNamespace
         {
-            get { return ident.Identifier(this.DatabaseName.Name); }
+            get { return Ident.Identifier(this.DatabaseName.Name); }
         }
 
 
