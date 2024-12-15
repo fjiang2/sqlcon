@@ -20,7 +20,11 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Data;
+#if NET48
 using System.Data.SqlClient;
+#else
+using Microsoft.Data.SqlClient;
+#endif
 
 namespace Sys.Data
 {
