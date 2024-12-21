@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Sys.Stdio
 {
-    public class cin
+    public class Cin
     {
 
         public static ConsoleKey ReadKey()
         {
             ConsoleKeyInfo keyInfo = Console.ReadKey();
 
-            clog.Write(keyInfo.KeyChar.ToString());
+            Clog.Write(keyInfo.KeyChar.ToString());
 
             return keyInfo.Key;
         }
@@ -23,7 +23,7 @@ namespace Sys.Stdio
         {
             string line = Console.ReadLine();
 
-            clog.WriteLine(line);
+            Clog.WriteLine(line);
 
             return line;
         }
@@ -62,12 +62,12 @@ namespace Sys.Stdio
 
 
                 builder.Append(ch);
-                cout.Write(ch.ToString());
+                Cout.Write(ch.ToString());
 
                 keyInfo = Console.ReadKey();
             };
 
-            cout.WriteLine();
+            Cout.WriteLine();
 
             return builder.ToString();
         }
@@ -81,13 +81,13 @@ namespace Sys.Stdio
         /// <returns></returns>
         public static bool YesOrNo(string text)
         {
-            cout.Write(text);
+            Cout.Write(text);
             if (ReadKey() != ConsoleKey.Y)
             {
                 return false;
             }
 
-            cout.WriteLine();
+            Cout.WriteLine();
             return true;
         }
 

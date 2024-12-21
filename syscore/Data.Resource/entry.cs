@@ -1,11 +1,11 @@
 ﻿namespace Sys.Data.Resource
 {
-    class entry
+    class Entry
     {
         public string name { get; set; }
         public string value { get; set; }
 
-        public entry()
+        public Entry()
         {
 
         }
@@ -17,7 +17,7 @@
 
         public override bool Equals(object obj)
         {
-            var entry = obj as entry;
+            var entry = obj as Entry;
             if (entry == null)
                 return false;
 

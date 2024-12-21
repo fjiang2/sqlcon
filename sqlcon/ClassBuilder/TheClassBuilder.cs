@@ -10,7 +10,7 @@ using Sys.Data.Manager;
 using Sys.Data.Linq;
 using System.Data.Common;
 
-namespace sqlcon
+namespace SqlCon
 {
     abstract class TheClassBuilder : ClassMaker
     {

@@ -211,7 +211,7 @@ namespace Sys.Data.Manager
 
             cons.Statement.Add(sent1);
             cons.Statement.AppendLine("this.Load();");
-            cons.Statement.IF("!this.Exists", sent2);
+            cons.Statement.If("!this.Exists", sent2);
 
 
         }
@@ -331,8 +331,11 @@ namespace Sys.Data.Manager
 
             ConstStringColumnNames();
 
-            clss.AddUtilsMethod(UtilsThisMethod.Copy | UtilsThisMethod.Clone | UtilsThisMethod.Compare);
-            
+            var common = clss.CommonMethod();
+            common.Copy();
+            common.Clone();
+            common.Compare();
+
             return code.ToString();
         }
 

@@ -7,7 +7,7 @@ using Tie;
 using Sys.Stdio;
 using Sys.Data;
 
-namespace sqlcon
+namespace SqlCon
 {
     class Program
     {
@@ -18,7 +18,7 @@ namespace sqlcon
         {
             Console.Title = "sqlcon";
             Console.WriteLine($"SQL Console [Version {Helper.ApplicationVerison}]");
-            Console.WriteLine($"Copyright (c) 2014-{DateTime.Today.Year} Datconn. All rights reserved.");
+            Console.WriteLine($"Copyright (c) 2014-2025 Datconn. All rights reserved.");
             Console.WriteLine();
 
             Constant.MAX_CPU_REG_NUM = 2 * 1024;
@@ -46,13 +46,13 @@ namespace sqlcon
                         }
                         else
                         {
-                            cout.WriteLine("/cfg configuration file missing");
+                            Cout.WriteLine("/cfg configuration file missing");
                             return;
                         }
 
                     case "/h":
                     case "/?":
-                        sqlcon.Main.ShowHelp();
+                        SqlCon.Main.ShowHelp();
                         return;
                 }
 
@@ -70,7 +70,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                cout.WriteLine("error on configuration file {0}, {1}:", cfg.Personal, ex.Message);
+                Cout.WriteLine("error on configuration file {0}, {1}:", cfg.Personal, ex.Message);
                 return;
             }
 

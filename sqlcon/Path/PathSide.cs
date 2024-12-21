@@ -7,7 +7,7 @@ using Sys.Data;
 using Sys;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
     class PathSide
     {
@@ -48,7 +48,7 @@ namespace sqlcon
         {
             if (source == null)
             {
-                cerr.WriteLine("invalid argument");
+                Cerr.WriteLine("invalid argument");
                 return false;
             }
 
@@ -57,14 +57,14 @@ namespace sqlcon
             node = mgr.Navigate(path);
             if (node == null)
             {
-                cerr.WriteLine("invalid path:" + path);
+                Cerr.WriteLine("invalid path:" + path);
                 return false;
             }
 
             dname = mgr.GetPathFrom<DatabaseName>(node);
             if (dname == null)
             {
-                cerr.WriteLine($"warning: {sourceText} database is unavailable");
+                Cerr.WriteLine($"warning: {sourceText} database is unavailable");
                 return false;
             }
 
@@ -111,7 +111,7 @@ namespace sqlcon
             dname = mgr.GetPathFrom<DatabaseName>(node);
             if (dname == null)
             {
-                cerr.WriteLine("warning: destination database is unavailable");
+                Cerr.WriteLine("warning: destination database is unavailable");
                 return false;
             }
 

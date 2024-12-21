@@ -10,7 +10,7 @@ namespace Sys.Stdio
 {
     public class Command : ICommand
     {
-        public bool badcommand { get; private set; }
+        public bool Badcommand { get; private set; }
         protected List<string> paths = new List<string>();
 
         /// <summary>
@@ -23,9 +23,9 @@ namespace Sys.Stdio
         /// <summary>
         /// 
         /// </summary>
-        public string args { get; private set; }
-        public string arg1 { get; private set; }
-        public string arg2 { get; private set; }
+        public string Args { get; private set; }
+        public string Arg1 { get; private set; }
+        public string Arg2 { get; private set; }
         public string[] Arguments { get; private set; }
 
         public Options Options { get; } = new Options();
@@ -48,25 +48,25 @@ namespace Sys.Stdio
 
             string _line;
 
-            if (!eval(line, out _line))
+            if (!Eval(line, out _line))
             {
-                badcommand = true;
+                Badcommand = true;
                 return;
             }
 
 
-            int k = parseAction(_line, out string action);
+            int k = ParseAction(_line, out string action);
             this.Action = action;
-            this.args = _line.Substring(k);
+            this.Args = _line.Substring(k);
 
-            this.badcommand = !parseArgument(this.args, out string[] L);
+            this.Badcommand = !ParseArgument(this.Args, out string[] L);
             this.Arguments = L;
 
             if (L.Length > 0 && !L[0].StartsWith("/"))
-                this.arg1 = L[0];
+                this.Arg1 = L[0];
 
             if (L.Length > 1 && !L[1].StartsWith("/"))
-                this.arg2 = L[1];
+                this.Arg2 = L[1];
 
             for (int i = 0; i < L.Length; i++)
             {
@@ -126,7 +126,7 @@ namespace Sys.Stdio
         }
 
 
-        private static int parseAction(string line, out string action)
+        private static int ParseAction(string line, out string action)
         {
             int k = 0;
             char[] buf = new char[200];
@@ -147,7 +147,7 @@ namespace Sys.Stdio
             return k;
         }
 
-        private static bool parseArgument(string args, out string[] result)
+        private static bool ParseArgument(string args, out string[] result)
         {
             if (args.Length == 0)
             {
@@ -182,7 +182,7 @@ namespace Sys.Stdio
 
                     if (k == args.Length)
                     {
-                        cerr.WriteLine("Unclosed quotation mark after the character string \"");
+                        Cerr.WriteLine("Unclosed quotation mark after the character string \"");
                         result = new string[] { };
                         return false;
                     }
@@ -211,7 +211,7 @@ namespace Sys.Stdio
         /// <param name="args"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        private bool eval(string args, out string result)
+        private bool Eval(string args, out string result)
         {
             int i = 0;
             int k = 0;
@@ -235,7 +235,7 @@ namespace Sys.Stdio
 
                     if (k == args.Length)
                     {
-                        cerr.WriteLine("Unclosed expression character }");
+                        Cerr.WriteLine("Unclosed expression character }");
                         result = string.Empty;
                         return false;
                     }
@@ -257,7 +257,7 @@ namespace Sys.Stdio
                         }
                         catch (Exception ex)
                         {
-                            cerr.WriteLine($"error in {code}, {ex.Message}");
+                            Cerr.WriteLine($"error in {code}, {ex.Message}");
                         }
 
                         foreach (char ch in text) buf[i++] = ch;
@@ -265,7 +265,7 @@ namespace Sys.Stdio
                 }
                 else if (args[k] == '}')
                 {
-                    cerr.WriteLine("Unclosed expression character }");
+                    Cerr.WriteLine("Unclosed expression character }");
                     result = string.Empty;
                     return false;
                 }

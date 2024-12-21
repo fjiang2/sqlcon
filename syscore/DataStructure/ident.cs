@@ -21,11 +21,11 @@ using System.Text;
 
 namespace Sys
 {
-    public sealed class ident : IComparable, IComparable<string>, IEquatable<ident>
+    public sealed class Ident : IComparable, IComparable<string>, IEquatable<Ident>
     {
         private string id;
 
-        public ident(string id)
+        public Ident(string id)
         {
             this.id = id;
 
@@ -71,10 +71,10 @@ namespace Sys
 
         public override bool Equals(object obj)
         {
-            return id.Equals(((ident)obj).id);
+            return id.Equals(((Ident)obj).id);
         }
 
-        public bool Equals(ident obj)
+        public bool Equals(Ident obj)
         {
             return id.Equals(obj.id);
         }
@@ -84,17 +84,17 @@ namespace Sys
             return this.id;
         }
 
-        public static bool operator ==(ident id1, ident id2)
+        public static bool operator ==(Ident id1, Ident id2)
         {
             return id1.id.Equals(id2.id);
         }
 
-        public static bool operator !=(ident id1, ident id2)
+        public static bool operator !=(Ident id1, Ident id2)
         {
             return !(id1 == id2);
         }
 
-        public static explicit operator string(ident ident)
+        public static explicit operator string(Ident ident)
         {
             return ident.id;
         }

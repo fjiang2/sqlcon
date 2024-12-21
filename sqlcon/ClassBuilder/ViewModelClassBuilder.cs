@@ -8,7 +8,7 @@ using Sys;
 using Sys.CodeBuilder;
 using Sys.Data;
 
-namespace sqlcon
+namespace SqlCon
 {
 
     class ViewModelClassBuilder : DataTableClassBuilder
@@ -51,7 +51,7 @@ namespace sqlcon
             
             foreach (DataColumn column in dt.Columns)
             {
-                EachProperty(clss, dict[column], ident.Identifier(column.ColumnName));
+                EachProperty(clss, dict[column], Ident.Identifier(column.ColumnName));
             }
 
             Method_OnPropertyChanged(clss);

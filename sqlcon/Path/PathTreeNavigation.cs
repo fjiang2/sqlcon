@@ -8,7 +8,7 @@ using Sys.Data;
 using Sys.Stdio;
 
 
-namespace sqlcon
+namespace SqlCon
 {
     partial class PathManager
     {
@@ -189,7 +189,7 @@ namespace sqlcon
             DatabaseName d = provider.DefaultDatabaseName;
             if (DbSchemaProvider.IsSystemDatabase(d.Name))
             {
-                cerr.WriteLine($"cannot navigate to system database: \"{d.Name}\"");
+                Cerr.WriteLine($"cannot navigate to system database: \"{d.Name}\"");
                 return null;
             }
 
@@ -203,14 +203,14 @@ namespace sqlcon
                 return pt;
             }
 
-            if (string.IsNullOrEmpty(cmd.arg1))
+            if (string.IsNullOrEmpty(cmd.Arg1))
             {
-                cerr.WriteLine("argument cannot be empty");
+                Cerr.WriteLine("argument cannot be empty");
             }
 
             TableName tname = GetCurrentPath<TableName>();
 
-            var locator = new Locator(cmd.arg1) { Name = cmd.GetValue("name") };
+            var locator = new Locator(cmd.Arg1) { Name = cmd.GetValue("name") };
             if (locator.Name == null)
             {
                 locator.Name = $"filter{pt.Nodes.Count + 1}";
@@ -219,7 +219,7 @@ namespace sqlcon
             var builder = new SqlBuilder().SELECT().TOP(1).COLUMNS().FROM(tname).WHERE(locator);
             if (builder.Invalid())
             {
-                cerr.WriteLine($"invalid path: {cmd.arg1}");
+                Cerr.WriteLine($"invalid path: {cmd.Arg1}");
                 return pt;
             }
 

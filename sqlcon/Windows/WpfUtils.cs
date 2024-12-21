@@ -12,7 +12,7 @@ using System.Windows.Input;
 using System.Windows.Controls.Primitives;
 using System.Data;
 
-namespace sqlcon.Windows
+namespace SqlCon.Windows
 {
     static class WpfUtils
     {

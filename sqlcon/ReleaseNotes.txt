@@ -1,5 +1,9 @@
 ﻿sqlcon release notes
 
+12/14/2024 v2.7.0.0
+	Improvements/Enhancements:
+	1. Command "export dbo.* /view" exports data contract classes for database views.
+
 12/20/2022 v2.6.7.0
 	Improvements/Enhancements:
 	1. Command "export /INSERT /identity" generates SQL INSERT statements with identity values.

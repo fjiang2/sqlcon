@@ -19,7 +19,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
+#if NET48
 using System.Data.SqlClient;
+#else
+using Microsoft.Data.SqlClient;
+#endif
 using System.Data.Common;
 
 namespace Sys.Data

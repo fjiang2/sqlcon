@@ -5,7 +5,7 @@ using Sys.Data;
 using Sys.Stdio;
 using Sys;
 
-namespace sqlcon
+namespace SqlCon
 {
     class ShellContext
     {
@@ -41,7 +41,7 @@ namespace sqlcon
             }
             else
             {
-                cerr.WriteLine("database server not defined");
+                Cerr.WriteLine("database server not defined");
             }
         }
 
@@ -49,7 +49,7 @@ namespace sqlcon
         {
             if (side == null)
             {
-                cerr.WriteLine("undefined side");
+                Cerr.WriteLine("undefined side");
                 return;
             }
 

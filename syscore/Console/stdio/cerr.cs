@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Sys.Stdio
 {
-    public class cerr
+    public class Cerr
     {
         public static void WriteLine(string text)
         {
@@ -14,7 +14,7 @@ namespace Sys.Stdio
             Console.ForegroundColor = ConsoleColor.DarkRed;
 
             Console.WriteLine(text);
-            clog.WriteLine(text);
+            Clog.WriteLine(text);
 
             Console.ForegroundColor = keep;
         }

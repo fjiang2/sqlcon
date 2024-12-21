@@ -12,7 +12,7 @@ using Sys.Data.Manager;
 using Sys.Data.Resource;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
     class Importer
     {
@@ -74,22 +74,22 @@ namespace sqlcon
             else if (cmd.Has("extract-string"))
                 ExtractStringList();
             else
-                cerr.WriteLine("invalid command options");
+                Cerr.WriteLine("invalid command options");
         }
 
 
         public void ProcessZipArchive()
         {
-            string file = cmd.arg1;
+            string file = cmd.Arg1;
             if (file == null)
             {
-                cerr.WriteLine("file name not specified");
+                Cerr.WriteLine("file name not specified");
                 return;
             }
 
             if (!File.Exists(file))
             {
-                cerr.WriteLine($"cannot find the file \"{file}\"");
+                Cerr.WriteLine($"cannot find the file \"{file}\"");
                 return;
             }
 
@@ -124,13 +124,13 @@ namespace sqlcon
 
             if (file_name == null)
             {
-                cerr.WriteLine($"file name is not defined, use option /in:file_name");
+                Cerr.WriteLine($"file name is not defined, use option /in:file_name");
                 return;
             }
 
             if (!File.Exists(file_name))
             {
-                cerr.WriteLine($"file doesn't exist: \"{file_name}\"");
+                Cerr.WriteLine($"file doesn't exist: \"{file_name}\"");
                 return;
             }
 
@@ -138,20 +138,20 @@ namespace sqlcon
             {
                 if (table_name == null)
                 {
-                    cerr.WriteLine($"/table-name is not defined");
+                    Cerr.WriteLine($"/table-name is not defined");
                     return;
                 }
 
                 if (dname == null)
                 {
-                    cerr.WriteLine($"required to select a database");
+                    Cerr.WriteLine($"required to select a database");
                     return;
                 }
 
                 tname = new TableName(dname, schema_name, table_name);
                 if (!tname.Exists())
                 {
-                    cerr.WriteLine($"table-name doesn't exist: {tname}");
+                    Cerr.WriteLine($"table-name doesn't exist: {tname}");
                     return;
                 }
             }
@@ -168,7 +168,7 @@ namespace sqlcon
             if (!ValidateColumn<int>(dt, order_column, "order-column", required: false))
                 return;
 
-            cout.WriteLine($"{dt.Rows.Count} of entries on \"{file_name}\"");
+            Cout.WriteLine($"{dt.Rows.Count} of entries on \"{file_name}\"");
 
             ResourceTableWriter writer = new ResourceTableWriter(file_name, tname, name_column, value_column, order_column);
             List<ResourceEntry> entries = writer.Differ(format, dt, trim_name, trim_value);
@@ -177,23 +177,23 @@ namespace sqlcon
                 switch (entry.Action)
                 {
                     case DataRowAction.Add:
-                        cout.WriteLine($"new entry: \"{entry.Name}\", \"{entry.NewValue}\"");
+                        Cout.WriteLine($"new entry: \"{entry.Name}\", \"{entry.NewValue}\"");
                         break;
 
                     case DataRowAction.Change:
-                        cout.WriteLine($"update entry: \"{entry.Name}\", \"{entry.OldValue}\" -> \"{entry.NewValue}\"");
+                        Cout.WriteLine($"update entry: \"{entry.Name}\", \"{entry.OldValue}\" -> \"{entry.NewValue}\"");
                         break;
 
                     case DataRowAction.Delete:
-                        cout.WriteLine($"delete entry: \"{entry.Name}\"");
+                        Cout.WriteLine($"delete entry: \"{entry.Name}\"");
                         break;
                 }
             }
 
             if (entries.Count > 0)
-                cout.WriteLine($"{entries.Count} of entries were changed");
+                Cout.WriteLine($"{entries.Count} of entries were changed");
             else
-                cout.WriteLine($"no entry is changed");
+                Cout.WriteLine($"no entry is changed");
 
             if (entries.Count == 0)
                 return;
@@ -202,15 +202,15 @@ namespace sqlcon
             if (!commit)
                 return;
 
-            cout.WriteLine($"starting to save changes into table \"{tname}\"");
+            Cout.WriteLine($"starting to save changes into table \"{tname}\"");
             try
             {
                 writer.SubmitChanges(entries, deleteRowNotInResource);
-                cout.WriteLine($"completed to save on table \"{tname}\" from \"{file_name}\"");
+                Cout.WriteLine($"completed to save on table \"{tname}\" from \"{file_name}\"");
             }
             catch (Exception ex)
             {
-                cerr.WriteLine($"failed to save in \"{tname}\" , {ex.AllMessages()}");
+                Cerr.WriteLine($"failed to save in \"{tname}\" , {ex.AllMessages()}");
             }
 
         }
@@ -241,13 +241,13 @@ namespace sqlcon
 
             if (file_names == null)
             {
-                cerr.WriteLine($"file name or directory is not defined, use option /in:file_name");
+                Cerr.WriteLine($"file name or directory is not defined, use option /in:file_name");
                 return;
             }
 
             if (file_names.Length == 0)
             {
-                cerr.WriteLine($"file doesn't exist: \"{file_names}\"");
+                Cerr.WriteLine($"file doesn't exist: \"{file_names}\"");
                 return;
             }
 
@@ -255,20 +255,20 @@ namespace sqlcon
             {
                 if (table_name == null)
                 {
-                    cerr.WriteLine($"/table-name is not defined");
+                    Cerr.WriteLine($"/table-name is not defined");
                     return;
                 }
 
                 if (dname == null)
                 {
-                    cerr.WriteLine($"required to select a database");
+                    Cerr.WriteLine($"required to select a database");
                     return;
                 }
 
                 tname = new TableName(dname, schema_name, table_name);
                 if (!tname.Exists())
                 {
-                    cerr.WriteLine($"table-name doesn't exist: {tname}");
+                    Cerr.WriteLine($"table-name doesn't exist: {tname}");
                     return;
                 }
             }
@@ -315,25 +315,25 @@ namespace sqlcon
 
                 int count = extractor.Extract(file);
                 if (count > 0)
-                    cout.WriteLine($"{count} of strings were extracted in file: \"{file}\"");
+                    Cout.WriteLine($"{count} of strings were extracted in file: \"{file}\"");
                 else
-                    cout.WriteLine($"no string found in file: \"{file}\"");
+                    Cout.WriteLine($"no string found in file: \"{file}\"");
             }
 
             bool commit = cmd.Has("submit-changes");
             if (!commit)
                 return;
 
-            cout.WriteLine($"starting to save changes into table \"{tname}\"");
+            Cout.WriteLine($"starting to save changes into table \"{tname}\"");
             try
             {
                 TableWriter tableWriter = new TableWriter(tname);
                 tableWriter.Save(dumper.Table);
-                cout.WriteLine($"completed to save on table \"{tname}\" from \"{cmd.InputPath()}\"");
+                Cout.WriteLine($"completed to save on table \"{tname}\" from \"{cmd.InputPath()}\"");
             }
             catch (Exception ex)
             {
-                cerr.WriteLine($"failed to save in \"{tname}\" , {ex.AllMessages()}");
+                Cerr.WriteLine($"failed to save in \"{tname}\" , {ex.AllMessages()}");
             }
 
         }
@@ -345,20 +345,20 @@ namespace sqlcon
                 if (!required)
                     return true;
 
-                cerr.WriteLine($"{option} is undefined");
+                Cerr.WriteLine($"{option} is undefined");
                 return false;
             }
 
             if (!dt.Columns.Contains(columnName))
             {
-                cerr.WriteLine($"{option} doesn't exist: {columnName}");
+                Cerr.WriteLine($"{option} doesn't exist: {columnName}");
                 return false;
             }
 
             DataColumn column = dt.Columns[columnName];
             if (column.DataType != typeof(T))
             {
-                cerr.WriteLine($"{option} data type is required: {typeof(T)}");
+                Cerr.WriteLine($"{option} data type is required: {typeof(T)}");
                 return false;
             }
 
@@ -367,35 +367,35 @@ namespace sqlcon
 
         public static void Help()
         {
-            cout.WriteLine("import data");
-            cout.WriteLine("import [path]              :");
-            cout.WriteLine("options:");
-            cout.WriteLine("  /zip                     : dump variables memory to output file");
-            cout.WriteLine("  /out                     : define output file or directory");
-            cout.WriteLine("  /resource: import resource file into a table");
-            cout.WriteLine("      [/in:]            : resource file name");
-            cout.WriteLine("      [/format:]        : resource format: resx|xlf|json, default:resx");
-            cout.WriteLine("      [/schema-name:]   : default is dbo");
-            cout.WriteLine("      [/table-name:]    : default is current table selected");
-            cout.WriteLine("      [/name-column:]   : name column, default is name");
-            cout.WriteLine("      [/value-column:]  : value column");
-            cout.WriteLine("      [/order-column:]  : keep order of entries, it is integer");
-            cout.WriteLine("      [/trim-name]      : trim string of property [name]");
-            cout.WriteLine("      [/trim-value]     : trim string of property [value]");
-            cout.WriteLine("      [/submit-changes] : save entries into database");
-            cout.WriteLine("  /extract-string: extract string from source code files for string resources");
-            cout.WriteLine("      [/in:]            : source code file name or directory");
-            cout.WriteLine("      [/subdirectory]   : include subdirectory");
-            cout.WriteLine("      [/schema-name:]   : default is dbo");
-            cout.WriteLine("      [/table-name:]    : default is current table selected");
-            cout.WriteLine("      [/column-names:]  : string list table definition [file,line,col,type,string]");
-            cout.WriteLine("      [/submit-changes] : save strings into database");
-            cout.WriteLine("example:");
-            cout.WriteLine("  import insert.sql        : run script");
-            cout.WriteLine("  import insert.zip  /zip  : run script, default extension is .sqt");
-            cout.WriteLine("  import /resource /format:resx /table-name:i18n-resx-table /name-column:name /value-column:es /in:.\\resource.es.resx /submit-changes");
-            cout.WriteLine("  import /resource /format:json /table-name:i18n-json-table /name-column:name /value-column:es /in:.\\es.json /submit-changes");
-            cout.WriteLine("  import /extract-string /table-name:StringList /column-names:file=FileName,line=Line,col=Col,type=StringType,string=String /subdirectory /in:*.cs /submit-changes");
+            Cout.WriteLine("import data");
+            Cout.WriteLine("import [path]              :");
+            Cout.WriteLine("options:");
+            Cout.WriteLine("  /zip                     : dump variables memory to output file");
+            Cout.WriteLine("  /out                     : define output file or directory");
+            Cout.WriteLine("  /resource: import resource file into a table");
+            Cout.WriteLine("      [/in:]            : resource file name");
+            Cout.WriteLine("      [/format:]        : resource format: resx|xlf|json, default:resx");
+            Cout.WriteLine("      [/schema-name:]   : default is dbo");
+            Cout.WriteLine("      [/table-name:]    : default is current table selected");
+            Cout.WriteLine("      [/name-column:]   : name column, default is name");
+            Cout.WriteLine("      [/value-column:]  : value column");
+            Cout.WriteLine("      [/order-column:]  : keep order of entries, it is integer");
+            Cout.WriteLine("      [/trim-name]      : trim string of property [name]");
+            Cout.WriteLine("      [/trim-value]     : trim string of property [value]");
+            Cout.WriteLine("      [/submit-changes] : save entries into database");
+            Cout.WriteLine("  /extract-string: extract string from source code files for string resources");
+            Cout.WriteLine("      [/in:]            : source code file name or directory");
+            Cout.WriteLine("      [/subdirectory]   : include subdirectory");
+            Cout.WriteLine("      [/schema-name:]   : default is dbo");
+            Cout.WriteLine("      [/table-name:]    : default is current table selected");
+            Cout.WriteLine("      [/column-names:]  : string list table definition [file,line,col,type,string]");
+            Cout.WriteLine("      [/submit-changes] : save strings into database");
+            Cout.WriteLine("example:");
+            Cout.WriteLine("  import insert.sql        : run script");
+            Cout.WriteLine("  import insert.zip  /zip  : run script, default extension is .sqt");
+            Cout.WriteLine("  import /resource /format:resx /table-name:i18n-resx-table /name-column:name /value-column:es /in:.\\resource.es.resx /submit-changes");
+            Cout.WriteLine("  import /resource /format:json /table-name:i18n-json-table /name-column:name /value-column:es /in:.\\es.json /submit-changes");
+            Cout.WriteLine("  import /extract-string /table-name:StringList /column-names:file=FileName,line=Line,col=Col,type=StringType,string=String /subdirectory /in:*.cs /submit-changes");
         }
     }
 }

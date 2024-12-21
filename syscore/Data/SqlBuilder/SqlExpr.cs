@@ -183,7 +183,7 @@ namespace Sys.Data
 #endif
 
         #region implicit section
-        public static implicit operator SqlExpr(ident ident)
+        public static implicit operator SqlExpr(Ident ident)
         {
             return new SqlExpr().Next(ident);
         }

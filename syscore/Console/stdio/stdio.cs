@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Sys.Stdio
 {
-    public sealed class stdio
+    public sealed class StdIO
     {
         public const string FILE_EDITOR = "editor";
         public const string FILE_LOG = "log";
@@ -15,8 +15,8 @@ namespace Sys.Stdio
         static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
             e.Cancel = true;
-            cout.WriteLine();
-            cout.WriteLine("exit application...");
+            Cout.WriteLine();
+            Cout.WriteLine("exit application...");
         }
 
 
@@ -26,7 +26,7 @@ namespace Sys.Stdio
             const string notepad = "notepad.exe";
             if (!File.Exists(fileName))
             {
-                cerr.WriteLine($"cannot find the file: {fileName}");
+                Cerr.WriteLine($"cannot find the file: {fileName}");
                 return;
             }
 
@@ -58,7 +58,7 @@ namespace Sys.Stdio
             }
             catch (Exception ex)
             {
-                cerr.WriteLine($"failed to lauch application: {editor} {fileName}, {ex.Message}");
+                Cerr.WriteLine($"failed to lauch application: {editor} {fileName}, {ex.Message}");
                 return false;
             }
 

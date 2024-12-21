@@ -12,7 +12,7 @@ using Sys.Data.Comparison;
 using Tie;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
     partial class Shell : ShellContext, IShell
     {
@@ -31,9 +31,9 @@ namespace sqlcon
             string line = null;
 
         L1:
-            cout.Write($"{mgr}> ");
+            Cout.Write($"{mgr}> ");
         L2:
-            line = cin.ReadLine();
+            line = Cin.ReadLine();
 
             if (Console.IsOutputRedirected)
                 Console.WriteLine(line);
@@ -44,7 +44,7 @@ namespace sqlcon
 
             if (FlowControl.IsFlowStatement(line))
             {
-                cerr.WriteLine($"use \"{line}\" on batch script file only");
+                Cerr.WriteLine($"use \"{line}\" on batch script file only");
                 goto L1;
             }
 
@@ -73,9 +73,9 @@ namespace sqlcon
             FlowControl flow = new FlowControl(lines);
             NextStep next = flow.Execute(Run);
             if (next == NextStep.EXIT)
-                cout.WriteLine(ConsoleColor.Green, "completed.");
+                Cout.WriteLine(ConsoleColor.Green, "completed.");
 
-            cout.Write($"{mgr}> ");
+            Cout.Write($"{mgr}> ");
         }
 
         private bool multipleLineMode = false;
@@ -107,7 +107,7 @@ namespace sqlcon
                             var _result = TrySingleLineCommand(line);
                             if (_result == NextStep.COMPLETED)
                             {
-                                cout.WriteLine();
+                                Cout.WriteLine();
                                 return NextStep.COMPLETED;
                             }
                             else if (_result == NextStep.ERROR)
@@ -133,16 +133,16 @@ namespace sqlcon
                 {
                     multipleLineMode = false;
                     var result = DoMultipleLineCommand(text);
-                    cout.WriteLine();
+                    Cout.WriteLine();
                     return result;
                 }
                 catch (System.Data.SqlClient.SqlException ex1)
                 {
-                    cerr.WriteLine($"SQL:{ex1.AllMessages()}");
+                    Cerr.WriteLine($"SQL:{ex1.AllMessages()}");
                 }
                 catch (Exception ex)
                 {
-                    cout.WriteLine(ex.Message);
+                    Cout.WriteLine(ex.Message);
                     return NextStep.ERROR;
                 }
 
@@ -150,7 +150,7 @@ namespace sqlcon
             else if (multipleLineBuilder.ToString() != "")
             {
                 multipleLineMode = true;
-                cout.Write("...");
+                Cout.Write("...");
                 return NextStep.CONTINUE;
             }
 
@@ -188,7 +188,7 @@ namespace sqlcon
                 return NextStep.CONTINUE;
 
             ApplicationCommand cmd = new ApplicationCommand(cfg, line);
-            if (cmd.badcommand)
+            if (cmd.Badcommand)
                 return NextStep.ERROR;
 
             switch (cmd.Action)
@@ -222,10 +222,10 @@ namespace sqlcon
 
                 case "cd":
                 case "chdir":
-                    if (cmd.arg1 != null || cmd.HasHelp)
+                    if (cmd.Arg1 != null || cmd.HasHelp)
                         chdir(cmd);
                     else
-                        cout.WriteLine(mgr.ToString());
+                        Cout.WriteLine(mgr.ToString());
                     return NextStep.COMPLETED;
 
                 case "type":
@@ -254,18 +254,18 @@ namespace sqlcon
                     return NextStep.COMPLETED;
 
                 case "ver":
-                    cout.WriteLine("sqlcon [Version {0}]", Helper.ApplicationVerison);
+                    Cout.WriteLine("sqlcon [Version {0}]", Helper.ApplicationVerison);
                     return NextStep.COMPLETED;
 
                 case "show":
-                    if (cmd.arg1 != null)
-                        Show(cmd.arg1.ToLower(), cmd.arg2);
+                    if (cmd.Arg1 != null)
+                        Show(cmd.Arg1.ToLower(), cmd.Arg2);
                     else
-                        cerr.WriteLine("invalid argument");
+                        Cerr.WriteLine("invalid argument");
                     return NextStep.COMPLETED;
 
                 case "find":
-                    commandee.find(cmd, cmd.arg1);
+                    commandee.find(cmd, cmd.Arg1);
                     return NextStep.COMPLETED;
 
                 case "save":
@@ -306,45 +306,45 @@ namespace sqlcon
                     return NextStep.COMPLETED;
 
                 case "lcd":
-                    if (cmd.arg1 != null)
-                        cfg.WorkingDirectory.ChangeDirectory(cmd.arg1);
+                    if (cmd.Arg1 != null)
+                        cfg.WorkingDirectory.ChangeDirectory(cmd.Arg1);
                     else
-                        cout.WriteLine(cfg.WorkingDirectory.CurrentDirectory);
+                        Cout.WriteLine(cfg.WorkingDirectory.CurrentDirectory);
                     return NextStep.COMPLETED;
 
                 case "ldir":
-                    cfg.WorkingDirectory.ShowCurrentDirectory(cmd.arg1);
+                    cfg.WorkingDirectory.ShowCurrentDirectory(cmd.Arg1);
                     return NextStep.COMPLETED;
 
                 case "ltype":
-                    if (cmd.arg1 != null)
+                    if (cmd.Arg1 != null)
                     {
-                        string[] lines = cfg.WorkingDirectory.ReadAllLines(cmd.arg1);
+                        string[] lines = cfg.WorkingDirectory.ReadAllLines(cmd.Arg1);
                         if (lines != null)
                         {
                             foreach (var _line in lines)
-                                cout.WriteLine(_line);
+                                Cout.WriteLine(_line);
                         }
                     }
                     else
-                        cout.WriteLine("invalid arguments");
+                        Cout.WriteLine("invalid arguments");
                     return NextStep.COMPLETED;
 
                 case "path":
-                    if (cmd.arg1 == null)
+                    if (cmd.Arg1 == null)
                     {
-                        cout.WriteLine(cfg.Path);
+                        Cout.WriteLine(cfg.Path);
                     }
                     else
                     {
-                        Context.SetValue("path", cmd.arg1);
+                        Context.SetValue("path", cmd.Arg1);
                     }
                     return NextStep.COMPLETED;
 
                 case "run":
-                    if (cmd.arg1 != null)
+                    if (cmd.Arg1 != null)
                     {
-                        new Batch(cfg, cmd.arg1).Call(this, cmd.Arguments);
+                        new Batch(cfg, cmd.Arg1).Call(this, cmd.Arguments);
                     }
                     return NextStep.COMPLETED;
 
@@ -394,7 +394,7 @@ namespace sqlcon
                 default:
                     if (!_SQL.Contains(cmd.Action.ToUpper()))
                     {
-                        cerr.WriteLine("invalid command");
+                        Cerr.WriteLine("invalid command");
                         return NextStep.COMPLETED;
                     }
                     break;
@@ -489,21 +489,21 @@ namespace sqlcon
                     {
                         int count = new SqlCmd(theSide.Provider, text).ExecuteNonQuery();
                         if (count > 0)
-                            cout.WriteLine("{0} of row(s) affected", count);
+                            Cout.WriteLine("{0} of row(s) affected", count);
                         else if (count == 0)
-                            cout.WriteLine("nothing affected");
+                            Cout.WriteLine("nothing affected");
                         else
-                            cout.WriteLine("command(s) completed successfully");
+                            Cout.WriteLine("command(s) completed successfully");
                     }
                     catch (Exception ex)
                     {
-                        cerr.WriteLine(ex.Message);
+                        Cerr.WriteLine(ex.Message);
                         return NextStep.ERROR;
                     }
                     break;
 
                 default:
-                    cerr.WriteLine("invalid command");
+                    Cerr.WriteLine("invalid command");
                     break;
             }
 
@@ -524,9 +524,9 @@ namespace sqlcon
                         foreach (var tname in PKS)
                         {
                             count++;
-                            cout.WriteLine("{0,5} {1}", $"[{count}]", tname);
+                            Cout.WriteLine("{0,5} {1}", $"[{count}]", tname);
                         }
-                        cout.WriteLine("total <{0}> tables with primary keys", count);
+                        Cout.WriteLine("total <{0}> tables with primary keys", count);
                     }
                     break;
 
@@ -540,10 +540,10 @@ namespace sqlcon
                             if (PKS.FirstOrDefault(row => row.Equals(tname)) == null)
                             {
                                 count++;
-                                cout.WriteLine("{0,5} {1}", $"[{count}]", tname);
+                                Cout.WriteLine("{0,5} {1}", $"[{count}]", tname);
                             }
                         }
-                        cout.WriteLine("total <{0}> tables without primary keys", count);
+                        Cout.WriteLine("total <{0}> tables without primary keys", count);
                     }
                     break;
 
@@ -555,11 +555,11 @@ namespace sqlcon
                         dt = vname.ViewSchema();
                         if (dt.Rows.Count > 0)
                         {
-                            cout.WriteLine("<{0}>", vname.ShortName);
+                            Cout.WriteLine("<{0}>", vname.ShortName);
                             dt.ToConsole();
                         }
                         else
-                            cout.WriteLine("not found at <{0}>", vname.ShortName);
+                            Cout.WriteLine("not found at <{0}>", vname.ShortName);
                     }
                     break;
 
@@ -586,12 +586,12 @@ namespace sqlcon
                             .ToConsole();
                         }
                         else
-                            cerr.WriteLine("connection string not found");
+                            Cerr.WriteLine("connection string not found");
                     }
                     break;
 
                 case "current":
-                    cout.WriteLine("current: {0}({1})", theSide.Provider.Name, showConnection(theSide.Provider));
+                    Cout.WriteLine("current: {0}({1})", theSide.Provider.Name, showConnection(theSide.Provider));
                     break;
 
                 case "var":
@@ -603,7 +603,7 @@ namespace sqlcon
                     }
                     break;
                 default:
-                    cerr.WriteLine("invalid argument");
+                    Cerr.WriteLine("invalid argument");
                     break;
             }
         }

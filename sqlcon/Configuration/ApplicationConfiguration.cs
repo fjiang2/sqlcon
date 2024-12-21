@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Sys;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
     class ApplicationConfiguration : Configuration, IApplicationConfiguration
     {

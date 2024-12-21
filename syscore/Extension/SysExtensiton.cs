@@ -32,10 +32,10 @@ namespace Sys
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static ident ToIdent(this string str)
+        public static Ident ToIdent(this string str)
         {
-            string id = ident.Identifier(str);
-            return new ident(id);
+            string id = Ident.Identifier(str);
+            return new Ident(id);
         }
 
         /// <summary>

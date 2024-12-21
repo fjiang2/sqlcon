@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 
-namespace sqlcon
+namespace SqlCon
 {
     /// <summary>
     /// An ASCII progress bar

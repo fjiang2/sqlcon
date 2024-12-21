@@ -21,7 +21,7 @@ namespace Sys.Data.Comparison
             foreach (TableName tableName in names)
             {
 #if DEBUG
-                cout.WriteLine(tableName.ShortName);
+                Cout.WriteLine(tableName.ShortName);
 #endif
                 try
                 {
@@ -29,12 +29,12 @@ namespace Sys.Data.Comparison
                     builder.Append(sql);
 #if DEBUG
                     if (sql != string.Empty)
-                        cout.WriteLine(sql);
+                        Cout.WriteLine(sql);
 #endif
                 }
                 catch (Exception ex)
                 {
-                    cerr.WriteLine("error:" + ex.Message);
+                    Cerr.WriteLine("error:" + ex.Message);
                 }
             }
 
@@ -57,17 +57,17 @@ namespace Sys.Data.Comparison
                 TableSchema schema1 = new TableSchema(tname1);
                 TableSchema schema2 = new TableSchema(tname2);
 
-                cout.WriteLine(tname1.ShortName);
+                Cout.WriteLine(tname1.ShortName);
 
                 if (excludedTables.Contains(tableName.ShortName.ToUpper()))
                 {
-                    cout.WriteLine("skip to compare data on excluded table {0}", tableName.ShortName);
+                    Cout.WriteLine("skip to compare data on excluded table {0}", tableName.ShortName);
                     continue;
                 }
 
                 if (schema1.PrimaryKeys.Length == 0)
                 {
-                    cout.WriteLine("undefined primary key");
+                    Cout.WriteLine("undefined primary key");
                     continue;
                 }
 

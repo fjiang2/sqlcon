@@ -9,7 +9,7 @@ using System.Linq;
 using Sys.Data.Manager;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
 
     class EntityClassBuilder : TheClassBuilder
@@ -89,9 +89,15 @@ namespace sqlcon
                 }
             }
 
+            PropertyInfo[] columns = schema.Columns
+                  .Select(column => new PropertyInfo
+                  {
+                      PropertyType = column.GetTypeInfo(),
+                      PropertyName = column.ColumnName
+                  })
+                  .ToArray();
 
-            UtilsThisMethod option = UtilsThisMethod.Undefined;
-
+            ICommonMethod option = clss.CommonMethod(ClassName, columns, isExtensionMethod: false);
             if (ContainsMethod("Map"))
             {
                 string identityColumn = schema.Columns
@@ -122,46 +128,35 @@ namespace sqlcon
                 }
 
                 //identity column excluded
-                PropertyInfo[] columns = schema.Columns
+                PropertyInfo[] __columns = schema.Columns
                     .Where(column => !column.IsIdentity)
                     .Select(column => new PropertyInfo { PropertyName = column.ColumnName })
                     .ToArray();
 
-                clss.AddUtilsMethod(ClassName, columns, UtilsThisMethod.Map);
+                option = clss.CommonMethod(ClassName, __columns, isExtensionMethod: false);
+                option.Map();
             }
 
             if (ContainsMethod("Copy"))
-                option |= UtilsThisMethod.Copy;
+                option.Copy();
 
             if (ContainsMethod("Clone"))
-                option |= UtilsThisMethod.Clone;
+                option.Clone();
 
             if (ContainsMethod("Equals"))
-                option |= UtilsThisMethod.Equals;
+                option.Equals();
 
             if (ContainsMethod("GetHashCode"))
-                option |= UtilsThisMethod.GetHashCode;
+                option.GetHashCode();
 
             if (ContainsMethod("Compare"))
-                option |= UtilsThisMethod.Compare;
+                option.Compare();
 
             if (ContainsMethod("ToDictionary"))
-                option |= UtilsThisMethod.ToDictionary;
+                option.ToDictionary();
 
             if (ContainsMethod("ToString"))
-                option |= UtilsThisMethod.ToString;
-
-            {
-                PropertyInfo[] columns = schema.Columns
-                    .Select(column => new PropertyInfo
-                    {
-                        PropertyType = column.GetTypeInfo(),
-                        PropertyName = column.ColumnName
-                    })
-                    .ToArray();
-
-                clss.AddUtilsMethod(ClassName, columns, option);
-            }
+                option.ToString();
         }
     }
 }

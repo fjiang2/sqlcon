@@ -18,7 +18,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data.Common;
+#if NET48
 using System.Data.SqlClient;
+#else
+using Microsoft.Data.SqlClient;
+#endif
 using System.Data;
 using Tie;
 

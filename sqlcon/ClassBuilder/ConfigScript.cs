@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using Tie;
 
-namespace sqlcon
+namespace SqlCon
 {
     enum CodeMemberType
     {

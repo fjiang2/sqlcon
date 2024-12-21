@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Data;
 
-namespace sqlcon.Windows
+namespace SqlCon.Windows
 {
     public static class WpfExtension
     {

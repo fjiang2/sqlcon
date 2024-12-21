@@ -99,7 +99,7 @@ namespace Sys.Data.Resource
             int index = 0;
 
             //load data rows from database
-            var rows = dt.ToList(row => new entry
+            var rows = dt.ToList(row => new Entry
             {
                 name = row.GetField<string>(name_column),
                 value = row.GetField<string>(value_column)
@@ -111,11 +111,11 @@ namespace Sys.Data.Resource
                 TrimPropertyName = trimName,
                 TrimPropertyValue = trimValue,
             };
-            List<entry> entries = reader.Read(format, path);
+            List<Entry> entries = reader.Read(format, path);
 
 
 
-            DifferenceList<entry> diff = new DifferenceList<entry>(rows);
+            DifferenceList<Entry> diff = new DifferenceList<Entry>(rows);
 
             diff.OnItemAdded(x => list.Add(new ResourceEntry
             {

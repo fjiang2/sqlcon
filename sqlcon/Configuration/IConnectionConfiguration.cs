@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Sys.Data;
 
-namespace sqlcon
+namespace SqlCon
 {
     public interface IConnectionConfiguration
     {

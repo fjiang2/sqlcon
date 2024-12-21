@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 using Sys;
 using Sys.Data;
 
-namespace sqlcon
+namespace SqlCon
 {
 
     partial class PathManager

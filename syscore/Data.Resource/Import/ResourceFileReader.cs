@@ -29,7 +29,7 @@ namespace Sys.Data.Resource
         {
         }
 
-        internal List<entry> Read(ResourceFormat format, string path)
+        internal List<Entry> Read(ResourceFormat format, string path)
         {
             switch (format)
             {
@@ -43,12 +43,12 @@ namespace Sys.Data.Resource
                     return ReadXlf(path);
             }
 
-            return new List<entry>();
+            return new List<Entry>();
         }
 
-        private List<entry> ReadResx(string path)
+        private List<Entry> ReadResx(string path)
         {
-            List<entry> list = new List<entry>();
+            List<Entry> list = new List<Entry>();
             XElement xdoc = XElement.Load(path);
 
             XNamespace xmlns = XNamespace.Xml;
@@ -66,7 +66,7 @@ namespace Sys.Data.Resource
                 if (TrimPropertyValue)
                     value = value.Trim();
 
-                entry entry = new entry
+                Entry entry = new Entry
                 {
                     name = name,
                     value = value,
@@ -75,8 +75,8 @@ namespace Sys.Data.Resource
                 if (list.Select(x => x.name).Contains(entry.name))
                 {
                     var result = list.Find(x => x.name == entry.name);
-                    cerr.WriteLine($"duplicated in resx: {result}");
-                    cerr.WriteLine($"duplicated in resx: {entry}");
+                    Cerr.WriteLine($"duplicated in resx: {result}");
+                    Cerr.WriteLine($"duplicated in resx: {entry}");
                 }
 
                 list.Add(entry);
@@ -86,14 +86,14 @@ namespace Sys.Data.Resource
             return list;
         }
 
-        private List<entry> ReadJson(string path)
+        private List<Entry> ReadJson(string path)
         {
-            List<entry> list = new List<entry>();
+            List<Entry> list = new List<Entry>();
             string json = File.ReadAllText(path);
             VAL val = Script.Evaluate(json);
             foreach (var item in val)
             {
-                entry entry = new entry
+                Entry entry = new Entry
                 {
                     name = (string)item[0],
                     value = (string)item[1],
@@ -105,9 +105,9 @@ namespace Sys.Data.Resource
             return list;
         }
 
-        private List<entry> ReadXlf(string path)
+        private List<Entry> ReadXlf(string path)
         {
-            List<entry> list = new List<entry>();
+            List<Entry> list = new List<Entry>();
 
             XNamespace xmlns = "urn:oasis:names:tc:xliff:document:1.2";
 
@@ -121,17 +121,17 @@ namespace Sys.Data.Resource
 
                 if (source == null)
                 {
-                    cerr.WriteLine($"cannot find <source>");
+                    Cerr.WriteLine($"cannot find <source>");
                     continue;
                 }
 
                 if (target == null)
                 {
-                    cerr.WriteLine($"cannot find <target> in {source}");
+                    Cerr.WriteLine($"cannot find <target> in {source}");
                     continue;
                 }
 
-                entry entry = new entry();
+                Entry entry = new Entry();
                 if (source.Elements().Any())
                 {
                     //todo: when source has children elements

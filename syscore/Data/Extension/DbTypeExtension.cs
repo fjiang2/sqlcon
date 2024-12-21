@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.OleDb;
-using System.Xml.Linq;
 
 namespace Sys.Data
 {

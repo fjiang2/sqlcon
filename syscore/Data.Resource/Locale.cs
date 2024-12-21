@@ -12,7 +12,7 @@ namespace Sys.Data.Resource
 {
     public class Locale
     {
-        private List<entry> entries = new List<entry>();
+        private List<Entry> entries = new List<Entry>();
 
         public ResourceFormat Format { get; set; } = ResourceFormat.resx;
         public bool Append { get; set; } = false;
@@ -40,7 +40,7 @@ namespace Sys.Data.Resource
                     continue;
                 }
 
-                entries.Add(new entry { name = name, value = value });
+                entries.Add(new Entry { name = name, value = value });
             }
         }
 

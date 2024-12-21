@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using Sys.Data;
 
-namespace sqlcon
+namespace SqlCon
 {
     class DataContract1ClassBuilder : DataTableClassBuilder
     {
@@ -61,7 +61,7 @@ namespace sqlcon
 
             if (hasFK)
             {
-                var field = CreateConstraintField(tname);
+                var field = CreateConstraintField(tname, EXTENSION);
                 if (field != null)
                     clss3.Insert(index1, field);
             }
@@ -104,17 +104,16 @@ namespace sqlcon
             if (ContainsMethod("FromDictionary"))
                 Method_FromDictionary(clss);
 
-            UtilsStaticMethod option = UtilsStaticMethod.Undefined;
-            if (ContainsMethod("CopyTo"))
-                option |= UtilsStaticMethod.CopyTo;
-
+            ICommonMethod option = clss.CommonMethod(ClassName, dict.Keys.Select(column => new PropertyInfo { PropertyName = PropertyName(column) }),isExtensionMethod: true);
             if (ContainsMethod("CompareTo"))
-                option |= UtilsStaticMethod.CompareTo;
+                option.StaticCompare();
+
+            if (ContainsMethod("CopyTo"))
+                option.StaticCopy();
 
             if (ContainsMethod("ToSimpleString"))
-                option |= UtilsStaticMethod.ToSimpleString;
+                option.StaticToSimpleString();
 
-            clss.AddUtilsMethod(ClassName, dict.Keys.Select(column => new PropertyInfo { PropertyName = PropertyName(column) }), option);
             index2 = clss.Index;
             clss.AppendLine();
 
@@ -294,11 +293,11 @@ namespace sqlcon
             {
                 Modifier = Modifier.Public | Modifier.Static,
                 Type = new TypeInfo { UserType = associationClassName },
-                Params = new Parameters().Add(ClassName, "entity"),
+                Params = new Parameters().Add(ClassName, "entity").Add("IDbQuery", "query"),
                 IsExtensionMethod = true
             };
             Statement sent = method.Statement;
-            sent.RETURN("entity.AsEnumerable().GetAssociation().FirstOrDefault()");
+            sent.Return($"GetAssociation(new {ClassName}[] {{ entity }}, query).FirstOrDefault()");
             clss.Insert(index++, method);
 
 
@@ -306,13 +305,13 @@ namespace sqlcon
             {
                 Modifier = Modifier.Public | Modifier.Static,
                 Type = new TypeInfo { UserType = $"IEnumerable<{associationClassName}>" },
-                Params = new Parameters().Add($"IEnumerable<{ClassName}>", "entities"),
+                Params = new Parameters().Add($"IEnumerable<{ClassName}>", "entities").Add("IDbQuery", "query"),
                 IsExtensionMethod = true
             };
             clss.Insert(index++, method);
 
             sent = method.Statement;
-            sent.AppendLine("var reader = entities.Expand();");
+            sent.AppendLine("var reader = query.Expand(entities);");
             sent.AppendLine();
             sent.AppendLine($"var associations = new List<{associationClassName}>();");
             sent.AppendLine();

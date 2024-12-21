@@ -183,7 +183,7 @@ namespace Sys
             }
             catch (Exception ex)
             {
-                clog.WriteLine($"cannot cast key={variable} value {val} to type {typeof(T).FullName}: {ex.Message}");
+                Clog.WriteLine($"cannot cast key={variable} value {val} to type {typeof(T).FullName}: {ex.Message}");
                 result = default(T);
                 return true;
             }
@@ -213,8 +213,8 @@ namespace Sys
                 TryReadCfg(cfg.Personal);
             }
 
-            CopyVariableContext(stdio.FILE_LOG);
-            CopyVariableContext(stdio.FILE_EDITOR);
+            CopyVariableContext(StdIO.FILE_LOG);
+            CopyVariableContext(StdIO.FILE_EDITOR);
 
             CopyContext(DS["Context"]);
 
