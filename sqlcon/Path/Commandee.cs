@@ -1709,22 +1709,22 @@ sp_rename '{1}', '{2}', 'COLUMN'";
             switch (cmd.Arg1)
             {
                 case "output":
-                    stdio.OpenEditor(cfg.OutputFile);
+                    StdIO.OpenEditor(cfg.OutputFile);
                     break;
 
                 case "log":
-                    stdio.OpenEditor(Context.GetValue<string>("log"));
+                    StdIO.OpenEditor(Context.GetValue<string>("log"));
                     break;
 
                 case "config":
                     if (cmd.IsSchema)
-                        stdio.OpenEditor("sqlcon.cfg");
+                        StdIO.OpenEditor("sqlcon.cfg");
                     else
-                        stdio.OpenEditor(ConfigurationEnvironment.Path.Personal);
+                        StdIO.OpenEditor(ConfigurationEnvironment.Path.Personal);
                     break;
 
                 case "release":
-                    stdio.OpenEditor("ReleaseNotes.txt");
+                    StdIO.OpenEditor("ReleaseNotes.txt");
                     break;
 
                 case "working":
@@ -1769,7 +1769,7 @@ sp_rename '{1}', '{2}', 'COLUMN'";
                     string _path = cfg.WorkingDirectory.GetFullPath(filename, ext);
                     if (File.Exists(_path))
                     {
-                        stdio.OpenEditor(_path);
+                        StdIO.OpenEditor(_path);
                         return true;
                     }
                 }

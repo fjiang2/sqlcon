@@ -213,8 +213,8 @@ namespace Sys
                 TryReadCfg(cfg.Personal);
             }
 
-            CopyVariableContext(stdio.FILE_LOG);
-            CopyVariableContext(stdio.FILE_EDITOR);
+            CopyVariableContext(StdIO.FILE_LOG);
+            CopyVariableContext(StdIO.FILE_EDITOR);
 
             CopyContext(DS["Context"]);
 

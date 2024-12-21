@@ -14,7 +14,7 @@ namespace Sys.Stdio
 
         static Clog()
         {
-            string fileName = Context.GetValue<string>(stdio.FILE_LOG, "clog.log");
+            string fileName = Context.GetValue<string>(StdIO.FILE_LOG, "clog.log");
 
             try
             {

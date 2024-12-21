@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Sys.Stdio
 {
-    public sealed class stdio
+    public sealed class StdIO
     {
         public const string FILE_EDITOR = "editor";
         public const string FILE_LOG = "log";
