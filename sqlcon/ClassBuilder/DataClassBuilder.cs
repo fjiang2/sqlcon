@@ -195,7 +195,7 @@ namespace SqlCon
             TypeInfo type = new TypeInfo { UserType = $"{cname}" };
             foreach (DataRow row in dt.Rows)
             {
-                string key = Primitive.ToPrimitive(row[0]);
+                object key = row[0];
 
                 if (dt.Columns.Count != 2)
                 {
