@@ -85,10 +85,10 @@ namespace SqlCon
             }
             catch (Exception ex)
             {
-                cerr.WriteLine(ex.Message);
+                Cerr.WriteLine(ex.Message);
                 //stdio.ShowError(ex.StackTrace);
-                cerr.WriteLine("fatal error, hit any key to exit");
-                cin.ReadKey();
+                Cerr.WriteLine("fatal error, hit any key to exit");
+                Cin.ReadKey();
             }
 #endif
         }

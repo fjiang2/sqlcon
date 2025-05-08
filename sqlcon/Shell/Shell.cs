@@ -169,11 +169,11 @@ namespace SqlCon
             }
             catch (System.Data.SqlClient.SqlException ex1)
             {
-                cerr.WriteLine($"SQL:{ex1.AllMessages()}");
+                Cerr.WriteLine($"SQL:{ex1.AllMessages()}");
             }
             catch (Exception ex2)
             {
-                cerr.WriteLine(ex2.Message);
+                Cerr.WriteLine(ex2.Message);
             }
 
             return NextStep.ERROR;
