@@ -250,12 +250,14 @@ namespace Sys.Data.Manager
             clss.Add(collect);
 
             CodeBlock block = new CodeBlock();
+            block.Indent();
+            block.Indent();
             block.Add(fill);
             block.AppendLine();
             block.Add(collect);
             return block.ToString();
 
-        }
+        } 
 
         private void Fields()
         {

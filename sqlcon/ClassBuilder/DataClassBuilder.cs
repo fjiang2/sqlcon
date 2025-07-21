@@ -265,7 +265,7 @@ namespace SqlCon
             TypeInfo type = new TypeInfo { UserType = $"{cname}" };
             foreach (DataRow row in dt.Rows)
             {
-                var V = ClassMaker.NewPropertyObject(type);
+                Value V = ClassMaker.NewPropertyObject(type);
                 for (int i = 0; i < columns.Length; i++)
                 {
                     object obj = row[i];
