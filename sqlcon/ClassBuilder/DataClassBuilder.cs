@@ -123,10 +123,7 @@ namespace SqlCon
             CSharpBuilder builder = new CSharpBuilder
             {
                 Namespace = NamespaceName,
-                Option = new Option
-                {
-                    TabType = TabType.InsertSpaces,
-                }
+                Option = base.CodeOption,
             };
 
             builder.AddUsingRange(base.Usings);
@@ -302,10 +299,7 @@ namespace SqlCon
             CSharpBuilder builder = new CSharpBuilder
             {
                 Namespace = NamespaceName,
-                Option = new Option
-                {
-                    TabType = TabType.InsertSpaces,
-                }
+                Option = base.CodeOption,
             };
             builder.AddUsingRange(base.Usings);
 
@@ -407,10 +401,7 @@ namespace SqlCon
             CSharpBuilder builder = new CSharpBuilder
             {
                 Namespace = NamespaceName,
-                Option = new Option
-                {
-                    TabType = TabType.InsertSpaces,
-                }
+                Option = base.CodeOption,
             };
             builder.AddUsingRange(base.Usings);
 

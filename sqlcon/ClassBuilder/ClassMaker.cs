@@ -21,6 +21,11 @@ namespace SqlCon
 
         protected ApplicationCommand cmd;
 
+        protected Option CodeOption = new Option
+        {
+            TabType = TabType.InsertSpaces,
+        };
+
         public ClassMaker(ApplicationCommand cmd)
         {
             this.cmd = cmd;

@@ -68,10 +68,7 @@ namespace SqlCon
             var builder = new CSharpBuilder
             {
                 Namespace = NamespaceName,
-                Option = new Option
-                {
-                    TabType = TabType.InsertSpaces,
-                }
+                Option = base.CodeOption,
             };
             builder.AddUsing("System");
             builder.AddUsing("System.Collections.Generic");
@@ -213,10 +210,7 @@ namespace SqlCon
             CSharpBuilder builder = new CSharpBuilder 
             { 
                 Namespace = NamespaceName,
-                Option = new Option
-                {
-                    TabType = TabType.InsertSpaces,
-                }
+                Option = base.CodeOption,
             };
             Class clss = new Class(ClassName)
             {

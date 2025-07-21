@@ -24,10 +24,7 @@ namespace SqlCon
         {
             builder = new CSharpBuilder
             {
-                Option = new Option
-                {
-                    TabType = TabType.InsertSpaces,
-                }
+                Option = base.CodeOption,
             };
         }
 
