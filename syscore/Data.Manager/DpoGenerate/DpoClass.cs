@@ -52,7 +52,14 @@ namespace Sys.Data.Manager
 
             this.option = option;
 
-            this.code = new CSharpBuilder { Namespace = cname.Namespace, };
+            this.code = new CSharpBuilder 
+            { 
+                Namespace = cname.Namespace,
+                Option = new Option
+                {
+                    TabType = TabType.InsertSpaces,
+                }
+            };
 
             code.AddUsing("System");
             code.AddUsing("System.Collections.Generic");

@@ -22,8 +22,13 @@ namespace SqlCon
         public TheClassBuilder(ApplicationCommand cmd)
             : base(cmd)
         {
-            builder = new CSharpBuilder();
-
+            builder = new CSharpBuilder
+            {
+                Option = new Option
+                {
+                    TabType = TabType.InsertSpaces,
+                }
+            };
         }
 
         public void AddOptionalUsing()
