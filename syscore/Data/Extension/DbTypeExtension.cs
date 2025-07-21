@@ -60,7 +60,7 @@ namespace Sys.Data
 
         internal static string GetCSharpType(this CType type, bool nullable)
         {
-            string ty = "";
+            string ty;
             switch (type)
             {
                 case CType.VarChar:

@@ -246,7 +246,7 @@ namespace Sys.Data.Manager
             block.Add(fill);
             block.AppendLine();
             block.Add(collect);
-            return block.ToString(2);
+            return block.ToString();
 
         }
 

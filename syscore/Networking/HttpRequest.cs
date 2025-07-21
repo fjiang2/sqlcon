@@ -273,25 +273,7 @@ namespace Sys.Networking
             return bytes;
         }
 
-        public static string md5(string filename)
-        {
-            byte[] bytes = ReadFileToBytes(filename);
-
-            // encrypt bytes
-            System.Security.Cryptography.MD5CryptoServiceProvider md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
-            byte[] hashBytes = md5.ComputeHash(bytes);
-
-            // Convert the encrypted bytes back to a string (base 16)
-            string hashString = "";
-
-            for (int i = 0; i < hashBytes.Length; i++)
-            {
-                hashString += Convert.ToString(hashBytes[i], 16).PadLeft(2, '0');
-            }
-
-            return hashString.PadLeft(32, '0');
-        }
-
+       
         #endregion
 
         public static HttpStatusCode GetHttpStatus(Uri uri)
