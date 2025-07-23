@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
 
     class ConfClassBuilder : ClassMaker
@@ -65,7 +65,11 @@ namespace sqlcon
             string _ConstKeyClassName = cmd.GetValue("kc");
             string _DefaultValueClassName = cmd.GetValue("dc");
 
-            var builder = new CSharpBuilder { Namespace = NamespaceName };
+            var builder = new CSharpBuilder
+            {
+                Namespace = NamespaceName,
+                Option = base.CodeOption,
+            };
             builder.AddUsing("System");
             builder.AddUsing("System.Collections.Generic");
             string cname = ClassName;
@@ -203,7 +207,11 @@ namespace sqlcon
 
         private CSharpBuilder CreateClass(IEnumerable<Buildable> elements)
         {
-            CSharpBuilder builder = new CSharpBuilder { Namespace = NamespaceName };
+            CSharpBuilder builder = new CSharpBuilder 
+            { 
+                Namespace = NamespaceName,
+                Option = base.CodeOption,
+            };
             Class clss = new Class(ClassName)
             {
                 Modifier = Modifier.Public | Modifier.Static | Modifier.Partial
@@ -235,13 +243,13 @@ namespace sqlcon
 
             if (columnKey != null && !dt.Columns.Contains(columnKey))
             {
-                cerr.WriteLine($"column [{columnKey}] not found in [{dt.TableName}]");
+                Cerr.WriteLine($"column [{columnKey}] not found in [{dt.TableName}]");
                 return string.Empty;
             }
 
             if (columnDefaultValue != null && !dt.Columns.Contains(columnDefaultValue))
             {
-                cerr.WriteLine($"column [{columnDefaultValue}] not found in [{dt.TableName}]");
+                Cerr.WriteLine($"column [{columnDefaultValue}] not found in [{dt.TableName}]");
                 return string.Empty;
             }
 

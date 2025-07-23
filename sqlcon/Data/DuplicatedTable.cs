@@ -5,7 +5,7 @@ using System.Linq;
 using Sys.Data;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
     class DuplicatedTable
     {
@@ -59,13 +59,13 @@ namespace sqlcon
             {
                 var where = _columns.Select(column => column.Equal(row[column])).AND();
                 if (AllColumnsSelected)
-                    cout.WriteLine("idential rows");
+                    Cout.WriteLine("idential rows");
                 else
-                    cout.WriteLine("{0}", where);
+                    Cout.WriteLine("{0}", where);
 
                 var builder = new SqlBuilder().SELECT().COLUMNS().FROM(tname).WHERE(where);
                 display(builder.SqlCmd.FillDataTable());
-                cout.WriteLine();
+                Cout.WriteLine();
             }
         }
 

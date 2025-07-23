@@ -16,7 +16,7 @@ using System.Data.SqlClient;
 using Sys.Data;
 using Sys.Data.IO;
 
-namespace sqlcon.Windows
+namespace SqlCon.Windows
 {
     interface IResultPane
     {

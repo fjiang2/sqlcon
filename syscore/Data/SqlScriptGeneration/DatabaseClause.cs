@@ -55,7 +55,7 @@ namespace Sys.Data
 
             foreach (var tableName in history)
             {
-                cout.WriteLine("generate CREATE TABLE {0}", tableName.FormalName);
+                Cout.WriteLine("generate CREATE TABLE {0}", tableName.FormalName);
                 try
                 {
                     builder
@@ -64,7 +64,7 @@ namespace Sys.Data
                 }
                 catch (Exception ex)
                 {
-                    cerr.WriteLine($"failed to generate CREATE TABLE {tableName.FormalName},{ex.Message}");
+                    Cerr.WriteLine($"failed to generate CREATE TABLE {tableName.FormalName},{ex.Message}");
                 }
             }
 

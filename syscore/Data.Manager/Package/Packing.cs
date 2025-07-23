@@ -47,9 +47,13 @@ namespace Sys.Data.Manager
             Type baseType = typeof(BasePackage<>);
             baseType = baseType.MakeGenericType(dpoType);
 
-            this.classBuilder = new CSharpBuilder()
+            this.classBuilder = new CSharpBuilder
             {
                 Namespace = dpoType.Assembly.GetName().Name + "." + Setting.DPO_PACKAGE_SUB_NAMESPACE,
+                Option = new Option
+                {
+                    TabType = TabType.InsertSpaces,
+                }
             };
 
             this.classBuilder.AddUsing("System")

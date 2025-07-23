@@ -11,7 +11,7 @@ using Sys.Data;
 using Sys.Stdio;
 using Sys;
 
-namespace sqlcon.Windows
+namespace SqlCon.Windows
 {
     public class DbTreeUI : TreeView
     {

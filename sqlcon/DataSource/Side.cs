@@ -11,7 +11,7 @@ using System.IO;
 using Sys.Stdio;
 using Sys;
 
-namespace sqlcon
+namespace SqlCon
 {
     class Side : IDataPath
     {
@@ -63,11 +63,11 @@ namespace sqlcon
         {
             if (!File.Exists(scriptFile))
             {
-                cerr.WriteLine($"no input file found : {scriptFile}");
+                Cerr.WriteLine($"no input file found : {scriptFile}");
                 return false;
             }
 
-            cout.WriteLine("executing {0}", scriptFile);
+            Cout.WriteLine("executing {0}", scriptFile);
             var script = new SqlScript(provider, scriptFile)
             {
                 BatchSize = batchSize
@@ -76,23 +76,23 @@ namespace sqlcon
             script.Reported += (sender, e) =>
             {
                 if (verbose)
-                    cout.WriteLine($"processed line:{e.Line} batch:{e.BatchLine}/{e.BatchSize} total:{e.TotalSize}");
+                    Cout.WriteLine($"processed line:{e.Line} batch:{e.BatchLine}/{e.BatchSize} total:{e.TotalSize}");
             };
 
             bool hasError = false;
             script.Error += (sender, e) =>
             {
                 hasError = true;
-                cerr.WriteLine($"line:{e.Line}, {e.Exception.Message}, SQL:{e.Command}");
+                Cerr.WriteLine($"line:{e.Line}, {e.Exception.Message}, SQL:{e.Command}");
             };
 
             Func<bool> stopOnError = () =>
             {
-                return !cin.YesOrNo("are you sure to continue (yes/no)?");
+                return !Cin.YesOrNo("are you sure to continue (yes/no)?");
             };
 
             script.Execute(stopOnError);
-            cout.WriteLine("completed.");
+            Cout.WriteLine("completed.");
 
             return !hasError;
         }

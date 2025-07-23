@@ -39,7 +39,7 @@ namespace Sys.Data
                 var row = ReadRow(table);
                 progress.Report(row);
 
-                if (cancellationToken != null && cancellationToken.IsCancellationRequested)
+                if (cancellationToken.IsCancellationRequested)
                     break;
             }
 
@@ -60,7 +60,7 @@ namespace Sys.Data
                 var row = ReadRow(table);
                 table.Rows.Add(row);
 
-                if (cancellationToken != null && cancellationToken.IsCancellationRequested)
+                if (cancellationToken.IsCancellationRequested)
                     break;
             }
 

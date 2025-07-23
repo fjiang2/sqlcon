@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
     class ClassMaker
     {
@@ -20,6 +20,11 @@ namespace sqlcon
         private string mtd;
 
         protected ApplicationCommand cmd;
+
+        protected Option CodeOption = new Option
+        {
+            TabType = TabType.InsertSpaces,
+        };
 
         public ClassMaker(ApplicationCommand cmd)
         {
@@ -33,7 +38,7 @@ namespace sqlcon
 
         public void SetClassName(string cname)
         {
-            this.cname = ident.Identifier(cname);
+            this.cname = Ident.Identifier(cname);
         }
 
         public void SetMethod(string mtd)
@@ -112,7 +117,7 @@ namespace sqlcon
             string path = cmd.OutputFile($"{name}.cs");
             if (path == null)
             {
-                cout.WriteLine(text);
+                Cout.WriteLine(text);
             }
             else
             {
@@ -125,11 +130,11 @@ namespace sqlcon
                 try
                 {
                     text.WriteIntoFile(file);
-                    cout.WriteLine("created on {0}", Path.GetFullPath(file));
+                    Cout.WriteLine("created on {0}", Path.GetFullPath(file));
                 }
                 catch (Exception ex)
                 {
-                    cout.WriteLine(ex.Message);
+                    Cout.WriteLine(ex.Message);
                 }
             }
         }
@@ -147,7 +152,7 @@ namespace sqlcon
         {
             if (!File.Exists(path))
             {
-                cerr.WriteLine($"file {path} not found");
+                Cerr.WriteLine($"file {path} not found");
                 return null;
             }
 
@@ -189,7 +194,14 @@ namespace sqlcon
                     }
                 }
             }
+
         }
+
+        public static Value NewPropertyObject(TypeInfo type)
+        {
+            return new Value(new Dictionary<string, Value>()) { Type = type };
+        }
+
     }
 
 }

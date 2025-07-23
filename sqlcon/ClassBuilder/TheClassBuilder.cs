@@ -10,7 +10,7 @@ using Sys.Data.Manager;
 using Sys.Data.Linq;
 using System.Data.Common;
 
-namespace sqlcon
+namespace SqlCon
 {
     abstract class TheClassBuilder : ClassMaker
     {
@@ -22,8 +22,10 @@ namespace sqlcon
         public TheClassBuilder(ApplicationCommand cmd)
             : base(cmd)
         {
-            builder = new CSharpBuilder();
-
+            builder = new CSharpBuilder
+            {
+                Option = base.CodeOption,
+            };
         }
 
         public void AddOptionalUsing()

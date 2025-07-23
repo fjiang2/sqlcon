@@ -7,14 +7,14 @@ using System.Data;
 using System.Data.Common;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
     static class ConsoleGrid
     {
         public static void ToConsole<T>(this IEnumerable<T> source, bool vertical = false)
         {
             DataTable dt = ToDataTable(source);
-            new OutputDataTable(dt, cout.TrimWriteLine, vertical).Output();
+            new OutputDataTable(dt, Cout.TrimWriteLine, vertical).Output();
         }
 
         private static DataTable ToDataTable<T>(IEnumerable<T> source)
@@ -70,7 +70,7 @@ namespace sqlcon
 
                 string[] headers = schema.Select(row => row.Name).ToArray();
 
-                var D = new OutputDataLine(cout.TrimWriteLine, headers.Length);
+                var D = new OutputDataLine(Cout.TrimWriteLine, headers.Length);
 
                 D.MeasureWidth(schema.Select(row => row.Size).ToArray());
                 D.MeasureWidth(headers);
@@ -82,7 +82,7 @@ namespace sqlcon
 
                 if (!reader.HasRows)
                 {
-                    cout.WriteLine("<0 row>");
+                    Cout.WriteLine("<0 row>");
                     return;
                 }
 
@@ -103,7 +103,7 @@ namespace sqlcon
                 }
 
                 D.DisplayLine();
-                cout.WriteLine("<{0} row{1}> {2}",
+                Cout.WriteLine("<{0} row{1}> {2}",
                     count,
                     count > 1 ? "s" : "",
                     limited ? "limit reached" : ""
@@ -117,14 +117,14 @@ namespace sqlcon
         public static void ToConsole(this DataTable dt, bool vertical = false, bool more = false, bool outputDbNull = true, int maxColumnWidth = 0)
         {
             ShellHistory.SetLastResult(dt);
-            OutputDataTable odt = new OutputDataTable(dt, cout.TrimWriteLine, vertical)
+            OutputDataTable odt = new OutputDataTable(dt, Cout.TrimWriteLine, vertical)
             {
                 OutputDbNull = outputDbNull,
                 MaxColumnWidth = maxColumnWidth,
             };
             odt.Output();
 
-            cout.WriteLine("<{0}{1} row{2}>", more ? "top " : "", dt.Rows.Count, dt.Rows.Count > 1 ? "s" : "");
+            Cout.WriteLine("<{0}{1} row{2}>", more ? "top " : "", dt.Rows.Count, dt.Rows.Count > 1 ? "s" : "");
         }
 
 

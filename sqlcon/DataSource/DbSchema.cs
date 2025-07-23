@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Data;
 using Sys.Data;
 
-namespace sqlcon
+namespace SqlCon
 {
     static class DbSchema
     {

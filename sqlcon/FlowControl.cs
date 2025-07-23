@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Tie;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
     class FlowControl
     {
@@ -81,12 +81,12 @@ namespace sqlcon
         {
             if (SP >= lines.Length)
             {
-                cerr.WriteLine("command is not completed. Letter ';' expected.");
+                Cerr.WriteLine("command is not completed. Letter ';' expected.");
                 return string.Empty;
             }
 
             string line = lines[SP];
-            cout.WriteLine(ConsoleColor.DarkGray, line);
+            Cout.WriteLine(ConsoleColor.DarkGray, line);
             return line;
         }
 
@@ -95,9 +95,9 @@ namespace sqlcon
             if (SP >= lines.Length)
                 return true;
 
-            if (!cin.YesOrNo($"continue to run \"{lines[SP]}\" (y/n)?"))
+            if (!Cin.YesOrNo($"continue to run \"{lines[SP]}\" (y/n)?"))
             {
-                cerr.WriteLine("interupted.");
+                Cerr.WriteLine("interupted.");
                 return true;
             }
 
@@ -132,7 +132,7 @@ namespace sqlcon
                 string[] L = _line.Split(new string[] { GOTO }, StringSplitOptions.RemoveEmptyEntries);
                 if (L.Length != 2)
                 {
-                    cerr.WriteLine($"syntax error: {line}");
+                    Cerr.WriteLine($"syntax error: {line}");
                     return NextStep.ERROR;
                 }
 
@@ -149,7 +149,7 @@ namespace sqlcon
                 }
                 catch (Exception ex)
                 {
-                    cerr.WriteLine($"error on: {expr},  {ex.Message}");
+                    Cerr.WriteLine($"error on: {expr},  {ex.Message}");
                     return NextStep.ERROR;
                 }
 
@@ -164,7 +164,7 @@ namespace sqlcon
         {
             if (label.IndexOf(' ') >= 0)
             {
-                cerr.WriteLine($"invalid goto label: {label}");
+                Cerr.WriteLine($"invalid goto label: {label}");
                 return NextStep.ERROR;
             }
 
@@ -175,7 +175,7 @@ namespace sqlcon
             }
             else
             {
-                cerr.WriteLine($"undefined goto label: {label}");
+                Cerr.WriteLine($"undefined goto label: {label}");
                 return NextStep.ERROR;
             }
         }

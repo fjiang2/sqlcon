@@ -8,7 +8,7 @@ using Sys.CodeBuilder;
 using Tie;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
     class TieClassBuilder : TheClassBuilder
     {
@@ -36,7 +36,7 @@ namespace sqlcon
             };
 
             builder.AddClass(clss);
-            string code = ReadAllText(cmd.arg1);
+            string code = ReadAllText(cmd.Arg1);
 
             Memory DS = new Memory();
             try
@@ -45,7 +45,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                cerr.WriteLine(ex.Message);
+                Cerr.WriteLine(ex.Message);
                 return;
             }
 

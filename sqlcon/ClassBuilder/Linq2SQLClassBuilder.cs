@@ -10,7 +10,7 @@ using Sys.Data;
 using Sys.Data.Manager;
 
 
-namespace sqlcon
+namespace SqlCon
 {
     class Linq2SQLClassBuilder : TheClassBuilder
     {

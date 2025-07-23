@@ -1,6 +1,6 @@
 using System;
 
-namespace sqlcon
+namespace SqlCon
 {
 	public static partial class ConfigKey
 	{

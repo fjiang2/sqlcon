@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.OleDb;
-using System.Xml.Linq;
 
 namespace Sys.Data
 {
@@ -61,7 +60,7 @@ namespace Sys.Data
 
         internal static string GetCSharpType(this CType type, bool nullable)
         {
-            string ty = "";
+            string ty;
             switch (type)
             {
                 case CType.VarChar:

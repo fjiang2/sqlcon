@@ -10,7 +10,7 @@ using Sys.Data;
 using Sys.Data.Manager;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
 
     class DataClassBuilder : ClassMaker
@@ -122,7 +122,8 @@ namespace sqlcon
 
             CSharpBuilder builder = new CSharpBuilder
             {
-                Namespace = NamespaceName
+                Namespace = NamespaceName,
+                Option = base.CodeOption,
             };
 
             builder.AddUsingRange(base.Usings);
@@ -172,7 +173,7 @@ namespace sqlcon
             {
                 if (dt.Columns.Count < 2)
                 {
-                    cerr.WriteLine("cannot generate dictionary class, column# > 2");
+                    Cerr.WriteLine("cannot generate dictionary class, column# > 2");
                     return;
                 }
 
@@ -195,11 +196,11 @@ namespace sqlcon
             TypeInfo type = new TypeInfo { UserType = $"{cname}" };
             foreach (DataRow row in dt.Rows)
             {
-                string key = Value.ToPrimitive(row[0]);
+                object key = row[0];
 
                 if (dt.Columns.Count != 2)
                 {
-                    var V = Value.NewPropertyObject(type);
+                    var V = ClassMaker.NewPropertyObject(type);
                     for (int i = 0; i < columns.Length; i++)
                     {
                         object obj = row[i];
@@ -245,8 +246,8 @@ namespace sqlcon
             }
 
 
-            TypeInfo typeinfo = new TypeInfo { UserType = $"Dictionary<{keyType}, {valueType}>" };
-            Field field = new Field(typeinfo, fieldName, new Value(dict) { Type = typeinfo })
+            TypeInfo typeInfo = new TypeInfo { UserType = $"Dictionary<{keyType}, {valueType}>" };
+            Field field = new Field(typeInfo, fieldName, new Value(dict) { Type = typeInfo })
             {
                 Modifier = Modifier.Public | Modifier.Static | Modifier.Readonly
             };
@@ -261,7 +262,7 @@ namespace sqlcon
             TypeInfo type = new TypeInfo { UserType = $"{cname}" };
             foreach (DataRow row in dt.Rows)
             {
-                var V = Value.NewPropertyObject(type);
+                Value V = ClassMaker.NewPropertyObject(type);
                 for (int i = 0; i < columns.Length; i++)
                 {
                     object obj = row[i];
@@ -291,13 +292,14 @@ namespace sqlcon
             int count = dt.Columns.Count;
             if (count < 2)
             {
-                cerr.WriteLine("cannot generate enum class because table is < 2 columns");
+                Cerr.WriteLine("cannot generate enum class because table is < 2 columns");
                 return;
             }
 
-            CSharpBuilder builder = new CSharpBuilder()
+            CSharpBuilder builder = new CSharpBuilder
             {
-                Namespace = NamespaceName
+                Namespace = NamespaceName,
+                Option = base.CodeOption,
             };
             builder.AddUsingRange(base.Usings);
 
@@ -307,7 +309,7 @@ namespace sqlcon
 
             DataColumn _feature = null;     //1st string column as property name
             DataColumn _value = null;       //1st int column as property value
-            DataColumn _label = null;       //2nd string column as attribute [DataEnum("label")]
+            DataColumn _label = null;       //2nd string column as attribute [Description("label")]
             DataColumn _category = null;    //3rd string column as category to generate multiple enum types
             foreach (DataColumn column in dt.Columns)
             {
@@ -327,13 +329,13 @@ namespace sqlcon
 
             if (_feature == null)
             {
-                cerr.WriteLine("invalid enum property name");
+                Cerr.WriteLine("invalid enum property name");
                 return;
             }
 
             if (_value == null)
             {
-                cerr.WriteLine("invalid enum property value");
+                Cerr.WriteLine("invalid enum property value");
                 return;
             }
 
@@ -382,7 +384,7 @@ namespace sqlcon
 
             if (optionColumns.Length == 0)
             {
-                cerr.WriteLine("missing parameter /field:col1,col2");
+                Cerr.WriteLine("missing parameter /field:col1,col2");
                 return;
             }
 
@@ -392,13 +394,14 @@ namespace sqlcon
             }
             else if (optionColumns.Length != optionConstants.Length)
             {
-                cerr.WriteLine($"invalid parameter /value:{string.Join(",", optionConstants)}");
+                Cerr.WriteLine($"invalid parameter /value:{string.Join(",", optionConstants)}");
                 return;
             }
 
-            CSharpBuilder builder = new CSharpBuilder()
+            CSharpBuilder builder = new CSharpBuilder
             {
-                Namespace = NamespaceName
+                Namespace = NamespaceName,
+                Option = base.CodeOption,
             };
             builder.AddUsingRange(base.Usings);
 
@@ -424,7 +427,7 @@ namespace sqlcon
                 }
                 else if (type != _type)
                 {
-                    cerr.WriteLine($"column [{constant}] data type is imcompatible");
+                    Cerr.WriteLine($"column [{constant}] data type is imcompatible");
                     continue;
                 }
 
@@ -441,7 +444,7 @@ namespace sqlcon
 
             foreach (var kvp in dict)
             {
-                string fieldName = Sys.ident.Identifier(kvp.Key);
+                string fieldName = Sys.Ident.Identifier(kvp.Key);
 
                 Field field = new Field(new TypeInfo(type), fieldName, new Value(kvp.Value))
                 {

@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using Sys.Data.Manager;
 
-namespace sqlcon
+namespace SqlCon
 {
 
     class DataContractClassBuilder : DataTableClassBuilder

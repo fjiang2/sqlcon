@@ -8,7 +8,7 @@ using Sys;
 using Sys.Data;
 using Sys.Stdio;
 
-namespace sqlcon
+namespace SqlCon
 {
     class TableOut
     {
@@ -69,7 +69,7 @@ namespace sqlcon
 
             if (cmd.Has("json"))
             {
-                cout.WriteLine(table.WriteJson(JsonStyle.Normal, excludeTableName: false));
+                Cout.WriteLine(table.WriteJson(JsonStyle.Normal, excludeTableName: false));
                 return;
             }
 
@@ -100,7 +100,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                cerr.WriteLine(ex.Message);
+                Cerr.WriteLine(ex.Message);
                 return false;
             }
         }
@@ -114,7 +114,7 @@ namespace sqlcon
             }
             catch (Exception ex)
             {
-                cerr.WriteLine(ex.Message);
+                Cerr.WriteLine(ex.Message);
                 return false;
             }
 
@@ -132,7 +132,7 @@ namespace sqlcon
                 DuplicatedTable dup = new DuplicatedTable(tname, columns);
                 if (dup.group.Rows.Count == 0)
                 {
-                    cout.WriteLine("no duplicated record found");
+                    Cout.WriteLine("no duplicated record found");
                     return true;
                 }
 

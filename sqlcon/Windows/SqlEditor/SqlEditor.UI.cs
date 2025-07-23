@@ -12,7 +12,7 @@ using System.Windows.Controls.Primitives;
 using Sys;
 using Sys.Data;
 
-namespace sqlcon.Windows
+namespace SqlCon.Windows
 {
     public partial class SqlEditor : Window
     {

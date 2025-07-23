@@ -22,7 +22,7 @@ namespace Sys.Data.Manager
 
         public static string ToFieldName(this string columnName, string prefix, CodeStyle style = CodeStyle.Original)
         {
-            string fieldName = ident.Identifier(columnName, prefix);
+            string fieldName = Ident.Identifier(columnName, prefix);
 
             char ch = fieldName[0];
             switch (style)
@@ -46,7 +46,7 @@ namespace Sys.Data.Manager
         public static string ToClassName(this TableName tname, Func<string, string> rule)
         {
             string tableName = tname.Name;
-            string className = ident.Identifier(tableName);
+            string className = Ident.Identifier(tableName);
 
             //remove plural
             className = Singularize(className);

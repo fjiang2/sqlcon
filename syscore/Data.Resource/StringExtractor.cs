@@ -108,7 +108,7 @@ namespace Sys.Data.Resource
             s = s.Trim();
             int hash = s.GetHashCode();
 
-            string name = ident.Identifier(s).ToUpper();
+            string name = Ident.Identifier(s).ToUpper();
             if (name.Length <= 20)
                 return name;
 

@@ -11,7 +11,7 @@ using Sys.Data;
 using Sys.Stdio;
 using Tie;
 
-namespace sqlcon
+namespace SqlCon
 {
     class ConnectionConfiguration : IConnectionConfiguration
     {
@@ -74,7 +74,7 @@ namespace sqlcon
                 if (pair[0].IsNull || pair[1].IsNull)
                 {
                     string text = pair[0].ToSimpleString();
-                    cerr.WriteLine($"warning: undefined connection string at servers.{text}");
+                    Cerr.WriteLine($"warning: undefined connection string at servers.{text}");
                     continue;
                 }
 
@@ -87,7 +87,7 @@ namespace sqlcon
                 }
                 catch (Exception ex)
                 {
-                    cerr.WriteLine(ex.Message);
+                    Cerr.WriteLine(ex.Message);
                 }
             }
 
@@ -99,7 +99,7 @@ namespace sqlcon
             string[] x = path.Split('\\');
             if (x.Length < 3)
             {
-                cerr.WriteLine($"invalid server path: {path}, correct format is server\\database");
+                Cerr.WriteLine($"invalid server path: {path}, correct format is server\\database");
                 return null;
             }
 
@@ -119,7 +119,7 @@ namespace sqlcon
             }
             else
             {
-                cerr.WriteLine($"invalid server path: \\{serverName}\\{databaseName}");
+                Cerr.WriteLine($"invalid server path: \\{serverName}\\{databaseName}");
                 return null;
             }
         }

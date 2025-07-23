@@ -1,6 +1,6 @@
 ﻿using Tie;
 
-namespace sqlcon
+namespace SqlCon
 {
     public interface IApplicationConfiguration 
     {

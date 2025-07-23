@@ -52,7 +52,14 @@ namespace Sys.Data.Manager
 
             this.option = option;
 
-            this.code = new CSharpBuilder { Namespace = cname.Namespace, };
+            this.code = new CSharpBuilder 
+            { 
+                Namespace = cname.Namespace,
+                Option = new Option
+                {
+                    TabType = TabType.InsertSpaces,
+                }
+            };
 
             code.AddUsing("System");
             code.AddUsing("System.Collections.Generic");
@@ -211,7 +218,7 @@ namespace Sys.Data.Manager
 
             cons.Statement.Add(sent1);
             cons.Statement.AppendLine("this.Load();");
-            cons.Statement.IF("!this.Exists", sent2);
+            cons.Statement.If("!this.Exists", sent2);
 
 
         }
@@ -243,12 +250,14 @@ namespace Sys.Data.Manager
             clss.Add(collect);
 
             CodeBlock block = new CodeBlock();
+            block.Indent();
+            block.Indent();
             block.Add(fill);
             block.AppendLine();
             block.Add(collect);
-            return block.ToString(2);
+            return block.ToString();
 
-        }
+        } 
 
         private void Fields()
         {
@@ -331,8 +340,11 @@ namespace Sys.Data.Manager
 
             ConstStringColumnNames();
 
-            clss.AddUtilsMethod(UtilsThisMethod.Copy | UtilsThisMethod.Clone | UtilsThisMethod.Compare);
-            
+            var common = clss.CommonMethod();
+            common.Copy();
+            common.Clone();
+            common.Compare();
+
             return code.ToString();
         }
 

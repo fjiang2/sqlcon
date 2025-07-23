@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Sys;
 
-namespace sqlcon
+namespace SqlCon
 {
 	public static partial class Config
 	{

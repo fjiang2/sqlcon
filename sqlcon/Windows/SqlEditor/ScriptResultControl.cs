@@ -20,7 +20,7 @@ using Sys.Data;
 using Sys.Data.IO;
 using System.ComponentModel;
 
-namespace sqlcon.Windows
+namespace SqlCon.Windows
 {
     class ScriptResultControl : TabControl
     {

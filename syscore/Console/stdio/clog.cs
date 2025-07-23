@@ -8,13 +8,13 @@ using System.IO;
 
 namespace Sys.Stdio
 {
-    public class clog
+    public class Clog
     {
         private static TextWriter writer = null;
 
-        static clog()
+        static Clog()
         {
-            string fileName = Context.GetValue<string>(stdio.FILE_LOG, "clog.log");
+            string fileName = Context.GetValue<string>(StdIO.FILE_LOG, "clog.log");
 
             try
             {
@@ -27,7 +27,7 @@ namespace Sys.Stdio
             }
         }
 
-        ~clog()
+        ~Clog()
         {
             if (writer != null)
                 writer.Close();

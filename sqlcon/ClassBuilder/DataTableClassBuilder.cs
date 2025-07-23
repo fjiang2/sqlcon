@@ -11,7 +11,7 @@ using Sys.Data.Manager;
 using Sys.Data.Linq;
 using System.Data.Common;
 
-namespace sqlcon
+namespace SqlCon
 {
     abstract class DataTableClassBuilder : TheClassBuilder
     {
@@ -75,7 +75,7 @@ namespace sqlcon
         public static string COLUMN(DataColumn column) => COLUMN(column.ColumnName);
         public static string COLUMN(string columnName)
         {
-            string name = ident.Identifier(columnName).ToUpper();
+            string name = Ident.Identifier(columnName).ToUpper();
             if (name.StartsWith("_"))
                 return name;
             else
@@ -93,7 +93,7 @@ namespace sqlcon
 
             bool hasColumnProperty = cmd.Has("data-column-property");
             Statement sent = method.Statement;
-            sent.AppendLine("DataTable dt = new DataTable();");
+            sent.AppendLine("DataTable dt = new DataTable { TableName = TableName };");
             foreach (DataColumn column in dt.Columns)
             {
                 TypeInfo ty = new TypeInfo(dict[column].Type);
@@ -118,6 +118,8 @@ namespace sqlcon
                 sent.AppendLine($"dt.Columns.Add({_column});");
             }
 
+            sent.AppendLine();
+            sent.AppendLine("dt.PrimaryKey = dt.Columns.OfType<DataColumn>().Where(column => Keys.Contains(column.ColumnName)).ToArray();");
             sent.AppendLine();
             sent.AppendLine("return dt;");
         }
@@ -207,12 +209,12 @@ namespace sqlcon
 
         }
 
-        protected static Field CreateConstraintField(TableName tname)
+        protected static Field CreateConstraintField(TableName tname, string EXTENSION)
         {
             const string CONSTRAINT = nameof(Constraint);
             Value ToColumn(string table, string column)
             {
-                table = ident.Identifier(table);
+                table = Ident.Identifier(table);
                 column = COLUMN(column);
                 column = $"{table}{EXTENSION}.{column}";
                 return new Value(new CodeString(column));
@@ -230,9 +232,9 @@ namespace sqlcon
             List<Value> L = new List<Value>();
             foreach (IForeignKey pkey in pkeys)
             {
-                string entity = ident.Identifier(pkey.FK_Table);
+                string entity = Ident.Identifier(pkey.FK_Table);
                 TypeInfo type = new TypeInfo { UserType = $"{CONSTRAINT}<{entity}>" };
-                var V = Value.NewPropertyObject(type);
+                var V = ClassMaker.NewPropertyObject(type);
                 V.AddProperty(nameof(IConstraint.ThisKey), ToColumn2(pkey.PK_Column));
                 V.AddProperty(nameof(IConstraint.OtherKey), ToColumn(pkey.FK_Table, pkey.FK_Column));
                 if (IsOneToMany(tname, pkey))
@@ -243,9 +245,9 @@ namespace sqlcon
             var fkeys = schema.ForeignKeys.Keys.OrderBy(k => k.FK_Table);
             foreach (IForeignKey fkey in fkeys)
             {
-                string entity = ident.Identifier(fkey.PK_Table);
+                string entity = Ident.Identifier(fkey.PK_Table);
                 TypeInfo type = new TypeInfo { UserType = $"{CONSTRAINT}<{entity}>" };
-                var V = Value.NewPropertyObject(type);
+                var V = ClassMaker.NewPropertyObject(type);
                 V.AddProperty(nameof(IConstraint.Name), new Value(fkey.Constraint_Name));
                 V.AddProperty(nameof(IConstraint.ThisKey), ToColumn2(fkey.FK_Column));
                 V.AddProperty(nameof(IConstraint.OtherKey), ToColumn(fkey.PK_Table, fkey.PK_Column));
@@ -283,7 +285,7 @@ namespace sqlcon
 
             foreach (IForeignKey pkey in pkeys)
             {
-                string entity = ident.Identifier(pkey.FK_Table);
+                string entity = Ident.Identifier(pkey.FK_Table);
 
                 TypeInfo type;
                 string propertyName;
@@ -314,7 +316,7 @@ namespace sqlcon
             var fkeys = schema.ForeignKeys.Keys.OrderBy(k => k.FK_Table);
             foreach (IForeignKey fkey in fkeys)
             {
-                string entity = ident.Identifier(fkey.PK_Table);
+                string entity = Ident.Identifier(fkey.PK_Table);
                 TypeInfo type = new TypeInfo { UserType = $"EntityRef<{entity}>" };
                 string propertyName = Plural.Singularize(entity);
                 var property = new Property(type, propertyName);

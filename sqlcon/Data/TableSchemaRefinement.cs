@@ -8,7 +8,7 @@ using System.Data;
 using Sys;
 using Sys.Data;
 
-namespace sqlcon
+namespace SqlCon
 {
     class SchemaRefineOption
     {

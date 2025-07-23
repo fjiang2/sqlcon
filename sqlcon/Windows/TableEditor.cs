@@ -10,7 +10,7 @@ using System.Data;
 using Sys.Data;
 using Sys.Stdio;
 
-namespace sqlcon.Windows
+namespace SqlCon.Windows
 {
     class TableEditor : Window
     {
@@ -119,7 +119,7 @@ namespace sqlcon.Windows
             }
             catch (Exception ex)
             {
-                cerr.WriteLine(ex.Message);
+                Cerr.WriteLine(ex.Message);
             }
         }
 
@@ -150,7 +150,7 @@ namespace sqlcon.Windows
             }
             catch (Exception ex)
             {
-                cerr.WriteLine(ex.Message);
+                Cerr.WriteLine(ex.Message);
             }
 
         }
