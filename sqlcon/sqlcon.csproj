@@ -3,7 +3,7 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net48</TargetFramework>
-        <Version>2.7.0.0</Version>
+        <Version>2.7.2.0</Version>
         <Title>sqlcon</Title>
         <Description>Sql Server Console</Description>
         <Configuration>datconn</Configuration>

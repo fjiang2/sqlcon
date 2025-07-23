@@ -5,7 +5,7 @@
     <RootNamespace>Sys</RootNamespace>
     <Title>syscore</Title>
     <PackageId>syscore</PackageId>
-    <Version>2.7.0</Version>
+    <Version>2.7.2</Version>
   </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Tie" Version="2.0.11" />
