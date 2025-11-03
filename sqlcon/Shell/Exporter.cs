@@ -707,7 +707,10 @@ namespace SqlCon
         {
             DataSet ds = LastOrCurrentDataSet();
             if (ds == null)
+            {
+                Cout.WriteLine("Cannot find last or current data set.");
                 return;
+            }
 
             string ds_name = cmd.GetValue("ds-name");
             string[] dt_names = cmd.GetStringArray("dt-names");
