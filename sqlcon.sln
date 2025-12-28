@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29102.190
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36616.10 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlcon", "sqlcon\sqlcon.csproj", "{C60691C9-DA2E-4DFD-9923-9349A1777C5D}"
 EndProject
@@ -17,6 +17,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SysData.SqlServerCe", "SysData.SqlServerCe\SysData.SqlServerCe.csproj", "{B78CFFC9-5CD5-4C79-A781-5C5DD87A8BC4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SysData.Sqlite", "SysData.Sqlite\SysData.Sqlite.csproj", "{8049D6C4-6B0E-42E4-BE26-1C7CD9A52875}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer", "Installer\Installer.vdproj", "{52B20422-474D-5734-629F-99A1F7DE9787}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +46,8 @@ Global
 		{8049D6C4-6B0E-42E4-BE26-1C7CD9A52875}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8049D6C4-6B0E-42E4-BE26-1C7CD9A52875}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8049D6C4-6B0E-42E4-BE26-1C7CD9A52875}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52B20422-474D-5734-629F-99A1F7DE9787}.Debug|Any CPU.ActiveCfg = Debug
+		{52B20422-474D-5734-629F-99A1F7DE9787}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
